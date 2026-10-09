@@ -44,3 +44,6 @@ htmlcov/
 Thumbs.db
 .idea/
 .vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
