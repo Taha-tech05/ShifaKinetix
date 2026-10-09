@@ -1,0 +1,51 @@
+{
+  "label": "draft, awaiting clinician review",
+  "note": "PLACEHOLDER, Person A will replace. Danger cases first.",
+  "cases": [
+    {
+      "caseId": "T1",
+      "description": "PLACEHOLDER: danger A yes gives RED_FLAG",
+      "answers": [
+        { "questionId": "Q_DANGER_A", "type": "yesno", "value": true, "state": "answered" },
+        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "T2",
+      "description": "PLACEHOLDER: danger B yes gives RED_FLAG",
+      "answers": [
+        { "questionId": "Q_DANGER_A", "type": "yesno", "value": false, "state": "answered" },
+        { "questionId": "Q_DANGER_B", "type": "yesno", "value": true, "state": "answered" }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "T3",
+      "description": "PLACEHOLDER: not sure on key danger question must NEVER be SAFE",
+      "answers": [
+        { "questionId": "Q_DANGER_A", "type": "yesno", "value": null, "state": "unknown" },
+        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "mustNotBe": "SAFE",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "T4",
+      "description": "PLACEHOLDER: all danger answers no gives SAFE",
+      "answers": [
+        { "questionId": "Q_DANGER_A", "type": "yesno", "value": false, "state": "answered" },
+        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+      ],
+      "expectedVerdict": "SAFE",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    }
+  ]
+}
