@@ -24,7 +24,7 @@ export default function Intro() {
             label={t('intro.start')}
             onPress={() => {
               reset();
-              router.push('/report/body');
+              router.push('/report/fork');
             }}
           />
           <AppText variant="secondary" color={colors.muted} style={styles.emergency}>

@@ -29,7 +29,7 @@ export default function Confirm() {
 
   // Marker sits on the selected shoulder. Facing the viewer, patient-right is on the viewer's left.
   const right = selection.regionId === 'shoulder_right';
-  const back = selection.subRegionId === 'back';
+  const back = selection.subRegionId === 'back' || selection.subRegionId === 'scapular';
   const markerX = right === !back ? 22 : 78;
 
   return (
@@ -37,7 +37,7 @@ export default function Confirm() {
       onBack={() => router.back()}
       footer={
         <>
-          <Button label={t('confirm.yes')} onPress={() => router.push('/report/questions')} />
+          <Button label={t('confirm.yes')} onPress={() => router.push('/report/basics')} />
           <Button variant="text" label={t('common.change')} onPress={() => router.back()} />
         </>
       }
