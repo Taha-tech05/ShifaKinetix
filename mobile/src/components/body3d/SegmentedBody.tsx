@@ -51,8 +51,8 @@ export interface SegmentedBodyProps {
 }
 
 const FOV = 45;
-const TARGET: Vec3 = [-0.2, 1.28, -0.03]; // middle of the right shoulder and arm
-const DISTANCE = 1.45;
+const TARGET: Vec3 = [-0.25, 1.33, -0.03]; // middle of the right shoulder and arm
+const DISTANCE = 1.9;
 const GROUPS: Group[] = ['trunk', 'girdle', 'upper', 'forearm'];
 const ARROW_LENGTH = 0.16;
 
