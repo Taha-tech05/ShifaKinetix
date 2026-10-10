@@ -1,14 +1,11 @@
 import { create } from 'zustand';
 import type { Answer, Verdict } from '../gate/evaluate';
 import { evaluateStub } from '../gate/stub';
+import type { NarrowingInput } from '../narrowing/stub';
+import { depthAnswerFrom } from '../questions/followUp';
+import type { BodySelection, Point3D } from '../regions/types';
 
-export type Depth = 'surface' | 'middle' | 'deep';
-
-export interface Point3D {
-  x: number;
-  y: number;
-  z: number;
-}
+export type { Point3D } from '../regions/types';
 
 /** Shared format 3: movement result. */
 export interface MovementResult {
@@ -21,15 +18,13 @@ export interface MovementResult {
 }
 
 export interface SessionState {
-  regionId: string | null;
-  point: Point3D | null;
-  depth: Depth | null;
+  /** What the patient tapped on the body: side, sub-region, point, closest structure and layer. */
+  selection: BodySelection | null;
   answers: Answer[];
   gateVerdict: Verdict | null;
   movementResults: MovementResult[];
 
-  setRegion: (regionId: string | null, point?: Point3D | null) => void;
-  setDepth: (depth: Depth | null) => void;
+  setSelection: (selection: BodySelection | null) => void;
   /** Adds an answer, replacing any earlier answer to the same question. */
   recordAnswer: (answer: Answer) => void;
   runGate: () => Verdict;
@@ -38,9 +33,7 @@ export interface SessionState {
 }
 
 const initial = {
-  regionId: null,
-  point: null,
-  depth: null,
+  selection: null,
   answers: [] as Answer[],
   gateVerdict: null,
   movementResults: [] as MovementResult[],
@@ -49,8 +42,7 @@ const initial = {
 export const useSession = create<SessionState>((set, get) => ({
   ...initial,
 
-  setRegion: (regionId, point = null) => set({ regionId, point }),
-  setDepth: (depth) => set({ depth }),
+  setSelection: (selection) => set({ selection }),
 
   recordAnswer: (answer) =>
     set((s) => ({
@@ -73,3 +65,17 @@ export const useSession = create<SessionState>((set, get) => ({
 
   reset: () => set({ ...initial }),
 }));
+
+/** Input for the narrowing step, or null until the patient has chosen a spot. */
+export function narrowingInputFrom(
+  s: Pick<SessionState, 'selection' | 'answers' | 'movementResults'>,
+): NarrowingInput | null {
+  if (!s.selection) return null;
+  return {
+    layer: s.selection.layer,
+    subRegionId: s.selection.subRegionId,
+    point: s.selection.point,
+    depthAnswer: depthAnswerFrom(s.answers),
+    movementResults: s.movementResults,
+  };
+}

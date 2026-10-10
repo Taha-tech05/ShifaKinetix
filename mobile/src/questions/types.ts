@@ -21,6 +21,10 @@ export interface Question {
   text: string;
   options?: QuestionOption[];
   isKeyDangerQuestion?: boolean;
+  /** Where the question comes from, e.g. "PLACEHOLDER, Person C replaces". */
+  source?: string;
+  /** Review status, e.g. "draft, awaiting clinician review". */
+  label?: string;
 }
 
 export type DurationUnit = 'days' | 'weeks' | 'months';
