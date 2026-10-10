@@ -4,8 +4,8 @@
 // region into single meshes with no joints (see docs/intake-flow.md).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from 'react-native';
-import { LOOP_MS, localized } from '../../movement/movements';
-import type { Keyframe, Movement } from '../../movement/movements';
+import { localized, mannequinKeyframes } from '../../movement/movements';
+import type { MannequinKeyframe, Movement } from '../../movement/movements';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
 import { AppText } from '../AppText';
@@ -28,7 +28,7 @@ function Capsule({ x, y, w, h, fill = BODY_FILL, line = BODY_LINE }: { x: number
 }
 
 /** Interpolate one channel of the keyframes into a rotation in degrees, easing like pose.ts. */
-function channel(v: Animated.Value, kf: Keyframe[], pick: (k: Keyframe) => number, mul: number) {
+function channel(v: Animated.Value, kf: MannequinKeyframe[], pick: (k: MannequinKeyframe) => number, mul: number) {
   return v.interpolate({
     inputRange: kf.map((k) => k.t),
     outputRange: kf.map((k) => `${pick(k) * mul}deg`),
@@ -45,11 +45,11 @@ function Pivot({ x, y, rotate, children }: { x: number; y: number; rotate: Anima
 
 function Mannequin({ movement, value }: { movement: Movement; value: Animated.Value }) {
   const front = movement.view === 'front';
-  const kf = movement.keyframes;
+  const kf = mannequinKeyframes(movement);
   // Front view: the right arm is drawn on the left of the picture and rises outward (clockwise).
   // Side view: the body faces right and the arm rises forward (counter-clockwise).
   const armSign = front ? 1 : -1;
-  const elbowSign = movement.elbowDirection === 'behind' ? 1 : -1;
+  const elbowSign = movement.id === 'hand_behind_back' ? 1 : -1;
   const arm = channel(value, kf, (k) => k.humerusDeg, armSign);
   const elbow = channel(value, kf, (k) => k.elbowDeg, elbowSign);
   // Outward swing (outward push): the hand moves away from the belly, counter-clockwise on the picture (schematic).
@@ -104,12 +104,14 @@ export function MovementPlayer({ movement }: { movement: Movement }) {
 
   useEffect(() => {
     if (reduce) {
-      const peak = movement.keyframes.find((k) => k.name === 'peak');
-      value.setValue(peak?.t ?? 0.5);
+      // still picture: the frame furthest from rest
+      const kf = mannequinKeyframes(movement);
+      const far = kf.reduce((b, k) => (Math.abs(k.humerusDeg) + k.elbowDeg > Math.abs(b.humerusDeg) + b.elbowDeg ? k : b), kf[0]);
+      value.setValue(far.t);
       return;
     }
     value.setValue(0);
-    const loop = Animated.loop(Animated.timing(value, { toValue: 1, duration: LOOP_MS, easing: Easing.linear, useNativeDriver: true }));
+    const loop = Animated.loop(Animated.timing(value, { toValue: 1, duration: movement.loopSeconds * 1000, easing: Easing.linear, useNativeDriver: true }));
     loop.start();
     return () => loop.stop();
   }, [movement, reduce, value]);

@@ -214,6 +214,7 @@ export const roman: Translations = {
     pain: 'Dard',
     weak: 'Kamzori',
     couldNot: 'Nahi kar saka',
+    simplified: 'Saada khaka',
   },
   result: {
     title: 'Woh pattho jo shamil ho sakte hain',

@@ -214,6 +214,7 @@ export const ur: Translations = {
     pain: 'درد',
     weak: 'کمزوری',
     couldNot: 'نہیں کر سکا',
+    simplified: 'سادہ خاکہ',
   },
   result: {
     title: 'وہ پٹھے جو شامل ہو سکتے ہیں',

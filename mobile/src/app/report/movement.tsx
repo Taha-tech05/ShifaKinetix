@@ -6,7 +6,7 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { CautionStrip } from '../../components/CautionStrip';
 import { IconTile } from '../../components/IconTile';
-import { MovementPlayer } from '../../components/movement/MovementPlayer';
+import { MovementStage } from '../../components/movement/MovementStage';
 import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
 import { MOVEMENT_COUNT, routeAfterMovement } from '../../flow/intake';
@@ -56,7 +56,7 @@ export default function MovementScreen() {
           <AppText variant="h1" color={colors.navy}>
             {localized(movement.name)}
           </AppText>
-          <MovementPlayer movement={movement} />
+          <MovementStage movement={movement} />
           <Card row>
             <IconTile icon="information-circle-outline" tone="teal" />
             <AppText variant="body" style={styles.col}>

@@ -8,6 +8,7 @@ import { colors, gradients, MIN_TAP, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { Body3D } from './body3d/Body3D';
 import { usePack } from './body3d/usePack';
+import { useScreenFocused } from './body3d/useScreenFocused';
 import { BodyPicker } from './BodyPicker';
 import { Button } from './Button';
 import { Card } from './Card';
@@ -83,7 +84,8 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
 export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
   const t = useT();
   const [layer, setLayer] = useState<BodyLayer>(initialLayer);
-  const packState = usePack(!FORCE_PLAIN);
+  const focused = useScreenFocused();
+  const packState = usePack(!FORCE_PLAIN && focused);
   const [timedOut, setTimedOut] = useState(false);
   const [boundaryFailed, setBoundaryFailed] = useState(false);
   const [usePlain, setUsePlain] = useState(false);
@@ -97,7 +99,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
   }, [packState.status]);
 
   const failed = FORCE_PLAIN || packState.status === 'failed' || boundaryFailed || (timedOut && packState.status === 'loading');
-  const ready = !failed && packState.status === 'ready' && packState.pack !== null;
+  const ready = !failed && packState.status === 'ready' && packState.pack !== null && focused;
 
   const changeLayer = (l: BodyLayer) => {
     setLayer(l);

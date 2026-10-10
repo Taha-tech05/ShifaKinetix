@@ -43,6 +43,7 @@ export function usePack(enabled = true): PackState {
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
+    setState({ status: 'loading', pack: null }); // a pack from before the screen was left may have been released
     const entry = acquire();
     entry.promise
       .then((p) => !cancelled && setState({ status: 'ready', pack: p }))

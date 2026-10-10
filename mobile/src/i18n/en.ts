@@ -212,6 +212,7 @@ export const en = {
     pain: 'Pain',
     weak: 'Weak',
     couldNot: 'Could not do it',
+    simplified: 'Simplified diagram',
   },
   result: {
     title: 'Muscles that may be involved',
