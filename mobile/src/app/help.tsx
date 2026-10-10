@@ -4,5 +4,5 @@ import { useT } from '../store/settings';
 
 export default function Help() {
   const t = useT();
-  return <FullProjectPlaceholder title={t('home.tileHelp')} onBack={() => router.back()} />;
+  return <FullProjectPlaceholder title={t('placeholder.title')} onBack={() => router.back()} />;
 }

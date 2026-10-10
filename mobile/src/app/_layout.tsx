@@ -11,13 +11,13 @@ function Shell() {
   const offline = useSettings((s) => s.offline);
   return (
     <View style={styles.root}>
-      {/* The demo banner sits above the navigator, so it shows on every screen. */}
-      <View style={{ paddingTop: insets.top, backgroundColor: colors.cautionTint }}>
+      {/* The demo strip sits above the navigator, so it shows on every screen. */}
+      <View style={{ paddingTop: insets.top, backgroundColor: colors.neutralTint }}>
         <Banner kind="demo" />
       </View>
       {offline ? <Banner kind="offline" /> : null}
       <View style={styles.fill}>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.page } }} />
       </View>
     </View>
   );
@@ -33,6 +33,6 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
+  root: { flex: 1, backgroundColor: colors.page },
   fill: { flex: 1 },
 });
