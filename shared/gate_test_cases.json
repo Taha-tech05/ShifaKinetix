@@ -1,50 +1,4710 @@
 {
+  "schemaVersion": 1,
   "label": "draft, awaiting clinician review",
-  "note": "PLACEHOLDER, Person A will replace. Danger cases first.",
+  "note": "Synthetic engineering fixtures, not patient data or clinical validation. Expected rule lists are specified independently of the evaluator.",
   "cases": [
     {
-      "caseId": "T1",
-      "description": "PLACEHOLDER: danger A yes gives RED_FLAG",
+      "caseId": "R_chest",
+      "description": "Reported chest requires referral",
       "answers": [
-        { "questionId": "Q_DANGER_A", "type": "yesno", "value": true, "state": "answered" },
-        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
       ],
       "expectedVerdict": "RED_FLAG",
-      "source": "PLACEHOLDER, Person A will replace",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_chest",
+            "matchedAnswers": [
+              "chest"
+            ],
+            "source": "https://www.nhs.uk/conditions/heart-attack/",
+            "reason": "Reported concern: chest. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review"
     },
     {
-      "caseId": "T2",
-      "description": "PLACEHOLDER: danger B yes gives RED_FLAG",
+      "caseId": "R_breathing",
+      "description": "Reported breathing requires referral",
       "answers": [
-        { "questionId": "Q_DANGER_A", "type": "yesno", "value": false, "state": "answered" },
-        { "questionId": "Q_DANGER_B", "type": "yesno", "value": true, "state": "answered" }
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
       ],
       "expectedVerdict": "RED_FLAG",
-      "source": "PLACEHOLDER, Person A will replace",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_breathing",
+            "matchedAnswers": [
+              "breathing"
+            ],
+            "source": "https://www.nhs.uk/conditions/heart-attack/",
+            "reason": "Reported concern: breathing. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review"
     },
     {
-      "caseId": "T3",
-      "description": "PLACEHOLDER: not sure on key danger question must NEVER be SAFE",
+      "caseId": "R_injury",
+      "description": "Reported injury requires referral",
       "answers": [
-        { "questionId": "Q_DANGER_A", "type": "yesno", "value": null, "state": "unknown" },
-        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: injury. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_unable",
+      "description": "Reported unable requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: unable. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_shape",
+      "description": "Reported shape requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_shape",
+            "matchedAnswers": [
+              "shape"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: shape. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_swelling",
+      "description": "Reported swelling requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_swelling",
+            "matchedAnswers": [
+              "swelling"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: swelling. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_tingling",
+      "description": "Reported tingling requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_tingling",
+            "matchedAnswers": [
+              "tingling"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: tingling. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_numb",
+      "description": "Reported numb requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_numb",
+            "matchedAnswers": [
+              "numb"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: numb. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_temperature_hot",
+      "description": "Reported temperature requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "hot",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_temperature_hot",
+            "matchedAnswers": [
+              "temperature"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: temperature. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_temperature_cold",
+      "description": "Reported temperature requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "cold",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_temperature_cold",
+            "matchedAnswers": [
+              "temperature"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: temperature. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_sudden",
+      "description": "Reported sudden requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_sudden",
+            "matchedAnswers": [
+              "sudden"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: sudden. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_severe",
+      "description": "Reported severe requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_severe",
+            "matchedAnswers": [
+              "severe"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: severe. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_bilateral",
+      "description": "Reported bilateral requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_bilateral",
+            "matchedAnswers": [
+              "bilateral"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: bilateral. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_fever",
+      "description": "Reported fever requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_fever",
+            "matchedAnswers": [
+              "fever"
+            ],
+            "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+            "reason": "Reported concern: fever. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_systemic",
+      "description": "Reported systemic requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_systemic",
+            "matchedAnswers": [
+              "systemic"
+            ],
+            "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+            "reason": "Reported concern: systemic. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "R_cancer",
+      "description": "Reported cancer requires referral",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_cancer",
+            "matchedAnswers": [
+              "cancer"
+            ],
+            "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+            "reason": "Reported concern: cancer. Seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "trauma_unable",
+      "description": "Fall and inability to move",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: injury. Seek clinical assessment."
+          },
+          {
+            "ruleId": "R_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Reported concern: unable. Seek clinical assessment."
+          },
+          {
+            "ruleId": "R_injury_unable",
+            "matchedAnswers": [
+              "injury",
+              "unable"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "Injury with inability to move: seek urgent clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "fever_red_joint",
+      "description": "Fever and local inflammation",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_fever",
+            "matchedAnswers": [
+              "fever"
+            ],
+            "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+            "reason": "Reported concern: fever. Seek clinical assessment."
+          },
+          {
+            "ruleId": "R_fever_joint",
+            "matchedAnswers": [
+              "fever",
+              "redness"
+            ],
+            "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+            "reason": "Fever with a warm or red painful joint: seek urgent clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "risk_red_joint",
+      "description": "Risk context and local inflammation",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_local_infection_risk",
+            "matchedAnswers": [
+              "infection_risk",
+              "redness"
+            ],
+            "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+            "reason": "Joint infection risk with local redness or warmth: seek clinical assessment."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "danger_over_unknown",
+      "description": "Danger takes priority over uncertainty",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_chest",
+            "matchedAnswers": [
+              "chest"
+            ],
+            "source": "https://www.nhs.uk/conditions/heart-attack/",
+            "reason": "Reported concern: chest. Seek clinical assessment."
+          },
+          {
+            "ruleId": "U_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Safety answer is uncertain; ask the fixed clarification."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "persistent_unknown",
+      "description": "Second Not sure routes to clinical review",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "U_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Uncertainty persists after clarification; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "string_boolean",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": "false",
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "numeric_boolean",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": 0,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "null_answered",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": null,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unknown_nonnull",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "unknown"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "wrong_type",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "number",
+          "value": 0,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bad_state",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "skipped"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bad_clarification",
+      "description": "Invalid input must not clear",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered",
+          "clarificationAttempted": "true"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "duplicate",
+      "description": "Duplicate answer IDs",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "foreign_id",
+      "description": "Unknown question ID",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "foreign",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bad_choice",
+      "description": "Unsupported choice",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "warmish",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "negative_duration",
+      "description": "Negative duration",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "duration",
+          "type": "duration",
+          "value": -1,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "empty_record",
+      "description": "Missing answer fields",
+      "answers": [
+        {}
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "INPUT_INVALID",
+            "matchedAnswers": [],
+            "source": "docs/gate-contract.md",
+            "reason": "Invalid or conflicting answers; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "empty",
+      "description": "An empty intake cannot clear",
+      "answers": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "M_chest",
+            "matchedAnswers": [
+              "chest"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_breathing",
+            "matchedAnswers": [
+              "breathing"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_shape",
+            "matchedAnswers": [
+              "shape"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_swelling",
+            "matchedAnswers": [
+              "swelling"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_tingling",
+            "matchedAnswers": [
+              "tingling"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_numb",
+            "matchedAnswers": [
+              "numb"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_temperature",
+            "matchedAnswers": [
+              "temperature"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_sudden",
+            "matchedAnswers": [
+              "sudden"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_severe",
+            "matchedAnswers": [
+              "severe"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_bilateral",
+            "matchedAnswers": [
+              "bilateral"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_fever",
+            "matchedAnswers": [
+              "fever"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_systemic",
+            "matchedAnswers": [
+              "systemic"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_cancer",
+            "matchedAnswers": [
+              "cancer"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          },
+          {
+            "ruleId": "M_redness",
+            "matchedAnswers": [
+              "redness"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "missing",
+      "description": "One missing safety answer",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
       ],
       "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "M_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          }
+        ]
+      },
       "mustNotBe": "SAFE",
-      "source": "PLACEHOLDER, Person A will replace",
+      "source": "docs/gate-contract.md",
       "label": "draft, awaiting clinician review"
     },
     {
-      "caseId": "T4",
-      "description": "PLACEHOLDER: all danger answers no gives SAFE",
+      "caseId": "unknown",
+      "description": "First uncertainty asks fixed clarification",
       "answers": [
-        { "questionId": "Q_DANGER_A", "type": "yesno", "value": false, "state": "answered" },
-        { "questionId": "Q_DANGER_B", "type": "yesno", "value": false, "state": "answered" }
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "U_injury",
+            "matchedAnswers": [
+              "injury"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Safety answer is uncertain; ask the fixed clarification."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "safe",
+      "description": "Complete negative safety screen",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
       ],
       "expectedVerdict": "SAFE",
-      "source": "PLACEHOLDER, Person A will replace",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "clarified_no",
+      "description": "Uncertainty resolved to a valid negative",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "optional_unknown",
+      "description": "Optional context remains unknown",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "typed_context",
+      "description": "Choice, number and duration retain types",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        },
+        {
+          "questionId": "duration",
+          "type": "duration",
+          "value": 2.5,
+          "state": "answered"
+        },
+        {
+          "questionId": "side",
+          "type": "choice",
+          "value": "right",
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      },
+      "source": "docs/gate-contract.md",
       "label": "draft, awaiting clinician review"
     }
   ]
