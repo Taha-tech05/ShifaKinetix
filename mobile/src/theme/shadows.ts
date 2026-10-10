@@ -5,10 +5,10 @@ import { colors } from './colors';
 export const shadows = {
   card: {
     shadowColor: colors.navy,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.09,
+    shadowRadius: 22,
+    elevation: 3,
   },
   raised: {
     shadowColor: colors.navy,
@@ -17,11 +17,25 @@ export const shadows = {
     shadowRadius: 16,
     elevation: 6,
   },
+  nav: {
+    shadowColor: colors.navy,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  sos: {
+    shadowColor: colors.danger,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 7,
+    elevation: 4,
+  },
   button: {
     shadowColor: colors.teal,
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 14,
+    shadowOpacity: 0.28,
+    shadowRadius: 13,
     elevation: 4,
   },
 } as const satisfies Record<string, ViewStyle>;
