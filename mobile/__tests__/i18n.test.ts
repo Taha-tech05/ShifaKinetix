@@ -15,9 +15,7 @@ describe('i18n', () => {
 
   it('fills params', () => {
     setLanguage('en');
-    expect(t('confirm.youSelected', { region: 'Right shoulder, front' })).toBe(
-      'You selected: Right shoulder, front',
-    );
+    expect(t('home.hello', { name: 'Patient A' })).toBe('Assalam o Alaikum, Patient A');
   });
 
   it('only Urdu is right-to-left', () => {
