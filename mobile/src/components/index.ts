@@ -1,6 +1,8 @@
 export { AppText } from './AppText';
 export { AnswerButton } from './AnswerButton';
 export type { AnswerKind } from './AnswerButton';
+export { BodyViewer } from './BodyViewer';
+export type { BodyViewerProps, BodySelection, BodyLayer } from './BodyViewer';
 export { Banner } from './Banner';
 export { BottomSheet } from './BottomSheet';
 export { Button } from './Button';
