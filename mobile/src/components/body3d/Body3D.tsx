@@ -1,16 +1,20 @@
-// 3D body for BodyViewer. Loads the lite pack (one merged mesh per layer+region) and reports taps.
+// 3D body for BodyViewer and the result screen. Shows the lite pack (one merged mesh per layer+region) and reports taps.
 // Taps are resolved with pickPack (triangle ranges), not three's raycaster over every mesh.
+// What is highlighted is decided by the parent (highlightNames), so one structure (exact mode), a whole area (region
+// mode) or several result candidates can be shown with the same code.
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
 import * as THREE from 'three';
-import { applyLayer, selectFromRay } from '../../regions/select';
+import { applyLayer, resolveRay } from '../../regions/select';
 import type { BodyLayer, BodySelection, Point3D } from '../../regions/types';
 import { disposeOutline, highlightMesh, makeOutline, restoreMesh } from '../../screens/model3d/loadPack';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
 
 const FOV = 45;
+/** More outlines than this is too many extra meshes for a phone; the fill highlight still shows. */
+const MAX_OUTLINES = 60;
 
 type Control = {
   yaw: number;
@@ -20,18 +24,27 @@ type Control = {
   tap: { x: number; y: number } | null;
 };
 
+/** What a tap did: a shoulder selection, a tap on another body area (full project), or nothing. */
+export type PickResult = { type: 'selection'; selection: BodySelection } | { type: 'outOfScope'; packRegion: string } | { type: 'none' };
+
 export interface Body3DProps {
   pack: LoadedPack;
   layer: BodyLayer;
-  /** A tap result: the selection, or null when the tap hit nothing or was not near a shoulder. */
-  onPick: (selection: BodySelection | null) => void;
+  /** Mesh names to show highlighted (cyan fill and outline). */
+  highlightNames?: string[];
+  /** Turn the body at the start, in radians. 0 faces the viewer. */
+  initialYaw?: number;
+  /** Omit for a read-only view (result screen): taps then do nothing. */
+  onPick?: (result: PickResult) => void;
   onFirstFrame: () => void;
 }
 
-function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+type Highlighted = { part: LoadedPack['parts'][number]; index: number; outline: THREE.Mesh | null };
+
+function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: Body3DProps & { control: React.MutableRefObject<Control> }) {
   const pivot = useRef<THREE.Group>(null);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  const highlighted = useRef<{ part: (typeof pack.parts)[number]; index: number; outline: THREE.Mesh } | null>(null);
+  const highlighted = useRef<Highlighted[]>([]);
   const frames = useRef(0);
 
   const fitted = useMemo(() => {
@@ -43,24 +56,50 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
     return { center: lo.clone().add(hi).multiplyScalar(0.5), scale: 2 / size.y, distance };
   }, [pack]);
 
+  // mesh name -> part and index, built once per pack
+  const meshIndex = useMemo(() => {
+    const m = new Map<string, { part: LoadedPack['parts'][number]; index: number }>();
+    for (const part of pack.parts) part.names.forEach((n, index) => m.set(n, { part, index }));
+    return m;
+  }, [pack]);
+
   useEffect(() => {
     control.current.baseDistance = fitted.distance;
     control.current.distance = fitted.distance;
   }, [fitted, control]);
 
   const clearHighlight = () => {
-    const h = highlighted.current;
-    if (h) {
+    for (const h of highlighted.current) {
       restoreMesh(h.part, h.index);
       disposeOutline(h.outline);
     }
-    highlighted.current = null;
+    highlighted.current = [];
   };
-  // Only the chosen layer is shown and can be hit. Changing layer also drops the old highlight.
+
+  // Only the chosen layer is shown and can be hit.
   useEffect(() => {
-    clearHighlight();
     applyLayer(pack.parts, layer);
   }, [pack, layer]);
+
+  // Highlight exactly the meshes the parent names, and only the ones in the visible layer.
+  const key = (highlightNames ?? []).join('|');
+  useEffect(() => {
+    clearHighlight();
+    const next: Highlighted[] = [];
+    const names = highlightNames ?? [];
+    for (const n of names) {
+      const e = meshIndex.get(n);
+      if (!e || !e.part.mesh.visible) continue;
+      highlightMesh(e.part, e.index);
+      let outline: THREE.Mesh | null = null;
+      if (names.length <= MAX_OUTLINES) {
+        outline = makeOutline(e.part, e.index);
+        e.part.mesh.parent?.add(outline);
+      }
+      next.push({ part: e.part, index: e.index, outline });
+    }
+    highlighted.current = next;
+  }, [pack, layer, key, meshIndex]);
   useEffect(() => clearHighlight, []);
 
   useFrame(({ camera, size }) => {
@@ -78,6 +117,7 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
     if (c.tap) {
       const { x, y } = c.tap;
       c.tap = null;
+      if (!onPick) return;
       pivot.current?.updateMatrixWorld(true);
       camera.updateMatrixWorld(true);
       raycaster.setFromCamera(new THREE.Vector2((x / size.width) * 2 - 1, -(y / size.height) * 2 + 1), camera);
@@ -87,17 +127,9 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
         const m = local.divideScalar(fitted.scale).add(fitted.center);
         return { x: m.x, y: m.y, z: m.z };
       };
-      const hit = selectFromRay(pack.parts, layer, raycaster.ray.origin.toArray(), raycaster.ray.direction.toArray(), toModel);
-      clearHighlight();
-      if (!hit) {
-        onPick(null);
-        return;
-      }
-      highlightMesh(hit.part, hit.index);
-      const outline = makeOutline(hit.part, hit.index);
-      hit.part.mesh.parent?.add(outline);
-      highlighted.current = { part: hit.part, index: hit.index, outline };
-      onPick(hit.selection);
+      const r = resolveRay(pack.parts, layer, raycaster.ray.origin.toArray(), raycaster.ray.direction.toArray(), toModel);
+      if (r.type === 'selection') onPick({ type: 'selection', selection: r.selection });
+      else onPick(r);
     }
   });
 
@@ -112,7 +144,7 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
 
 /** One finger turns, two fingers zoom, a short still touch is a tap. */
 export function Body3D(props: Body3DProps) {
-  const control = useRef<Control>({ yaw: 0, pitch: 0, distance: 5, baseDistance: 5, tap: null });
+  const control = useRef<Control>({ yaw: props.initialYaw ?? 0, pitch: 0, distance: 5, baseDistance: 5, tap: null });
   const touch = useRef({ x0: 0, y0: 0, t0: 0, moved: 0, lastX: 0, lastY: 0, pinch: 0, multi: false });
 
   const responder = useMemo(

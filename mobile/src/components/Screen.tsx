@@ -6,6 +6,8 @@ import { ScreenHeader } from './ScreenHeader';
 interface Props {
   onBack?: () => void;
   scroll?: boolean;
+  /** Full-width strip right under the top bar (e.g. the movement caution). */
+  banner?: React.ReactNode;
   /** Fixed action area at the bottom (design .act): main button and text link. */
   footer?: React.ReactNode;
   /** Footer without padding or page background (used by the P5 sheet). */
@@ -16,11 +18,12 @@ interface Props {
 }
 
 /** Standard patient screen: navy top bar with SOS, light grey page, padded body, optional fixed footer. */
-export function Screen({ onBack, scroll = true, footer, bareFooter = false, children }: Props) {
+export function Screen({ onBack, scroll = true, footer, bareFooter = false, banner, children }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.root}>
       <ScreenHeader onBack={onBack} />
+      {banner}
       {scroll ? (
         <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
           {children}

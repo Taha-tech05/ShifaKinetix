@@ -3,13 +3,11 @@ import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BodyLayer, BodySelection } from '../regions/types';
-import { disposePack, loadPack } from '../screens/model3d/loadPack';
-import type { LoadedPack } from '../screens/model3d/loadPack';
 import { useT } from '../store/settings';
 import { colors, gradients, MIN_TAP, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { Body3D } from './body3d/Body3D';
-import { LITE_BIN, LITE_META } from './body3d/pack';
+import { usePack } from './body3d/usePack';
 import { BodyPicker } from './BodyPicker';
 import { Button } from './Button';
 import { Card } from './Card';
@@ -19,6 +17,8 @@ export type { BodyLayer, BodySelection } from '../regions/types';
 export interface BodyViewerProps {
   /** Ids of the current choice (side and sub-region, e.g. "shoulder_right_top"), used by the figure and list. */
   highlightedIds?: string[];
+  /** Mesh names to highlight in the 3D body: one structure (exact mode) or a whole area (region mode). */
+  highlightNames?: string[];
   /** Layer to start with. Default "muscle". The user can switch between "muscle" and "bone" in the viewer. */
   layer?: BodyLayer;
   onLayerChange?: (layer: BodyLayer) => void;
@@ -29,8 +29,6 @@ export interface BodyViewerProps {
 const LOAD_TIMEOUT_MS = 25000;
 // Set EXPO_PUBLIC_DISABLE_3D=1 to force the plain picker (also how to test the fallback).
 const FORCE_PLAIN = process.env.EXPO_PUBLIC_DISABLE_3D === '1';
-
-type Mode = 'loading' | 'ready' | 'failed';
 
 /** Any render error inside the 3D view falls back to the plain picker instead of crashing the screen. */
 class Boundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
@@ -79,50 +77,37 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
 /**
  * Body selection. Shows the 3D body when the lite model loads in time; otherwise the plain picker
  * (figure with tappable shoulders, and a list), which returns the same selection shape.
+ * A tap on another body area (neck, chest, upper arm, ...) shows a "Full project" message and selects nothing.
  * Nothing else in the app depends on this component working.
  */
-export function BodyViewer({ highlightedIds = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
+export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
   const t = useT();
   const [layer, setLayer] = useState<BodyLayer>(initialLayer);
-  const [mode, setMode] = useState<Mode>(FORCE_PLAIN ? 'failed' : 'loading');
-  const [pack, setPack] = useState<LoadedPack | null>(null);
+  const packState = usePack(!FORCE_PLAIN);
+  const [timedOut, setTimedOut] = useState(false);
+  const [boundaryFailed, setBoundaryFailed] = useState(false);
   const [usePlain, setUsePlain] = useState(false);
-  const [miss, setMiss] = useState(false);
+  const [message, setMessage] = useState<'none' | 'miss' | 'outOfScope'>('none');
   const [firstFrame, setFirstFrame] = useState(false);
 
   useEffect(() => {
-    if (FORCE_PLAIN) return;
-    let cancelled = false;
-    let loaded: LoadedPack | null = null;
-    const timer = setTimeout(() => {
-      if (!cancelled && !loaded) setMode('failed');
-    }, LOAD_TIMEOUT_MS);
-    loadPack(LITE_BIN, LITE_META)
-      .then((p) => {
-        if (cancelled) return disposePack(p);
-        loaded = p;
-        setPack(p);
-        setMode('ready');
-      })
-      .catch(() => {
-        if (!cancelled) setMode('failed');
-      });
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-      disposePack(loaded);
-    };
-  }, []);
+    if (packState.status !== 'loading') return;
+    const timer = setTimeout(() => setTimedOut(true), LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [packState.status]);
+
+  const failed = FORCE_PLAIN || packState.status === 'failed' || boundaryFailed || (timedOut && packState.status === 'loading');
+  const ready = !failed && packState.status === 'ready' && packState.pack !== null;
 
   const changeLayer = (l: BodyLayer) => {
     setLayer(l);
-    setMiss(false);
+    setMessage('none');
     onLayerChange?.(l);
   };
 
   const plain = <BodyPicker highlightedIds={highlightedIds} layer={layer} onSelect={onSelect} />;
 
-  if (mode === 'failed') {
+  if (failed) {
     return (
       <View style={styles.fill}>
         <Card tone="gray">
@@ -139,7 +124,7 @@ export function BodyViewer({ highlightedIds = [], layer: initialLayer = 'muscle'
     return (
       <View style={styles.fill}>
         {plain}
-        {mode === 'ready' ? <Button variant="text" label={t('body.show3d')} onPress={() => setUsePlain(false)} /> : null}
+        {ready ? <Button variant="text" label={t('body.show3d')} onPress={() => setUsePlain(false)} /> : null}
       </View>
     );
   }
@@ -147,20 +132,23 @@ export function BodyViewer({ highlightedIds = [], layer: initialLayer = 'muscle'
   return (
     <View style={styles.fill}>
       <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={styles.canvas}>
-        {mode === 'ready' && pack ? (
-          <Boundary onError={() => setMode('failed')}>
+        {ready ? (
+          <Boundary onError={() => setBoundaryFailed(true)}>
             <Body3D
-              pack={pack}
+              pack={packState.pack!}
               layer={layer}
+              highlightNames={highlightNames}
               onFirstFrame={() => setFirstFrame(true)}
-              onPick={(sel) => {
-                setMiss(sel === null);
-                if (sel) onSelect(sel);
+              onPick={(r) => {
+                if (r.type === 'selection') {
+                  setMessage('none');
+                  onSelect(r.selection);
+                } else setMessage(r.type === 'outOfScope' ? 'outOfScope' : 'miss');
               }}
             />
           </Boundary>
         ) : null}
-        {mode === 'loading' || (mode === 'ready' && !firstFrame) ? (
+        {!ready || !firstFrame ? (
           <View style={styles.loading} pointerEvents="none">
             <ActivityIndicator size="large" color={colors.teal} />
             <AppText variant="body" color={colors.muted}>
@@ -168,10 +156,10 @@ export function BodyViewer({ highlightedIds = [], layer: initialLayer = 'muscle'
             </AppText>
           </View>
         ) : null}
-        {mode === 'ready' ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
+        {ready ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
       </LinearGradient>
-      <AppText variant="secondary" color={miss ? colors.navy : colors.muted} style={styles.hint}>
-        {miss ? t('body.tapShoulder') : t('body.tapHint')}
+      <AppText variant="secondary" color={message === 'none' ? colors.muted : colors.navy} style={styles.hint}>
+        {message === 'outOfScope' ? t('body.outOfScope') : message === 'miss' ? t('body.tapShoulder') : t('body.tapHint')}
       </AppText>
       <Button variant="text" label={t('body.useList')} onPress={() => setUsePlain(true)} />
     </View>
