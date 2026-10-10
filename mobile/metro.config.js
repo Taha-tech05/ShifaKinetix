@@ -19,4 +19,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return (defaultResolve ?? context.resolveRequest)(context, moduleName, platform);
 };
 
+// shared/ (one folder above mobile/) holds JSON the app imports: the region map and the placeholder questions.
+config.watchFolders = [...(config.watchFolders ?? []), path.join(__dirname, '..', 'shared')];
+
 module.exports = config;
