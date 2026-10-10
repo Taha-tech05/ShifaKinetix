@@ -1,20 +1,36 @@
 import type { TKey } from '../i18n';
+import { t } from '../i18n';
+import { SUB_REGIONS } from './subregion';
+import type { Side, SubRegionId } from './types';
 
 export interface ShoulderRegion {
+  /** "shoulder_right" or "shoulder_left". */
   regionId: string;
-  labelKey: TKey;
+  side: Side;
+  subRegionId: SubRegionId;
 }
 
-/** Shoulder regions offered for tapping until the 3D body viewer is wired in. */
-export const SHOULDER_REGIONS: ShoulderRegion[] = [
-  { regionId: 'shoulder_right_front', labelKey: 'regions.shoulder_right_front' },
-  { regionId: 'shoulder_right_back', labelKey: 'regions.shoulder_right_back' },
-  { regionId: 'shoulder_right_top', labelKey: 'regions.shoulder_right_top' },
-  { regionId: 'shoulder_left_front', labelKey: 'regions.shoulder_left_front' },
-  { regionId: 'shoulder_left_back', labelKey: 'regions.shoulder_left_back' },
-  { regionId: 'shoulder_left_top', labelKey: 'regions.shoulder_left_top' },
-];
+/** Every side and sub-region, for the plain list shown when the 3D body is not available. */
+export const SHOULDER_REGIONS: ShoulderRegion[] = (['right', 'left'] as Side[]).flatMap((side) =>
+  SUB_REGIONS.map((subRegionId) => ({ regionId: `shoulder_${side}`, side, subRegionId })),
+);
 
-export function regionLabelKey(regionId: string): TKey | null {
-  return SHOULDER_REGIONS.find((r) => r.regionId === regionId)?.labelKey ?? null;
+/** Id used to highlight a choice in the figure and the list: side and sub-region together. */
+export function selectionKey(regionId: string, subRegionId: SubRegionId): string {
+  return `${regionId}_${subRegionId}`;
+}
+
+const REGION_KEYS: Record<string, TKey> = { shoulder_right: 'regions.shoulder_right', shoulder_left: 'regions.shoulder_left' };
+const SUB_KEYS: Record<SubRegionId, TKey> = {
+  top: 'subRegions.top',
+  front: 'subRegions.front',
+  back: 'subRegions.back',
+  side: 'subRegions.side',
+};
+
+/** "Right shoulder, top" in the current language. Returns null for an unknown region. */
+export function regionLabel(regionId: string, subRegionId: SubRegionId): string | null {
+  const key = REGION_KEYS[regionId];
+  if (!key) return null;
+  return t('regions.label', { region: t(key), sub: t(SUB_KEYS[subRegionId]) });
 }
