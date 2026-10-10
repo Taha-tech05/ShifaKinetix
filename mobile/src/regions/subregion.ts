@@ -13,7 +13,7 @@ export const SHOULDER_RADIUS = 0.22;
 /** Points more than this far below the joint are the upper arm, not the shoulder. */
 export const MAX_BELOW_JOINT = 0.12;
 
-export const SUB_REGIONS: SubRegionId[] = ['front', 'back', 'top', 'side'];
+export const SUB_REGIONS: SubRegionId[] = ['front', 'back', 'top', 'side', 'scapular'];
 
 export interface SubRegionResult {
   side: Side;
@@ -26,7 +26,8 @@ const dist = (a: Point3D, b: Point3D) => Math.hypot(a.x - b.x, a.y - b.y, a.z - 
 /**
  * Label a tapped point by side and sub-region, or null if it is not near a shoulder.
  * The body faces +z and the patient's right is at negative x. The sub-region is the direction the point lies
- * from the joint: top (up), front (+z), back (-z) or side (outward). Heuristic, not clinically reviewed.
+ * from the joint: top (up), front (+z), back (-z), side (outward) or scapular (behind and towards the midline, the
+ * shoulder blade and upper back). Heuristic, not clinically reviewed.
  */
 export function subRegionFromPoint(p: Point3D): SubRegionResult | null {
   const side: Side = dist(p, JOINTS.right) <= dist(p, JOINTS.left) ? 'right' : 'left';
@@ -35,11 +36,15 @@ export function subRegionFromPoint(p: Point3D): SubRegionResult | null {
   const dx = p.x - j.x, dy = p.y - j.y, dz = p.z - j.z;
   if (dy < -MAX_BELOW_JOINT) return null;
   const outward = side === 'right' ? -dx : dx;
+  const inward = -outward;
+  // Shoulder blade: both behind the joint and towards the midline. Weighted so it wins over plain "back" there.
+  const scapular = 1.5 * Math.min(inward - 0.02, -dz);
   const scores: [SubRegionId, number][] = [
     ['top', dy],
     ['front', dz],
     ['back', -dz],
     ['side', outward],
+    ['scapular', scapular],
   ];
   const best = scores.reduce((b, s) => (s[1] > b[1] ? s : b), scores[0]);
   return { side, regionId: `shoulder_${side}`, subRegionId: best[0] };
@@ -55,6 +60,7 @@ export function approximatePoint(side: Side, sub: SubRegionId): Point3D {
     case 'front': return { x: j.x, y: j.y, z: j.z + d };
     case 'back': return { x: j.x, y: j.y, z: j.z - d };
     case 'side': return { x: j.x + out * d, y: j.y, z: j.z };
+    case 'scapular': return { x: j.x - out * 0.06, y: j.y, z: j.z - d };
   }
 }
 

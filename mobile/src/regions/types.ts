@@ -1,7 +1,7 @@
 export type Side = 'right' | 'left';
 
 /** Where on the shoulder the tap landed, relative to the shoulder joint (see subregion.ts). */
-export type SubRegionId = 'top' | 'front' | 'back' | 'side';
+export type SubRegionId = 'top' | 'front' | 'back' | 'side' | 'scapular';
 
 /** Which layer of the body the viewer shows and picks from. There is no skin layer. */
 export type BodyLayer = 'muscle' | 'bone';

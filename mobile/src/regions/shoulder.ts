@@ -26,6 +26,7 @@ const SUB_KEYS: Record<SubRegionId, TKey> = {
   front: 'subRegions.front',
   back: 'subRegions.back',
   side: 'subRegions.side',
+  scapular: 'subRegions.scapular',
 };
 
 /** "Right shoulder, top" in the current language. Returns null for an unknown region. */
