@@ -2,8 +2,8 @@ import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
 import { BodyPicker } from '../src/components/BodyPicker';
 import { ChooseOne } from '../src/components/questions/ChooseOne';
-import { narrowStub } from '../src/narrowing/stub';
-import { DEPTH_QUESTION_ID, depthAnswerFrom, depthQuestion } from '../src/questions/followUp';
+import { DEPTH_QUESTION_ID, depthAnswerFrom, depthQuestion } from '../src/dev/followUpQuestions';
+import { narrow } from '../src/dev/narrowingStub';
 import type { QuestionResult } from '../src/questions/types';
 import type { BodySelection } from '../src/regions/types';
 import { narrowingInputFrom, useSession } from '../src/store/session';
@@ -34,7 +34,7 @@ describe('depth question (placeholder)', () => {
   it('is the fixed question with the two options and is labelled as a placeholder', () => {
     const q = depthQuestion();
     expect(q.text).toBe('Does it feel just under the skin, deep inside, or are you not sure?');
-    expect(q.options!.map((o) => o.label)).toEqual(['Just under the skin', 'Deep inside']);
+    expect(q.options!.map((o: { label: string }) => o.label)).toEqual(['Just under the skin', 'Deep inside']);
     expect(q.source).toMatch(/PLACEHOLDER/);
   });
 
@@ -86,15 +86,17 @@ describe('narrowing input', () => {
     const input = narrowingInputFrom(useSession.getState())!;
     expect(input).toEqual({
       layer: 'muscle',
+      regionId: 'shoulder_right',
       subRegionId: 'top',
       point: selection.point,
+      hitMeshName: 'Trapezius_muscler_Plane1',
       depthAnswer: { state: 'unknown', value: null },
       movementResults: [move],
     });
   });
 
   it('the stub keeps the output shape', () => {
-    const out = narrowStub(narrowingInputFrom({ selection, answers: [], movementResults: [] })!);
+    const out = narrow(narrowingInputFrom({ selection, answers: [], movementResults: [] })!);
     expect(Array.isArray(out.candidates)).toBe(true);
     expect(typeof out.cluster).toBe('boolean');
   });
