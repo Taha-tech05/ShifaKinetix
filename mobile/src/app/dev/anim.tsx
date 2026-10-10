@@ -3,7 +3,7 @@
 // Optional link parameters (also used for emulator screenshots): m=<movement id>, layer=muscle|bone, view=front|side,
 // t=<0..1>, paused=1, speed=0.25|0.5|1.   Example: /dev/anim?m=sideways_raise&layer=bone&t=0.25&paused=1
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import { AppText } from '../../components/AppText';
@@ -65,8 +65,27 @@ export default function DevAnim() {
   const [info, setInfo] = useState<FrameInfo | null>(null);
   const [failed, setFailed] = useState(false);
   const startT = params.t !== undefined && !Number.isNaN(Number(params.t)) ? Math.min(1, Math.max(0, Number(params.t))) : 0;
+  const lastLog = useRef(0);
   const control = useRef<AnimControl>({ playing: params.paused !== '1', speed, seek: startT, t: startT });
   const movement = MOVEMENTS.find((m) => m.id === id) ?? MOVEMENTS[0];
+
+  // The router can fill the link parameters in after the first render, so apply them whenever they change.
+  useEffect(() => {
+    if (params.m && MOVEMENTS.some((x) => x.id === params.m)) setId(params.m);
+    if (params.layer === 'bone' || params.layer === 'muscle') setLayer(params.layer);
+    if (params.view === 'front' || params.view === 'side') setView(params.view);
+    const sp = Number(params.speed);
+    if (SPEEDS.includes(sp)) {
+      control.current.speed = sp;
+      setSpeed(sp);
+    }
+    if (params.paused === '1') {
+      control.current.playing = false;
+      setPlaying(false);
+    }
+    const tt = Number(params.t);
+    if (params.t !== undefined && !Number.isNaN(tt)) control.current.seek = Math.min(1, Math.max(0, tt));
+  }, [params.m, params.layer, params.view, params.t, params.paused, params.speed]);
 
   if (!ENABLED) return <Redirect href="/" />;
 
@@ -85,6 +104,15 @@ export default function DevAnim() {
   const scrub = (t: number) => {
     control.current.seek = t;
     if (control.current.playing) setPlay(false);
+  };
+  // dev logging: one line every 2 seconds, so the frame rate can be read from the Metro log during a test run
+  const onFrame = (i: FrameInfo) => {
+    setInfo(i);
+    const now = Date.now();
+    if (now - lastLog.current > 2000) {
+      lastLog.current = now;
+      console.log(`[anim-fps] ${movement.id} ${layer} fps=${i.fps} t=${i.t.toFixed(2)} playing=${control.current.playing}`);
+    }
   };
   const p = info?.pose;
   const f = (n?: number) => (n === undefined ? '-' : n.toFixed(1));
@@ -105,7 +133,7 @@ export default function DevAnim() {
       <View style={styles.stage}>
         {pack.status === 'ready' && pack.pack && focused && !failed ? (
           <Boundary onError={() => setFailed(true)}>
-            <SegmentedBody pack={pack.pack} movement={movement} layer={layer} control={control} view={view ?? undefined} onFrame={setInfo} />
+            <SegmentedBody pack={pack.pack} movement={movement} layer={layer} control={control} view={view ?? undefined} onFrame={onFrame} />
           </Boundary>
         ) : (
           <View style={styles.center}>
