@@ -1,0 +1,1624 @@
+{
+ "label": "draft, awaiting clinician review",
+ "note": "Computed by mobile/scripts/build-arm-rig.mjs from body-lite.json/.bin. The pack is not changed. Pivots and axes are computed from the mesh. Segment rules are explicit name rules with a reason each.",
+ "axes": {
+  "forward": {
+   "evidence": "the eyes are in front of the back of the skull, and the foot bones reach further than the heel",
+   "eyesZ": 0.066,
+   "occipitalZ": -0.069,
+   "furthestFootBoneZ": 0.137,
+   "heelZ": -0.045,
+   "direction": "+z"
+  },
+  "up": {
+   "evidence": "head is above the feet",
+   "headTopY": 1.699,
+   "heelY": 0.011,
+   "direction": "+y"
+  },
+  "patientRight": {
+   "evidence": "the right humerus is on the negative x side",
+   "rightHumerusX": -0.198,
+   "leftHumerusX": 0.198,
+   "direction": "-x"
+  },
+  "note": "Right-handed system: +x is the patient's left, +y is up, +z is forward. Units are metres."
+ },
+ "pivots": {
+  "humeralHead": [
+   -0.1691,
+   1.3819,
+   -0.0263
+  ],
+  "humeralHeadRadius": 0.0234,
+  "humeralHeadFitRms": 0.0014,
+  "humeralHeadFitPoints": 313,
+  "glenoid": [
+   -0.1498,
+   1.3777,
+   -0.0359
+  ],
+  "glenoidNormal": [
+   -0.859,
+   0.1972,
+   0.4725
+  ],
+  "headToGlenoid": 0.0219,
+  "elbow": [
+   -0.2214,
+   1.1033,
+   -0.0333
+  ],
+  "elbowFromUlna": [
+   -0.2162,
+   1.0928,
+   -0.0385
+  ],
+  "elbowHumerusToUlna": 0.0128,
+  "elbowFlexionAxisHorizontal": [
+   0.9976,
+   0,
+   0.0698
+  ],
+  "wrist": [
+   -0.263,
+   0.8643,
+   0.015
+  ],
+  "sternoclavicular": [
+   -0.0176,
+   1.4009,
+   0.0365
+  ],
+  "upperArmAxisHanging": [
+   -0.1845,
+   -0.9825,
+   -0.0246
+  ],
+  "upperArmLength": 0.2835,
+  "forearmLength": 0.2473
+ },
+ "signConventions": {
+  "elevation": "angle of the upper arm from hanging (0), positive = up. Negative = backward (extension), see ANIMATION.md.",
+  "plane": "direction of elevation: 0 = side (frontal plane), 90 = forward (sagittal plane), 30 = scapular plane. Elevation direction u = (-x)*cos(plane) + z*sin(plane); negative elevation moves the arm towards -z (backward).",
+  "rotation": "humeral rotation about the long axis, positive = external (outward). With the arm hanging and the elbow bent 90 degrees, positive rotation swings the hand from forward (+z) to outward (-x).",
+  "elbow": "elbow flexion, 0 = straight; positive bends the forearm forward (+z) when the arm hangs.",
+  "scapula": "girdle rotation about the sternoclavicular joint, axis perpendicular to the scapular plane, positive = upward rotation (the glenoid rises)."
+ },
+ "segments": {
+  "girdle": [
+   "Acromioclavicular_joint_s_capsule_r_Cube106",
+   "Infraspinatus_muscler_Generated_Mesh_From_X3D462_1",
+   "Infraspinatus_muscler_Generated_Mesh_From_X3D462_2",
+   "Supraspinatus_muscler_Generated_Mesh_From_X3D170",
+   "Acromioclavicular_ligamentr_Cube105",
+   "Inferior_transverse_scapular_ligamentr_Plane322",
+   "Subscapular_muscler_Generated_Mesh_From_X3D186",
+   "Superior_transverse_scapular_ligamentr_Plane261",
+   "Teres_major_muscler_Generated_Mesh_From_X3D160",
+   "Teres_minor_muscler_Generated_Mesh_From_X3D158",
+   "Coraco_acromial_ligamentr_Plane343",
+   "Articular_disc_of_acromioclavicular_jointr001_Cube092",
+   "Articular_disc_of_acromioclavicular_jointr_Cube058",
+   "Clavicler_Cone010_1",
+   "Clavicler_Cone010_2",
+   "Glenoid_labrumr001_Generated_Mesh_From_X3D489",
+   "Glenoid_labrumr_Generated_Mesh_From_X3D101",
+   "Scapular_Cone013_1",
+   "Scapular_Cone013_2"
+  ],
+  "upper": [
+   "Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_1",
+   "Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_2",
+   "Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_1",
+   "Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_2",
+   "Coracohumeral_ligamentr_Generated_Mesh_From_X3D993",
+   "Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_1",
+   "Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_2",
+   "Articular_capsule_of_glenohumeral_jointr_Generated_Mesh_From_X3D1006",
+   "Inferior_glenohumeral_ligamentr_Generated_Mesh_From_X3D466",
+   "Middle_glenohumeral_ligamentr_Generated_Mesh_From_X3D347",
+   "Superior_glenohumeral_ligamentr_Generated_Mesh_From_X3D176",
+   "Transverse_humeral_ligamentr_Plane254",
+   "Brachialis_muscler_Generated_Mesh_From_X3D1001_1",
+   "Brachialis_muscler_Generated_Mesh_From_X3D1001_2",
+   "Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_1",
+   "Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_2",
+   "Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_1",
+   "Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_2",
+   "Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_1",
+   "Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_2",
+   "Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_1",
+   "Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_2",
+   "Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_1",
+   "Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_2",
+   "Coracobrachialis_muscler_Generated_Mesh_From_X3D994_1",
+   "Coracobrachialis_muscler_Generated_Mesh_From_X3D994_2",
+   "Humerusr023_Cone017_1",
+   "Humerusr023_Cone017_2"
+  ],
+  "forearm": [
+   "Articular_disc_of_distal_radio_ulnar_jointr_Plane349",
+   "Brachioradialis_muscler_Generated_Mesh_From_X3D1000_1",
+   "Brachioradialis_muscler_Generated_Mesh_From_X3D1000_2",
+   "Dorsal_radio_ulnar_ligamentr_Plane330",
+   "Extensor_carpi_radialis_brevisr_Generated_Mesh_From_X3D976_1",
+   "Extensor_carpi_radialis_brevisr_Generated_Mesh_From_X3D976_2",
+   "Extensor_carpi_radialis_longusr_Generated_Mesh_From_X3D975_1",
+   "Extensor_carpi_radialis_longusr_Generated_Mesh_From_X3D975_2",
+   "Extensor_digitorumr_Generated_Mesh_From_X3D971_1",
+   "Extensor_digitorumr_Generated_Mesh_From_X3D971_2",
+   "Flexor_carpi_radialisr_Generated_Mesh_From_X3D737_1",
+   "Flexor_carpi_radialisr_Generated_Mesh_From_X3D737_2",
+   "Flexor_digitorum_profundusr_Generated_Mesh_From_X3D500_1",
+   "Flexor_digitorum_profundusr_Generated_Mesh_From_X3D500_2",
+   "Flexor_digitorum_superficialisr_Generated_Mesh_From_X3D498_1",
+   "Flexor_digitorum_superficialisr_Generated_Mesh_From_X3D498_2",
+   "Humeral_head_of_extensor_carpi_ulnarisr_grp1016_1",
+   "Humeral_head_of_extensor_carpi_ulnarisr_grp1016_2",
+   "Humeral_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D480_1",
+   "Humeral_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D480_2",
+   "Interosseus_membrane_of_forearmr_Generated_Mesh_From_X3D452",
+   "Palmar_radio_ulnar_ligamentr_Plane295",
+   "Pronator_quadratusr_Generated_Mesh_From_X3D284_1",
+   "Pronator_quadratusr_Generated_Mesh_From_X3D284_2",
+   "Radial_head_of_flexor_digitorum_superficialisr_Generated_Mesh_From_X3D251_1",
+   "Radial_head_of_flexor_digitorum_superficialisr_Generated_Mesh_From_X3D251_2",
+   "Superficial_head_of_pronator_teres_muscler_Generated_Mesh_From_X3D182_1",
+   "Superficial_head_of_pronator_teres_muscler_Generated_Mesh_From_X3D182_2",
+   "Supinatorr_Generated_Mesh_From_X3D172",
+   "Ulnar_head_of_extensor_carpi_ulnarisr_grp1003_1",
+   "Ulnar_head_of_extensor_carpi_ulnarisr_grp1003_2",
+   "Ulnar_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D132_1",
+   "Ulnar_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D132_2",
+   "Ulnocapitate_ligamentr_Plane245",
+   "Ulnolunate_ligamentr_Plane244",
+   "Anconeus_muscler_Generated_Mesh_From_X3D1008_1",
+   "Anconeus_muscler_Generated_Mesh_From_X3D1008_2",
+   "Annular_ligament_of_radiusr_Cylinder006",
+   "Articular_capsule_of_elbowr_Cube103",
+   "Radial_collateral_ligamentr_Cube075",
+   "Ulnar_collateral_ligamentr_Cube073",
+   "Deep_head_of_prontaor_teres_muscler_Generated_Mesh_From_X3D989_1",
+   "Deep_head_of_prontaor_teres_muscler_Generated_Mesh_From_X3D989_2",
+   "Palmaris_longus_muscler_Generated_Mesh_From_X3D306_1",
+   "Palmaris_longus_muscler_Generated_Mesh_From_X3D306_2",
+   "Quadrate_ligamentr_Cylinder005",
+   "Radiusr_Cone014_1",
+   "Radiusr_Cone014_2",
+   "Ulnar_Cone007_1",
+   "Ulnar_Cone007_2",
+   "Oblique_cordr_Generated_Mesh_From_X3D335"
+  ],
+  "hand": [
+   "1st_metacarpal_boner_Generated_Mesh_From_X3D742_1",
+   "1st_metacarpal_boner_Generated_Mesh_From_X3D742_2",
+   "2d_metacarpal_boner_Generated_Mesh_From_X3D741_1",
+   "2d_metacarpal_boner_Generated_Mesh_From_X3D741_2",
+   "3d_metacarpal_boner_Generated_Mesh_From_X3D740_1",
+   "3d_metacarpal_boner_Generated_Mesh_From_X3D740_2",
+   "4th_metacarpal_boner_Generated_Mesh_From_X3D739_1",
+   "4th_metacarpal_boner_Generated_Mesh_From_X3D739_2",
+   "5th_metacarpal_boner_Generated_Mesh_From_X3D738_1",
+   "5th_metacarpal_boner_Generated_Mesh_From_X3D738_2",
+   "Distal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D735_1",
+   "Distal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D735_2",
+   "Distal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D733_1",
+   "Distal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D733_2",
+   "Distal_phalanx_of_3d_fingerr_Generated_Mesh_From_X3D732_1",
+   "Distal_phalanx_of_3d_fingerr_Generated_Mesh_From_X3D732_2",
+   "Distal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D725_1",
+   "Distal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D725_2",
+   "Distal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D722_1",
+   "Distal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D722_2",
+   "Middle_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D718_1",
+   "Middle_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D718_2",
+   "Middle_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D717_1",
+   "Middle_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D717_2",
+   "Middle_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D716_1",
+   "Middle_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D716_2",
+   "Middle_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D715_1",
+   "Middle_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D715_2",
+   "Proximal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D711_1",
+   "Proximal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D711_2",
+   "Proximal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D709_1",
+   "Proximal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D709_2",
+   "Proximal_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D707_1",
+   "Proximal_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D707_2",
+   "Proximal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D706_1",
+   "Proximal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D706_2",
+   "Proximal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D705_1",
+   "Proximal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D705_2",
+   "Abductor_digiti_minimir_Generated_Mesh_From_X3D1018_1",
+   "Abductor_digiti_minimir_Generated_Mesh_From_X3D1018_2",
+   "Abductor_pollicis_brevisr_Generated_Mesh_From_X3D1016_1",
+   "Abductor_pollicis_brevisr_Generated_Mesh_From_X3D1016_2",
+   "Articular_capsule_of_wristr_Cube100",
+   "Capitohamate_interosseus_ligamentr_Plane345",
+   "Deep_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D990_1",
+   "Deep_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D990_2",
+   "Dorsal_radiocarpal_ligamentr_Plane329",
+   "Extensor_pollicis_brevisr_Generated_Mesh_From_X3D964_1",
+   "Extensor_pollicis_brevisr_Generated_Mesh_From_X3D964_2",
+   "Extensor_pollicis_longusr_Generated_Mesh_From_X3D963_1",
+   "Extensor_pollicis_longusr_Generated_Mesh_From_X3D963_2",
+   "Flexor_pollicis_longusr_Generated_Mesh_From_X3D494_1",
+   "Flexor_pollicis_longusr_Generated_Mesh_From_X3D494_2",
+   "Palmar_capitohamate_ligamentr_Plane299",
+   "Palmar_trapezoideocapitate_ligamentr_Plane293",
+   "Pisohamate_ligamentr_Plane292",
+   "Radiocapitate_ligamentr_Plane269",
+   "Radioscaphocapitate_ligamentr_Plane268",
+   "Scaphocapitate_ligamentr_Plane265",
+   "Scapholunate_interosseus_ligamentr_Plane264",
+   "Scaphotrapeziotrapezoidal_ligamentr_Plane263",
+   "Superficial_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D184_1",
+   "Superficial_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D184_2",
+   "Trapeziotrapezoidal_interosseus_ligamentr_Plane251",
+   "Trapezoideocapitate_interosseus_ligamentr_Plane249",
+   "Triquetrocapitate_ligamentr_Plane248",
+   "Triquetrohamate_ligamentr_Plane247",
+   "Ulnopisiform_ligamentr_Plane243",
+   "Adductor_pollicis_longusr_Generated_Mesh_From_X3D1009_1",
+   "Adductor_pollicis_longusr_Generated_Mesh_From_X3D1009_2",
+   "Oblique_head_of_adductor_policis_brevisr_Generated_Mesh_From_X3D331_1",
+   "Oblique_head_of_adductor_policis_brevisr_Generated_Mesh_From_X3D331_2",
+   "Transverse_head_of_adductor_pollicis_brevisr_Generated_Mesh_From_X3D146_1",
+   "Transverse_head_of_adductor_pollicis_brevisr_Generated_Mesh_From_X3D146_2",
+   "Radial_collateral_ligament_of_wrist_jointr_Plane272",
+   "Ulnar_collateral_ligament_of_wrist_jointr_Plane246",
+   "Dorsal_intercarpal_ligamentsr_Plane334",
+   "Dorsal_scaphotriquetral_ligamentr_Plane328",
+   "Dorsal_ulnocarpal_ligamentr_Plane326",
+   "Extensor_indicisr_Generated_Mesh_From_X3D968_1",
+   "Extensor_indicisr_Generated_Mesh_From_X3D968_2",
+   "Opponens_pollicis_muscler_Generated_Mesh_From_X3D314_1",
+   "Opponens_pollicis_muscler_Generated_Mesh_From_X3D314_2",
+   "Palmar_lunotriquetral_ligamentr_Plane297",
+   "Palmar_scaphotriquetral_ligamentr_Plane294",
+   "Pisotriquetral_ligamentr_Plane290",
+   "Radiate_carpal_ligamentr_Plane271",
+   "Ulnotriquetral_ligamentr_Plane242",
+   "Articular_capsules_of_distal_interphalangeal_joints_r_Cube098",
+   "Articular_capsules_of_metacarpophalangeal_joints_r001_Cube097",
+   "Articular_capsules_of_metacarpophalangeal_joints_r_Cube096",
+   "Articular_capsules_of_proximal_interphalangeal_joints_r_Cube093",
+   "Collateral_interphalangeal_ligaments_of_handr_Cube089",
+   "Collateral_metacarpophalangeal_ligamentsr_Cube088",
+   "Deep_transverse_metacarpal_ligamentr_Cube085",
+   "Dorsal_carpometacarpal_ligamentsr_Plane338",
+   "dorsal_interossei_muscles_of_handr_Generated_Mesh_From_X3D979_1",
+   "dorsal_interossei_muscles_of_handr_Generated_Mesh_From_X3D979_2",
+   "Dorsal_metacarpal_ligamentsr_Plane332",
+   "Extensor_digiti_minimir_Generated_Mesh_From_X3D974_1",
+   "Extensor_digiti_minimir_Generated_Mesh_From_X3D974_2",
+   "Flexor_digiti_minimi_of_handr_Generated_Mesh_From_X3D584_1",
+   "Flexor_digiti_minimi_of_handr_Generated_Mesh_From_X3D584_2",
+   "Interosseus_metacarpal_ligamentsr_Plane317",
+   "Lumbricals_muscles_of_handr_Generated_Mesh_From_X3D361_1",
+   "Lumbricals_muscles_of_handr_Generated_Mesh_From_X3D361_2",
+   "Lunotriquetral_interosseus_ligamentr_Plane307",
+   "Opponens_digiti_minimi_of_handr_Generated_Mesh_From_X3D316_1",
+   "Opponens_digiti_minimi_of_handr_Generated_Mesh_From_X3D316_2",
+   "Palmar_carpometacarpal_ligamentsr_Plane298",
+   "Palmar_interossei_muscles_of_handr_Generated_Mesh_From_X3D308",
+   "Palmar_interphalangeal_ligamentsr_Cube080",
+   "Palmar_metacarpal_ligamentsr_Plane296",
+   "Pisometacarpal_ligamentr_Plane291",
+   "Capitate_boner_Generated_Mesh_From_X3D736_1",
+   "Capitate_boner_Generated_Mesh_From_X3D736_2",
+   "Hamate_boner_Generated_Mesh_From_X3D721_1",
+   "Hamate_boner_Generated_Mesh_From_X3D721_2",
+   "Lunate_boner_Generated_Mesh_From_X3D719_1",
+   "Lunate_boner_Generated_Mesh_From_X3D719_2",
+   "Pisiform_boner_Generated_Mesh_From_X3D713_1",
+   "Pisiform_boner_Generated_Mesh_From_X3D713_2",
+   "Scaphoid_boner_Generated_Mesh_From_X3D704_1",
+   "Scaphoid_boner_Generated_Mesh_From_X3D704_2",
+   "Trapezium_boner_Generated_Mesh_From_X3D702_1",
+   "Trapezium_boner_Generated_Mesh_From_X3D702_2",
+   "Trapezoid_boner_Generated_Mesh_From_X3D701_1",
+   "Trapezoid_boner_Generated_Mesh_From_X3D701_2",
+   "Triquetrum_boner_Generated_Mesh_From_X3D700_1",
+   "Triquetrum_boner_Generated_Mesh_From_X3D700_2"
+  ]
+ },
+ "segmentCounts": {
+  "girdle": 19,
+  "upper": 28,
+  "forearm": 51,
+  "hand": 130
+ },
+ "placed": [
+  {
+   "label": "1st Metacarpal Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "2d Metacarpal Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "3d Metacarpal Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "4th Metacarpal Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "5th Metacarpal Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Distal Phalanx Of 1st Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Distal Phalanx Of 2d Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Distal Phalanx Of 3d Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Distal Phalanx Of 4th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Distal Phalanx Of 5th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Middle Phalanx Of 2d Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Middle Phalanx Of 3rd Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Middle Phalanx Of 4th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Middle Phalanx Of 5th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Proximal Phalanx Of 1st Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Proximal Phalanx Of 2d Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Proximal Phalanx Of 3rd Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Proximal Phalanx Of 4th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Proximal Phalanx Of 5th Finger (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Abdominal Part Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Clavicular Head Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Sternocostal Head Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Abductor Digiti Minimi (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Abductor Pollicis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Articular Capsule Of Wrist (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Disc Of Distal Radio Ulnar Joint (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Brachioradialis Muscle (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Capitohamate Interosseus Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Deep Head Of Flexor Pollicis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Dorsal Radio Ulnar Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Dorsal Radiocarpal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Extensor Carpi Radialis Brevis (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Extensor Carpi Radialis Longus (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Extensor Digitorum (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Extensor Pollicis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Extensor Pollicis Longus (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Flexor Carpi Radialis (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Flexor Digitorum Profundus (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Flexor Digitorum Superficialis (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Flexor Pollicis Longus (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Humeral Head Of Extensor Carpi Ulnarisr Grp1",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Humeral Head Of Flexor Carpi Ulnaris (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Interosseus Membrane Of Forearm (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Capitohamate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Radio Ulnar Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Trapezoideocapitate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Pisohamate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Pronator Quadratus (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Radial Head Of Flexor Digitorum Superficialis (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Radiocapitate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Radioscaphocapitate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Scaphocapitate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Scapholunate Interosseus Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Scaphotrapeziotrapezoidal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Superficial Head Of Flexor Pollicis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Superficial Head Of Pronator Teres Muscle (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Supinator (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Trapeziotrapezoidal Interosseus Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Trapezoideocapitate Interosseus Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Triquetrocapitate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Triquetrohamate Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnar Head Of Extensor Carpi Ulnarisr Grp1",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Ulnar Head Of Flexor Carpi Ulnaris (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Ulnocapitate Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnolunate Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnopisiform Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Acromial Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly wraps the humeral head and shaft and inserts on the humerus; the origin on clavicle, acromion and spine tears slightly when the girdle turns",
+   "meshes": 2
+  },
+  {
+   "label": "Acromioclavicular Joint S Capsule (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 1
+  },
+  {
+   "label": "Anterior Sternoclavicular Ligament (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Capsule Of Sternoclavicular Joint (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 1
+  },
+  {
+   "label": "Clavicular Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly wraps the humeral head and shaft and inserts on the humerus; the origin on clavicle, acromion and spine tears slightly when the girdle turns",
+   "meshes": 2
+  },
+  {
+   "label": "Coracohumeral Ligament (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Infraspinatus Muscle (Right)",
+   "seg": "girdle",
+   "why": "rotator cuff and teres: the belly lies on the scapula (fossae, lateral border), only the short tendon reaches the humerus; the tendon end tears from the arm",
+   "meshes": 2
+  },
+  {
+   "label": "Levator Scapulae (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Posterior Sternoclavicular Ligament (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 1
+  },
+  {
+   "label": "Scapular Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly wraps the humeral head and shaft and inserts on the humerus; the origin on clavicle, acromion and spine tears slightly when the girdle turns",
+   "meshes": 2
+  },
+  {
+   "label": "Supraspinatus Muscle (Right)",
+   "seg": "girdle",
+   "why": "rotator cuff and teres: the belly lies on the scapula (fossae, lateral border), only the short tendon reaches the humerus; the tendon end tears from the arm",
+   "meshes": 1
+  },
+  {
+   "label": "Acromioclavicular Ligament (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Capsule Of Glenohumeral Joint (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Inferior Glenohumeral Ligament (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Inferior Transverse Scapular Ligament (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 1
+  },
+  {
+   "label": "Middle Glenohumeral Ligament (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Subscapular Muscle (Right)",
+   "seg": "girdle",
+   "why": "rotator cuff and teres: the belly lies on the scapula (fossae, lateral border), only the short tendon reaches the humerus; the tendon end tears from the arm",
+   "meshes": 1
+  },
+  {
+   "label": "Superior Glenohumeral Ligament (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Superior Transverse Scapular Ligament (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 1
+  },
+  {
+   "label": "Teres Major Muscle (Right)",
+   "seg": "girdle",
+   "why": "rotator cuff and teres: the belly lies on the scapula (fossae, lateral border), only the short tendon reaches the humerus; the tendon end tears from the arm",
+   "meshes": 1
+  },
+  {
+   "label": "Teres Minor Muscle (Right)",
+   "seg": "girdle",
+   "why": "rotator cuff and teres: the belly lies on the scapula (fossae, lateral border), only the short tendon reaches the humerus; the tendon end tears from the arm",
+   "meshes": 1
+  },
+  {
+   "label": "Adductor Pollicis Longus (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Oblique Head Of Adductor Policis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Transverse Head Of Adductor Pollicis Brevis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Anconeus Muscle (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Annular Ligament Of Radius (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Capsule Of Elbow (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Radial Collateral Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Radial Collateral Ligament Of Wrist Joint (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnar Collateral Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnar Collateral Ligament Of Wrist Joint (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Coraco Acromial Ligament (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 1
+  },
+  {
+   "label": "Costoclavicular Ligament (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 1
+  },
+  {
+   "label": "Deep Head Of Prontaor Teres Muscle (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Dorsal Intercarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Dorsal Scaphotriquetral Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Dorsal Ulnocarpal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Extensor Indicis (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Interclavicular Ligament (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 1
+  },
+  {
+   "label": "Opponens Pollicis Muscle (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Palmar Lunotriquetral Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Scaphotriquetral Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmaris Longus Muscle (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Pisotriquetral Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Quadrate Ligament (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Radiate Carpal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Subclavius Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 1
+  },
+  {
+   "label": "Transverse Humeral Ligament (Right)",
+   "seg": "upper",
+   "why": "the capsule and ligaments hug the humeral head, so they turn with it",
+   "meshes": 1
+  },
+  {
+   "label": "Ulnotriquetral Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Capsules Of Distal Interphalangeal Joints (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Capsules Of Metacarpophalangeal Joints (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Articular Capsules Of Proximal Interphalangeal Joints (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Collateral Interphalangeal Ligaments Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Collateral Metacarpophalangeal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Deep Transverse Metacarpal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Dorsal Carpometacarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Dorsal Interossei Muscles Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Dorsal Metacarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Extensor Digiti Minimi (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Flexor Digiti Minimi Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Interosseus Metacarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Lumbricals Muscles Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Lunotriquetral Interosseus Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Opponens Digiti Minimi Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Palmar Carpometacarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Interossei Muscles Of Hand (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Interphalangeal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Palmar Metacarpal Ligaments (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Pisometacarpal Ligament (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 1
+  },
+  {
+   "label": "Articular Disc Of Acromioclavicular Joint (Right)",
+   "seg": "girdle",
+   "why": "joint and ligaments between parts of the girdle (clavicle, acromion, scapula)",
+   "meshes": 2
+  },
+  {
+   "label": "Articular Disc Of Sternoclavicular Joint (Right)",
+   "seg": "trunk",
+   "why": "the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk",
+   "meshes": 2
+  },
+  {
+   "label": "Clavicle (Right)",
+   "seg": "girdle",
+   "why": "bones of the shoulder girdle; the glenoid is part of the scapula",
+   "meshes": 2
+  },
+  {
+   "label": "Glenoid Labrum (Right)",
+   "seg": "girdle",
+   "why": "bones of the shoulder girdle; the glenoid is part of the scapula",
+   "meshes": 2
+  },
+  {
+   "label": "Scapula (Right)",
+   "seg": "girdle",
+   "why": "bones of the shoulder girdle; the glenoid is part of the scapula",
+   "meshes": 2
+  },
+  {
+   "label": "Ascending Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Descending Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Latissimus Dorsi Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 6
+  },
+  {
+   "label": "Rhomboid Major Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Rhomboid Minor Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Transverse Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 2
+  },
+  {
+   "label": "Brachialis Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Lateral Head Of Triceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Long Head Of Biceps Brachii (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Long Head Of Biceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Medial Head Of Biceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Short Head Of Biceps Brachii (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Capitate Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Hamate Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Lunate Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Pisiform Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Radius (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Scaphoid Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Trapezium Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Trapezoid Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Triquetrum Bone (Right)",
+   "seg": "hand",
+   "why": "hand structure: below the wrist (no wrist motion is animated, so it moves with the forearm)",
+   "meshes": 2
+  },
+  {
+   "label": "Ulna (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 2
+  },
+  {
+   "label": "Pectoralis Minor Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 1
+  },
+  {
+   "label": "Coracobrachialis Muscle (Right)",
+   "seg": "upper",
+   "why": "the belly lies on the humerus; the proximal and distal tendons tear when the shoulder or elbow moves",
+   "meshes": 2
+  },
+  {
+   "label": "Oblique Cord (Right)",
+   "seg": "forearm",
+   "why": "elbow, forearm and wrist structures move with the forearm; at the elbow the humeral end tears slightly",
+   "meshes": 1
+  },
+  {
+   "label": "Omohyoid Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 1
+  },
+  {
+   "label": "Humerus (Right)",
+   "seg": "upper",
+   "why": "the bone of the upper arm",
+   "meshes": 2
+  },
+  {
+   "label": "Serratus Anterior Muscle (Right)",
+   "seg": "trunk",
+   "why": "large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back",
+   "meshes": 1
+  }
+ ],
+ "unplaced": [],
+ "sanity": [
+  {
+   "label": "Abdominal Part Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 17.6,
+   "toScapulaCm": 18.1,
+   "toTrunkMidlineCm": 11.3
+  },
+  {
+   "label": "Clavicular Head Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 5.6,
+   "toScapulaCm": 7.2,
+   "toTrunkMidlineCm": 13.4
+  },
+  {
+   "label": "Sternocostal Head Of Pectoralis Major Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 11.6,
+   "toScapulaCm": 12.2,
+   "toTrunkMidlineCm": 11.3
+  },
+  {
+   "label": "Palmar Trapezoideocapitate Ligament (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 55.3,
+   "toScapulaCm": 55.7,
+   "toTrunkMidlineCm": 27.1
+  },
+  {
+   "label": "Scaphotrapeziotrapezoidal Ligament (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 54.7,
+   "toScapulaCm": 55.1,
+   "toTrunkMidlineCm": 27.3
+  },
+  {
+   "label": "Superficial Head Of Pronator Teres Muscle (Right)",
+   "seg": "forearm",
+   "toHumeralHeadCm": 34.3,
+   "toScapulaCm": 34.8,
+   "toTrunkMidlineCm": 23.9
+  },
+  {
+   "label": "Trapeziotrapezoidal Interosseus Ligament (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 55.1,
+   "toScapulaCm": 55.5,
+   "toTrunkMidlineCm": 27.8
+  },
+  {
+   "label": "Trapezoideocapitate Interosseus Ligament (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 55.5,
+   "toScapulaCm": 55.8,
+   "toTrunkMidlineCm": 27.2
+  },
+  {
+   "label": "Acromial Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 5,
+   "toScapulaCm": 8.9,
+   "toTrunkMidlineCm": 20.6
+  },
+  {
+   "label": "Clavicular Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 3,
+   "toScapulaCm": 7,
+   "toTrunkMidlineCm": 16.9
+  },
+  {
+   "label": "Infraspinatus Muscle (Right)",
+   "seg": "girdle",
+   "toHumeralHeadCm": 7,
+   "toScapulaCm": 2.6,
+   "toTrunkMidlineCm": 13
+  },
+  {
+   "label": "Levator Scapulae (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 13.6,
+   "toScapulaCm": 10.4,
+   "toTrunkMidlineCm": 5.3
+  },
+  {
+   "label": "Scapular Part Of Deltoid Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 5.6,
+   "toScapulaCm": 6.2,
+   "toTrunkMidlineCm": 18
+  },
+  {
+   "label": "Supraspinatus Muscle (Right)",
+   "seg": "girdle",
+   "toHumeralHeadCm": 3.3,
+   "toScapulaCm": 3.8,
+   "toTrunkMidlineCm": 14.8
+  },
+  {
+   "label": "Subscapular Muscle (Right)",
+   "seg": "girdle",
+   "toHumeralHeadCm": 5.8,
+   "toScapulaCm": 1.5,
+   "toTrunkMidlineCm": 12
+  },
+  {
+   "label": "Teres Major Muscle (Right)",
+   "seg": "girdle",
+   "toHumeralHeadCm": 9.1,
+   "toScapulaCm": 7.5,
+   "toTrunkMidlineCm": 14.5
+  },
+  {
+   "label": "Teres Minor Muscle (Right)",
+   "seg": "girdle",
+   "toHumeralHeadCm": 5.3,
+   "toScapulaCm": 3.8,
+   "toTrunkMidlineCm": 15.2
+  },
+  {
+   "label": "Deep Head Of Prontaor Teres Muscle (Right)",
+   "seg": "forearm",
+   "toHumeralHeadCm": 36.8,
+   "toScapulaCm": 37.3,
+   "toTrunkMidlineCm": 25
+  },
+  {
+   "label": "Ascending Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 16.4,
+   "toScapulaCm": 13.5,
+   "toTrunkMidlineCm": 3.7
+  },
+  {
+   "label": "Descending Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 17.3,
+   "toScapulaCm": 12,
+   "toTrunkMidlineCm": 3.4
+  },
+  {
+   "label": "Latissimus Dorsi Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 21.6,
+   "toScapulaCm": 17.9,
+   "toTrunkMidlineCm": 3
+  },
+  {
+   "label": "Rhomboid Major Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 16.2,
+   "toScapulaCm": 10.8,
+   "toTrunkMidlineCm": 2.5
+  },
+  {
+   "label": "Rhomboid Minor Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 16.7,
+   "toScapulaCm": 12.1,
+   "toTrunkMidlineCm": 1.9
+  },
+  {
+   "label": "Transverse Part Of Trapezius Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 13.2,
+   "toScapulaCm": 8.6,
+   "toTrunkMidlineCm": 5.6
+  },
+  {
+   "label": "Lateral Head Of Triceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 16.7,
+   "toScapulaCm": 17.1,
+   "toTrunkMidlineCm": 21
+  },
+  {
+   "label": "Long Head Of Biceps Brachii (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 15.5,
+   "toScapulaCm": 16.7,
+   "toTrunkMidlineCm": 20.3
+  },
+  {
+   "label": "Long Head Of Biceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 14.4,
+   "toScapulaCm": 14.1,
+   "toTrunkMidlineCm": 18
+  },
+  {
+   "label": "Medial Head Of Biceps Brachii Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 23,
+   "toScapulaCm": 23,
+   "toTrunkMidlineCm": 20
+  },
+  {
+   "label": "Short Head Of Biceps Brachii (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 13.2,
+   "toScapulaCm": 14.2,
+   "toTrunkMidlineCm": 18.5
+  },
+  {
+   "label": "Trapezium Bone (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 54.9,
+   "toScapulaCm": 55.4,
+   "toTrunkMidlineCm": 28.1
+  },
+  {
+   "label": "Trapezoid Bone (Right)",
+   "seg": "hand",
+   "toHumeralHeadCm": 55.5,
+   "toScapulaCm": 55.9,
+   "toTrunkMidlineCm": 27.5
+  },
+  {
+   "label": "Pectoralis Minor Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 10.1,
+   "toScapulaCm": 10.5,
+   "toTrunkMidlineCm": 10.9
+  },
+  {
+   "label": "Coracobrachialis Muscle (Right)",
+   "seg": "upper",
+   "toHumeralHeadCm": 6.9,
+   "toScapulaCm": 8.2,
+   "toTrunkMidlineCm": 16.7
+  },
+  {
+   "label": "Serratus Anterior Muscle (Right)",
+   "seg": "trunk",
+   "toHumeralHeadCm": 9.7,
+   "toScapulaCm": 7.5,
+   "toTrunkMidlineCm": 11.6
+  }
+ ],
+ "feasibility": {
+  "trianglesRangesContiguous": true,
+  "meshesSharingVerticesWithOthers": 0,
+  "cost": {
+   "pairs": {
+    "bone|hand_fingers / hand": 7798,
+    "superficial|ankle_foot / hand": 1138,
+    "superficial|forearm_wrist / hand": 7346,
+    "superficial|forearm_wrist / forearm": 27472,
+    "superficial|shoulder / upper": 5276,
+    "superficial|shoulder / girdle": 5486,
+    "deep|shoulder / girdle": 4580,
+    "deep|shoulder / upper": 4272,
+    "superficial|thigh_quad_hamstring / hand": 2836,
+    "superficial|elbow / forearm": 2912,
+    "superficial|elbow / hand": 272,
+    "superficial|unmapped / girdle": 12,
+    "superficial|unmapped / forearm": 2716,
+    "superficial|unmapped / hand": 3628,
+    "superficial|unmapped / upper": 136,
+    "superficial|hand_fingers / hand": 10956,
+    "bone|shoulder / girdle": 9296,
+    "superficial|upper_arm / upper": 8343,
+    "bone|forearm_wrist / hand": 4266,
+    "bone|forearm_wrist / forearm": 1648,
+    "deep|upper_arm / upper": 1797,
+    "superficial|core_abdomen / forearm": 12,
+    "bone|upper_arm / upper": 1468
+   },
+   "layerPairs": {
+    "bone": 5,
+    "muscle": 18
+   },
+   "partsTouched": 15,
+   "trianglesMoved": 113666,
+   "trianglesInTouchedParts": 907084,
+   "extraDrawCallsBone": 5,
+   "extraDrawCallsMuscle": 18,
+   "indexMemoryExtraMB": 10.38
+  }
+ }
+}
