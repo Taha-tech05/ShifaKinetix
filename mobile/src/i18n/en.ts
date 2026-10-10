@@ -1,3 +1,4 @@
+import { MODEL_CREDIT } from './credit';
 // English is the source of truth for translation keys.
 export const en = {
   appName: 'ShifaKinetix',
@@ -129,6 +130,11 @@ export const en = {
     showBody: 'Show the body',
     rightShoulder: 'Right shoulder',
     leftShoulder: 'Left shoulder',
+    loading3d: 'Loading 3D body...',
+    unavailable: '3D view unavailable, choose from the list',
+    tapHint: 'Drag to turn the body. Tap your shoulder.',
+    tapShoulder: 'Please tap your shoulder, or choose from the list.',
+    show3d: 'Show 3D body',
   },
   confirm: {
     selectedLabel: 'You selected',
@@ -156,7 +162,16 @@ export const en = {
     title: 'Profile',
     language: 'Language',
     signOut: 'Sign out',
+    about: 'About and privacy',
     restartNote: 'Restart the app to finish switching the layout direction.',
+  },
+  about: {
+    title: 'About and privacy',
+    privacyTitle: 'Your privacy',
+    privacy: 'This is a demo. Your answers stay on this phone and are not sent anywhere.',
+    creditTitle: 'Credits',
+    modelNote: 'The 3D body is a simplified (reduced, merged and compressed) version of the model, shared under the same licence.',
+    credit: MODEL_CREDIT,
   },
   placeholder: { title: 'Full project' },
 };

@@ -1,5 +1,7 @@
+import { MODEL_CREDIT } from './credit';
 import type { Translations } from './en';
 
+// NEEDS NATIVE SPEAKER REVIEW: machine-written text. The credit line below is a legal text and stays in English.
 export const roman: Translations = {
   appName: 'ShifaKinetix',
   demoBanner: 'Sirf demo, asal mareezon ke liye nahi',
@@ -130,6 +132,11 @@ export const roman: Translations = {
     showBody: 'Jism dikhayein',
     rightShoulder: 'Dayan kandha',
     leftShoulder: 'Bayan kandha',
+    loading3d: '3D jism load ho raha hai...',
+    unavailable: '3D manzar dastiyab nahi, fehrist se chunein',
+    tapHint: 'Jism ghumane ke liye ghaseetein. Apne kandhe par tap karein.',
+    tapShoulder: 'Baraye meherbani apne kandhe par tap karein, ya fehrist se chunein.',
+    show3d: '3D jism dikhayein',
   },
   confirm: {
     selectedLabel: 'Aap ne chuna',
@@ -157,7 +164,16 @@ export const roman: Translations = {
     title: 'Profile',
     language: 'Zabaan',
     signOut: 'Sign out',
+    about: 'Taaruf aur raazdari',
     restartNote: 'Layout ki simt tabdeel karne ke liye app dobara shuru karein.',
+  },
+  about: {
+    title: 'Taaruf aur raazdari',
+    privacyTitle: 'Aap ki raazdari',
+    privacy: 'Yeh aik demo hai. Aap ke jawabat isi phone par rehte hain aur kahin nahi bheje jaate.',
+    creditTitle: 'Hawale',
+    modelNote: '3D jism asal model ka saada kiya hua (kam, yakja aur sikuda hua) version hai, usi licence ke tehat.',
+    credit: MODEL_CREDIT,
   },
   placeholder: { title: 'Mukammal project' },
 };

@@ -1,5 +1,7 @@
+import { MODEL_CREDIT } from './credit';
 import type { Translations } from './en';
 
+// NEEDS NATIVE SPEAKER REVIEW: machine-written text. The credit line below is a legal text and stays in English.
 export const ur: Translations = {
   appName: 'شفا کائنیٹکس',
   demoBanner: 'صرف ڈیمو، حقیقی مریضوں کے لیے نہیں',
@@ -130,6 +132,11 @@ export const ur: Translations = {
     showBody: 'جسم دکھائیں',
     rightShoulder: 'دایاں کندھا',
     leftShoulder: 'بایاں کندھا',
+    loading3d: 'تھری ڈی جسم لوڈ ہو رہا ہے...',
+    unavailable: 'تھری ڈی منظر دستیاب نہیں، فہرست سے چنیں',
+    tapHint: 'جسم گھمانے کے لیے گھسیٹیں۔ اپنے کندھے پر ٹیپ کریں۔',
+    tapShoulder: 'براہ کرم اپنے کندھے پر ٹیپ کریں، یا فہرست سے چنیں۔',
+    show3d: 'تھری ڈی جسم دکھائیں',
   },
   confirm: {
     selectedLabel: 'آپ نے چنا',
@@ -157,7 +164,16 @@ export const ur: Translations = {
     title: 'پروفائل',
     language: 'زبان',
     signOut: 'سائن آؤٹ',
+    about: 'تعارف اور رازداری',
     restartNote: 'سمت کی تبدیلی مکمل کرنے کے لیے ایپ دوبارہ شروع کریں۔',
+  },
+  about: {
+    title: 'تعارف اور رازداری',
+    privacyTitle: 'آپ کی رازداری',
+    privacy: 'یہ ایک ڈیمو ہے۔ آپ کے جوابات اسی فون پر رہتے ہیں اور کہیں نہیں بھیجے جاتے۔',
+    creditTitle: 'حوالہ جات',
+    modelNote: 'تھری ڈی جسم اصل ماڈل کا سادہ کیا ہوا (کم، یکجا اور سکڑا ہوا) ورژن ہے، اسی لائسنس کے تحت۔',
+    credit: MODEL_CREDIT,
   },
   placeholder: { title: 'مکمل پروجیکٹ' },
 };
