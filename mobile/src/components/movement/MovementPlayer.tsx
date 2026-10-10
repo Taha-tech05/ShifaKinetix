@@ -27,12 +27,11 @@ function Capsule({ x, y, w, h, fill = BODY_FILL, line = BODY_LINE }: { x: number
   );
 }
 
-/** Interpolate one channel of the keyframes into a rotation in degrees, easing like pose.ts. */
+/** Interpolate one channel of the keyframes into a rotation in degrees. (The native driver does not accept an easing here, so segments are linear; the holds are in the keyframes.) */
 function channel(v: Animated.Value, kf: MannequinKeyframe[], pick: (k: MannequinKeyframe) => number, mul: number) {
   return v.interpolate({
     inputRange: kf.map((k) => k.t),
     outputRange: kf.map((k) => `${pick(k) * mul}deg`),
-    easing: Easing.inOut(Easing.sin),
   });
 }
 
@@ -64,13 +63,15 @@ function Mannequin({ movement, value }: { movement: Movement; value: Animated.Va
 
   return (
     <View style={{ width: STAGE.w, height: STAGE.h }}>
-      <Capsule x={cx - 20} y={12} w={40} h={44} /> {/* head */}
-      <Capsule x={torsoX} y={58} w={torsoW} h={112} /> {/* torso */}
+      {/* head, torso */}
+      <Capsule x={cx - 20} y={12} w={40} h={44} />
+      <Capsule x={torsoX} y={58} w={torsoW} h={112} />
       {front ? (
         <>
           <Capsule x={cx - 34} y={164} w={30} h={96} />
           <Capsule x={cx + 4} y={164} w={30} h={96} />
-          <Capsule x={torsoX + torsoW - 14} y={pivotY - 8} w={18} h={UPPER + FORE - 10} /> {/* other arm, still */}
+          {/* other arm, still */}
+          <Capsule x={torsoX + torsoW - 14} y={pivotY - 8} w={18} h={UPPER + FORE - 10} />
         </>
       ) : (
         <Capsule x={cx - 17} y={164} w={34} h={96} />
