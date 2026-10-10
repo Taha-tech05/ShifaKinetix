@@ -1,1 +1,8 @@
-# Code owners are filled in on feature/ci-skeleton.
+# Person A = @Zaid2004fast (gate, questions, tests)
+# Person B = @Taha-tech05 (mobile)
+# Person C = @SaudurRahman997 (server)
+/shared/gate_* @Zaid2004fast @SaudurRahman997
+/shared/questions* @Zaid2004fast
+/mobile/ @Taha-tech05 @Zaid2004fast
+/server/ @SaudurRahman997
+/.github/ @Zaid2004fast

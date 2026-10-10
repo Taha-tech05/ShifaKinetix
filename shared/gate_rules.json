@@ -1,0 +1,43 @@
+{
+  "label": "draft, awaiting clinician review",
+  "note": "PLACEHOLDER, Person A will replace. Fake rules for pipeline testing only.",
+  "rules": [
+    {
+      "ruleId": "R1",
+      "description": "PLACEHOLDER danger rule: danger question A answered yes",
+      "questionId": "Q_DANGER_A",
+      "when": { "state": "answered", "value": true },
+      "verdict": "RED_FLAG",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R2",
+      "description": "PLACEHOLDER danger rule: danger question B answered yes",
+      "questionId": "Q_DANGER_B",
+      "when": { "state": "answered", "value": true },
+      "verdict": "RED_FLAG",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R3",
+      "description": "PLACEHOLDER: not sure on key danger question A must never be SAFE",
+      "questionId": "Q_DANGER_A",
+      "when": { "state": "unknown" },
+      "verdict": "CLARIFY",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R4",
+      "description": "PLACEHOLDER: not sure on key danger question B must never be SAFE",
+      "questionId": "Q_DANGER_B",
+      "when": { "state": "unknown" },
+      "verdict": "CLARIFY",
+      "source": "PLACEHOLDER, Person A will replace",
+      "label": "draft, awaiting clinician review"
+    }
+  ],
+  "defaultVerdict": "SAFE"
+}

@@ -1,6 +1,6 @@
 # ShifaKinetix
 
-[![CI](https://img.shields.io/badge/CI-pending-lightgrey)](#)
+[![CI](https://github.com/Taha-tech05/ShifaKinetix/actions/workflows/ci.yml/badge.svg)](https://github.com/Taha-tech05/ShifaKinetix/actions/workflows/ci.yml)
 
 ShifaKinetix is a final-year project: a mobile musculoskeletal-pain care app. A short safety gate screens for danger signs first, then guided questions and movement checks narrow down which muscles may be involved, and the app suggests a care pathway. The mid-term scope covers the **shoulder only**. All clinical content (questions, rules, thresholds) is draft and awaiting clinician review.
 
@@ -22,3 +22,10 @@ ShifaKinetix is a final-year project: a mobile musculoskeletal-pain care app. A 
 | `server/` | FastAPI server |
 | `shared/` | Formats, gate rules, questions and test cases used by both sides |
 | `docs/` | Project documentation |
+
+## How to contribute
+
+- Branch naming: `feature/<person>-<task>` (for example `feature/zaid-gate-rules`).
+- Open pull requests into `develop`. Never push directly to `main` or `develop`.
+- Every PR needs one approval from a different person than the author, and CI must pass.
+- Commit prefixes: `feat:`, `fix:`, `test:`, `docs:`, `ci:`, `chore:`.
