@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import type { Answer, Verdict } from '../gate/evaluate';
 import { evaluateStub } from '../gate/stub';
-import type { NarrowingInput } from '../narrowing/stub';
-import { depthAnswerFrom } from '../questions/followUp';
-import type { BodySelection, Point3D } from '../regions/types';
+import { depthAnswerFrom } from '../dev/followUpQuestions';
+import type { NarrowingInput } from '../dev/narrowingStub';
+import type { IntakeMode } from '../regions/regionMap';
+import type { BodySelection } from '../regions/types';
 
 export type { Point3D } from '../regions/types';
 
@@ -19,11 +20,17 @@ export interface MovementResult {
 
 export interface SessionState {
   /** What the patient tapped on the body: side, sub-region, point, closest structure and layer. */
+  /** "exact" when the patient can point to the spot, "region" for the whole area (also when not sure). */
+  mode: IntakeMode | null;
   selection: BodySelection | null;
   answers: Answer[];
   gateVerdict: Verdict | null;
+  /** True once the clarifying re-ask has been used (it is offered only once). */
+  reaskDone: boolean;
   movementResults: MovementResult[];
 
+  setMode: (mode: IntakeMode | null) => void;
+  setReaskDone: (done: boolean) => void;
   setSelection: (selection: BodySelection | null) => void;
   /** Adds an answer, replacing any earlier answer to the same question. */
   recordAnswer: (answer: Answer) => void;
@@ -33,15 +40,19 @@ export interface SessionState {
 }
 
 const initial = {
+  mode: null,
   selection: null,
   answers: [] as Answer[],
   gateVerdict: null,
+  reaskDone: false,
   movementResults: [] as MovementResult[],
 };
 
 export const useSession = create<SessionState>((set, get) => ({
   ...initial,
 
+  setMode: (mode) => set({ mode }),
+  setReaskDone: (reaskDone) => set({ reaskDone }),
   setSelection: (selection) => set({ selection }),
 
   recordAnswer: (answer) =>
@@ -73,8 +84,10 @@ export function narrowingInputFrom(
   if (!s.selection) return null;
   return {
     layer: s.selection.layer,
+    regionId: s.selection.regionId,
     subRegionId: s.selection.subRegionId,
     point: s.selection.point,
+    hitMeshName: s.selection.hitStructure?.meshName ?? null,
     depthAnswer: depthAnswerFrom(s.answers),
     movementResults: s.movementResults,
   };
