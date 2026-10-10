@@ -68,8 +68,13 @@ export type LoadedPack = {
   timings: { assetMs: number; readMs: number; parseMs: number; totalMs: number };
 };
 
-const HIGHLIGHT_LINEAR = [0, 0.8, 1]; // cyan
-const MIX = 0.75;
+// Selected structure: pure bright cyan fill (no blend with the original colour) plus a dark outline,
+// so it stays visible against the orange muscles and the tan bones, also when zoomed in.
+const HIGHLIGHT_LINEAR = [0, 0.85, 1];
+const MIX = 1;
+const OUTLINE_COLOR = 0x0b1b2b;
+/** Outline thickness in model units (metres): 3.5 mm. */
+export const OUTLINE_WIDTH = 0.0035;
 
 export async function loadPack(binModule: number, meta: PackMeta): Promise<LoadedPack> {
   const t0 = Date.now();
@@ -160,6 +165,42 @@ export function restoreMesh(part: PackPart, i: number) {
   // full re-upload of this part's color buffer: partial update ranges are not reliable on expo-gl
   attr.clearUpdateRanges();
   attr.needsUpdate = true;
+}
+
+/**
+ * Dark outline for one source mesh: a copy of its triangles pushed out along the normals and drawn back-face only,
+ * so it shows as a border around the cyan fill. Add it next to the part's mesh; dispose it with disposeOutline.
+ */
+export function makeOutline(part: PackPart, i: number, width = OUTLINE_WIDTH): THREE.Mesh {
+  const geo = part.mesh.geometry;
+  const nrm = (geo.getAttribute('normal') as THREE.BufferAttribute).array as Int8Array;
+  const half = [part.mesh.scale.x, part.mesh.scale.y, part.mesh.scale.z];
+  const vStart = part.vStart[i];
+  const vCount = part.vCount[i];
+  const pos = new Float32Array(vCount * 3);
+  for (let v = 0; v < vCount; v++) {
+    const g = (vStart + v) * 3;
+    for (let a = 0; a < 3; a++) pos[v * 3 + a] = part.positions[g + a] / 32767 + ((nrm[g + a] / 127) * width) / half[a];
+  }
+  const triStart = part.triStart[i];
+  const triCount = part.triCount[i];
+  const idx = new Uint32Array(triCount * 3);
+  for (let k = 0; k < idx.length; k++) idx[k] = part.indices[triStart * 3 + k] - vStart;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: OUTLINE_COLOR, side: THREE.BackSide }));
+  mesh.position.copy(part.mesh.position);
+  mesh.scale.copy(part.mesh.scale);
+  mesh.frustumCulled = false;
+  return mesh;
+}
+
+export function disposeOutline(mesh: THREE.Mesh | null) {
+  if (!mesh) return;
+  mesh.removeFromParent();
+  mesh.geometry.dispose();
+  (mesh.material as THREE.Material).dispose();
 }
 
 export function disposePack(pack: LoadedPack | null) {

@@ -5,12 +5,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
 import type { GestureResponderEvent } from 'react-native';
 import * as THREE from 'three';
-import { shoulderRegionFromHit } from '../../regions/fromHit';
-import type { Point3D } from '../../store/session';
-import { highlightMesh, restoreMesh } from '../../screens/model3d/loadPack';
+import { applyLayer, selectFromRay } from '../../regions/select';
+import type { BodyLayer, BodySelection, Point3D } from '../../regions/types';
+import { disposeOutline, highlightMesh, makeOutline, restoreMesh } from '../../screens/model3d/loadPack';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
-import { pickPack } from '../../screens/model3d/pick';
-import type { BodyLayer } from '../BodyViewer';
 
 const FOV = 45;
 
@@ -25,15 +23,15 @@ type Control = {
 export interface Body3DProps {
   pack: LoadedPack;
   layer: BodyLayer;
-  /** Called with a shoulder region id and the tapped point, or with null when the tap was elsewhere. */
-  onPick: (pick: { regionId: string; point: Point3D } | null) => void;
+  /** A tap result: the selection, or null when the tap hit nothing or was not near a shoulder. */
+  onPick: (selection: BodySelection | null) => void;
   onFirstFrame: () => void;
 }
 
 function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { control: React.MutableRefObject<Control> }) {
   const pivot = useRef<THREE.Group>(null);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  const highlighted = useRef<{ part: (typeof pack.parts)[number]; index: number } | null>(null);
+  const highlighted = useRef<{ part: (typeof pack.parts)[number]; index: number; outline: THREE.Mesh } | null>(null);
   const frames = useRef(0);
 
   const fitted = useMemo(() => {
@@ -50,19 +48,20 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
     control.current.distance = fitted.distance;
   }, [fitted, control]);
 
-  useEffect(() => {
-    for (const p of pack.parts) p.mesh.visible = layer === 'all' || p.layer === layer;
-  }, [pack, layer]);
-
   const clearHighlight = () => {
     const h = highlighted.current;
-    if (h) restoreMesh(h.part, h.index);
+    if (h) {
+      restoreMesh(h.part, h.index);
+      disposeOutline(h.outline);
+    }
     highlighted.current = null;
   };
-  useEffect(() => clearHighlight, []);
+  // Only the chosen layer is shown and can be hit. Changing layer also drops the old highlight.
   useEffect(() => {
     clearHighlight();
-  }, [layer]);
+    applyLayer(pack.parts, layer);
+  }, [pack, layer]);
+  useEffect(() => clearHighlight, []);
 
   useFrame(({ camera, size }) => {
     const c = control.current;
@@ -82,31 +81,23 @@ function Scene({ pack, layer, control, onPick, onFirstFrame }: Body3DProps & { c
       pivot.current?.updateMatrixWorld(true);
       camera.updateMatrixWorld(true);
       raycaster.setFromCamera(new THREE.Vector2((x / size.width) * 2 - 1, -(y / size.height) * 2 + 1), camera);
-      const origin = raycaster.ray.origin;
-      const dir = raycaster.ray.direction;
-      const hits = pickPack(pack.parts, origin.toArray(), dir.toArray());
+      // World point back to model space: undo the pivot turn, then the fit (scale and centre).
+      const toModel = (w: Point3D): Point3D => {
+        const local = pivot.current ? pivot.current.worldToLocal(new THREE.Vector3(w.x, w.y, w.z)) : new THREE.Vector3(w.x, w.y, w.z);
+        const m = local.divideScalar(fitted.scale).add(fitted.center);
+        return { x: m.x, y: m.y, z: m.z };
+      };
+      const hit = selectFromRay(pack.parts, layer, raycaster.ray.origin.toArray(), raycaster.ray.direction.toArray(), toModel);
       clearHighlight();
-      // First hit (nearest) that is near the shoulder wins; anything else is ignored.
-      for (const h of hits) {
-        const world = origin.clone().addScaledVector(dir, h.distance);
-        // back to model space: undo pivot rotation and the fit transform
-        const local = pivot.current ? pivot.current.worldToLocal(world.clone()) : world.clone();
-        const model = local.divideScalar(fitted.scale).add(fitted.center);
-        const regionId = shoulderRegionFromHit({
-          packRegion: h.part.region,
-          meshName: h.name,
-          x: model.x,
-          yaw: c.yaw,
-          pitch: c.pitch,
-        });
-        if (regionId) {
-          highlightMesh(h.part, h.index);
-          highlighted.current = { part: h.part, index: h.index };
-          onPick({ regionId, point: { x: model.x, y: model.y, z: model.z } });
-          return;
-        }
+      if (!hit) {
+        onPick(null);
+        return;
       }
-      onPick(null);
+      highlightMesh(hit.part, hit.index);
+      const outline = makeOutline(hit.part, hit.index);
+      hit.part.mesh.parent?.add(outline);
+      highlighted.current = { part: hit.part, index: hit.index, outline };
+      onPick(hit.selection);
     }
   });
 

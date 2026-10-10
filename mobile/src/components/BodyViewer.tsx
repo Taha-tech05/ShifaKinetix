@@ -1,12 +1,12 @@
 import { Component, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { BodyLayer, BodySelection } from '../regions/types';
 import { disposePack, loadPack } from '../screens/model3d/loadPack';
 import type { LoadedPack } from '../screens/model3d/loadPack';
-import type { Point3D } from '../store/session';
 import { useT } from '../store/settings';
-import { colors, gradients, spacing } from '../theme';
+import { colors, gradients, MIN_TAP, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { Body3D } from './body3d/Body3D';
 import { LITE_BIN, LITE_META } from './body3d/pack';
@@ -14,17 +14,15 @@ import { BodyPicker } from './BodyPicker';
 import { Button } from './Button';
 import { Card } from './Card';
 
-/** Which layer of the model to show. Labels are a geometry guess, not clinically reviewed. */
-export type BodyLayer = 'all' | 'superficial' | 'deep' | 'bone';
-
-export interface BodySelection {
-  regionId: string;
-  point: Point3D;
-}
+export type { BodyLayer, BodySelection } from '../regions/types';
 
 export interface BodyViewerProps {
+  /** Ids of the current choice (side and sub-region, e.g. "shoulder_right_top"), used by the figure and list. */
   highlightedIds?: string[];
+  /** Layer to start with. Default "muscle". The user can switch between "muscle" and "bone" in the viewer. */
   layer?: BodyLayer;
+  onLayerChange?: (layer: BodyLayer) => void;
+  /** Always returns a layer. hitStructure is a hint only, see regions/types.ts. */
   onSelect: (selection: BodySelection) => void;
 }
 
@@ -48,13 +46,44 @@ class Boundary extends Component<{ onError: () => void; children: ReactNode }, {
   }
 }
 
+/** Two-option layer menu: Muscle (default) and Bone. No skin layer. */
+function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLayer) => void }) {
+  const t = useT();
+  const options: { value: BodyLayer; label: string }[] = [
+    { value: 'muscle', label: t('layers.muscle') },
+    { value: 'bone', label: t('layers.bone') },
+  ];
+  return (
+    <View style={styles.menu} accessibilityLabel={t('layers.title')}>
+      {options.map((o) => {
+        const on = layer === o.value;
+        return (
+          <Pressable
+            key={o.value}
+            accessibilityRole="button"
+            accessibilityLabel={o.label}
+            accessibilityState={{ selected: on }}
+            onPress={() => onChange(o.value)}
+            style={[styles.menuBtn, on && styles.menuOn]}
+          >
+            <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+              {o.label}
+            </AppText>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 /**
  * Body selection. Shows the 3D body when the lite model loads in time; otherwise the plain picker
- * (figure with tappable shoulders, and a list), which returns the same region ids.
+ * (figure with tappable shoulders, and a list), which returns the same selection shape.
  * Nothing else in the app depends on this component working.
  */
-export function BodyViewer({ highlightedIds = [], layer = 'all', onSelect }: BodyViewerProps) {
+export function BodyViewer({ highlightedIds = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
   const t = useT();
+  const [layer, setLayer] = useState<BodyLayer>(initialLayer);
   const [mode, setMode] = useState<Mode>(FORCE_PLAIN ? 'failed' : 'loading');
   const [pack, setPack] = useState<LoadedPack | null>(null);
   const [usePlain, setUsePlain] = useState(false);
@@ -84,6 +113,12 @@ export function BodyViewer({ highlightedIds = [], layer = 'all', onSelect }: Bod
       disposePack(loaded);
     };
   }, []);
+
+  const changeLayer = (l: BodyLayer) => {
+    setLayer(l);
+    setMiss(false);
+    onLayerChange?.(l);
+  };
 
   const plain = <BodyPicker highlightedIds={highlightedIds} layer={layer} onSelect={onSelect} />;
 
@@ -118,9 +153,9 @@ export function BodyViewer({ highlightedIds = [], layer = 'all', onSelect }: Bod
               pack={pack}
               layer={layer}
               onFirstFrame={() => setFirstFrame(true)}
-              onPick={(pick) => {
-                setMiss(pick === null);
-                if (pick) onSelect(pick);
+              onPick={(sel) => {
+                setMiss(sel === null);
+                if (sel) onSelect(sel);
               }}
             />
           </Boundary>
@@ -133,6 +168,7 @@ export function BodyViewer({ highlightedIds = [], layer = 'all', onSelect }: Bod
             </AppText>
           </View>
         ) : null}
+        {mode === 'ready' ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
       </LinearGradient>
       <AppText variant="secondary" color={miss ? colors.navy : colors.muted} style={styles.hint}>
         {miss ? t('body.tapShoulder') : t('body.tapHint')}
@@ -147,4 +183,18 @@ const styles = StyleSheet.create({
   canvas: { flex: 1, borderRadius: 24, overflow: 'hidden' },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: spacing.md },
   hint: { textAlign: 'center' },
+  menu: {
+    position: 'absolute',
+    top: 12,
+    start: 12,
+    flexDirection: 'row',
+    padding: 4,
+    gap: 4,
+    borderRadius: 24,
+    backgroundColor: colors.white,
+    ...shadows.card,
+  },
+  menuBtn: { minHeight: MIN_TAP, minWidth: MIN_TAP + 16, paddingHorizontal: 12, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  menuOn: { backgroundColor: colors.navy },
+  bold: { fontWeight: '700' },
 });

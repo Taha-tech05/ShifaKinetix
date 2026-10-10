@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SHOULDER_REGIONS } from '../regions/shoulder';
+import { approximatePoint } from '../regions/subregion';
+import { SHOULDER_REGIONS, regionLabel, selectionKey } from '../regions/shoulder';
+import type { BodyLayer, BodySelection, Side, SubRegionId } from '../regions/types';
 import { useT } from '../store/settings';
 import { colors, MIN_TAP, radius, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { BodyFigure } from './BodyFigure';
 import { Button } from './Button';
-
-import type { BodyLayer, BodySelection } from './BodyViewer';
 
 export interface BodyPickerProps {
   highlightedIds?: string[];
@@ -18,25 +18,34 @@ export interface BodyPickerProps {
 
 type View3 = 'front' | 'back';
 
-function RegionList({ highlightedIds, onSelect }: Pick<BodyPickerProps, 'highlightedIds' | 'onSelect'>) {
-  const t = useT();
-  const ids = highlightedIds ?? [];
+/** Selection from the figure or list: no real hit point or structure, so the point is approximate. */
+export function fallbackSelection(side: Side, subRegionId: SubRegionId, layer: BodyLayer = 'muscle'): BodySelection {
+  return {
+    regionId: `shoulder_${side}`,
+    subRegionId,
+    point: approximatePoint(side, subRegionId),
+    hitStructure: null,
+    layer,
+  };
+}
+
+function RegionList({ highlightedIds, layer, onSelect }: Required<Pick<BodyPickerProps, 'highlightedIds' | 'layer' | 'onSelect'>>) {
   return (
     <ScrollView contentContainerStyle={styles.list}>
       {SHOULDER_REGIONS.map((r) => {
-        const highlighted = ids.includes(r.regionId);
+        const label = regionLabel(r.regionId, r.subRegionId) ?? r.regionId;
+        const highlighted = highlightedIds.includes(selectionKey(r.regionId, r.subRegionId));
         return (
           <Pressable
-            key={r.regionId}
+            key={selectionKey(r.regionId, r.subRegionId)}
             accessibilityRole="button"
-            accessibilityLabel={t(r.labelKey)}
+            accessibilityLabel={label}
             accessibilityState={{ selected: highlighted }}
-            // The list has no 3D hit point, so the origin stands in for the tapped point.
-            onPress={() => onSelect({ regionId: r.regionId, point: { x: 0, y: 0, z: 0 } })}
+            onPress={() => onSelect(fallbackSelection(r.side, r.subRegionId, layer))}
             style={[styles.row, highlighted && styles.highlighted]}
           >
             <AppText variant="bodyStrong" color={colors.navy} style={styles.label}>
-              {t(r.labelKey)}
+              {label}
             </AppText>
             <Ionicons name="chevron-forward" size={20} color={colors.muted} />
           </Pressable>
@@ -48,9 +57,9 @@ function RegionList({ highlightedIds, onSelect }: Pick<BodyPickerProps, 'highlig
 
 /**
  * Plain body picker: a simple figure with tappable shoulders (front or back) and a plain list.
- * The 3D viewer will replace the figure and keep these props, so screens do not change.
+ * Used when the 3D body is not available. Returns the same selection shape as the 3D body, without a hit structure.
  */
-export function BodyPicker({ highlightedIds = [], onSelect }: BodyPickerProps) {
+export function BodyPicker({ highlightedIds = [], layer = 'muscle', onSelect }: BodyPickerProps) {
   const t = useT();
   const [view, setView] = useState<View3>('front');
   const [asList, setAsList] = useState(false);
@@ -58,7 +67,7 @@ export function BodyPicker({ highlightedIds = [], onSelect }: BodyPickerProps) {
   if (asList) {
     return (
       <View style={styles.fill}>
-        <RegionList highlightedIds={highlightedIds} onSelect={onSelect} />
+        <RegionList highlightedIds={highlightedIds} layer={layer} onSelect={onSelect} />
         <Button variant="text" label={t('body.showBody')} onPress={() => setAsList(false)} />
       </View>
     );
@@ -67,8 +76,8 @@ export function BodyPicker({ highlightedIds = [], onSelect }: BodyPickerProps) {
   // Facing the viewer, the patient's right shoulder is on the viewer's left. Seen from behind it swaps.
   const rightX = view === 'front' ? 22 : 78;
   const hotspots = [
-    { id: `shoulder_right_${view}`, x: rightX, y: 22, label: t('body.rightShoulder') },
-    { id: `shoulder_left_${view}`, x: 100 - rightX, y: 22, label: t('body.leftShoulder') },
+    { id: selectionKey('shoulder_right', view), x: rightX, y: 22, label: t('body.rightShoulder'), side: 'right' as Side },
+    { id: selectionKey('shoulder_left', view), x: 100 - rightX, y: 22, label: t('body.leftShoulder'), side: 'left' as Side },
   ];
 
   return (
@@ -77,7 +86,10 @@ export function BodyPicker({ highlightedIds = [], onSelect }: BodyPickerProps) {
         height="fill"
         hotspots={hotspots}
         selectedId={highlightedIds[0] ?? null}
-        onHotspot={(id) => onSelect({ regionId: id, point: { x: 0, y: 0, z: 0 } })}
+        onHotspot={(id) => {
+          const h = hotspots.find((x) => x.id === id);
+          if (h) onSelect(fallbackSelection(h.side, view, layer));
+        }}
       >
         <View style={styles.pill}>
           {(['front', 'back'] as View3[]).map((v, i) => (
