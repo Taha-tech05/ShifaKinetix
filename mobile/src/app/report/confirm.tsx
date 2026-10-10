@@ -6,33 +6,31 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { IconTile } from '../../components/IconTile';
 import { Screen } from '../../components/Screen';
-import { Segmented } from '../../components/Segmented';
 import { StatusChip } from '../../components/StatusChip';
 import { StepProgress } from '../../components/StepProgress';
-import { regionLabelKey } from '../../regions/shoulder';
+import { regionLabel } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
-import type { Depth } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
 
-/** P6 (design): preview with marker, "You selected" card, optional depth, Yes this is right, Change. */
+/**
+ * P6 (design): preview with marker, "You selected" card, Yes this is right, Change.
+ * The card shows side and sub-region. The small line names the closest structure under the finger as a hint,
+ * and the note says this is where the patient tapped, not a diagnosis.
+ */
 export default function Confirm() {
   const t = useT();
-  const { regionId, depth, setDepth } = useSession();
-  const labelKey = regionId ? regionLabelKey(regionId) : null;
-  if (!labelKey) return <Redirect href="/report/body" />;
+  const selection = useSession((s) => s.selection);
+  const label = selection ? regionLabel(selection.regionId, selection.subRegionId) : null;
+  if (!selection || !label) return <Redirect href="/report/body" />;
 
-  const label = t(labelKey);
-  const right = regionId?.includes('_right_');
-  const back = regionId?.includes('_back');
+  const hit = selection.hitStructure;
+  const hint = hit ? t(hit.kind === 'bone' ? 'confirm.closestBone' : 'confirm.closestSurface', { name: hit.name }) : null;
+
   // Marker sits on the selected shoulder. Facing the viewer, patient-right is on the viewer's left.
-  const markerX = (right ? 1 : 0) === (back ? 1 : 0) ? 78 : 22;
-
-  const depths: { value: Depth; label: string }[] = [
-    { value: 'surface', label: t('confirm.surface') },
-    { value: 'middle', label: t('confirm.middle') },
-    { value: 'deep', label: t('confirm.deep') },
-  ];
+  const right = selection.regionId === 'shoulder_right';
+  const back = selection.subRegionId === 'back';
+  const markerX = right === !back ? 22 : 78;
 
   return (
     <Screen
@@ -55,21 +53,21 @@ export default function Confirm() {
           <AppText variant="h2" color={colors.navy}>
             {label}
           </AppText>
+          {hint ? (
+            <AppText variant="secondary" color={colors.muted}>
+              {hint}
+            </AppText>
+          ) : null}
         </View>
         <StatusChip status="safe" label={t('body.selected')} />
       </Card>
-      <View style={styles.depth}>
-        <AppText variant="secondary" color={colors.muted} style={styles.bold}>
-          {t('confirm.depthTitle')} <AppText variant="secondary" color={colors.muted}>{t('confirm.optional')}</AppText>
-        </AppText>
-        <Segmented options={depths} value={depth} onChange={setDepth} />
-      </View>
+      <AppText variant="secondary" color={colors.muted}>
+        {t('confirm.notDiagnosis')}
+      </AppText>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   col: { flex: 1 },
-  depth: { gap: 6 },
-  bold: { fontWeight: '600' },
 });
