@@ -7,6 +7,7 @@ module.exports = {
   moduleNameMapper: {
     '^react-native$': '<rootDir>/__tests__/support/react-native.tsx',
     '^@expo/vector-icons$': '<rootDir>/__tests__/support/vector-icons.tsx',
+    '^expo-linear-gradient$': '<rootDir>/__tests__/support/linear-gradient.tsx',
   },
   transform: {
     '^.+\.tsx?$': ['ts-jest', { tsconfig: { resolveJsonModule: true, esModuleInterop: true, module: 'commonjs', strict: true, jsx: 'react-jsx', types: ['jest', 'node'] } }],
