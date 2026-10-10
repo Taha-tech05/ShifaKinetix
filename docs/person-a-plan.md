@@ -32,7 +32,7 @@ with a normal merge, without Co-authored-by trailers.
 
 ## Human checks
 
-- A faculty supervisor and a doctor are available to review the summary;
+- A faculty supervisor and a doctor are available to review the summary (confirmed by Zaid);
   names are intentionally not recorded. Availability is not approval.
 - Real-device airplane-mode testing and clinician review must be recorded only
   after they actually happen.
