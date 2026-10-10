@@ -12,7 +12,7 @@ export function CanCant({ question, onAnswer }: TemplateProps) {
   const [picked, setPicked] = useState<AnswerKind | null>(null);
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h2" color={colors.navy}>
+      <AppText variant="h1" color={colors.navy}>
         {question.text}
       </AppText>
       {KINDS.map((kind) => (
@@ -20,6 +20,7 @@ export function CanCant({ question, onAnswer }: TemplateProps) {
           key={kind}
           question={question}
           kind={kind}
+          layout="row"
           selected={picked === kind}
           onAnswer={(result) => {
             setPicked(kind);

@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useT } from '../store/settings';
-import { colors, MIN_TAP, radius, spacing } from '../theme';
+import { colors, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { BottomSheet } from './BottomSheet';
-import { Button } from './Button';
+import { IconTile } from './IconTile';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
-/** Small SOS icon that opens a sheet with two actions and no advice text. */
+/** Red SOS pill in the top bar. Opens a sheet with two big actions and no advice text. */
 export function SosButton() {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -21,24 +21,39 @@ export function SosButton() {
         onPress={() => setOpen(true)}
         style={styles.button}
       >
-        <Ionicons name="medkit" size={18} color={colors.white} />
         <AppText variant="secondary" color={colors.white} style={styles.text}>
           {t('sos.label')}
         </AppText>
       </Pressable>
-      <BottomSheet
-        visible={open}
-        onClose={() => setOpen(false)}
-        title={t('sos.title')}
-        closeLabel={t('common.close')}
-      >
-        <Button label={t('sos.call')} icon="call" onPress={() => Linking.openURL('tel:1122')} />
-        <Button
-          label={t('sos.hospital')}
-          icon="location"
-          variant="outline"
+      <BottomSheet visible={open} onClose={() => setOpen(false)} closeLabel={t('common.close')}>
+        <View style={styles.head}>
+          <IconTile icon="alert-circle-outline" tone="danger" />
+          <AppText variant="h2" color={colors.navy} style={styles.title}>
+            {t('sos.title')}
+          </AppText>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('sos.call')}
+          onPress={() => Linking.openURL('tel:1122')}
+          style={[styles.big, styles.red]}
+        >
+          <Ionicons name="call" size={24} color={colors.white} />
+          <AppText variant="h2" color={colors.white} style={styles.bigText}>
+            {t('sos.call')}
+          </AppText>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('sos.hospital')}
           onPress={() => Linking.openURL(HOSPITAL_SEARCH_URL)}
-        />
+          style={[styles.big, styles.line]}
+        >
+          <Ionicons name="location" size={24} color={colors.navy} />
+          <AppText variant="h2" color={colors.navy} style={styles.bigText}>
+            {t('sos.hospital')}
+          </AppText>
+        </Pressable>
       </BottomSheet>
     </>
   );
@@ -46,15 +61,27 @@ export function SosButton() {
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: MIN_TAP,
-    minWidth: MIN_TAP,
+    height: 48,
+    minWidth: 48,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 24,
+    backgroundColor: colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.sos,
+  },
+  text: { fontWeight: '800', letterSpacing: 0.3 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  title: { fontSize: 20 },
+  big: {
+    height: 72,
+    borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.dangerDark,
+    gap: spacing.sm,
   },
-  text: { fontWeight: '800' },
+  bigText: { fontSize: 20 },
+  red: { backgroundColor: colors.danger },
+  line: { backgroundColor: colors.white, borderWidth: 2, borderColor: colors.navy },
 });

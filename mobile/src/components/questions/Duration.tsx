@@ -24,7 +24,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
 
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h2" color={colors.navy}>
+      <AppText variant="h1" color={colors.navy}>
         {question.text}
       </AppText>
       <View style={styles.stepper}>
@@ -37,7 +37,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
           }}
           style={styles.stepBtn}
         >
-          <AppText variant="h2" color={colors.navy}>
+          <AppText variant="h1" color={colors.navy}>
             -
           </AppText>
         </Pressable>
@@ -53,7 +53,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
           }}
           style={styles.stepBtn}
         >
-          <AppText variant="h2" color={colors.navy}>
+          <AppText variant="h1" color={colors.navy}>
             +
           </AppText>
         </Pressable>
@@ -79,6 +79,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
       <AnswerButton
         question={question}
         kind="notSure"
+        layout="row"
         selected={notSure}
         onAnswer={(result) => {
           setNotSure(true);

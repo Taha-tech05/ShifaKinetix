@@ -1,16 +1,15 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { colors, radius, shadows, spacing } from '../theme';
-import { AppText } from './AppText';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  title?: string;
   closeLabel: string;
   children: React.ReactNode;
 }
 
-export function BottomSheet({ visible, onClose, title, closeLabel, children }: Props) {
+/** Modal sheet over a dark scrim (design .scrim + .sheet). */
+export function BottomSheet({ visible, onClose, closeLabel, children }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable
@@ -21,11 +20,6 @@ export function BottomSheet({ visible, onClose, title, closeLabel, children }: P
       />
       <View style={styles.sheet}>
         <View style={styles.handle} />
-        {title ? (
-          <AppText variant="h2" color={colors.navy} style={styles.title}>
-            {title}
-          </AppText>
-        ) : null}
         {children}
       </View>
     </Modal>
@@ -33,22 +27,22 @@ export function BottomSheet({ visible, onClose, title, closeLabel, children }: P
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(26,46,64,0.4)' },
+  backdrop: { flex: 1, backgroundColor: colors.scrim },
   sheet: {
     backgroundColor: colors.white,
-    borderTopStartRadius: radius.xl,
-    borderTopEndRadius: radius.xl,
-    padding: spacing.xl,
-    paddingBottom: spacing.xxl,
+    borderTopStartRadius: radius.sheet,
+    borderTopEndRadius: radius.sheet,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 24,
     gap: spacing.md,
     ...shadows.raised,
   },
   handle: {
     alignSelf: 'center',
-    width: 40,
-    height: 4,
-    borderRadius: radius.pill,
+    width: 44,
+    height: 5,
+    borderRadius: 3,
     backgroundColor: colors.lineStrong,
   },
-  title: { marginBottom: spacing.xs },
 });

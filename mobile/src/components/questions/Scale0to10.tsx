@@ -15,7 +15,7 @@ export function Scale0to10({ question, onAnswer }: TemplateProps) {
   const [notSure, setNotSure] = useState(false);
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h2" color={colors.navy}>
+      <AppText variant="h1" color={colors.navy}>
         {question.text}
       </AppText>
       <View style={styles.grid}>
@@ -52,6 +52,7 @@ export function Scale0to10({ question, onAnswer }: TemplateProps) {
       <AnswerButton
         question={question}
         kind="notSure"
+        layout="row"
         selected={notSure}
         onAnswer={(result) => {
           // "Not sure" is not zero: state is unknown and the value stays null.

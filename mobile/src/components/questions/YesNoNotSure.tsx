@@ -12,9 +12,10 @@ export function YesNoNotSure({ question, onAnswer }: TemplateProps) {
   const [picked, setPicked] = useState<AnswerKind | null>(null);
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h2" color={colors.navy}>
+      <AppText variant="h1" color={colors.navy}>
         {question.text}
       </AppText>
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
       {KINDS.map((kind) => (
         <AnswerButton
           key={kind}
@@ -27,6 +28,7 @@ export function YesNoNotSure({ question, onAnswer }: TemplateProps) {
           }}
         />
       ))}
+      </View>
     </View>
   );
 }

@@ -20,7 +20,7 @@ export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
 
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h2" color={colors.navy}>
+      <AppText variant="h1" color={colors.navy}>
         {question.text}
       </AppText>
       <AppText variant="secondary" color={colors.muted}>
@@ -51,6 +51,7 @@ export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
       <AnswerButton
         question={question}
         kind="notSure"
+        layout="row"
         selected={notSure}
         onAnswer={(result) => {
           setNotSure(true);

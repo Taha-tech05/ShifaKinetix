@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, MIN_TAP, radius, shadows, spacing } from '../theme';
+import { colors, MIN_TAP, radius, shadows } from '../theme';
 import { AppText } from './AppText';
 
 export type ButtonVariant = 'primary' | 'outline' | 'text';
@@ -16,6 +16,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
+/** Primary: teal, 56 high, radius 20 (design .btn). Outline: white with navy border (.btn.line). Text: underlined link (.txt). */
 export function Button({
   label,
   onPress,
@@ -25,7 +26,15 @@ export function Button({
   fullWidth = true,
   style,
 }: Props) {
-  const textColor = variant === 'primary' ? colors.white : colors.teal;
+  const isText = variant === 'text';
+  const textColor =
+    variant === 'primary'
+      ? disabled
+        ? colors.disabledText
+        : colors.white
+      : variant === 'outline'
+        ? colors.navy
+        : colors.linkTeal;
   return (
     <Pressable
       accessibilityRole="button"
@@ -35,17 +44,21 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        variant === 'primary' && styles.primary,
+        variant === 'primary' && (disabled ? styles.primaryOff : styles.primary),
         variant === 'outline' && styles.outline,
+        isText && styles.text,
         fullWidth && styles.full,
-        disabled && styles.disabled,
         pressed && styles.pressed,
         style,
       ]}
     >
       <View style={styles.row}>
         {icon ? <Ionicons name={icon} size={20} color={textColor} /> : null}
-        <AppText variant="button" color={textColor}>
+        <AppText
+          variant="button"
+          color={textColor}
+          style={isText ? styles.underline : undefined}
+        >
           {label}
         </AppText>
       </View>
@@ -56,16 +69,17 @@ export function Button({
 const styles = StyleSheet.create({
   base: {
     minHeight: MIN_TAP,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
   },
   full: { alignSelf: 'stretch' },
-  primary: { backgroundColor: colors.teal, minHeight: 52, ...shadows.button },
-  outline: { borderWidth: 2, borderColor: colors.teal, backgroundColor: colors.white },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  disabled: { opacity: 0.5 },
+  primary: { height: 56, backgroundColor: colors.teal, ...shadows.button },
+  primaryOff: { height: 56, backgroundColor: colors.disabled },
+  outline: { height: 56, borderWidth: 2, borderColor: colors.navy, backgroundColor: colors.white },
+  text: { height: 48, backgroundColor: 'transparent' },
+  underline: { textDecorationLine: 'underline' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pressed: { opacity: 0.85 },
 });

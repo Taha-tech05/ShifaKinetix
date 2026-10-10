@@ -1,9 +1,10 @@
 import { Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { t } from '../i18n';
 import type { TKey } from '../i18n';
 import { answered, unknown } from '../questions/answer';
 import type { Question, QuestionResult } from '../questions/types';
-import { colors, MIN_TAP, radius, spacing } from '../theme';
+import { colors, MIN_TAP, radius, shadows } from '../theme';
 import { AppText } from './AppText';
 
 export type AnswerKind = 'yes' | 'no' | 'notSure' | 'can' | 'cant';
@@ -14,6 +15,14 @@ const LABELS: Record<AnswerKind, TKey> = {
   notSure: 'answer.notSure',
   can: 'answer.can',
   cant: 'answer.cant',
+};
+
+const ICONS: Record<AnswerKind, keyof typeof Ionicons.glyphMap> = {
+  yes: 'checkmark',
+  no: 'close',
+  notSure: 'help-circle-outline',
+  can: 'checkmark',
+  cant: 'close',
 };
 
 /** Value reported for each kind. "Not sure" is handled separately and has no value. */
@@ -34,20 +43,24 @@ interface Props {
   kind: AnswerKind;
   onAnswer: (result: QuestionResult) => void;
   selected?: boolean;
+  /** 'tile': icon above label, for a row of three (design 88 high). 'row': icon beside label, full width (64 high). */
+  layout?: 'tile' | 'row';
 }
 
 /** Yes, No and Not sure share one style, so none looks more important than another. */
-export function AnswerButton({ question, kind, onAnswer, selected = false }: Props) {
+export function AnswerButton({ question, kind, onAnswer, selected = false, layout = 'tile' }: Props) {
   const label = t(LABELS[kind]);
+  const fg = selected ? colors.white : colors.navy;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected }}
       onPress={() => onAnswer(resultFor(question, kind))}
-      style={[styles.button, selected && styles.selected]}
+      style={[styles.button, layout === 'tile' ? styles.tile : styles.row, selected && styles.selected]}
     >
-      <AppText variant="button" color={selected ? colors.white : colors.navy}>
+      <Ionicons name={ICONS[kind]} size={24} color={fg} />
+      <AppText variant="button" color={fg} numberOfLines={1}>
         {label}
       </AppText>
     </Pressable>
@@ -56,16 +69,16 @@ export function AnswerButton({ question, kind, onAnswer, selected = false }: Pro
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 56,
     minWidth: MIN_TAP,
-    alignSelf: 'stretch',
-    paddingHorizontal: spacing.xl,
-    borderRadius: radius.pill,
+    borderRadius: radius.button,
     borderWidth: 2,
-    borderColor: colors.lineStrong,
+    borderColor: colors.fieldBorder,
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadows.card,
   },
-  selected: { backgroundColor: colors.teal, borderColor: colors.teal },
+  tile: { flex: 1, height: 88, flexDirection: 'column', gap: 4, paddingHorizontal: 4 },
+  row: { alignSelf: 'stretch', height: 64, flexDirection: 'row', gap: 6 },
+  selected: { backgroundColor: colors.navy, borderColor: colors.navy },
 });
