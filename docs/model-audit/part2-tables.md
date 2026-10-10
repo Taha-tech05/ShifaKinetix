@@ -64,7 +64,7 @@ FAIL rows that are NOT explained by that: 2.
 | Ethmoid Bone | bone | 4064 | 1016 | 25.0 | 0.49 | 0.264 | 1.383 | 0.6 | 0.1 | -0.7 | WARN (kept<30%) |
 | Longus Colli Muscle (Right) | deep | 12590 | 9122 | 72.5 | 1.34 | 0.255 | 2.120 | 3.3 | -11.9 | -26.7 | WARN (maxErr>2%) |
 
-### Shoulder structures (75)
+### Shoulder structures (59)
 
 | Structure | Type | Tris orig | Tris lite | Kept % | BBox change % of longest | Mean err % | Max err % | Max err mm | Area change % | Volume change % | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -82,8 +82,6 @@ FAIL rows that are NOT explained by that: 2.
 | Clavicular Part Of Deltoid Muscle (Right) | superficial | 5806 | 1388 | 23.9 | 0.17 | 0.040 | 0.419 | 0.7 | -0.8 | -0.6 | WARN (kept<30%) |
 | Coracobrachialis Muscle (Left) | deep+superficial | 2322 | 1198 | 51.6 | 0.02 | 0.014 | 0.140 | 0.2 | 0.1 | -0.3 | PASS |
 | Coracobrachialis Muscle (Right) | deep | 2322 | 1198 | 51.6 | 0.02 | 0.014 | 0.181 | 0.3 | 0.1 | -0.4 | PASS |
-| Deep Head Of Prontaor Teres Muscle (Left) | superficial | 2230 | 818 | 36.7 | 0.03 | 0.027 | 0.269 | 0.3 | -0.1 | -0.6 | PASS |
-| Deep Head Of Prontaor Teres Muscle (Right) | superficial | 2230 | 818 | 36.7 | 0.03 | 0.027 | 0.226 | 0.2 | -0.3 | -0.6 | PASS |
 | Descending Part Of Trapezius Muscle (Left) | superficial | 13522 | 2702 | 20.0 | 0.11 | 0.048 | 0.204 | 0.6 | -1.0 | -0.7 | WARN (kept<30%) |
 | Descending Part Of Trapezius Muscle (Right) | superficial | 13522 | 2698 | 20.0 | 0.11 | 0.045 | 0.225 | 0.7 | -0.8 | -0.5 | WARN (kept<30%) |
 | Humerus (Left) | bone | 4280 | 1468 | 34.3 | 0.06 | 0.024 | 0.252 | 0.8 | 0.1 | -0.9 | PASS |
@@ -94,20 +92,8 @@ FAIL rows that are NOT explained by that: 2.
 | Lateral Head Of Triceps Brachii Muscle (Right) | superficial | 7258 | 1748 | 24.1 | 0.10 | 0.031 | 0.237 | 0.6 | -0.6 | -0.3 | WARN (kept<30%) |
 | Latissimus Dorsi Muscle (Left) | superficial | 55610 | 11118 | 20.0 | 0.09 | 0.025 | 0.152 | 0.6 | -0.7 | -0.9 | WARN (kept<30%) |
 | Latissimus Dorsi Muscle (Right) | deep+superficial | 30714 | 7030 | 22.9 | 0.00 | 0.020 | 0.136 | 0.5 | -0.5 | -0.6 | WARN (kept<30%) |
-| Levator Anguli Oris (Left) | superficial | 662 | 600 | 90.6 | 0.03 | 0.009 | 0.039 | 0.0 | -0.1 | 0.0 | PASS |
-| Levator Anguli Oris (Right) | superficial | 662 | 600 | 90.6 | 0.03 | 0.009 | 0.068 | 0.0 | -0.1 | 0.0 | PASS |
-| Levator Labii Superioris (Left) | superficial | 1080 | 600 | 55.6 | 0.11 | 0.042 | 0.277 | 0.1 | -0.1 | -0.4 | PASS |
-| Levator Labii Superioris (Right) | superficial | 1080 | 600 | 55.6 | 0.11 | 0.053 | 0.335 | 0.1 | -0.1 | -0.5 | PASS |
-| Levator Nasolabialis (Left) | superficial | 344 | 344 | 100.0 | 0.04 | 0.006 | 0.035 | 0.0 | 0.0 | 0.0 | PASS |
-| Levator Nasolabialis (Right) | deep | 344 | 344 | 100.0 | 0.01 | 0.004 | 0.025 | 0.0 | -0.0 | 0.1 | PASS |
-| Levator Palpebrae Superiorisl Grp1 | superficial | 4306 | 860 | 20.0 | 0.06 | 0.074 | 0.351 | 0.2 | -0.4 | -1.7 | WARN (kept<30%) |
-| Levator Palpebrae Superiorisr Grp1 | superficial | 4306 | 860 | 20.0 | 0.06 | 0.070 | 0.253 | 0.1 | -0.3 | -1.8 | WARN (kept<30%) |
 | Levator Scapulae (Left) | superficial | 6164 | 1246 | 20.2 | 0.09 | 0.053 | 0.289 | 0.4 | -0.8 | -1.8 | WARN (kept<30%) |
 | Levator Scapulae (Right) | superficial | 6164 | 1246 | 20.2 | 0.09 | 0.052 | 0.280 | 0.4 | -0.8 | -1.4 | WARN (kept<30%) |
-| Levatores Breves Costarum (Left) | deep | 5382 | 1074 | 20.0 | 0.08 | 0.026 | 0.264 | 0.9 | -1.7 | -1.9 | WARN (kept<30%) |
-| Levatores Breves Costarum (Right) | deep | 5382 | 1076 | 20.0 | 0.08 | 0.029 | 0.387 | 1.3 | -1.6 | -2.0 | WARN (kept<30%) |
-| Levatores Longi Costarum (Left) | deep | 11860 | 2372 | 20.0 | 0.05 | 0.024 | 0.109 | 0.4 | -0.7 | -1.6 | WARN (kept<30%) |
-| Levatores Longi Costarum (Right) | deep | 11860 | 2372 | 20.0 | 0.03 | 0.021 | 0.109 | 0.4 | -0.8 | -1.6 | WARN (kept<30%) |
 | Long Head Of Biceps Brachii (Left) | superficial | 6436 | 1414 | 22.0 | 0.13 | 0.029 | 0.138 | 0.5 | -0.9 | -0.6 | WARN (kept<30%) |
 | Long Head Of Biceps Brachii (Right) | superficial | 6436 | 1414 | 22.0 | 0.13 | 0.030 | 0.141 | 0.5 | -0.9 | -0.7 | WARN (kept<30%) |
 | Long Head Of Biceps Brachii Muscle (Left) | superficial+deep | 7902 | 1580 | 20.0 | 0.03 | 0.038 | 0.202 | 0.5 | -0.6 | -0.4 | WARN (kept<30%) |
@@ -132,8 +118,6 @@ FAIL rows that are NOT explained by that: 2.
 | Sternocostal Head Of Pectoralis Major Muscle (Right) | superficial | 6444 | 1730 | 26.8 | 0.02 | 0.059 | 0.394 | 0.7 | -0.6 | -0.3 | WARN (kept<30%) |
 | Subscapular Muscle (Left) | deep | 5910 | 1182 | 20.0 | 0.44 | 0.071 | 0.237 | 0.3 | -0.4 | -1.0 | WARN (kept<30%) |
 | Subscapular Muscle (Right) | deep | 5910 | 1182 | 20.0 | 0.44 | 0.060 | 0.625 | 0.7 | -0.5 | -1.1 | WARN (kept<30%) |
-| Superficial Head Of Pronator Teres Muscle (Left) | superficial | 5092 | 1352 | 26.6 | 1.54 | 0.030 | 0.243 | 0.4 | -1.0 | -0.2 | WARN (kept<30%) |
-| Superficial Head Of Pronator Teres Muscle (Right) | superficial | 5092 | 1352 | 26.6 | 1.54 | 0.033 | 0.230 | 0.4 | -1.0 | -0.3 | WARN (kept<30%) |
 | Supraspinatus Muscle (Left) | deep | 2860 | 1716 | 60.0 | 0.03 | 0.012 | 0.119 | 0.1 | 0.1 | -0.1 | PASS |
 | Supraspinatus Muscle (Right) | superficial | 2860 | 1716 | 60.0 | 0.03 | 0.010 | 0.092 | 0.1 | 0.1 | -0.1 | PASS |
 | Supraspinous Ligament (Right) | superficial | 1696 | 600 | 35.4 | 0.00 | 0.001 | 0.012 | 0.1 | -0.0 | 0.0 | PASS |

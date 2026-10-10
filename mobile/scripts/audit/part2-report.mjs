@@ -41,7 +41,7 @@ out.push('### FAIL rows not explained by tiny originals\n\n' + (failReal.length 
 out.push('### 10 lowest percentage of triangles kept (structures with at least 100 original triangles)\n\n' + md([...rows].filter((r) => r.orig_tris >= 100).sort((a, b) => a.kept - b.kept).slice(0, 10), COLS) + '\n');
 out.push('### 10 highest max shape error\n\n' + md([...rows].sort((a, b) => b.maxErr - a.maxErr).slice(0, 10), COLS) + '\n');
 out.push('### 10 highest mean shape error\n\n' + md([...rows].sort((a, b) => b.meanErr - a.meanErr).slice(0, 10), COLS) + '\n');
-const SH = /deltoid|supraspin|infraspin|teres|subscap|trapezius|levator|rhomboid|biceps_brachii|biceps brachii|triceps brachii|pectoralis|latissimus|^clavicle|^scapula|^humerus|serratus anterior|coracobrachialis/i;
+const SH = /deltoid|supraspin|infraspin|teres m(ajor|inor)|subscapular|trapezius|levator scapulae|rhomboid|biceps brachii|triceps brachii|pectoralis|latissimus|^clavicle|^scapula|^humerus|serratus anterior|coracobrachialis/i;
 const shoulder = rows.filter((r) => SH.test(r.structure)).sort((a, b) => a.structure.localeCompare(b.structure));
 out.push(`### Shoulder structures (${shoulder.length})\n\n` + md(shoulder, COLS) + '\n');
 const wm = rows.filter((r) => r.status === 'WARN' && r.category !== 'bone');

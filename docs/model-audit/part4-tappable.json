@@ -1,0 +1,91 @@
+{
+ "supraspinatus": {
+  "views": [],
+  "label": "Supraspinatus Muscle (Right)",
+  "sampled": 400,
+  "rays": 1224,
+  "firstHitTotal": 0,
+  "note": "never the first hit from any tested direction with all layers visible"
+ },
+ "infraspinatus": {
+  "views": [
+   "-180/-30:14",
+   "-180/0:12",
+   "-180/30:11",
+   "-150/-30:11",
+   "-150/0:10",
+   "-150/30:9",
+   "-120/-30:5",
+   "-120/0:5",
+   "-120/30:6",
+   "90/-30:14",
+   "90/0:16",
+   "90/30:16",
+   "120/-30:19",
+   "120/0:15",
+   "120/30:14",
+   "150/-30:17",
+   "150/0:15",
+   "150/30:12"
+  ],
+  "label": "Infraspinatus Muscle (Right)",
+  "sampled": 800,
+  "rays": 2412,
+  "firstHitTotal": 221,
+  "bestYawDeg": 90,
+  "bestPitchDeg": 0,
+  "successInBestView": 16,
+  "point": [
+   -0.10609019547700882,
+   1.3159297704696655,
+   -0.11640564352273941
+  ]
+ },
+ "teres-minor": {
+  "views": [
+   "-180/-30:14",
+   "-180/0:11",
+   "-180/30:3",
+   "-150/-30:13",
+   "-150/0:3",
+   "0/-30:1",
+   "90/-30:7",
+   "90/0:2",
+   "120/-30:16",
+   "120/0:10",
+   "120/30:6",
+   "150/-30:19",
+   "150/0:9",
+   "150/30:7"
+  ],
+  "label": "Teres Minor Muscle (Right)",
+  "sampled": 400,
+  "rays": 1224,
+  "firstHitTotal": 121,
+  "bestYawDeg": -180,
+  "bestPitchDeg": 0,
+  "successInBestView": 11,
+  "point": [
+   -0.13216948509216309,
+   1.3245571851730347,
+   -0.09177660942077637
+  ]
+ },
+ "subscapularis": {
+  "views": [
+   "30/-30:3"
+  ],
+  "label": "Subscapular Muscle (Right)",
+  "sampled": 400,
+  "rays": 1224,
+  "firstHitTotal": 3,
+  "bestYawDeg": 30,
+  "bestPitchDeg": -30,
+  "successInBestView": 3,
+  "point": [
+   -0.11889234185218811,
+   1.352299451828003,
+   -0.06487056612968445
+  ]
+ }
+}
