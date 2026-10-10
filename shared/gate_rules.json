@@ -1,43 +1,269 @@
 {
+  "schemaVersion": 1,
+  "contentVersion": "shoulder-1",
   "label": "draft, awaiting clinician review",
-  "note": "PLACEHOLDER, Person A will replace. Fake rules for pipeline testing only.",
+  "policySource": "docs/gate-contract.md",
+  "defaultVerdict": "SAFE",
   "rules": [
     {
-      "ruleId": "R1",
-      "description": "PLACEHOLDER danger rule: danger question A answered yes",
-      "questionId": "Q_DANGER_A",
-      "when": { "state": "answered", "value": true },
+      "ruleId": "R_chest",
+      "description": "Reported concern: chest. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "chest",
+          "equals": true
+        }
+      ],
       "verdict": "RED_FLAG",
-      "source": "PLACEHOLDER, Person A will replace",
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review"
     },
     {
-      "ruleId": "R2",
-      "description": "PLACEHOLDER danger rule: danger question B answered yes",
-      "questionId": "Q_DANGER_B",
-      "when": { "state": "answered", "value": true },
+      "ruleId": "R_breathing",
+      "description": "Reported concern: breathing. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "breathing",
+          "equals": true
+        }
+      ],
       "verdict": "RED_FLAG",
-      "source": "PLACEHOLDER, Person A will replace",
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review"
     },
     {
-      "ruleId": "R3",
-      "description": "PLACEHOLDER: not sure on key danger question A must never be SAFE",
-      "questionId": "Q_DANGER_A",
-      "when": { "state": "unknown" },
-      "verdict": "CLARIFY",
-      "source": "PLACEHOLDER, Person A will replace",
+      "ruleId": "R_injury",
+      "description": "Reported concern: injury. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "injury",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review"
     },
     {
-      "ruleId": "R4",
-      "description": "PLACEHOLDER: not sure on key danger question B must never be SAFE",
-      "questionId": "Q_DANGER_B",
-      "when": { "state": "unknown" },
-      "verdict": "CLARIFY",
-      "source": "PLACEHOLDER, Person A will replace",
+      "ruleId": "R_unable",
+      "description": "Reported concern: unable. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "unable",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_shape",
+      "description": "Reported concern: shape. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "shape",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_swelling",
+      "description": "Reported concern: swelling. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "swelling",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_tingling",
+      "description": "Reported concern: tingling. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "tingling",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_numb",
+      "description": "Reported concern: numb. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "numb",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_temperature_hot",
+      "description": "Reported concern: temperature. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "temperature",
+          "equals": "hot"
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_temperature_cold",
+      "description": "Reported concern: temperature. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "temperature",
+          "equals": "cold"
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_sudden",
+      "description": "Reported concern: sudden. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "sudden",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_severe",
+      "description": "Reported concern: severe. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "severe",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_bilateral",
+      "description": "Reported concern: bilateral. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "bilateral",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_fever",
+      "description": "Reported concern: fever. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "fever",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_systemic",
+      "description": "Reported concern: systemic. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "systemic",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_cancer",
+      "description": "Reported concern: cancer. Seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "cancer",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_injury_unable",
+      "description": "Injury with inability to move: seek urgent clinical assessment.",
+      "all": [
+        {
+          "questionId": "injury",
+          "equals": true
+        },
+        {
+          "questionId": "unable",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_fever_joint",
+      "description": "Fever with a warm or red painful joint: seek urgent clinical assessment.",
+      "all": [
+        {
+          "questionId": "fever",
+          "equals": true
+        },
+        {
+          "questionId": "redness",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "ruleId": "R_local_infection_risk",
+      "description": "Joint infection risk with local redness or warmth: seek clinical assessment.",
+      "all": [
+        {
+          "questionId": "infection_risk",
+          "equals": true
+        },
+        {
+          "questionId": "redness",
+          "equals": true
+        }
+      ],
+      "verdict": "RED_FLAG",
+      "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+      "label": "draft, awaiting clinician review",
+      "adaptation": "Conservative draft combination, not a validated prediction rule."
     }
-  ],
-  "defaultVerdict": "SAFE"
+  ]
 }
