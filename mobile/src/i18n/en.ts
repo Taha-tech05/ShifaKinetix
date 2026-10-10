@@ -115,7 +115,12 @@ export const en = {
   },
   myCare: { title: 'My Care' },
   exercises: { title: 'Exercises' },
-  profile: { title: 'Profile', language: 'Language', signOut: 'Sign out' },
+  profile: {
+    title: 'Profile',
+    language: 'Language',
+    signOut: 'Sign out',
+    restartNote: 'Restart the app to finish switching the layout direction.',
+  },
   placeholder: { title: 'Full project' },
 };
 

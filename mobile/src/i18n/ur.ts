@@ -116,6 +116,11 @@ export const ur: Translations = {
   },
   myCare: { title: 'میری دیکھ بھال' },
   exercises: { title: 'مشقیں' },
-  profile: { title: 'پروفائل', language: 'زبان', signOut: 'سائن آؤٹ' },
+  profile: {
+    title: 'پروفائل',
+    language: 'زبان',
+    signOut: 'سائن آؤٹ',
+    restartNote: 'سمت کی تبدیلی مکمل کرنے کے لیے ایپ دوبارہ شروع کریں۔',
+  },
   placeholder: { title: 'مکمل پروجیکٹ' },
 };

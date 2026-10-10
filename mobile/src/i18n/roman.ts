@@ -116,6 +116,11 @@ export const roman: Translations = {
   },
   myCare: { title: 'Meri dekh bhaal' },
   exercises: { title: 'Mashqein' },
-  profile: { title: 'Profile', language: 'Zabaan', signOut: 'Sign out' },
+  profile: {
+    title: 'Profile',
+    language: 'Zabaan',
+    signOut: 'Sign out',
+    restartNote: 'Layout ki simt tabdeel karne ke liye app dobara shuru karein.',
+  },
   placeholder: { title: 'Mukammal project' },
 };
