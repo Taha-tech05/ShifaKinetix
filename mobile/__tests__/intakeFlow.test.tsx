@@ -207,3 +207,15 @@ describe('dummy narrowing', () => {
     expect(suggestDoctor({ candidates: [], cluster: false })).toBe(true);
   });
 });
+
+describe('every screen that needs the verdict SAFE is wrapped in SafeGuard', () => {
+  // A source check, so a new or edited screen cannot silently open movements or the result without the gate.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const fs = require('fs') as typeof import('fs');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const path = require('path') as typeof import('path');
+  const read = (f: string) => fs.readFileSync(path.join(__dirname, '..', 'src', 'app', 'report', f), 'utf8');
+  it.each(['movement.tsx', 'feel.tsx', 'followup.tsx', 'result.tsx', 'choice.tsx', 'assistant.tsx', 'safe.tsx'])('%s', (file) => {
+    expect(read(file)).toContain('<SafeGuard>');
+  });
+});

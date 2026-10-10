@@ -6,3 +6,4 @@ export const Redirect = (props: { href: string }) => createElement('Redirect', p
 export const router = { push: (_: string) => undefined, replace: (_: string) => undefined, back: () => undefined };
 export const useLocalSearchParams = () => ({});
 export const Link = (props: { children?: ReactNode }) => createElement('Link', props);
+export const useFocusEffect = (_cb: () => void) => undefined;
