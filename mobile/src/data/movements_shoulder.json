@@ -1,22 +1,70 @@
 {
   "label": "draft, awaiting clinician review",
+  "valuesLabel": "test values, replace with researched data",
   "region": "shoulder",
-  "note": "Guided shoulder movements for the demo animation. All angles are typical values for a gentle, comfortable demonstration (typical value, confirm with physio), not norms and not limits. The animation never goes past a comfortable range. The shoulder-blade rotation is about one third of the total arm elevation after the first 30 degrees (typical value, confirm with physio). Which source supports which movement still has to be confirmed by a physiotherapist. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
-  "scapulaRule": "scapulaDeg = (humerusDeg - 30) / 3 for humerusDeg above 30, else 0",
-  "valueNote": "typical value, confirm with physio",
+  "note": "The angles, times, plane, rotation, elbow and suggested muscles below are TEST VALUES for checking the animation. They are typical textbook-style numbers, not researched and not checked by a clinician. No citation belongs to them. The animation never goes past the stated allowed range. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
+  "conventions": "elevation: angle of the upper arm from the model's rest pose, positive = up, negative = backward. plane: direction of elevation, 0 = side, 90 = forward, 30 = scapular plane. rotation: about the long axis of the upper arm, positive = external. elbow: flexion, 0 = straight. t: fraction of the loop. Hold = two frames with equal values.",
+  "scapulaRule": "scapula = (elevation - 30) / 3 above 30 degrees, else 0",
+  "defaultLoopSeconds": 4,
   "movements": [
     {
       "id": "sideways_raise",
       "order": 1,
       "region": "shoulder",
-      "name": { "en": "Raise your arm sideways", "ur": "بازو پہلو کی طرف اٹھائیں", "roman": "Bazu pehlu ki taraf uthayein" },
+      "name": {
+        "en": "Raise your arm sideways",
+        "ur": "بازو پہلو کی طرف اٹھائیں",
+        "roman": "Bazu pehlu ki taraf uthayein"
+      },
       "view": "front",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": 120, "elbowDeg": 0, "scapulaDeg": 30 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      "allowed": {
+        "elevation": [
+          0,
+          120
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.45,
+          "elevation": 120,
+          "plane": 0,
+          "rotation": 25,
+          "elbow": 0
+        },
+        {
+          "t": 0.55,
+          "elevation": 120,
+          "plane": 0,
+          "rotation": 25,
+          "elbow": 0
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 0
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 4,
+      "suggests": [
+        "deltoid middle part",
+        "supraspinatus"
+      ],
+      "suggestsStructures": [
+        "acromial_part_of_deltoid_muscle_right",
+        "supraspinatus_muscle_right"
+      ],
+      "resistArrow": null,
+      "cameraMeasurable": true,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Slowly lift your arm out to the side, then lower it.",
         "ur": "آہستہ سے اپنا بازو پہلو کی طرف اٹھائیں، پھر نیچے لائیں۔",
@@ -27,22 +75,70 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": true,
-      "sources": ["Park 2005", "Michener 2009", "AAOS range norms"],
+      "sources": [
+        "Park 2005",
+        "Michener 2009",
+        "AAOS range norms"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     },
     {
       "id": "forward_raise",
       "order": 2,
       "region": "shoulder",
-      "name": { "en": "Raise your arm forward", "ur": "بازو آگے کی طرف اٹھائیں", "roman": "Bazu aage ki taraf uthayein" },
+      "name": {
+        "en": "Raise your arm forward",
+        "ur": "بازو آگے کی طرف اٹھائیں",
+        "roman": "Bazu aage ki taraf uthayein"
+      },
       "view": "side",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": 120, "elbowDeg": 0, "scapulaDeg": 30 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      "allowed": {
+        "elevation": [
+          0,
+          120
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.45,
+          "elevation": 120,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.55,
+          "elevation": 120,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 0
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 4,
+      "suggests": [
+        "deltoid front part"
+      ],
+      "suggestsStructures": [
+        "clavicular_part_of_deltoid_muscle_right"
+      ],
+      "resistArrow": null,
+      "cameraMeasurable": true,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Slowly lift your arm forward, then lower it.",
         "ur": "آہستہ سے اپنا بازو آگے کی طرف اٹھائیں، پھر نیچے لائیں۔",
@@ -53,22 +149,76 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": true,
-      "sources": ["AAOS range norms", "Hegedus 2012"],
+      "sources": [
+        "AAOS range norms",
+        "Hegedus 2012"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     },
     {
       "id": "can_position_hold",
       "order": 3,
       "region": "shoulder",
-      "name": { "en": "Hold your arm in the can position", "ur": "بازو کو ڈبے والی حالت میں روکیں", "roman": "Bazu ko dabbe wali halat mein rokein" },
+      "name": {
+        "en": "Hold your arm in the can position",
+        "ur": "بازو کو ڈبے والی حالت میں روکیں",
+        "roman": "Bazu ko dabbe wali halat mein rokein"
+      },
       "view": "front",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": 90, "elbowDeg": 0, "scapulaDeg": 20 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      "allowed": {
+        "elevation": [
+          0,
+          90
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 30,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.3,
+          "elevation": 90,
+          "plane": 30,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.75,
+          "elevation": 90,
+          "plane": 30,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 30,
+          "rotation": 0,
+          "elbow": 0
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 5,
+      "suggests": [
+        "supraspinatus"
+      ],
+      "suggestsStructures": [
+        "supraspinatus_muscle_right"
+      ],
+      "resistArrow": {
+        "segment": "forearm",
+        "direction": "down",
+        "during": [
+          0.3,
+          0.75
+        ]
+      },
+      "cameraMeasurable": false,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Lift your arm out to the side and a little forward, thumb pointing down, as if emptying a can. Hold it there, then lower it.",
         "ur": "اپنا بازو پہلو اور تھوڑا آگے کی طرف اٹھائیں، انگوٹھا نیچے کی طرف، جیسے ڈبہ خالی کر رہے ہوں۔ وہاں روکیں، پھر نیچے لائیں۔",
@@ -79,22 +229,86 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": false,
-      "sources": ["Kelly 1996", "Hegedus 2012"],
+      "sources": [
+        "Kelly 1996",
+        "Hegedus 2012"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     },
     {
-      "id": "outward_push_elbow_side",
+      "id": "outward_push_elbow_at_side",
       "order": 4,
       "region": "shoulder",
-      "name": { "en": "Push outward with your elbow at your side", "ur": "کہنی پہلو پر رکھ کر باہر کی طرف دبائیں", "roman": "Kuhni pehlu par rakh kar bahar ki taraf dabayein" },
+      "name": {
+        "en": "Push outward with your elbow at your side",
+        "ur": "کہنی پہلو پر رکھ کر باہر کی طرف دبائیں",
+        "roman": "Kuhni pehlu par rakh kar bahar ki taraf dabayein"
+      },
       "view": "front",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 25 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 0 }
+      "allowed": {
+        "elevation": [
+          0,
+          15
+        ],
+        "rotation": [
+          0,
+          30
+        ],
+        "elbow": [
+          85,
+          95
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 90
+        },
+        {
+          "t": 0.35,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 20,
+          "elbow": 90
+        },
+        {
+          "t": 0.75,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 20,
+          "elbow": 90
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 90
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 4,
+      "suggests": [
+        "infraspinatus",
+        "teres minor"
+      ],
+      "suggestsStructures": [
+        "infraspinatus_muscle_right",
+        "teres_minor_muscle_right"
+      ],
+      "resistArrow": {
+        "segment": "forearm",
+        "direction": "inward",
+        "during": [
+          0.35,
+          0.75
+        ]
+      },
+      "cameraMeasurable": false,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Keep your elbow at your side, bent like the letter L. Gently push your hand outward against something steady, like a door frame.",
         "ur": "کہنی کو پہلو کے ساتھ رکھیں اور L کی شکل میں موڑیں۔ ہاتھ کو کسی مضبوط چیز، جیسے دروازے کی چوکھٹ، کے خلاف آہستہ سے باہر کی طرف دبائیں۔",
@@ -105,22 +319,84 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": false,
-      "sources": ["Hegedus 2012", "Park 2005"],
+      "sources": [
+        "Hegedus 2012",
+        "Park 2005"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     },
     {
       "id": "belly_press",
       "order": 5,
       "region": "shoulder",
-      "name": { "en": "Press your hand into your belly", "ur": "ہاتھ کو پیٹ میں دبائیں", "roman": "Haath ko pet mein dabayein" },
-      "view": "side",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": 20, "elbowDeg": 95, "scapulaDeg": 0 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      "name": {
+        "en": "Press your hand into your belly",
+        "ur": "ہاتھ کو پیٹ میں دبائیں",
+        "roman": "Haath ko pet mein dabayein"
+      },
+      "view": "front",
+      "allowed": {
+        "elevation": [
+          0,
+          25
+        ],
+        "rotation": [
+          -60,
+          0
+        ],
+        "elbow": [
+          85,
+          100
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 90
+        },
+        {
+          "t": 0.35,
+          "elevation": 20,
+          "plane": 90,
+          "rotation": -45,
+          "elbow": 90
+        },
+        {
+          "t": 0.75,
+          "elevation": 20,
+          "plane": 90,
+          "rotation": -45,
+          "elbow": 90
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 90,
+          "rotation": 0,
+          "elbow": 90
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 4,
+      "suggests": [
+        "subscapularis"
+      ],
+      "suggestsStructures": [
+        "subscapular_muscle_right"
+      ],
+      "resistArrow": {
+        "segment": "hand",
+        "direction": "toward trunk",
+        "during": [
+          0.35,
+          0.75
+        ]
+      },
+      "cameraMeasurable": false,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Put your palm flat on your belly with the elbow in front. Gently press your hand into your belly.",
         "ur": "ہتھیلی کو پیٹ پر رکھیں اور کہنی آگے رکھیں۔ ہاتھ کو آہستہ سے پیٹ میں دبائیں۔",
@@ -131,23 +407,78 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": false,
-      "sources": ["Gerber 1991", "Hegedus 2012"],
+      "sources": [
+        "Gerber 1991",
+        "Hegedus 2012"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     },
     {
       "id": "hand_behind_back",
       "order": 6,
       "region": "shoulder",
-      "name": { "en": "Reach your hand behind your back", "ur": "ہاتھ پیٹھ کے پیچھے لے جائیں", "roman": "Haath peeth ke peeche le jayein" },
+      "name": {
+        "en": "Reach your hand behind your back",
+        "ur": "ہاتھ پیٹھ کے پیچھے لے جائیں",
+        "roman": "Haath peeth ke peeche le jayein"
+      },
       "view": "side",
-      "elbowDirection": "behind",
-      "keyframes": [
-        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
-        { "name": "peak", "t": 0.5, "humerusDeg": -30, "elbowDeg": 110, "scapulaDeg": 0 },
-        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      "allowed": {
+        "elevation": [
+          -45,
+          0
+        ],
+        "rotation": [
+          -80,
+          0
+        ],
+        "elbow": [
+          80,
+          110
+        ]
+      },
+      "frames": [
+        {
+          "t": 0,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 0
+        },
+        {
+          "t": 0.5,
+          "elevation": -30,
+          "plane": 0,
+          "rotation": -70,
+          "elbow": 100
+        },
+        {
+          "t": 0.65,
+          "elevation": -30,
+          "plane": 0,
+          "rotation": -70,
+          "elbow": 100
+        },
+        {
+          "t": 1,
+          "elevation": 0,
+          "plane": 0,
+          "rotation": 0,
+          "elbow": 0
+        }
       ],
-      "valueNote": "typical value, confirm with physio",
+      "loopSeconds": 4,
+      "suggests": [
+        "subscapularis",
+        "internal rotation range"
+      ],
+      "suggestsStructures": [
+        "subscapular_muscle_right"
+      ],
+      "resistArrow": null,
+      "cameraMeasurable": false,
+      "valuesLabel": "test values, replace with researched data",
       "instruction": {
         "en": "Slowly reach your hand up your back, as high as is comfortable, then lower it.",
         "ur": "آہستہ سے اپنا ہاتھ پیٹھ کے پیچھے اوپر کی طرف لے جائیں، جتنا آرام دہ ہو، پھر نیچے لائیں۔",
@@ -158,8 +489,11 @@
         "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
         "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
       },
-      "cameraMeasurable": false,
-      "sources": ["Gerber 1991", "AAOS range norms"],
+      "sources": [
+        "Gerber 1991",
+        "AAOS range norms"
+      ],
+      "sourcesNote": "Sources name the movement or test in general. They do not support the angle values above, which are test values.",
       "review": "draft, awaiting clinician review"
     }
   ]
