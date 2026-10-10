@@ -1,0 +1,166 @@
+{
+  "label": "draft, awaiting clinician review",
+  "region": "shoulder",
+  "note": "Guided shoulder movements for the demo animation. All angles are typical values for a gentle, comfortable demonstration (typical value, confirm with physio), not norms and not limits. The animation never goes past a comfortable range. The shoulder-blade rotation is about one third of the total arm elevation after the first 30 degrees (typical value, confirm with physio). Which source supports which movement still has to be confirmed by a physiotherapist. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
+  "scapulaRule": "scapulaDeg = (humerusDeg - 30) / 3 for humerusDeg above 30, else 0",
+  "valueNote": "typical value, confirm with physio",
+  "movements": [
+    {
+      "id": "sideways_raise",
+      "order": 1,
+      "region": "shoulder",
+      "name": { "en": "Raise your arm sideways", "ur": "بازو پہلو کی طرف اٹھائیں", "roman": "Bazu pehlu ki taraf uthayein" },
+      "view": "front",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": 120, "elbowDeg": 0, "scapulaDeg": 30 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Slowly lift your arm out to the side, then lower it.",
+        "ur": "آہستہ سے اپنا بازو پہلو کی طرف اٹھائیں، پھر نیچے لائیں۔",
+        "roman": "Aahista se apna bazu pehlu ki taraf uthayein, phir neeche layein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": true,
+      "sources": ["Park 2005", "Michener 2009", "AAOS range norms"],
+      "review": "draft, awaiting clinician review"
+    },
+    {
+      "id": "forward_raise",
+      "order": 2,
+      "region": "shoulder",
+      "name": { "en": "Raise your arm forward", "ur": "بازو آگے کی طرف اٹھائیں", "roman": "Bazu aage ki taraf uthayein" },
+      "view": "side",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": 120, "elbowDeg": 0, "scapulaDeg": 30 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Slowly lift your arm forward, then lower it.",
+        "ur": "آہستہ سے اپنا بازو آگے کی طرف اٹھائیں، پھر نیچے لائیں۔",
+        "roman": "Aahista se apna bazu aage ki taraf uthayein, phir neeche layein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": true,
+      "sources": ["AAOS range norms", "Hegedus 2012"],
+      "review": "draft, awaiting clinician review"
+    },
+    {
+      "id": "can_position_hold",
+      "order": 3,
+      "region": "shoulder",
+      "name": { "en": "Hold your arm in the can position", "ur": "بازو کو ڈبے والی حالت میں روکیں", "roman": "Bazu ko dabbe wali halat mein rokein" },
+      "view": "front",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": 90, "elbowDeg": 0, "scapulaDeg": 20 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Lift your arm out to the side and a little forward, thumb pointing down, as if emptying a can. Hold it there, then lower it.",
+        "ur": "اپنا بازو پہلو اور تھوڑا آگے کی طرف اٹھائیں، انگوٹھا نیچے کی طرف، جیسے ڈبہ خالی کر رہے ہوں۔ وہاں روکیں، پھر نیچے لائیں۔",
+        "roman": "Apna bazu pehlu aur thora aage ki taraf uthayein, angutha neeche ki taraf, jaise dabba khali kar rahe hon. Wahan rokein, phir neeche layein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": false,
+      "sources": ["Kelly 1996", "Hegedus 2012"],
+      "review": "draft, awaiting clinician review"
+    },
+    {
+      "id": "outward_push_elbow_side",
+      "order": 4,
+      "region": "shoulder",
+      "name": { "en": "Push outward with your elbow at your side", "ur": "کہنی پہلو پر رکھ کر باہر کی طرف دبائیں", "roman": "Kuhni pehlu par rakh kar bahar ki taraf dabayein" },
+      "view": "front",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 25 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 90, "scapulaDeg": 0, "forearmRotationDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Keep your elbow at your side, bent like the letter L. Gently push your hand outward against something steady, like a door frame.",
+        "ur": "کہنی کو پہلو کے ساتھ رکھیں اور L کی شکل میں موڑیں۔ ہاتھ کو کسی مضبوط چیز، جیسے دروازے کی چوکھٹ، کے خلاف آہستہ سے باہر کی طرف دبائیں۔",
+        "roman": "Kuhni ko pehlu ke sath rakhein aur L ki shakal mein modein. Haath ko kisi mazboot cheez, jaise darwaze ki chaukhat, ke khilaf aahista se bahar ki taraf dabayein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": false,
+      "sources": ["Hegedus 2012", "Park 2005"],
+      "review": "draft, awaiting clinician review"
+    },
+    {
+      "id": "belly_press",
+      "order": 5,
+      "region": "shoulder",
+      "name": { "en": "Press your hand into your belly", "ur": "ہاتھ کو پیٹ میں دبائیں", "roman": "Haath ko pet mein dabayein" },
+      "view": "side",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": 20, "elbowDeg": 95, "scapulaDeg": 0 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Put your palm flat on your belly with the elbow in front. Gently press your hand into your belly.",
+        "ur": "ہتھیلی کو پیٹ پر رکھیں اور کہنی آگے رکھیں۔ ہاتھ کو آہستہ سے پیٹ میں دبائیں۔",
+        "roman": "Hatheli ko pet par rakhein aur kuhni aage rakhein. Haath ko aahista se pet mein dabayein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": false,
+      "sources": ["Gerber 1991", "Hegedus 2012"],
+      "review": "draft, awaiting clinician review"
+    },
+    {
+      "id": "hand_behind_back",
+      "order": 6,
+      "region": "shoulder",
+      "name": { "en": "Reach your hand behind your back", "ur": "ہاتھ پیٹھ کے پیچھے لے جائیں", "roman": "Haath peeth ke peeche le jayein" },
+      "view": "side",
+      "elbowDirection": "behind",
+      "keyframes": [
+        { "name": "start", "t": 0, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 },
+        { "name": "peak", "t": 0.5, "humerusDeg": -30, "elbowDeg": 110, "scapulaDeg": 0 },
+        { "name": "return", "t": 1, "humerusDeg": 0, "elbowDeg": 0, "scapulaDeg": 0 }
+      ],
+      "valueNote": "typical value, confirm with physio",
+      "instruction": {
+        "en": "Slowly reach your hand up your back, as high as is comfortable, then lower it.",
+        "ur": "آہستہ سے اپنا ہاتھ پیٹھ کے پیچھے اوپر کی طرف لے جائیں، جتنا آرام دہ ہو، پھر نیچے لائیں۔",
+        "roman": "Aahista se apna haath peeth ke peeche upar ki taraf le jayein, jitna araam deh ho, phir neeche layein."
+      },
+      "caution": {
+        "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
+        "ur": "صرف اتنا حرکت کریں جتنا آرام دہ ہو۔ شدید یا تیز درد ہو تو رک جائیں۔",
+        "roman": "Sirf itna hilayein jitna araam deh ho. Tez ya shadeed dard ho to ruk jayein."
+      },
+      "cameraMeasurable": false,
+      "sources": ["Gerber 1991", "AAOS range norms"],
+      "review": "draft, awaiting clinician review"
+    }
+  ]
+}
