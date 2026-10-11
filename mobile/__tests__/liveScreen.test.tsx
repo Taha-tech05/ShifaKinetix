@@ -1,3 +1,8 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -69,10 +74,13 @@ const seedMuscleLeads = () => {
   for (const id of ['Q_ST_BONE_POINT', 'Q_ST_TINGLE', 'Q_ST_NECK', 'Q_ST_NUMB']) submitQuestion(no(id)); // muscle or tendon leads, no muscle is favoured
   narrowSpy.mockClear();
 };
+const rendered: ReturnType<typeof create>[] = [];
+afterEach(() => act(() => { for(const tree of rendered.splice(0)) tree.unmount(); }));
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(el);
+    rendered.push(tree);
   });
   return tree;
 };

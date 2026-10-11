@@ -1,3 +1,8 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -7,7 +12,7 @@ import LiveScreen from '../src/app/report/movement';
 import Result from '../src/app/report/result';
 import { narrow } from '../src/dev/narrowingStub';
 import type { NarrowingInput } from '../src/dev/narrowingStub';
-import { evaluate } from '../src/gate/evaluate';
+import { evaluateSessionGate as evaluate } from '../src/gate/sessionAdapter';
 import { Q_BONE_TENDER_AFTER_TRAUMA, Q_NUMB_OR_WEAK, Q_ONSET_SUDDEN_TRAUMA, structuredGateInputs } from '../src/flow/gateInputs';
 import { firstMuscleStep, liveSteps, nextStepIndex, submitMovement, submitQuestion, totalSteps } from '../src/flow/live';
 import { en } from '../src/i18n/en';
@@ -67,10 +72,13 @@ const textOf = (root: ReactTestInstance): string => {
   walk(root);
   return out.join(' | ');
 };
+const rendered: ReturnType<typeof create>[] = [];
+afterEach(() => act(() => { for(const tree of rendered.splice(0)) tree.unmount(); }));
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(el);
+    rendered.push(tree);
   });
   return tree;
 };
@@ -307,9 +315,9 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
     expect(find(structuredGateInputs([], []), Q_NUMB_OR_WEAK)).toBeUndefined();
   });
 
-  it('the real gate accepts them and does not react (no gate rule was added)', () => {
+  it('the real adapter stops on structured safety signals', () => {
     const g = structuredGateInputs([how('after_injury'), yes('Q_ST_BONE_POINT'), yes('Q_ST_TINGLE')], [move({ couldNot: true })]);
-    expect(evaluate(g)).toEqual({ verdict: 'SAFE', firedRules: [] });
+    expect(evaluate(g).verdict).toBe('RED_FLAG');
   });
 });
 

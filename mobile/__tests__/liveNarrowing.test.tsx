@@ -1,3 +1,8 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
 import config from '../../shared/narrowing_config.json';
@@ -7,7 +12,7 @@ import type { NarrowingInput, NarrowingOutput } from '../src/dev/narrowingStub';
 import { routeAfterGate } from '../src/flow/intake';
 import { Q_ONSET_SUDDEN_TRAUMA, Q_UNABLE_TO_MOVE_ARM, structuredGateInputs } from '../src/flow/gateInputs';
 import { liveSteps, nextStepIndex, submitMovement, submitQuestion, totalSteps } from '../src/flow/live';
-import { evaluate } from '../src/gate/evaluate';
+import { evaluateSessionGate as evaluate } from '../src/gate/sessionAdapter';
 import { getLanguage, setLanguage } from '../src/i18n';
 import { buildMovementResult } from '../src/movement/result';
 import { discriminatorIds, discriminatorQuestions, looksDoubleBarrelled, questionText, supportsOf } from '../src/narrowing/bank';
@@ -365,9 +370,9 @@ describe('structured gate inputs', () => {
     expect(structuredGateInputs([], [skipped('sideways_raise'), buildMovementResult('forward_raise', { kind: 'unsure' })])).toEqual([{ questionId: Q_UNABLE_TO_MOVE_ARM, type: 'yesno', value: null, state: 'unknown' }]);
   });
 
-  it('the gate accepts them and, with the current rules, does not react (no gate rule was added)', () => {
+  it('the real adapter stops on structured safety signals', () => {
     const inputs = structuredGateInputs([how('after_injury')], [buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: true })]);
-    expect(evaluate(inputs)).toEqual({ verdict: 'SAFE', firedRules: [] });
+    expect(evaluate(inputs).verdict).toBe('RED_FLAG');
   });
 });
 
