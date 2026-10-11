@@ -1,9 +1,16 @@
-// PLACEHOLDER, Person C replaces. Dummy narrowing so the result screens can be built.
-// It makes NO clinical claim beyond "may be involved". Scores come from a fixed hash of the ids, not from medicine.
-// To replace it, change the body of narrow() (or the import in flow/intake.ts). Nothing else calls the stub.
+// PLACEHOLDER, Person C replaces. Dummy narrowing so the live flow and the result screen can be built.
+// It makes NO clinical claim beyond "may be involved". It scores the muscles of the selected side by how well they match
+// the answers (src/narrowing/scoring.ts) with placeholder expectations (shared/narrowing_bank_shoulder.json and the
+// movement data), all draft, awaiting clinician review.
+// To replace it, change the body of narrow() (or the import in flow/intake.ts). The function and its types are the
+// agreed interface; the two OPTIONAL additions below (input.answers, candidate.matched / unmatched) can be ignored by a
+// replacement: nothing breaks without them, the screens then just show less "why" text.
 // Output shape is the agreed one: {candidates: [{muscleId, confidence, reason}], cluster} (shared/formats.md, format 4).
-import { structuresIn } from '../regions/regionMap';
-import type { BodyLayer, Point3D, SubRegionId } from '../regions/types';
+import { NARROWING } from '../narrowing/config';
+import { evidenceFrom, scoreCandidates } from '../narrowing/scoring';
+import { REGION_MAP, structuresIn } from '../regions/regionMap';
+import type { Answer } from '../gate/evaluate';
+import type { BodyLayer, Point3D, Side, SubRegionId } from '../regions/types';
 import type { MovementResult } from '../store/session';
 import type { DepthAnswer } from './followUpQuestions';
 
@@ -20,13 +27,23 @@ export interface NarrowingInput {
   hitMeshName: string | null;
   depthAnswer: DepthAnswer | null;
   movementResults: MovementResult[];
+  /**
+   * OPTIONAL. The patient's answers (shared format 1), for the discriminator questions. Answers with state "unknown"
+   * ("Not sure", "Skip") must never be treated as "no". A replacement may ignore this field.
+   */
+  answers?: Answer[];
 }
 
 export interface Candidate {
   /** Id of a structure in shared/regions_shoulder.json. */
   muscleId: string;
+  /** Match strength from 0 to 1. NOT a probability; the screens show a band, never this number. */
   confidence: number;
   reason: string;
+  /** OPTIONAL. Ids of the movements and questions that matched this muscle (for the "why" text). */
+  matched?: string[];
+  /** OPTIONAL. Ids of the movements and questions answered "no" that this muscle would have expected a "yes" for. */
+  unmatched?: string[];
 }
 
 export interface NarrowingOutput {
@@ -35,20 +52,9 @@ export interface NarrowingOutput {
 }
 
 const NOT_MUSCLE = /ligament|capsule|disc|labrum/i;
-const MAX_CANDIDATES = 3;
 const TIE = 0.02;
 
-/** Fixed pseudo-random number in [0, 1) from a string. Same input, same output. */
-function hash01(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return ((h >>> 0) % 10000) / 10000;
-}
-
-/** How many of the inputs are unknown ("not sure", skipped, or never asked). */
+/** How many of the inputs are unknown ("not sure", skipped, or never asked). Informational only: scoring does not use it. */
 export function unknownCount(input: Pick<NarrowingInput, 'depthAnswer' | 'movementResults'>): number {
   const depthUnknown = !input.depthAnswer || input.depthAnswer.state === 'unknown' ? 1 : 0;
   return depthUnknown + input.movementResults.filter((m) => m.state === 'unknown').length;
@@ -59,22 +65,29 @@ export function isCluster(candidates: Pick<Candidate, 'confidence'>[]): boolean 
   return candidates.length >= 2 && Math.abs(candidates[0].confidence - candidates[1].confidence) < TIE;
 }
 
-/** PLACEHOLDER. 1 to 3 candidates from the muscles of the chosen area; lower confidence when answers are unknown. */
+/** The muscle structures of one side, without ligaments, capsules, discs and labra. */
+export function musclePool(side: Side): string[] {
+  return Object.entries(REGION_MAP.structures)
+    .filter(([, s]) => s.kind === 'muscle' && s.side === side && !NOT_MUSCLE.test(s.name))
+    .map(([id]) => id);
+}
+
+/**
+ * PLACEHOLDER. Up to 3 candidates from the muscles of the selected side, scored by how well they match the answers that
+ * are not unknown. Unknown answers change nothing. Same input, same output.
+ */
 export function narrow(input: NarrowingInput): NarrowingOutput {
-  const pool = structuresIn(input.regionId, input.subRegionId).filter(
-    (x) => x.structure.kind === 'muscle' && !NOT_MUSCLE.test(x.structure.name),
-  );
-  const penalty = 1 - Math.min(0.5, 0.1 * unknownCount(input));
-  const scored = pool.map(({ id, structure }) => {
-    const isHit = input.hitMeshName !== null && structure.meshNames.includes(input.hitMeshName);
-    const raw = 0.3 + 0.3 * hash01(`${input.subRegionId}:${id}`) + (isHit ? 0.25 : 0);
-    return {
-      muscleId: id,
-      confidence: Math.round(Math.min(0.9, raw) * penalty * 100) / 100,
-      reason: isHit ? 'Closest to the spot you tapped. May be involved.' : 'Part of the area you marked. May be involved.',
-    };
-  });
-  scored.sort((a, b) => b.confidence - a.confidence || a.muscleId.localeCompare(b.muscleId));
-  const candidates = scored.slice(0, MAX_CANDIDATES);
+  const side: Side = input.regionId === 'shoulder_left' ? 'left' : 'right';
+  const inArea = new Set(structuresIn(input.regionId, input.subRegionId).map((x) => x.id));
+  const hit = (id: string) => input.hitMeshName !== null && REGION_MAP.structures[id].meshNames.includes(input.hitMeshName);
+  const priorOf = (id: string) => (hit(id) ? NARROWING.priors.tappedStructure : inArea.has(id) ? NARROWING.priors.tappedSubRegion : NARROWING.priors.sameSide);
+  const scored = scoreCandidates(musclePool(side), evidenceFrom(input.movementResults, input.answers ?? [], side), priorOf).slice(0, NARROWING.maxCandidatesShown);
+  const candidates: Candidate[] = scored.map((s) => ({
+    muscleId: s.muscleId,
+    confidence: Math.max(0.01, s.strength),
+    reason: s.matched.length > 0 ? 'Matches what you reported. May be involved.' : hit(s.muscleId) ? 'Closest to the spot you tapped. May be involved.' : 'Part of the area you marked. May be involved.',
+    matched: s.matched,
+    unmatched: s.unmatched,
+  }));
   return { candidates, cluster: isCluster(candidates) };
 }
