@@ -6,6 +6,7 @@ import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
+import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
@@ -26,6 +27,7 @@ export default function Urgent() {
         </>
       }
     >
+      <SafetyStopNotice />
       <View style={styles.center}>
         <View style={styles.halo}>
           <View style={styles.disc}>

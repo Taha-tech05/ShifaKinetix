@@ -6,6 +6,7 @@ import { Button } from '../../components/Button';
 import { Screen } from '../../components/Screen';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
+import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
 
 /** Still unclear after the re-ask (design P32). The flow stops: to be safe, the patient is sent to a doctor. */
 export default function Unclear() {
@@ -20,6 +21,7 @@ export default function Unclear() {
         </>
       }
     >
+      <SafetyStopNotice />
       <View style={styles.center}>
         <View style={styles.halo}>
           <View style={styles.disc}>

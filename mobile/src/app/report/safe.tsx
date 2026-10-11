@@ -7,24 +7,32 @@ import { Card } from '../../components/Card';
 import { IconTile } from '../../components/IconTile';
 import { Screen } from '../../components/Screen';
 import { StatusChip } from '../../components/StatusChip';
-import { routeAfterSafe } from '../../flow/intake';
+import { routeAfterGate, routeAfterSafe } from '../../flow/intake';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
+import { openSafetySession } from '../../gate/safetySession';
 
 /** SAFE verdict (design P9). Only now can the patient go on to movements (region mode) or follow-up questions (exact mode). */
 export default function Safe() {
   const t = useT();
   const mode = useSession((s) => s.mode) ?? 'region';
   const region = mode === 'region';
+  async function onSafe() {
+    try {
+      const output = await (await openSafetySession()).checkpoint();
+      router.replace((output.verdict === 'SAFE' ? routeAfterSafe(mode)
+        : routeAfterGate(output.verdict, useSession.getState().reaskDone)) as never);
+    } catch { router.replace('/report/danger'); }
+  }
   return (
     <SafeGuard>
       <Screen
         scroll={false}
         footer={
           <>
-            <Button label={t('common.continue')} onPress={() => router.replace(routeAfterSafe(mode) as never)} />
+            <Button label={t('common.continue')} onPress={() => { void onSafe(); }} />
             <Button variant="text" label={t('safe.doctorInstead')} onPress={() => router.push('/report/doctor')} />
           </>
         }
