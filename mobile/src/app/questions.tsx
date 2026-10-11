@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Action, Page, styles } from '../components/SafetyUI';
-import { Answer, isValidAnswer, Question } from '../gate/evaluate';
+import { SafetyAnswer as Answer, isValidAnswer, Question } from '../gate/evaluate';
 import { openIntakeStore } from '../storage/nativeStore';
 
 function QuestionInput({ question, busy, save }: { question: Question; busy: boolean; save: (value: Answer['value']) => void }) {

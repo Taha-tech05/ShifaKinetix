@@ -3,7 +3,9 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { IntakeStore, SqlDatabase, SyncEvent } from '../src/storage/intakeStore';
-import { Answer, questions } from '../src/gate/evaluate';
+import { SafetyAnswer as Answer, questions } from '../src/gate/evaluate';
+import { SafetySession } from '../src/gate/safetySession';
+import { useSession } from '../src/store/session';
 
 // A real SQLite engine; Node 22 test job only. The phone uses expo-sqlite.
 const { DatabaseSync } = createRequire(__filename)('node:sqlite') as typeof import('node:sqlite');
@@ -28,10 +30,51 @@ function open() {
   store = new IntakeStore(adapter);
 }
 beforeEach(async () => {
+  useSession.getState().reset();
   directory = mkdtempSync(join(tmpdir(), 'shifakinetix-test-'));
   open();
   await store.initialize();
   await store.createIntake('test-intake');
+});
+
+function selectedSession() {
+  useSession.getState().setMode('region');
+  useSession.getState().setSelection({ regionId: 'shoulder_right', subRegionId: 'front',
+    point: { x: 0, y: 1, z: 0 }, layer: 'muscle', hitStructure: null });
+  return new SafetySession(store);
+}
+
+test('integrated intake resumes from SQLite after restart and retains repeated uncertainty', async () => {
+  const session = selectedSession();
+  await session.start('integrated');
+  await session.save({ ...no, state: 'unknown', value: null });
+  await session.save({ ...no, state: 'unknown', value: null, clarificationAttempted: true });
+  useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('RED_FLAG');
+  expect(useSession.getState().selection?.regionId).toBe('shoulder_right');
+  expect(useSession.getState().answers[0].clarificationAttempted).toBe(true);
+});
+
+test('integrated SAFE requires saved answers and reset cannot reuse the prior intake', async () => {
+  const session = selectedSession(); await session.start('integrated');
+  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  useSession.getState().recordAnswer({ ...no, value: true });
+  await expect(session.checkpoint()).rejects.toThrow('do not match');
+  expect(useSession.getState().gateVerdict).toBeNull();
+  useSession.getState().reset();
+  expect(session.activeId).toBeNull();
+  await expect(session.checkpoint()).rejects.toThrow('Start or explicitly resume');
+});
+
+test('context write failure cannot grant clearance', async () => {
+  const session = selectedSession(); await session.start('integrated');
+  db.exec("CREATE TRIGGER fail_context BEFORE INSERT ON intake_context BEGIN SELECT RAISE(ABORT, 'disk full'); END;");
+  await expect(session.save(no)).rejects.toThrow('disk full');
+  expect(useSession.getState().gateVerdict).toBeNull();
+  expect(await store.answers('integrated')).toHaveLength(1);
 });
 afterEach(() => { db.close(); rmSync(directory, { recursive: true, force: true }); });
 
