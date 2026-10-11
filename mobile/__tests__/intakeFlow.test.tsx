@@ -166,6 +166,7 @@ describe('dummy narrowing', () => {
   it('returns 1 to 3 candidates with the agreed shape, for every side and sub-region', () => {
     for (const r of SHOULDER_REGIONS) {
       const out = narrow(input({ regionId: r.regionId, subRegionId: r.subRegionId, hitMeshName: null }));
+      out.candidates = out.candidates.filter((c) => c.kind !== 'category'); // the muscles; the structure types are tested in structureType.test.tsx
       expect(out.candidates.length).toBeGreaterThanOrEqual(1);
       expect(out.candidates.length).toBeLessThanOrEqual(3);
       expect(typeof out.cluster).toBe('boolean');

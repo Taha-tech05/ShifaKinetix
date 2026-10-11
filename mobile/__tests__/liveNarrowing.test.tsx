@@ -53,6 +53,12 @@ const painful = (movementId: string) => buildMovementResult(movementId, { kind: 
 const fine = (movementId: string) => buildMovementResult(movementId, { kind: 'felt', pain: false, weak: false, couldNot: false });
 const skipped = (movementId: string) => buildMovementResult(movementId, { kind: 'skip' });
 const q = (id: string) => discriminatorQuestions().find((x) => x.questionId === id)!;
+/** Structure-type answers under which muscle or tendon leads, so that muscles may be shown (shared/structure_type_bank_shoulder.json). */
+const MT = (): NarrowingInput['answers'] => [
+  { questionId: 'Q_ST_PASSIVE_BETTER', type: 'yesno', value: true, state: 'answered' },
+  { questionId: 'Q_ST_BONE_POINT', type: 'yesno', value: false, state: 'answered' },
+  { questionId: 'Q_ST_TINGLE', type: 'yesno', value: false, state: 'answered' },
+];
 const input = (over: Partial<NarrowingInput> = {}): NarrowingInput => ({
   layer: 'muscle',
   regionId: 'shoulder_right',
@@ -61,8 +67,8 @@ const input = (over: Partial<NarrowingInput> = {}): NarrowingInput => ({
   hitMeshName: null,
   depthAnswer: null,
   movementResults: [],
-  answers: [],
   ...over,
+  answers: [...(MT() ?? []), ...(over.answers ?? [])],
 });
 
 beforeEach(() => {
@@ -121,7 +127,8 @@ describe('the bank: one idea per question, fixed, labelled as a placeholder', ()
     for (const f of ['narrowing/live.ts', 'flow/live.ts', 'dev/narrowingStub.ts', 'narrowing/scoring.ts', 'app/report/movement.tsx', 'app/report/result.tsx']) {
       expect(src(f)).not.toMatch(new RegExp(`\\b${config.leadMargin}\\b`)); // no copy of the number
     }
-    expect(totalSteps('region')).toBe(Math.min(config.maxQuestions, liveSteps('region').length));
+    const structureSteps = liveSteps('region').filter((x) => x.kind === 'structure').length;
+    expect(totalSteps('region')).toBe(Math.min(config.structureType.maxQuestions, structureSteps) + Math.min(config.maxQuestions, liveSteps('region').length - structureSteps));
   });
 });
 

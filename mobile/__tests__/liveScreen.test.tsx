@@ -56,6 +56,12 @@ const press = (tree: ReturnType<typeof create>, label: string) => {
     el.props.onPress();
   });
 };
+/** The structure-type questions come first. These two answers make muscle or tendon lead, so the movements (or muscle questions) follow. */
+const passStructure = (tree: ReturnType<typeof create>) => {
+  press(tree, 'No'); // a sore spot on a bone?
+  press(tree, 'Yes'); // does it go higher with the other hand's help?
+  narrowSpy.mockClear(); // two answers are enough for muscle or tendon to lead by the margin
+};
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
@@ -76,8 +82,11 @@ beforeEach(() => {
 });
 
 describe('live screen: one idea at a time, tap to answer', () => {
-  it('starts with the first movement: caution line, instruction, "I tried it" and "Skip"', () => {
+  it('starts with the structure-type questions, then the first movement: caution line, instruction, "I tried it" and "Skip"', () => {
     const tree = render(createElement(LiveScreen));
+    expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
+    expect(button(tree, 'I tried it')).toBeUndefined();
+    passStructure(tree);
     const all = textOf(tree.root);
     expect(all).toContain('Raise your arm sideways');
     expect(all).toContain('Move only as far as comfortable. Stop if pain is sharp or severe.');
@@ -88,6 +97,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
 
   it('the model is on top and about 55 percent of the height; it is the same stage on every step', () => {
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     const holder = tree.root.findAll((n: ReactTestInstance) => typeof n.props.onLayout === 'function' && (n.type as unknown) === 'View')[0];
     act(() => {
       holder.props.onLayout({ nativeEvent: { layout: { height: 800, width: 360 } } });
@@ -100,18 +110,20 @@ describe('live screen: one idea at a time, tap to answer', () => {
 
   it('"I tried it", then a chip: the answer is stored, the gate and narrowing run, and the next movement shows', () => {
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     press(tree, 'I tried it');
     expect(textOf(tree.root)).toContain('What did you feel?');
     press(tree, 'No pain');
     const s = useSession.getState();
     expect(s.movementResults).toEqual([expect.objectContaining({ movementId: 'sideways_raise', state: 'answered', painful: false })]);
-    expect(s.narrowingTrail).toHaveLength(1);
+    expect(s.narrowingTrail).toHaveLength(3); // 2 structure answers + 1 movement
     expect(narrowSpy).toHaveBeenCalledTimes(1);
     expect(textOf(tree.root)).toContain('Raise your arm forward');
   });
 
   it('"Not sure" and "Skip" are stored as unknown, never as "no pain", and also run the narrowing', () => {
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     press(tree, 'I tried it');
     press(tree, 'Not sure');
     press(tree, 'Skip'); // second movement, skipped without trying
@@ -122,11 +134,12 @@ describe('live screen: one idea at a time, tap to answer', () => {
     ]);
     expect(r.every((x) => x.painful === false && x.weak === false && x.unableToDo === false)).toBe(true); // only because there is no answer
     expect(narrowSpy).toHaveBeenCalledTimes(2);
-    expect(useSession.getState().narrowingTrail.map((x) => x.answer)).toEqual(['unknown', 'unknown']);
+    expect(useSession.getState().narrowingTrail.slice(2).map((x) => x.answer)).toEqual(['unknown', 'unknown']);
   });
 
   it('pain, weak and could-not-do-it can be combined and are sent with "Next"', () => {
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     press(tree, 'I tried it');
     press(tree, 'Pain');
     press(tree, 'Weak');
@@ -136,6 +149,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
 
   it('stops early with "Thanks, that\'s enough to go on" and offers the result', () => {
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     const move = (chips: string[]) => {
       press(tree, 'I tried it');
       chips.forEach((c) => press(tree, c));
@@ -159,6 +173,8 @@ describe('live screen: one idea at a time, tap to answer', () => {
     const tree = render(createElement(LiveScreen));
     const last = () => mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { paused: boolean; highlightIds: string[] };
     expect(last().paused).toBe(true);
+    expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
+    passStructure(tree);
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
     press(tree, 'Yes');
     press(tree, 'Yes'); // Q_DQ_ROTATE_OUT
@@ -168,6 +184,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
   it('exact mode asks only questions; "Not sure" and "Skip" are unknown answers with a null value', () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
+    passStructure(tree);
     press(tree, 'Not sure');
     press(tree, 'Skip');
     const a = useSession.getState().answers.filter((x) => x.questionId.startsWith('Q_DQ_'));
@@ -182,8 +199,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
     const replace = jest.spyOn(router.router, 'replace');
     useSession.setState({ runGate: jest.fn(() => 'RED_FLAG' as const) });
     const tree = render(createElement(LiveScreen));
-    press(tree, 'I tried it');
-    press(tree, 'No pain');
+    press(tree, 'No'); // the first answer (a structure-type question) already runs the gate
     expect(replace).toHaveBeenCalledWith('/report/urgent');
     expect(narrowSpy).not.toHaveBeenCalled();
     replace.mockRestore();
@@ -203,6 +219,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
 
 describe('result screen = the last live state', () => {
   const run = () => {
+    for (const [id, v] of [['Q_ST_PASSIVE_BETTER', true], ['Q_ST_BONE_POINT', false], ['Q_ST_TINGLE', false]] as const) submitQuestion({ questionId: id, type: 'yesno', value: v, state: 'answered' });
     submitMovement(buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: false }), 'pain');
     submitQuestion(answered(q('Q_DQ_OVERHEAD'), true));
     submitMovement(buildMovementResult('forward_raise', { kind: 'skip' }), 'skip');
@@ -235,10 +252,10 @@ describe('result screen = the last live state', () => {
     expect(all).toContain('Move only as far as comfortable. Stop if pain is sharp or severe.');
     expect(all).toContain('Not a diagnosis');
     expect(all).toContain('Estimate');
-    expect(all).toContain('Muscles that may be involved');
+    expect(all).toContain('Structures that may be involved');
     expect(all).not.toMatch(/%/);
     expect(all).toContain('match strength, not a probability');
-    const list = all.slice(all.indexOf('Muscles that may be involved'));
+    const list = all.slice(all.indexOf('Structures that may be involved'));
     expect(list).not.toMatch(/\d/);
   });
 
