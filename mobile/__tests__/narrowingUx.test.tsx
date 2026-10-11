@@ -10,7 +10,7 @@ import Result from '../src/app/report/result';
 import { ASSISTANT_ENABLED } from '../src/config';
 import { narrow } from '../src/dev/narrowingStub';
 import { activeHistory, goBack, seedLiveState, submitMovement, submitQuestion } from '../src/flow/live';
-import { fixedHeights, TOUCH_MIN, VIEWER_MIN, viewerHeightFor } from '../src/flow/liveLayout';
+import { fixedHeights, TOUCH_MIN, VIEWER_MIN } from '../src/flow/liveLayout';
 import { setLanguage } from '../src/i18n';
 import { buildMovementResult } from '../src/movement/result';
 import { NARROWING, STRUCTURE } from '../src/narrowing/config';
@@ -223,7 +223,7 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
     const parents = ['Yes', 'No', 'Not sure', 'Skip'].map((l) => rowOf(buttons(tree, l)[0]));
     expect(new Set(parents).size).toBe(1);
     const source = src('app/report/movement.tsx');
-    expect(source).toContain('minHeight: MIN_TAP');
+    expect(source).toContain('minHeight: 52');
     expect(TOUCH_MIN).toBe(48);
   });
 
@@ -243,8 +243,7 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
       const content = h - 24 - 16 - 52 - 40; // status bar, gesture bar, header, strip
       const f = fixedHeights(fs, content);
       const bottomBlock = f.progress + f.candidates + f.card + f.gaps;
-      expect(bottomBlock + VIEWER_MIN).toBeLessThanOrEqual(content + 60); // the viewer keeps at least its minimum
-      expect(viewerHeightFor(content)).toBeGreaterThanOrEqual(VIEWER_MIN);
+      expect(content - bottomBlock).toBeGreaterThanOrEqual(VIEWER_MIN); // what is left for the viewer
       expect(f.answerRow).toBeGreaterThanOrEqual(TOUCH_MIN);
       // everything except the viewer fits: the answer row can never be pushed off screen
       expect(f.header + f.strip + bottomBlock + VIEWER_MIN).toBeLessThanOrEqual(h);
@@ -404,6 +403,43 @@ describe('fix 5: back, history and recompute', () => {
     expect(nerve()).toBeLessThan(before); // the category scores are worked out again from the changed answer
     expect(activeHistory().map((e) => `${e.id}:${e.label}`)).toEqual(['Q_ST_NECK:unknown', 'Q_ST_TINGLE:no']);
     expect(useSession.getState().history.filter((e) => e.supersededAt).map((e) => `${e.id}:${e.label}`)).toEqual(['Q_ST_TINGLE:yes']);
+  });
+});
+
+describe('the options and the muscle names are shown in full', () => {
+  const texts = (root: ReactTestInstance) => root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Text');
+
+  it('every answer option shows its text, never cut to nothing: Yes, No, Not sure, Skip (and the movement answers)', () => {
+    const tree = render(createElement(LiveScreen));
+    const all = textOf(tree.root);
+    for (const label of ['Yes', 'No', 'Not sure', 'Skip']) {
+      expect(all).toContain(label);
+      const chip = buttons(tree, label)[0];
+      const t = texts(chip)[0];
+      expect(t.props.numberOfLines).toBeGreaterThanOrEqual(2); // long words wrap, they are not cut
+      expect(chip.props.accessibilityLabel).toBe(label);
+    }
+  });
+
+  it('the possible muscles are listed by their full names, one per line, none cut to one line', () => {
+    const tree = render(createElement(LiveScreen));
+    const strip = textOf(tree.root);
+    const list = state === undefined ? [] : (seedLiveState()?.candidates ?? []);
+    expect(list.length).toBeGreaterThan(0);
+    for (const c of list) {
+      const name = require('../src/regions/regionMap').REGION_MAP.structures[c.muscleId].name as string;
+      expect(strip).toContain(name);
+      const node = texts(tree.root).find((n) => textOf(n) === name);
+      expect(node).toBeDefined();
+      expect(node!.props.numberOfLines).toBeUndefined();
+    }
+    expect(src('components/narrowing/CandidateStrip.tsx')).not.toContain('numberOfLines={1}');
+  });
+
+  it('the viewer takes the height that is left, the controls are never given a fixed share', () => {
+    const s = src('app/report/movement.tsx');
+    expect(s).toContain('viewer: { flex: 1, minHeight: VIEWER_MIN }');
+    expect(s).toContain("flexWrap: 'wrap'"); // chips wrap instead of being cut
   });
 });
 

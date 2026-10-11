@@ -67,13 +67,12 @@ export function NarrowingChips() {
  *  - before two answers that are not unknown: "Still narrowing - keep going", no bands;
  *  - from then on each candidate carries a band (Low / Moderate / Higher), with "match strength, not a probability".
  */
-export function CandidateStrip({ state }: { state: LiveState | null }) {
+export function CandidateStrip({ state, maxShown = 3 }: { state: LiveState | null; maxShown?: number }) {
   const t = useT();
-  const list = state?.candidates ?? [];
+  const list = (state?.candidates ?? []).slice(0, maxShown);
   const bands = state?.bandsVisible === true;
   const early = state?.outcome === 'muscle' && state.status === 'enough';
   const headline = early ? t('live.enough') : !state || !bands ? t('live.stillNarrowing') : t('live.possibleSoFar');
-  const names = list.map((c) => (bands ? `${muscleName(c.muscleId)} (${t(`live.band.${c.band}` as const)})` : muscleName(c.muscleId))).join(' · ');
   return (
     <View style={styles.strip} accessibilityLiveRegion="polite">
       <View style={styles.head}>
@@ -83,17 +82,24 @@ export function CandidateStrip({ state }: { state: LiveState | null }) {
         <NarrowingChips />
       </View>
       {list.length > 0 ? (
-        <AppText variant="secondary" color={colors.navy} numberOfLines={1} style={styles.names}>
-          {state?.provisional && !bands ? `${t('live.possibleSoFar')}: ` : ''}
-          {names}
+        <AppText variant="secondary" color={colors.muted} style={styles.bold}>
+          {bands ? `${t('live.possibleSoFar')} - ${t('live.matchCaption')}` : t('live.possibleSoFar')}
         </AppText>
       ) : null}
-      {bands && list.length > 0 ? (
-        <AppText variant="secondary" color={colors.muted} style={styles.italic} numberOfLines={1}>
-          {state?.cluster ? `${t('live.clusterNote')} ` : ''}
-          {t('live.matchCaption')}
-        </AppText>
-      ) : null}
+      {list.map((c) => (
+        <View key={c.muscleId} style={styles.nameRow}>
+          <AppText variant="secondary" color={colors.navy} style={[styles.name, styles.bold]}>
+            {muscleName(c.muscleId)}
+          </AppText>
+          {bands ? (
+            <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
+              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+                {t(`live.band.${c.band}` as const)}
+              </AppText>
+            </View>
+          ) : null}
+        </View>
+      ))}
     </View>
   );
 }
@@ -102,7 +108,7 @@ const styles = StyleSheet.create({
   strip: { gap: 2, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.lg, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   headline: { flex: 1 },
-  names: { fontWeight: '600' },
+  nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 26, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 13 },
   bold: { fontWeight: '700' },

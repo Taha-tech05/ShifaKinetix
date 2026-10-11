@@ -110,17 +110,16 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
   });
 
-  it('the model is on top and about 43 percent of the height; it is the same stage on every step', () => {
+  it('the model is on top and takes the height that is left; it is the same stage on every step', () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    const holder = tree.root.findAll((n: ReactTestInstance) => typeof n.props.onLayout === 'function' && (n.type as unknown) === 'View')[0];
-    act(() => {
-      holder.props.onLayout({ nativeEvent: { layout: { height: 800, width: 360 } } });
-    });
-    const last = mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { height: number; movement: { id: string }; paused: boolean };
-    expect(last.height).toBe(344);
+    const last = mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { height?: number; style: { flex: number; minHeight: number }; movement: { id: string }; paused: boolean };
+    expect(last.height).toBeUndefined();
+    expect(last.style).toMatchObject({ flex: 1 });
+    expect(last.style.minHeight).toBeGreaterThanOrEqual(80);
     expect(last.movement.id).toBe('sideways_raise');
     expect(last.paused).toBe(false);
+    expect(tree).toBeDefined();
   });
 
   it('"I tried it", then a chip: the answer is stored, the gate and narrowing run, and the next movement shows', () => {

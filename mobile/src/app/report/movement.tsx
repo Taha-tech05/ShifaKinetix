@@ -13,7 +13,7 @@ import { Screen } from '../../components/Screen';
 import type { TKey } from '../../i18n';
 import { activeHistory, firstOpenStep, goBack, seedLiveState, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, stepIndexOf, submitMovement, submitQuestion, totalSteps } from '../../flow/live';
 import type { LiveOutcome } from '../../flow/live';
-import { textMaxFor, viewerHeightFor } from '../../flow/liveLayout';
+import { namesFor, textMaxFor, VIEWER_MIN } from '../../flow/liveLayout';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
 import { buildMovementResult } from '../../movement/result';
@@ -41,7 +41,7 @@ const FEEL: { key: Key; label: TKey }[] = [
 function Chip({ label, on = false, onPress, grow = true }: { label: string; on?: boolean; onPress: () => void; grow?: boolean }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: on }} onPress={onPress} style={[styles.chip, grow && styles.grow, on && styles.chipOn]}>
-      <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.chipText} numberOfLines={2}>
+      <AppText variant="button" color={on ? colors.white : colors.navy} style={styles.chipText} numberOfLines={3}>
         {label}
       </AppText>
     </Pressable>
@@ -213,7 +213,6 @@ export default function LiveScreen() {
   };
 
   if (!mode) return <Redirect href="/report/fork" />;
-  const viewerHeight = viewerHeightFor(height);
   const asked = (liveState ? liveState.structure.asked + liveState.asked : 0) + 1;
   const n = Math.min(asked, total);
   const textMax = textMaxFor(height);
@@ -225,7 +224,6 @@ export default function LiveScreen() {
           <MovementStage
             movement={current}
             side={side}
-            height={viewerHeight}
             style={styles.viewer}
             paused={!onMovement}
             highlightIds={highlightIds}
@@ -244,7 +242,7 @@ export default function LiveScreen() {
                 <ProgressBar value={n / total} />
               </View>
             </View>
-            <CandidateStrip state={liveState} />
+            <CandidateStrip state={liveState} maxShown={namesFor(height)} />
             <View style={styles.card}>
               {finished ? (
                 <Button label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
@@ -294,7 +292,7 @@ export default function LiveScreen() {
               ) : question ? (
                 <>
                   <ScrollView style={{ maxHeight: textMax }} scrollEnabled={!touching} showsVerticalScrollIndicator={false}>
-                    <AppText variant="h3" color={colors.navy}>
+                    <AppText variant="h2" color={colors.navy}>
                       {question.text}
                     </AppText>
                   </ScrollView>
@@ -316,20 +314,21 @@ export default function LiveScreen() {
 
 const styles = StyleSheet.create({
   fill: { flex: 1, gap: 6 },
-  viewer: { flexShrink: 1, minHeight: 140 },
+  // the viewer takes whatever height is left after the controls, but never less than VIEWER_MIN
+  viewer: { flex: 1, minHeight: VIEWER_MIN },
   bottom: { flexShrink: 0, gap: 6 },
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   backBtn: { width: MIN_TAP, height: MIN_TAP, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
   progress: { flex: 1, gap: 4 },
   bold: { fontWeight: '700' },
-  card: { gap: 6, padding: 10, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
-  row: { flexDirection: 'row', gap: 6 },
+  card: { gap: 10, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   rowWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  grow: { flexGrow: 1, flexBasis: 0 },
-  grow2: { flexGrow: 2, flexBasis: 0 },
-  chip: { minHeight: MIN_TAP, minWidth: MIN_TAP, paddingHorizontal: 6, borderRadius: 24, borderWidth: 2, borderColor: colors.fieldBorder, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  grow: { flexGrow: 1, flexBasis: 74, minWidth: 70 },
+  grow2: { flexGrow: 2, flexBasis: 150 },
+  chip: { minHeight: 52, minWidth: MIN_TAP, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 26, borderWidth: 2, borderColor: colors.fieldBorder, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
   chipText: { textAlign: 'center', fontWeight: '700' },
-  primary: { minHeight: MIN_TAP, borderRadius: 24, backgroundColor: colors.teal, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
+  primary: { minHeight: 52, borderRadius: 26, backgroundColor: colors.teal, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
   cameraLink: { minHeight: 32, justifyContent: 'center' },
 });

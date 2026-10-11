@@ -125,3 +125,7 @@ Commits are small and in order: `git log --oneline 3e4e7dc..HEAD`. Nothing is pu
 4. **Back and re-answer**: Back button, header arrow and the phone back button each go to the previous question with the old answer selected; changing it updates the highlight and the strip. On the first question Back asks before leaving. After a red-flag screen Back does not bring the questions back.
 5. **Non-muscle conclusion only at the end**: answer so that bone, neck or joint leads; no "may not be a muscle problem" appears until the last question; then **See result** shows it with "Talk to a doctor or physio". **Review answers** on the result lets you change an answer.
 6. **Urdu (right to left) and Roman Urdu**: all of the above; text not cut, chips on one row, layout mirrored.
+
+## 6. Follow-up: layout was too tight
+
+The first one-glance layout gave the viewer a fixed 43 % and cut the muscle names to one line, so on some phones the names and the option text were cut. Now the viewer takes the height that is left (minimum 80 dp), the strip lists each possible muscle by its full name (two on short screens, three otherwise), and the answer chips are 52 dp with larger text that wraps instead of being cut. Checked by hand by the owner on a phone; covered by tests for the full names and option labels and by the size arithmetic.
