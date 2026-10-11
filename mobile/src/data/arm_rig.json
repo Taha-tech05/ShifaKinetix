@@ -1,4 +1,5 @@
 {
+ "side": "right",
  "label": "draft, awaiting clinician review",
  "note": "Computed by mobile/scripts/build-arm-rig.mjs from body-lite.json/.bin. The pack is not changed. Pivots and axes are computed from the mesh. Segment rules are explicit name rules with a reason each.",
  "axes": {

@@ -1,4 +1,5 @@
-// Builds src/data/arm_rig.json: the right-arm rig for the movement animation, computed from the lite pack mesh.
+// Builds src/data/arm_rig.json (right arm) or src/data/arm_rig_left.json (left arm): the rig for the movement animation,
+// computed from the lite pack mesh.  Usage: node scripts/build-arm-rig.mjs [right|left]   (default: right)
 // Reads assets/models/pack/body-lite.{json,bin} (read-only). Nothing in the pack is changed or rebuilt.
 //
 // What it computes
@@ -13,6 +14,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const SIDE = process.argv[2] === 'left' ? 'left' : 'right';
+const SIDE_CAP = SIDE === 'left' ? 'Left' : 'Right';
+const SG = SIDE === 'left' ? 1 : -1; // the arm of this side is on the SG side of x = 0
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repo = path.join(root, '..');
 const META = JSON.parse(fs.readFileSync(path.join(root, 'assets', 'models', 'pack', 'body-lite.json'), 'utf8'));
@@ -90,7 +94,7 @@ const toePts = meshes.filter((m) => m.region === 'ankle_foot' && m.layer === 'bo
 const heel = mean(footPts), toe = [0, 0, Math.max(...toePts.map((p) => p[2]))];
 const headTop = Math.max(...cloud('Frontal Bone').map((p) => p[1]));
 const feetY = Math.min(...cloud('Calcaneus (Right)').map((p) => p[1]));
-const humR = mean(cloud('Humerus (Right)')), humL = mean(cloud('Humerus (Left)'));
+const humR = mean(cloud(`Humerus (${SIDE_CAP})`)), humL = mean(cloud('Humerus (Left)'));
 const axes = {
   forward: { evidence: 'the eyes are in front of the back of the skull, and the foot bones reach further than the heel', eyesZ: +eyeC[2].toFixed(3), occipitalZ: +skullC[2].toFixed(3), furthestFootBoneZ: +toe[2].toFixed(3), heelZ: +heel[2].toFixed(3), direction: eyeC[2] > skullC[2] && toe[2] > heel[2] ? '+z' : 'UNEXPECTED' },
   up: { evidence: 'head is above the feet', headTopY: +headTop.toFixed(3), heelY: +feetY.toFixed(3), direction: headTop > feetY ? '+y' : 'UNEXPECTED' },
@@ -99,13 +103,13 @@ const axes = {
 };
 
 // ---- pivots from the mesh ----
-const hum = cloud('Humerus (Right)');
+const hum = cloud(`Humerus (${SIDE_CAP})`);
 const humTop = Math.max(...hum.map((p) => p[1])), humBottom = Math.min(...hum.map((p) => p[1]));
 // humeral head: vertices of the top 4.5 cm, then keep only those within 3.2 cm of their sphere fit (drops the neck)
 let headPts = hum.filter((p) => p[1] > humTop - 0.045);
 let head = fitSphere(headPts);
 for (let it = 0; it < 4; it++) { headPts = hum.filter((p) => p[1] > humTop - 0.06 && Math.abs(norm(sub(p, head.centre)) - head.radius) < 0.004); head = fitSphere(headPts); }
-const labrum = cloud('Glenoid Labrum (Right)');
+const labrum = cloud(`Glenoid Labrum (${SIDE_CAP})`);
 const glenoid = mean(labrum);
 // glenoid plane normal: smallest-variance direction of the labrum ring (power iteration on the covariance)
 function planeNormal(pts) {
@@ -119,10 +123,10 @@ function planeNormal(pts) {
   return v;
 }
 let gNormal = planeNormal(labrum);
-if (gNormal[0] > 0) gNormal = gNormal.map((x) => -x); // make it point laterally (towards -x for the right side)
+if (gNormal[0] * SG < 0) gNormal = gNormal.map((x) => -x); // make it point laterally (towards the arm's own side of x)
 // elbow: distal humerus (bottom 3.5 cm) and proximal ulna (top 3.5 cm)
 const distalHum = hum.filter((p) => p[1] < humBottom + 0.035);
-const ulna = cloud('Ulna (Right)'), ulnaTop = Math.max(...ulna.map((p) => p[1]));
+const ulna = cloud(`Ulna (${SIDE_CAP})`), ulnaTop = Math.max(...ulna.map((p) => p[1]));
 const proxUlna = ulna.filter((p) => p[1] > ulnaTop - 0.035);
 const elbowHum = mean(distalHum), elbowUlna = mean(proxUlna);
 // flexion axis: widest horizontal direction of the distal humerus (epicondylar axis)
@@ -133,12 +137,12 @@ function widestHorizontal(pts) {
 }
 const flexAxis = widestHorizontal(distalHum);
 // wrist: distal ends of radius and ulna
-const radius = cloud('Radius (Right)');
+const radius = cloud(`Radius (${SIDE_CAP})`);
 const wrist = mean([...radius.filter((p) => p[1] < Math.min(...radius.map((q) => q[1])) + 0.02), ...ulna.filter((p) => p[1] < Math.min(...ulna.map((q) => q[1])) + 0.02)]);
 // sternoclavicular joint: medial end of the right clavicle (the vertices closest to the midline)
-const clav = cloud('Clavicle (Right)');
-const clavMedialX = Math.max(...clav.map((p) => p[0]));
-const sc = mean(clav.filter((p) => p[0] > clavMedialX - 0.015));
+const clav = cloud(`Clavicle (${SIDE_CAP})`);
+const clavMedialX = SG < 0 ? Math.max(...clav.map((p) => p[0])) : Math.min(...clav.map((p) => p[0]));
+const sc = mean(clav.filter((p) => (SG < 0 ? p[0] > clavMedialX - 0.015 : p[0] < clavMedialX + 0.015)));
 const hangingAxis = unit(sub(elbowHum, head.centre));
 const pivots = {
   humeralHead: r3(head.centre), humeralHeadRadius: +head.radius.toFixed(4), humeralHeadFitRms: +head.rms.toFixed(4), humeralHeadFitPoints: headPts.length,
@@ -165,20 +169,20 @@ const RULES = [
   { seg: 'trunk', re: /pectoralis (major|minor)|latissimus dorsi|trapezius|rhomboid|levator scapulae|serratus anterior|omohyoid|subclavius/, why: 'large trunk muscles: the belly lies on the trunk wall, so it stays fixed; the arm end tears away (gap near the insertion) instead of dragging the chest or back' },
   { seg: 'trunk', re: /sternoclavicular|costoclavicular|interclavicular/, why: 'the sternoclavicular joint is the pivot of the girdle, so it stays on the trunk' },
 ];
-const FOREARM_ZONE = (c) => c.cx < -0.14 && c.cy > 0.55 && c.cy < 1.5 && c.xmax < -0.05; // right arm below the shoulder
+const FOREARM_ZONE = (c) => c.cx * SG > 0.14 && c.cy > 0.55 && c.cy < 1.5 && c.xmed * SG > 0.05; // the arm of this side, below the shoulder (xmed = the extent nearest the midline)
 const placed = []; // {label, seg, rule, why}
 const unplaced = [];
 const info = new Map();
 for (const s of structs.values()) {
-  let n = 0, sx = 0, sy = 0, sz = 0, xmax = -1e9;
-  for (const m of s.meshes) for (let i = 0; i < m.pos.length; i += 3) { n++; sx += m.pos[i]; sy += m.pos[i + 1]; sz += m.pos[i + 2]; xmax = Math.max(xmax, m.pos[i]); }
-  info.set(s.label, { cx: sx / n, cy: sy / n, cz: sz / n, xmax });
+  let n = 0, sx = 0, sy = 0, sz = 0, xmed = SG < 0 ? -1e9 : 1e9;
+  for (const m of s.meshes) for (let i = 0; i < m.pos.length; i += 3) { n++; sx += m.pos[i]; sy += m.pos[i + 1]; sz += m.pos[i + 2]; xmed = SG < 0 ? Math.max(xmed, m.pos[i]) : Math.min(xmed, m.pos[i]); }
+  info.set(s.label, { cx: sx / n, cy: sy / n, cz: sz / n, xmed });
 }
 const sideOfName = (s) => (s.side ? s.side.toLowerCase() : /r Grp1$|ulnarisr Grp1/.test(s.label) ? 'right' : /l Grp1$/.test(s.label) ? 'left' : null);
 for (const s of structs.values()) {
   const c = info.get(s.label);
   const side = sideOfName(s) ?? (c.cx < 0 ? 'right' : 'left');
-  if (side !== 'right') continue;
+  if (side !== SIDE) continue;
   const lower = s.name.toLowerCase();
   const rule = RULES.find((r) => r.re.test(lower));
   if (rule) { placed.push({ label: s.label, seg: rule.seg, why: rule.why }); continue; }
@@ -200,7 +204,7 @@ for (const p of placed) {
   table.push({ ...p, meshes: structs.get(p.label).meshes.length });
 }
 // sanity metric for the rules: distance of each structure centroid to the humeral head and to the scapula centroid
-const scapC = mean(cloud('Scapula (Right)'));
+const scapC = mean(cloud(`Scapula (${SIDE_CAP})`));
 const sanity = placed.filter((p) => ['deltoid', 'pector', 'latiss', 'trapez', 'supraspin', 'infraspin', 'subscap', 'teres', 'biceps brachii', 'triceps', 'rhomb', 'levator', 'serratus anterior', 'coracobr'].some((k) => p.label.toLowerCase().includes(k))).map((p) => {
   const c = info.get(p.label);
   const cc = [c.cx, c.cy, c.cz];
@@ -249,7 +253,7 @@ const out = {
     cost,
   },
 };
-fs.writeFileSync(path.join(root, 'src', 'data', 'arm_rig.json'), JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(path.join(root, 'src', 'data', SIDE === 'left' ? 'arm_rig_left.json' : 'arm_rig.json'), JSON.stringify({ side: SIDE, ...out }, null, 1) + '\n');
 console.log(JSON.stringify({ axes, pivots, segmentCounts: out.segmentCounts, unplaced, feasibility: out.feasibility }, null, 1));
 console.log('\nsanity (centroid distances, cm):');
 for (const s of sanity) console.log(s.label.padEnd(50), s.seg.padEnd(7), 'head', s.toHumeralHeadCm, 'scapula', s.toScapulaCm, 'midline', s.toTrunkMidlineCm);

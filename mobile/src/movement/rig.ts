@@ -9,12 +9,15 @@
 // Axes (from the mesh): +y up, +z forward, +x the patient's left (the right arm is on -x). Units: metres.
 // Matrices are 4x4, column-major like three.js. Angles are degrees in the data and radians in the math below.
 import rigData from '../data/arm_rig.json';
+import rigLeftData from '../data/arm_rig_left.json';
 import type { Pose } from './pose';
 
 export type Vec3 = [number, number, number];
 export type Mat4 = number[];
 
 export interface ArmRig {
+  /** Which arm this rig is for. Missing means the right arm. */
+  side?: 'right' | 'left';
   axes: unknown;
   pivots: {
     humeralHead: Vec3;
@@ -30,6 +33,11 @@ export interface ArmRig {
 }
 
 export const ARM_RIG = rigData as unknown as ArmRig;
+/** The left arm, computed from the left meshes by the same script (scripts/build-arm-rig.mjs left). */
+export const ARM_RIG_LEFT = rigLeftData as unknown as ArmRig;
+
+export type Side = 'right' | 'left';
+export const rigFor = (side: Side): ArmRig => (side === 'left' ? ARM_RIG_LEFT : ARM_RIG);
 
 // ---- small vector and matrix helpers ----
 const dot = (a: Vec3, b: Vec3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -94,12 +102,47 @@ export function armAxes(rig: ArmRig = ARM_RIG): ArmAxes {
 
 /**
  * Direction the arm swings towards for an elevation plane (0 = side, 90 = forward), perpendicular to the rest axis.
- * A backward movement (negative elevation) always swings the arm towards -z.
+ * A negative elevation swings the arm the opposite way: plane 90 is straight backward (extension), plane 0 is inward
+ * (adduction, towards the midline), and planes in between are backward and inward together.
  */
 export function elevationDirection(plane: number, elevation: number, rest: Vec3): Vec3 {
-  const horizontal: Vec3 = elevation < 0 ? [0, 0, -1] : [-Math.cos(rad(plane)), 0, Math.sin(rad(plane))];
+  const sign = elevation < 0 ? -1 : 1;
+  const horizontal: Vec3 = [-Math.cos(rad(plane)) * sign, 0, Math.sin(rad(plane)) * sign];
   const along = dot(horizontal, rest);
   return unit([horizontal[0] - along * rest[0], horizontal[1] - along * rest[1], horizontal[2] - along * rest[2]]);
+}
+
+const flipX = (v: Vec3): Vec3 => [v[0] === 0 ? 0 : -v[0], v[1], v[2]];
+
+/** Reflect a 4x4 matrix across the plane x = 0: S M S. */
+export function reflectX(m: Mat4): Mat4 {
+  const o = m.slice();
+  for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) if ((r === 0) !== (c === 0)) o[c * 4 + r] = -m[c * 4 + r];
+  return o;
+}
+
+const mirrored = new WeakMap<ArmRig, ArmRig>();
+/** The rig with every point and axis reflected across x = 0, so a left arm looks like a right arm. */
+export function mirrorRig(rig: ArmRig): ArmRig {
+  const cached = mirrored.get(rig);
+  if (cached) return cached;
+  const p = rig.pivots;
+  const m: ArmRig = {
+    ...rig,
+    side: 'right',
+    pivots: {
+      ...p,
+      humeralHead: flipX(p.humeralHead),
+      glenoid: flipX(p.glenoid),
+      elbow: flipX(p.elbow),
+      wrist: flipX(p.wrist),
+      sternoclavicular: flipX(p.sternoclavicular),
+      elbowFlexionAxisHorizontal: flipX(p.elbowFlexionAxisHorizontal),
+      upperArmAxisHanging: flipX(p.upperArmAxisHanging),
+    },
+  };
+  mirrored.set(rig, m);
+  return m;
 }
 
 export interface ArmTransforms {
@@ -116,6 +159,16 @@ export interface ArmTransforms {
  * so the humeral head stays on the glenoid (both ride on the girdle) and the forearm follows the upper arm.
  */
 export function armTransforms(pose: Pose, rig: ArmRig = ARM_RIG): ArmTransforms {
+  // The maths below is written for the right arm. The left arm is its mirror image: compute with the pivots mirrored in x
+  // (a right-like arm), then reflect every matrix back (S M S with S = diag(-1, 1, 1)).
+  if (rig.side === 'left') {
+    const t = armTransformsRight(pose, mirrorRig(rig));
+    return { girdle: reflectX(t.girdle), upper: reflectX(t.upper), forearm: reflectX(t.forearm) };
+  }
+  return armTransformsRight(pose, rig);
+}
+
+function armTransformsRight(pose: Pose, rig: ArmRig): ArmTransforms {
   const p = rig.pivots;
   const ax = armAxes(rig);
   const girdle = aboutPivot(rotation(ax.scapularAxis, rad(pose.scapula)), p.sternoclavicular);
@@ -139,12 +192,9 @@ export function jointPositions(pose: Pose, rig: ArmRig = ARM_RIG) {
 }
 
 /** World direction of a resist arrow. "inward" is towards the midline for the right arm. */
-export function arrowDirection(direction: 'down' | 'inward' | 'toward trunk'): Vec3 {
-  switch (direction) {
-    case 'down': return [0, -1, 0];
-    case 'inward': return [1, 0, 0];
-    case 'toward trunk': return [0, 0, -1];
-  }
+export function arrowDirection(direction: 'down' | 'inward' | 'toward trunk', side: Side = 'right'): Vec3 {
+  const d: Vec3 = direction === 'down' ? [0, -1, 0] : direction === 'inward' ? [1, 0, 0] : [0, 0, -1];
+  return side === 'left' ? flipX(d) : d;
 }
 
 export const lengthOf = len;
