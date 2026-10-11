@@ -35,6 +35,19 @@ export interface CameraRig {
   framing: boolean;
   /** True once the user has moved the camera. The preset is then never applied again except by Reset view. */
   touched: boolean;
+  /** A running automatic focus on the highlighted muscles. Any touch cancels it. */
+  focus?: FocusAnim | null;
+  /** The view of the last focus, for the Re-focus button. */
+  lastFocus?: CameraView | null;
+  /** Pan stays within PAN_LIMIT of this point (the preset target, or the focus target after a focus). */
+  panCentre?: Vec3;
+}
+
+export interface FocusAnim {
+  from: CameraView;
+  to: CameraView;
+  elapsed: number;
+  duration: number;
 }
 
 export const PITCH_MIN = -1.0;
@@ -82,6 +95,7 @@ const copyView = (v: CameraView): CameraView => ({ ...v, target: [...v.target] }
 export function userTouched(rig: CameraRig): void {
   rig.touched = true;
   rig.framing = false;
+  rig.focus = null; // a touch hands control to the user at once
 }
 
 /** One-finger drag. */
@@ -106,10 +120,11 @@ export function pan(rig: CameraRig, dxPx: number, dyPx: number, viewportHeightPx
   const right: Vec3 = [Math.cos(v.yaw), 0, -Math.sin(v.yaw)];
   const up: Vec3 = [-Math.sin(v.pitch) * Math.sin(v.yaw), Math.cos(v.pitch), -Math.sin(v.pitch) * Math.cos(v.yaw)];
   const next: Vec3 = [0, 1, 2].map((a) => v.target[a] - right[a] * dxPx * metresPerPx + up[a] * dyPx * metresPerPx) as Vec3;
-  const off: Vec3 = [next[0] - rig.home.target[0], next[1] - rig.home.target[1], next[2] - rig.home.target[2]];
+  const c = rig.panCentre ?? rig.home.target;
+  const off: Vec3 = [next[0] - c[0], next[1] - c[1], next[2] - c[2]];
   const len = Math.hypot(...off);
   const k = len > PAN_LIMIT ? PAN_LIMIT / len : 1;
-  v.target = [rig.home.target[0] + off[0] * k, rig.home.target[1] + off[1] * k, rig.home.target[2] + off[2] * k];
+  v.target = [c[0] + off[0] * k, c[1] + off[1] * k, c[2] + off[2] * k];
 }
 
 /**
@@ -118,12 +133,16 @@ export function pan(rig: CameraRig, dxPx: number, dyPx: number, viewportHeightPx
  */
 export function setPreset(rig: CameraRig, p: CameraPreset): void {
   rig.home = viewFromPreset(p);
+  rig.panCentre = rig.home.target;
+  rig.focus = null;
   if (!rig.touched) rig.framing = true;
 }
 
 /** "Reset view": go back to the preset (eased) and hand the camera back to the automatic framing. */
 export function resetView(rig: CameraRig, instant = false): void {
   rig.touched = false;
+  rig.focus = null;
+  rig.panCentre = rig.home.target;
   if (instant) {
     rig.view = copyView(rig.home);
     rig.framing = false;
@@ -166,4 +185,102 @@ export function presetFacing(base: CameraPreset, facing: 'front' | 'side'): Came
   const yaw = facing === 'front' ? 0 : -Math.PI / 2;
   const c = Math.cos(v.pitch);
   return { ...base, position: [base.target[0] + v.distance * Math.sin(yaw) * c, base.target[1] + v.distance * Math.sin(v.pitch), base.target[2] + v.distance * Math.cos(yaw) * c] };
+}
+
+// ---- automatic focus on the highlighted muscles ----
+
+export interface Box {
+  min: Vec3;
+  max: Vec3;
+}
+
+/** Padding around the muscles in the frame (1 = the muscles touch the edge). */
+export const FOCUS_PADDING = 1.7;
+export const FOCUS_DISTANCE = 1.2;
+export const FOCUS_ZOOM_MIN = 0.8;
+export const FOCUS_ZOOM_MAX = 3;
+export const FOCUS_SECONDS = 0.7;
+
+/** The union of boxes (several candidates or a cluster). */
+export function unionBox(boxes: Box[]): Box | null {
+  if (boxes.length === 0) return null;
+  const min: Vec3 = [Infinity, Infinity, Infinity];
+  const max: Vec3 = [-Infinity, -Infinity, -Infinity];
+  for (const b of boxes) {
+    for (let a = 0; a < 3; a++) {
+      min[a] = Math.min(min[a], b.min[a]);
+      max[a] = Math.max(max[a], b.max[a]);
+    }
+  }
+  return { min, max };
+}
+
+/**
+ * A view that frames a box so the muscle faces the camera. The direction comes from where the box is relative to the middle of
+ * the body (a muscle behind the middle is seen from behind, one in front from the front, one at the side from that side),
+ * leaning a little towards the selected side for depth. The distance is fixed and the zoom fits the box with padding.
+ */
+export function boxFocusView(box: Box, side: 'right' | 'left', fov: number, aspect: number): CameraView {
+  const c: Vec3 = [(box.min[0] + box.max[0]) / 2, (box.min[1] + box.max[1]) / 2, (box.min[2] + box.max[2]) / 2];
+  const lateral: [number, number] = side === 'right' ? [-1, 0] : [1, 0];
+  let dx = c[0];
+  let dz = c[2]; // the middle of the body is at x = 0, z = 0
+  if (Math.hypot(dx, dz) < 0.03) {
+    dx = lateral[0];
+    dz = 0;
+  }
+  const len = Math.hypot(dx, dz);
+  dx = dx / len + 0.35 * lateral[0];
+  dz = dz / len;
+  const yaw = Math.atan2(dx, dz);
+  const radius = Math.max(0.03, Math.hypot(box.max[0] - box.min[0], box.max[1] - box.min[1], box.max[2] - box.min[2]) / 2);
+  const tanHalf = Math.tan((fov * Math.PI) / 360) * Math.min(1, Math.max(0.3, aspect));
+  const zoom = clamp((FOCUS_DISTANCE * tanHalf) / (radius * FOCUS_PADDING), FOCUS_ZOOM_MIN, FOCUS_ZOOM_MAX);
+  return { yaw, pitch: 0.1, distance: FOCUS_DISTANCE, target: c, zoom, fov };
+}
+
+const smooth = (x: number) => x * x * (3 - 2 * x);
+
+/** Start an eased move to the view (about 0.7 s). With reduce motion on it jumps at once. The user is in control again afterwards. */
+export function startFocus(rig: CameraRig, to: CameraView, seconds = FOCUS_SECONDS, reduceMotion = false): void {
+  rig.touched = false;
+  rig.framing = false;
+  rig.lastFocus = copyView(to);
+  rig.panCentre = [...to.target];
+  if (reduceMotion || seconds <= 0) {
+    rig.view = copyView(to);
+    rig.focus = null;
+    return;
+  }
+  rig.focus = { from: copyView(rig.view), to: copyView(to), elapsed: 0, duration: seconds };
+}
+
+/** Re-focus: run the last focus again. Returns false when there was none. */
+export function refocus(rig: CameraRig, seconds = FOCUS_SECONDS, reduceMotion = false): boolean {
+  if (!rig.lastFocus) return false;
+  startFocus(rig, rig.lastFocus, seconds, reduceMotion);
+  return true;
+}
+
+/** Advance a running focus; it ends exactly on the target. A touch has already cancelled it (userTouched). */
+export function stepFocus(rig: CameraRig, dt: number): void {
+  const f = rig.focus;
+  if (!f) return;
+  f.elapsed += Math.max(0, dt);
+  const x = Math.min(1, f.elapsed / f.duration);
+  const e = smooth(x);
+  const a = f.from;
+  const b = f.to;
+  rig.view = {
+    yaw: a.yaw + angleDelta(a.yaw, b.yaw) * e,
+    pitch: a.pitch + (b.pitch - a.pitch) * e,
+    distance: a.distance + (b.distance - a.distance) * e,
+    zoom: a.zoom + (b.zoom - a.zoom) * e,
+    fov: a.fov + (b.fov - a.fov) * e,
+    target: [a.target[0] + (b.target[0] - a.target[0]) * e, a.target[1] + (b.target[1] - a.target[1]) * e, a.target[2] + (b.target[2] - a.target[2]) * e],
+  };
+  if (x >= 1) {
+    rig.view = copyView(b);
+    rig.focus = null;
+  }
 }

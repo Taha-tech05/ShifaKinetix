@@ -21,7 +21,7 @@ import type { Pose } from '../../movement/pose';
 import type { Movement } from '../../movement/movements';
 import type { BodyLayer } from '../../regions/types';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
-import { positionOf, stepFraming } from './cameraRig';
+import { positionOf, stepFocus, stepFraming } from './cameraRig';
 import type { CameraRig } from './cameraRig';
 import { NO_EMPHASIS } from './highlightPlan';
 import type { Emphasis } from './highlightPlan';
@@ -82,6 +82,7 @@ function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRe
   const last = useRef({ at: 0, key: '' });
   useFrame((state, dt) => {
     const r = rig.current;
+    stepFocus(r, dt);
     stepFraming(r, dt);
     const v = r.view;
     const p = positionOf(v);

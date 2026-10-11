@@ -40,3 +40,29 @@ export function structureAnchors(pack: Pick<LoadedPack, 'parts'>, ids: string[])
   sum.forEach((e, id) => (out[id] = [e.p[0] / e.n, e.p[1] / e.n, e.p[2] / e.n]));
   return out;
 }
+
+/**
+ * The bounding box (model space) of the meshes of the given structures, from the per-mesh bounds of the pack. Null when none of
+ * the structures is in the pack.
+ */
+export function structureBounds(pack: Pick<LoadedPack, 'parts'>, ids: string[]): { min: Vec3; max: Vec3 } | null {
+  const want = new Set(ids);
+  const min: Vec3 = [Infinity, Infinity, Infinity];
+  const max: Vec3 = [-Infinity, -Infinity, -Infinity];
+  let any = false;
+  for (const part of pack.parts) {
+    part.names.forEach((name, i) => {
+      const id = structureIdOfMesh(name);
+      if (!id || !want.has(id)) return;
+      const b = part.bounds;
+      for (let a = 0; a < 3; a++) {
+        const lo = part.mesh.position.getComponent(a) + part.mesh.scale.getComponent(a) * b[i * 6 + a];
+        const hi = part.mesh.position.getComponent(a) + part.mesh.scale.getComponent(a) * b[i * 6 + 3 + a];
+        min[a] = Math.min(min[a], lo, hi);
+        max[a] = Math.max(max[a], lo, hi);
+      }
+      any = true;
+    });
+  }
+  return any ? { min, max } : null;
+}
