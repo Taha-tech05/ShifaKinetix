@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { replay } from '../../movement/animationStep';
@@ -13,11 +13,12 @@ import { useT } from '../../store/settings';
 import { colors, gradients } from '../../theme';
 import { AppText } from '../AppText';
 import { Boundary } from '../body3d/Boundary';
-import { createCameraRig, presetForSide, resetView, setPreset } from '../body3d/cameraRig';
+import { boxFocusView, createCameraRig, FOCUS_SECONDS, presetForSide, refocus, resetView, setPreset, startFocus } from '../body3d/cameraRig';
 import type { CameraPreset, CameraRig } from '../body3d/cameraRig';
 import { planEmphasis } from '../body3d/highlightPlan';
 import type { Emphasis } from '../body3d/highlightPlan';
-import { deepStructureIds, structureAnchors } from '../body3d/packLayers';
+import { planFocus } from '../body3d/focusPlan';
+import { deepStructureIds, structureAnchors, structureBounds } from '../body3d/packLayers';
 import { LeaderLabels } from '../narrowing/LeaderLabels';
 import { muscleName } from '../narrowing/CandidateStrip';
 import { musclePool } from '../../dev/narrowingStub';
@@ -54,6 +55,8 @@ interface Props {
   labelIds?: string[];
   /** True when the highlighted area stands in for a structure that has no mesh (joint, capsule, nerve, bone): labelled "approximate area". */
   approx?: boolean;
+  /** Frame the highlighted muscles with an eased camera move when they change (question phase). A touch cancels it. */
+  autoFocus?: boolean;
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
 }
@@ -65,7 +68,7 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, onReady }: Props) {
+export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady }: Props) {
   const preset = cameraPreset ?? movement.camera;
   const t = useT();
   const focused = useScreenFocused();
@@ -75,6 +78,12 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const [firstFrame, setFirstFrame] = useState(false);
   const [layer, setLayer] = useState<BodyLayer>('muscle');
   const [boxWidth, setBoxWidth] = useState(0);
+  const [boxHeight, setBoxHeight] = useState(0);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const lastFocusKey = useRef('');
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => undefined);
+  }, []);
   const [touched, setTouched] = useState(false);
   const [hintTimedOut, setHintTimedOut] = useState(false);
   const [screenPts, setScreenPts] = useState<{ id: string; x: number; y: number }[]>([]);
@@ -93,6 +102,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
     control.current.seek = 0;
     control.current.playing = !paused;
     setPreset(rig.current!, presetForSide(preset, side));
+    lastFocusKey.current = ''; // the preset took the camera: the next candidates focus again
   }, [movement.id, preset, side, paused]);
 
   const simple = FORCE_SIMPLE || crashed || pack.status === 'failed' || (timedOut && pack.status === 'loading');
@@ -129,6 +139,17 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
     const deep = deepStructureIds(loaded);
     return planEmphasis(highlightIds, (id) => deep.has(id));
   }, [emphasis, loaded, highlightIds]);
+  // auto-focus: when the candidates change, frame them (not when they did not change); the OS reduce-motion setting jumps instead
+  useEffect(() => {
+    if (!autoFocus || !loaded || !highlightIds || highlightIds.length === 0 || boxWidth === 0) return;
+    const plan = planFocus(lastFocusKey.current, highlightIds);
+    if (!plan.run) return;
+    const box = structureBounds(loaded, highlightIds);
+    if (!box) return;
+    lastFocusKey.current = plan.key;
+    startFocus(rig.current!, boxFocusView(box, side, 45, boxWidth / Math.max(1, boxHeight)), FOCUS_SECONDS, reduceMotion);
+  }, [autoFocus, loaded, hintKey, side, boxWidth > 0, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const anchorKey = (labelIds ?? []).join('|');
   const anchors = useMemo(() => {
     if (!loaded || !labelIds || labelIds.length === 0) return undefined;
@@ -158,7 +179,10 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   }
 
   return (
-    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => setBoxWidth(e.nativeEvent.layout.width)}>
+    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => {
+        setBoxWidth(e.nativeEvent.layout.width);
+        setBoxHeight(e.nativeEvent.layout.height);
+      }}>
       {ready ? (
         <Boundary onError={() => setCrashed(true)}>
           <SegmentedBody
@@ -213,6 +237,14 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
               </AppText>
             </Pressable>
             )}
+            {autoFocus && highlightIds && highlightIds.length > 0 ? (
+              <Pressable accessibilityRole="button" accessibilityLabel={t('movement.refocus')} onPress={() => refocus(rig.current!, FOCUS_SECONDS, reduceMotion)} style={styles.pill}>
+                <Ionicons name="scan" size={18} color={colors.navy} />
+                <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+                  {t('movement.refocus')}
+                </AppText>
+              </Pressable>
+            ) : null}
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.resetView')} onPress={() => resetView(rig.current!)} style={styles.pill}>
               <Ionicons name="locate" size={18} color={colors.navy} />
               <AppText variant="secondary" color={colors.navy} style={styles.bold}>

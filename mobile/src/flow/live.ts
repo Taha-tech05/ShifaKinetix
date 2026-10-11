@@ -126,6 +126,13 @@ export function goBack(): BackResult {
   return { ok: true, undone, route: null, state };
 }
 
+/** The live state before any answer: the possible muscles seeded from the tapped area. Nothing is stored. Null without a selection. */
+export function seedLiveState(): LiveState | null {
+  const store = useSession.getState();
+  const input = narrowingInputFrom(store);
+  return input ? evaluateLive(input, store.mode ?? 'region') : null;
+}
+
 /** The current answers in the order they were given (for "Review answers"). */
 export function activeHistory(): HistoryEntry[] {
   return useSession.getState().history.filter((h) => !h.supersededAt);

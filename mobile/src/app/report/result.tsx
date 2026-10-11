@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -23,6 +23,7 @@ import type { LiveCandidate, LiveState } from '../../narrowing/live';
 import { regionLabel } from '../../regions/shoulder';
 import { sideOfRegion } from '../../regions/shoulder';
 import { narrowingInputFrom, useSession } from '../../store/session';
+import type { HistoryEntry } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors, radius, shadows } from '../../theme';
 import type { CameraPreset } from '../../components/body3d/cameraRig';
@@ -35,6 +36,45 @@ const BACK: CameraPreset = { position: [-0.55, 1.35, -1.35], target: [-0.12, 1.2
 function evidenceName(id: string): string {
   const m = movementById(id);
   return m ? localized(m.name) : questionText(id) ?? structureQuestionText(id) ?? id;
+}
+
+/** The answer of a history entry in words: yes, no, not sure, or the movement result. Skipped and not sure are both unknown. */
+function answerWords(entry: HistoryEntry, t: ReturnType<typeof useT>): string {
+  if (entry.label === 'unknown') return t('answer.notSure');
+  if (entry.kind === 'question') return entry.label === 'yes' ? t('answer.yes') : t('answer.no');
+  const names: Record<string, string> = { noPain: t('movement.noPain'), pain: t('movement.pain'), weak: t('movement.weak'), couldNot: t('movement.couldNot') };
+  return entry.label.split('+').map((p) => names[p] ?? p).join(', ');
+}
+
+/** "Review answers": every current answer in the order given, each with a Change button that reopens that question. */
+function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
+  const t = useT();
+  if (entries.length === 0) return null;
+  return (
+    <View style={styles.review}>
+      <AppText variant="h3" color={colors.navy}>
+        {t('live.reviewAnswers')}
+      </AppText>
+      <AppText variant="secondary" color={colors.muted}>
+        {t('live.reviewHint')}
+      </AppText>
+      {entries.map((e) => (
+        <Pressable key={e.seq} accessibilityRole="button" accessibilityLabel={`${t('live.change')}: ${evidenceName(e.id)}`} onPress={() => router.push(`/report/movement?review=${e.id}` as never)} style={styles.reviewRow}>
+          <View style={styles.col}>
+            <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              {evidenceName(e.id)}
+            </AppText>
+            <AppText variant="secondary" color={colors.muted}>
+              {answerWords(e, t)}
+            </AppText>
+          </View>
+          <AppText variant="secondary" color={colors.linkTeal} style={styles.bold}>
+            {t('live.change')}
+          </AppText>
+        </Pressable>
+      ))}
+    </View>
+  );
 }
 
 function CandidateRow({ c }: { c: LiveCandidate }) {
@@ -79,6 +119,7 @@ export function suggestDoctorLive(s: LiveState | null): boolean {
 export default function Result() {
   const t = useT();
   const saved = useSession((s) => s.liveState);
+  const history = useSession((s) => s.history);
   const sel = useSession((s) => s.selection);
   const [touching, setTouching] = useState(false);
   // Only if the screen is opened without a live run (a direct link): evaluate once, from the stored answers.
@@ -199,6 +240,7 @@ export default function Result() {
             </AppText>
           </>
         )}
+        <ReviewAnswers entries={history.filter((h) => !h.supersededAt)} />
       {/*
         EXTENSION POINT (assistant). Nothing is rendered here while ASSISTANT_ENABLED is false (shared/app_config.json), and it
         must stay false in this phase: no button, no placeholder. A later phase may add its entry point below, behind the flag.
@@ -214,6 +256,8 @@ const styles = StyleSheet.create({
   bold: { fontWeight: '700' },
   italic: { fontStyle: 'italic' },
   col: { flex: 1 },
+  review: { gap: 8, paddingTop: 4 },
+  reviewRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
   item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, ...shadows.card },
   itemTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   band: { paddingHorizontal: 10, minHeight: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },

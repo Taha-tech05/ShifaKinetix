@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LogBox, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Banner } from '../components/Banner';
+import { useChrome } from '../store/chrome';
 import { useSettings } from '../store/settings';
 import { colors } from '../theme';
 
@@ -13,11 +14,12 @@ if (__DEV__) LogBox.ignoreLogs(['THREE.Clock: This module has been deprecated', 
 function Shell() {
   const insets = useSafeAreaInsets();
   const offline = useSettings((s) => s.offline);
+  const compact = useChrome((s) => s.compact);
   return (
     <View style={styles.root}>
       {/* The demo strip sits above the navigator, so it shows on every screen. */}
       <View style={{ paddingTop: insets.top, backgroundColor: colors.neutralTint }}>
-        <Banner kind="demo" />
+        {compact ? null : <Banner kind="demo" />}
       </View>
       {offline ? <Banner kind="offline" /> : null}
       <View style={styles.fill}>

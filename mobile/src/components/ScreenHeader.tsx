@@ -11,13 +11,15 @@ interface Props {
   onBack?: () => void;
   /** Transparent bar for use over the Home hero gradient; shows the logo instead of a back arrow. */
   hero?: boolean;
+  /** A slimmer bar (52 instead of 56 dp). */
+  compact?: boolean;
 }
 
 /** Top bar: back arrow (or logo), role chip, EN/Urdu/Roman toggle, SOS. Every patient screen has it. */
-export function ScreenHeader({ onBack, hero = false }: Props) {
+export function ScreenHeader({ onBack, hero = false, compact = false }: Props) {
   const t = useT();
   return (
-    <View style={[styles.bar, !hero && styles.solid]}>
+    <View style={[styles.bar, !hero && styles.solid, compact && styles.barCompact]}>
       {onBack ? (
         <Pressable
           accessibilityRole="button"
@@ -48,6 +50,7 @@ export function ScreenHeader({ onBack, hero = false }: Props) {
 const styles = StyleSheet.create({
   bar: { height: 56, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
   solid: { backgroundColor: colors.navy },
+  barCompact: { height: 52, paddingHorizontal: 8 },
   back: {
     width: 48,
     height: 48,

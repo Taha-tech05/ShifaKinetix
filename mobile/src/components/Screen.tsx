@@ -8,6 +8,8 @@ interface Props {
   scroll?: boolean;
   /** False while a child (the 3D viewer) is using the touch, so the page does not scroll under the finger. */
   scrollEnabled?: boolean;
+  /** Slim header and tighter padding, for the question screen (everything must fit without scrolling). */
+  compact?: boolean;
   /** Full-width strip right under the top bar (e.g. the movement caution). */
   banner?: React.ReactNode;
   /** Fixed action area at the bottom (design .act): main button and text link. */
@@ -20,18 +22,18 @@ interface Props {
 }
 
 /** Standard patient screen: navy top bar with SOS, light grey page, padded body, optional fixed footer. */
-export function Screen({ onBack, scroll = true, scrollEnabled = true, footer, bareFooter = false, banner, children }: Props) {
+export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = false, footer, bareFooter = false, banner, children }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.root}>
-      <ScreenHeader onBack={onBack} />
+      <ScreenHeader onBack={onBack} compact={compact} />
       {banner}
       {scroll ? (
         <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.body, styles.fill]}>{children}</View>
+        <View style={[styles.body, styles.fill, compact && [styles.compactBody, { paddingBottom: 6 + insets.bottom }]]}>{children}</View>
       )}
       {footer ? (
         bareFooter ? (
@@ -48,5 +50,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.page },
   body: { paddingHorizontal: 20, paddingVertical: 14, gap: 14 },
   fill: { flex: 1 },
+  compactBody: { paddingHorizontal: 12, paddingTop: 6, gap: 6 },
   footer: { paddingHorizontal: 16, paddingTop: 12, gap: spacing.xs, backgroundColor: colors.page },
 });
