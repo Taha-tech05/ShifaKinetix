@@ -110,7 +110,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
   });
 
-  it('the model is on top and about 55 percent of the height; it is the same stage on every step', () => {
+  it('the model is on top and about 43 percent of the height; it is the same stage on every step', () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
     const holder = tree.root.findAll((n: ReactTestInstance) => typeof n.props.onLayout === 'function' && (n.type as unknown) === 'View')[0];
@@ -118,7 +118,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
       holder.props.onLayout({ nativeEvent: { layout: { height: 800, width: 360 } } });
     });
     const last = mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { height: number; movement: { id: string }; paused: boolean };
-    expect(last.height).toBe(440);
+    expect(last.height).toBe(344);
     expect(last.movement.id).toBe('sideways_raise');
     expect(last.paused).toBe(false);
   });
@@ -215,6 +215,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
     const replace = jest.spyOn(router.router, 'replace');
     useSession.setState({ runGate: jest.fn(() => 'RED_FLAG' as const) });
     const tree = render(createElement(LiveScreen));
+    narrowSpy.mockClear(); // the first screen already seeded the candidates; an answer under a red flag must not narrow
     press(tree, 'I tried it');
     press(tree, 'No pain');
     expect(replace).toHaveBeenCalledWith('/report/urgent');
