@@ -16,5 +16,13 @@
   "bands": {
     "moderateFrom": 0.35,
     "higherFrom": 0.6
+  },
+  "structureType": {
+    "note": "Constants of the structure-type step that runs before muscle ranking. Placeholders for the clinician to confirm. Strength is a match score, not a probability.",
+    "minNonUnknownAnswers": 2,
+    "leadMargin": 0.25,
+    "minLeaderScore": 0.3,
+    "maxQuestions": 8,
+    "fullScore": 3
   }
 }

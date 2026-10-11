@@ -21,6 +21,20 @@ export const NARROWING = {
   bands: config.bands,
 } as const;
 
+/** The structure-type step (shared/narrowing_config.json, "structureType"). */
+export const STRUCTURE = {
+  /** Before this many answers that are not unknown, no category is shown as leading. */
+  minNonUnknownAnswers: config.structureType.minNonUnknownAnswers,
+  /** The leading category must be ahead of the next one by at least this much (match strength, 0 to 1). */
+  leadMargin: config.structureType.leadMargin,
+  /** ... and have at least this match strength itself. */
+  minLeaderScore: config.structureType.minLeaderScore,
+  /** Hard cap on structure-type questions (answered or skipped). */
+  maxQuestions: config.structureType.maxQuestions,
+  /** A sum of signed weights of this size is a full-strength match. */
+  fullScore: config.structureType.fullScore,
+} as const;
+
 export type Band = 'low' | 'moderate' | 'higher';
 
 /** Qualitative band of a match strength. Only the band is shown to the patient, never the number. */
