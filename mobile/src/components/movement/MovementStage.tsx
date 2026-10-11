@@ -29,6 +29,7 @@ import { MovementPlayer } from './MovementPlayer';
 // EXPO_PUBLIC_SIMPLE_ANIM=1 shows the simple diagram instead of the 3D body (also used when 3D is switched off).
 const FORCE_SIMPLE = process.env.EXPO_PUBLIC_SIMPLE_ANIM === '1' || process.env.EXPO_PUBLIC_DISABLE_3D === '1';
 const LOAD_TIMEOUT_MS = 25000;
+const HINT_MS = 5000;
 
 interface Props {
   movement: Movement;
@@ -71,6 +72,8 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const [firstFrame, setFirstFrame] = useState(false);
   const [layer, setLayer] = useState<BodyLayer>('muscle');
   const [boxWidth, setBoxWidth] = useState(0);
+  const [touched, setTouched] = useState(false);
+  const [hintTimedOut, setHintTimedOut] = useState(false);
   const [screenPts, setScreenPts] = useState<{ id: string; x: number; y: number }[]>([]);
   const control = useRef<AnimControl>({ playing: true, speed: 1, seek: null, t: 0 });
   const rig = useRef<CameraRig | null>(null);
@@ -101,6 +104,13 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
       onReady?.();
     }
   }, [ready, firstFrame, onReady]);
+
+  // the "drag to turn, pinch to zoom" hint shows for a few seconds after the model appears, or until the first touch
+  useEffect(() => {
+    if (!firstFrame) return;
+    const timer = setTimeout(() => setHintTimedOut(true), HINT_MS);
+    return () => clearTimeout(timer);
+  }, [firstFrame]);
 
   const loaded = pack.status === 'ready' ? pack.pack : null;
   const trackedIds = useMemo(() => tracked ?? (highlightIds !== undefined || labelIds !== undefined ? musclePool(side) : undefined), [tracked, highlightIds, labelIds, side]);
@@ -153,7 +163,12 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
             emphasis={emph}
             anchors={anchors}
             onProject={setScreenPts}
-            onInteract={onInteract}
+            armTint={!paused}
+            endGhost={!paused}
+            onInteract={(active) => {
+              if (active) setTouched(true);
+              onInteract?.(active);
+            }}
             onFirstFrame={() => setFirstFrame(true)}
           />
         </Boundary>
@@ -196,11 +211,13 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
               </AppText>
             </Pressable>
           </View>
-          <View style={styles.hint} pointerEvents="none">
-            <AppText variant="secondary" color={colors.muted}>
-              {t('movement.viewHint')}
-            </AppText>
-          </View>
+          {touched || hintTimedOut || (paused && labelIds !== undefined) ? null : (
+            <View style={styles.hint} pointerEvents="none">
+              <AppText variant="secondary" color={colors.muted}>
+                {t('movement.viewHint')}
+              </AppText>
+            </View>
+          )}
         </>
       )}
     </LinearGradient>
