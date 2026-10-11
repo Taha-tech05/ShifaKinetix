@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Answer, Verdict } from '../gate/evaluate';
+import type { Answer, GateOutput, Verdict } from '../gate/evaluate';
 import { evaluateStub } from '../gate/stub';
 import { structuredGateInputs } from '../flow/gateInputs';
 import type { LiveState, NarrowingSnapshot } from '../narrowing/live';
@@ -57,6 +57,9 @@ export interface SessionState {
   mode: IntakeMode | null;
   selection: BodySelection | null;
   answers: Answer[];
+  /** The complete evaluator result of the last run: { verdict, firedRules }. Null until the gate has run, and again after any answer changes. */
+  gateOutput: GateOutput | null;
+  /** Always the verdict of `gateOutput` (null when it is null). A SAFE verdict never outlives a changed answer. */
   gateVerdict: Verdict | null;
   /** True once the clarifying re-ask has been used (it is offered only once). */
   reaskDone: boolean;
@@ -93,7 +96,8 @@ const initial = {
   mode: null,
   selection: null,
   answers: [] as Answer[],
-  gateVerdict: null,
+  gateOutput: null as GateOutput | null,
+  gateVerdict: null as Verdict | null,
   reaskDone: false,
   movementResults: [] as MovementResult[],
   liveState: null as LiveState | null,
@@ -101,6 +105,13 @@ const initial = {
   history: [] as HistoryEntry[],
   escalation: null as Escalation | null,
 };
+
+/**
+ * Any change to the answers makes a SAFE result stale: the gate has to run again before the flow can go on. Only SAFE is
+ * dropped. A RED_FLAG or CLARIFY result stays until the next run (it never grants anything, and the re-ask screen needs its
+ * CLARIFY while the patient answers again).
+ */
+const staleGate = (s: Pick<SessionState, 'gateOutput' | 'gateVerdict'>) => (s.gateVerdict === 'SAFE' ? { gateOutput: null, gateVerdict: null } : {});
 
 export const useSession = create<SessionState>((set, get) => ({
   ...initial,
@@ -112,14 +123,15 @@ export const useSession = create<SessionState>((set, get) => ({
   recordAnswer: (answer) =>
     set((s) => ({
       answers: [...s.answers.filter((a) => a.questionId !== answer.questionId), answer],
+      ...staleGate(s),
     })),
 
   runGate: () => {
     // The gate sees the answers plus the structured onset and unable-to-move inputs derived from them (flow/gateInputs.ts).
     const { answers, movementResults } = get();
-    const { verdict } = evaluateStub([...answers, ...structuredGateInputs(answers, movementResults)]);
-    set({ gateVerdict: verdict });
-    return verdict;
+    const output = evaluateStub([...answers, ...structuredGateInputs(answers, movementResults)]);
+    set({ gateOutput: output, gateVerdict: output.verdict });
+    return output.verdict;
   },
 
   recordMovement: (result) =>
@@ -128,6 +140,7 @@ export const useSession = create<SessionState>((set, get) => ({
         ...s.movementResults.filter((m) => m.movementId !== result.movementId),
         result,
       ],
+      ...staleGate(s),
     })),
 
   recordNarrowing: (snapshot) => set((s) => ({ liveState: snapshot.state, narrowingTrail: [...s.narrowingTrail, snapshot] })),
@@ -162,6 +175,7 @@ export const useSession = create<SessionState>((set, get) => ({
       return {
         answers: [...s.answers.filter((a) => !isLive(a.questionId)), ...active.filter((h) => h.kind === 'question' && h.answer).map((h) => h.answer as Answer)],
         movementResults: active.filter((h) => h.kind === 'movement' && h.movement).map((h) => h.movement as MovementResult),
+        ...staleGate(s),
       };
     }),
 
