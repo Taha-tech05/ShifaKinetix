@@ -6,6 +6,14 @@ export type Verdict = 'RED_FLAG' | 'SAFE' | 'CLARIFY';
 export type AnswerType = 'yesno' | 'choice' | 'number' | 'duration';
 export interface Answer {
   questionId: string;
+  type: string;
+  value: unknown;
+  state: 'answered' | 'unknown';
+  clarificationAttempted?: boolean;
+}
+/** Only this validated subset crosses the clinical evaluator/storage boundary. */
+export interface SafetyAnswer extends Answer {
+  questionId: string;
   type: AnswerType;
   value: boolean | string | number | null;
   state: 'answered' | 'unknown';
@@ -37,7 +45,7 @@ const POLICY = 'docs/gate-contract.md';
 const record = (x: unknown): x is Record<string, unknown> =>
   typeof x === 'object' && x !== null && !Array.isArray(x);
 
-export function isValidAnswer(input: unknown): input is Answer {
+export function isValidAnswer(input: unknown): input is SafetyAnswer {
   if (!record(input)) return false;
   const q = questions.find((item) => item.questionId === input.questionId);
   if (!q || input.type !== q.type) return false;
@@ -60,7 +68,7 @@ export function evaluate(input: unknown): GateOutput {
     return { verdict: 'RED_FLAG', firedRules: [{ ruleId: 'INPUT_INVALID', matchedAnswers: [],
       source: POLICY, reason: 'Invalid or conflicting answers; clinical review required.' }] };
   }
-  const answers = new Map<string, Answer>(input.map((a) => [a.questionId, a]));
+  const answers = new Map<string, SafetyAnswer>(input.map((a) => [a.questionId, a]));
   const firedRules: FiredRule[] = [];
   let danger = false;
   for (const rule of gateRules.rules) {

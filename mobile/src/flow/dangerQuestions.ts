@@ -1,29 +1,16 @@
-// The red-flag questions. For now these are the PLACEHOLDER questions in shared/questions_shoulder.json (Person A
-// replaces them). They are shown with the existing yes / no / not sure template and judged by the gate stub.
-import questionsFile from '../../../shared/questions_shoulder.json';
-import type { Question, QuestionType } from '../questions/types';
+import { questions } from '../gate/evaluate';
+import type { Question } from '../questions/types';
 
-interface FileQuestion {
-  questionId: string;
-  text: string;
-  type: string;
-  isKeyDangerQuestion: boolean;
-  source: string;
-  label: string;
-}
-
+/** Presentation adapter; the safety screens preserve canonical types and values. */
 export function dangerQuestions(): Question[] {
-  return (questionsFile.questions as FileQuestion[]).map((q) => ({
+  return questions.map((q) => ({
     questionId: q.questionId,
-    type: q.type as QuestionType,
-    text: q.text,
-    isKeyDangerQuestion: q.isKeyDangerQuestion,
-    source: q.source,
-    label: q.label,
+    type: q.type === 'choice' ? 'chooseone' : q.type === 'number' ? 'scale0to10' : q.type as 'yesno' | 'duration',
+    text: q.wording, isKeyDangerQuestion: q.required,
+    options: q.options?.map((o) => ({ id: o.value, label: o.label })),
+    source: q.source, label: q.label,
   }));
 }
-
-/** The key danger questions whose answer is "not sure", for the clarifying re-ask. */
 export function unknownDangerQuestions(answers: { questionId: string; state: string }[]): Question[] {
   const unknown = new Set(answers.filter((a) => a.state === 'unknown').map((a) => a.questionId));
   return dangerQuestions().filter((q) => q.isKeyDangerQuestion && unknown.has(q.questionId));

@@ -13,10 +13,10 @@ export function evaluateStub(answers: FlaggableAnswer[]): GateOutput {
     if (!a.flagged) continue;
     if (a.state === 'unknown') {
       // "Not sure" on a danger question must never be SAFE.
-      firedRules.push({ ruleId: 'STUB_UNKNOWN', matchedAnswers: [a.questionId], source: 'stub' });
+      firedRules.push({ ruleId: 'STUB_UNKNOWN', matchedAnswers: [a.questionId], source: 'stub', reason: 'Test stub only.' });
       if (verdict === 'SAFE') verdict = 'CLARIFY';
     } else {
-      firedRules.push({ ruleId: 'STUB_FLAGGED', matchedAnswers: [a.questionId], source: 'stub' });
+      firedRules.push({ ruleId: 'STUB_FLAGGED', matchedAnswers: [a.questionId], source: 'stub', reason: 'Test stub only.' });
       verdict = 'RED_FLAG';
     }
   }

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Answer, GateOutput, Verdict } from '../gate/evaluate';
-import { evaluateStub } from '../gate/stub';
+import { evaluateStoredSessionGate as evaluateStub } from '../gate/sessionEvaluator';
 import { structuredGateInputs } from '../flow/gateInputs';
 import type { LiveState, NarrowingSnapshot } from '../narrowing/live';
 import { depthAnswerFrom } from '../dev/followUpQuestions';
