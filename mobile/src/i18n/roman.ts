@@ -230,10 +230,11 @@ export const roman: Translations = {
     none: 'Is jagah ke liye dikhane ko koi pattha nahi.',
   },
   live: {
+    possibleSoFar: 'Ab tak mumkin',
     typesSoFar: 'Ab tak ki aqsaam',
     notMuscleTitle: 'Yeh patthe ka masla nahi ho sakta',
-    notMuscleBody: 'Aap ke jawabat patthe se hat kar kuch aur batate hain. Doctor ya physio isay theek se dekh sakta hai.',
-    unclearBody: 'Aap ke jawabat kisi aik wazeh qism ki taraf ishara nahi karte. Doctor ya physio mazeed maloom karne mein madad kar sakta hai.',
+    notMuscleBody: 'Aap ke jawabat kisi patthe ki taraf ishara nahi karte. Yeh tool sirf patthon ko dekhta hai, is liye jod, haddi ya asab ke masle ko radd nahi kar sakta. Doctor ya physio isay theek se dekh sakta hai.',
+    unclearBody: 'Aap ke jawabat kisi aik wazeh qism ki taraf ishara nahi karte. Yeh tool sirf patthon ko dekhta hai, is liye jod, haddi ya asab ke masle ko radd nahi kar sakta. Doctor ya physio mazeed maloom karne mein madad kar sakta hai.',
     talkPhysio: 'Doctor ya physio se baat karein',
     approxArea: 'taqreebi jagah',
     approxNote: 'Numayan ki gayi jagah taqreebi hai. Yeh sakht model mein nahi dikhayi gayi.',

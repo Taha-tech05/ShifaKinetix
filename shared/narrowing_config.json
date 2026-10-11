@@ -24,5 +24,7 @@
     "minLeaderScore": 0.3,
     "maxQuestions": 8,
     "fullScore": 3
-  }
+  },
+  "minAnswersForBands": 2,
+  "bandsNote": "Bands (Low / Moderate / Higher) are shown only after this many answers that are not unknown (movements and questions together). Before that the model highlights the provisional candidates and the strip says 'Still narrowing'."
 }

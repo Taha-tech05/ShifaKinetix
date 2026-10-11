@@ -14,7 +14,7 @@ import { structureIds } from '../narrowing/structureBank';
 import { evaluateLive, snapshotOf } from '../narrowing/live';
 import type { LiveState } from '../narrowing/live';
 import { MOVEMENTS } from '../movement/movements';
-import type { MovementResult } from '../store/session';
+import type { HistoryEntry, MovementResult } from '../store/session';
 import { narrowingInputFrom, useSession } from '../store/session';
 import type { IntakeMode } from '../regions/regionMap';
 import { isSafe, RESULT_ROUTE, routeAfterGate } from './intake';
@@ -58,27 +58,82 @@ export interface LiveOutcome {
   state: LiveState | null;
 }
 
-function afterAnswer(afterId: string, answerLabel: string): LiveOutcome {
+function afterAnswer(afterId: string, answerLabel: string, seq?: number): LiveOutcome {
   const store = useSession.getState();
   const verdict = store.runGate();
-  if (!isSafe(verdict)) return { verdict, route: routeAfterGate(verdict, store.reaskDone), state: null };
+  if (!isSafe(verdict)) {
+    // The escalation is logged and stays: going back never undoes it.
+    store.setEscalation({ verdict, afterId, at: new Date().toISOString() });
+    return { verdict, route: routeAfterGate(verdict, store.reaskDone), state: null };
+  }
   const input = narrowingInputFrom(useSession.getState());
   if (!input) return { verdict, route: null, state: null };
-  const state = evaluateLive(input);
-  useSession.getState().recordNarrowing(snapshotOf(afterId, answerLabel, state, verdict));
+  const state = evaluateLive(input, store.mode ?? 'region');
+  useSession.getState().recordNarrowing(snapshotOf(afterId, answerLabel, state, verdict, new Date(), { seq }));
   return { verdict, route: null, state };
 }
 
 /** A movement result: "Skip" and "Not sure" arrive here with state "unknown". */
 export function submitMovement(result: MovementResult, label: string): LiveOutcome {
-  useSession.getState().recordMovement(result);
-  return afterAnswer(result.movementId, result.state === 'unknown' ? 'unknown' : label);
+  const text = result.state === 'unknown' ? 'unknown' : label;
+  const store = useSession.getState();
+  const entry = store.logAnswer({ kind: 'movement', id: result.movementId, answer: null, movement: result, label: text });
+  store.recordMovement(result);
+  return afterAnswer(result.movementId, text, entry.seq);
 }
 
-/** A discriminator answer: "Not sure" and "Skip" arrive here with state "unknown" and value null. */
+/** A discriminator or structure-type answer: "Not sure" and "Skip" arrive here with state "unknown" and value null. */
 export function submitQuestion(answer: Answer): LiveOutcome {
-  useSession.getState().recordAnswer(answer);
-  return afterAnswer(answer.questionId, answer.state === 'unknown' ? 'unknown' : answer.value === true ? 'yes' : 'no');
+  const text = answer.state === 'unknown' ? 'unknown' : answer.value === true ? 'yes' : 'no';
+  const store = useSession.getState();
+  const entry = store.logAnswer({ kind: 'question', id: answer.questionId, answer, movement: null, label: text });
+  store.recordAnswer(answer);
+  return afterAnswer(answer.questionId, text, entry.seq);
+}
+
+export interface BackResult {
+  /** False when going back is not allowed (nothing to undo, or the gate escalated). */
+  ok: boolean;
+  reason?: 'empty' | 'escalated';
+  /** The answer that was undone: the screen shows that question again. */
+  undone?: HistoryEntry;
+  /** Where to go instead (the recomputed state is a gate stop), or null. */
+  route: string | null;
+  state: LiveState | null;
+}
+
+/**
+ * Back: the most recent active answer is superseded (kept in the log), everything is rebuilt from the answers that remain and
+ * recomputed from scratch (the narrowing and the category scores are not adjusted step by step), and the Severity Gate is run
+ * again on the full structured state. After an escalation back does nothing: the escalation stays.
+ */
+export function goBack(): BackResult {
+  const store = useSession.getState();
+  if (store.escalation) return { ok: false, reason: 'escalated', route: null, state: null };
+  const undone = store.supersedeLast();
+  if (!undone) return { ok: false, reason: 'empty', route: null, state: null };
+  useSession.getState().rebuildFromHistory();
+  const after = useSession.getState();
+  const verdict = after.runGate();
+  if (!isSafe(verdict)) {
+    after.setEscalation({ verdict, afterId: undone.id, at: new Date().toISOString() });
+    return { ok: true, undone, route: routeAfterGate(verdict, after.reaskDone), state: null };
+  }
+  const input = narrowingInputFrom(useSession.getState());
+  if (!input) return { ok: true, undone, route: null, state: null };
+  const state = evaluateLive(input, after.mode ?? 'region');
+  useSession.getState().recordNarrowing(snapshotOf(undone.id, 'back', state, verdict, new Date(), { recomputed: true }));
+  return { ok: true, undone, route: null, state };
+}
+
+/** The current answers in the order they were given (for "Review answers"). */
+export function activeHistory(): HistoryEntry[] {
+  return useSession.getState().history.filter((h) => !h.supersededAt);
+}
+
+/** Index of a movement or question in the steps of a mode, or -1. */
+export function stepIndexOf(mode: IntakeMode, id: string): number {
+  return liveSteps(mode).findIndex((st) => st.id === id);
 }
 
 /**

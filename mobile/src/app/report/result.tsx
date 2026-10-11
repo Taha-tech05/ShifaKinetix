@@ -11,6 +11,7 @@ import { MatchBar } from '../../components/narrowing/MatchBar';
 import { CategoryRows, muscleName, NarrowingChips, useCategoryName } from '../../components/narrowing/CandidateStrip';
 import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
+import { ASSISTANT_ENABLED } from '../../config';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
 import { approxAreaIds } from '../../narrowing/approxArea';
@@ -174,7 +175,12 @@ export default function Result() {
           </AppText>
         ) : (
           <>
-            {state?.structure.leader ? <CategoryRows categories={(state.structure.categories ?? []).filter((c) => c.category === state.structure.leader)} /> : null}
+            {state?.provisional ? (
+              <AppText variant="secondary" color={colors.muted} style={styles.bold}>
+                {t('live.possibleSoFar')}
+              </AppText>
+            ) : null}
+            {state?.structure.leader && !state.provisional ? <CategoryRows categories={(state.structure.categories ?? []).filter((c) => c.category === state.structure.leader)} /> : null}
             {state?.cluster ? (
               <AppText variant="secondary" color={colors.muted}>
                 {t('live.clusterNote')}
@@ -193,6 +199,11 @@ export default function Result() {
             </AppText>
           </>
         )}
+      {/*
+        EXTENSION POINT (assistant). Nothing is rendered here while ASSISTANT_ENABLED is false (shared/app_config.json), and it
+        must stay false in this phase: no button, no placeholder. A later phase may add its entry point below, behind the flag.
+      */}
+      {ASSISTANT_ENABLED ? null : null}
       </Screen>
     </SafeGuard>
   );

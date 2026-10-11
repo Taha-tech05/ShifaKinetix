@@ -171,8 +171,9 @@ describe('live screen: one idea at a time, tap to answer', () => {
       if (chips.length && chips[0] !== 'No pain' && chips[0] !== 'Not sure') press(tree, 'Next');
     };
     move(['Pain']); // sideways raise: deltoid and supraspinatus
-    expect(useSession.getState().liveState?.status).toBe('narrowing'); // one answer: no list yet
-    expect(textOf(tree.root)).toContain('Still narrowing - keep going');
+    expect(useSession.getState().liveState?.provisional).toBe(true);
+    expect(useSession.getState().liveState?.candidates.length).toBeGreaterThan(0); // highlighted after the first movement, not at the end
+    expect(textOf(tree.root)).toContain('Possible so far');
     press(tree, 'Skip'); // forward raise skipped
     move(['Pain']); // can position: supraspinatus
     const state = useSession.getState().liveState!;
@@ -275,11 +276,12 @@ describe('result screen = the last live state', () => {
     expect(list).not.toMatch(/\d/);
   });
 
-  it('with no candidates it says so and suggests a doctor; it does not invent a muscle', () => {
+  it('opened before the questions are finished it says the muscles are only possible so far; it does not claim a conclusion', () => {
     submitMovement(buildMovementResult('sideways_raise', { kind: 'skip' }), 'skip');
-    const tree = render(createElement(Result));
-    const all = textOf(tree.root);
-    expect(all).toContain('No muscles to show for this area.');
-    expect(all).toContain('A doctor can help find out more.');
+    const all = textOf(render(createElement(Result)).root);
+    expect(useSession.getState().liveState?.provisional).toBe(true);
+    expect(all).toContain('Possible so far');
+    expect(all).not.toContain('may not be a muscle problem');
+    expect(all).not.toContain('Matched:');
   });
 });

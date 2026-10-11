@@ -55,6 +55,8 @@ export interface Candidate {
 export interface NarrowingOutput {
   candidates: Candidate[];
   cluster: boolean;
+  /** OPTIONAL. True while the question set is not finished: the candidates are "possible so far", not a conclusion. */
+  provisional?: boolean;
 }
 
 const NOT_MUSCLE = /ligament|capsule|disc|labrum/i;
@@ -104,5 +106,5 @@ export function narrow(input: NarrowingInput): NarrowingOutput {
     matched: c.matched,
     unmatched: c.unmatched,
   }));
-  return { candidates: [...candidates, ...categories], cluster: isCluster(candidates) };
+  return { candidates: [...candidates, ...categories], cluster: isCluster(candidates), provisional: true };
 }

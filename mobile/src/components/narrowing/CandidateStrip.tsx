@@ -62,90 +62,47 @@ export function NarrowingChips() {
 }
 
 /**
- * The live strip under the model: what the answers point to so far.
- *  - fewer than two real answers: "Still narrowing - keep going", no list at all
- *  - candidates: muscle name, band (Low / Moderate / Higher) and a match bar, in no rank order, with no numbers
- *  - when the signal is enough (or the cap is reached): "Thanks, that's enough to go on"
+ * The live strip under the model: neutral, one compact block, muscles only. It never shows a category or a conclusion.
+ *  - the candidates are "Possible so far" (provisional) and are highlighted on the model from the first screen;
+ *  - before two answers that are not unknown: "Still narrowing - keep going", no bands;
+ *  - from then on each candidate carries a band (Low / Moderate / Higher), with "match strength, not a probability".
  */
 export function CandidateStrip({ state }: { state: LiveState | null }) {
   const t = useT();
-  const stop = state?.stop === true;
-  const category = state?.outcome === 'category';
-  const types = state && state.structure.categories.length > 0 ? state.structure.categories.filter((c) => c.strength > 0) : [];
-  const list = state && state.outcome === 'muscle' && state.status !== 'narrowing' ? state.candidates : [];
-  const headline = category
-    ? state?.categoryResult === 'UNCLEAR'
-      ? t('live.category.UNCLEAR')
-      : t('live.notMuscleTitle')
-    : stop
-      ? t('live.enough')
-      : !state
-        ? t('live.stillNarrowing')
-        : state.outcome === 'pending'
-          ? types.length > 0
-            ? t('live.typesSoFar')
-            : t('live.stillNarrowing')
-          : state.status === 'narrowing'
-            ? t('live.stillNarrowing')
-            : list.length === 0
-              ? t('live.noMatchYet')
-              : t('live.candidatesSoFar');
-  const shownTypes = category && state?.categoryResult && state.categoryResult !== 'UNCLEAR' ? types.filter((c) => c.category === state.categoryResult) : types;
+  const list = state?.candidates ?? [];
+  const bands = state?.bandsVisible === true;
+  const early = state?.outcome === 'muscle' && state.status === 'enough';
+  const headline = early ? t('live.enough') : !state || !bands ? t('live.stillNarrowing') : t('live.possibleSoFar');
+  const names = list.map((c) => (bands ? `${muscleName(c.muscleId)} (${t(`live.band.${c.band}` as const)})` : muscleName(c.muscleId))).join(' · ');
   return (
     <View style={styles.strip} accessibilityLiveRegion="polite">
       <View style={styles.head}>
-        <AppText variant="secondary" color={stop && !category ? colors.safe : colors.navy} style={styles.bold} numberOfLines={3}>
+        <AppText variant="secondary" color={early ? colors.safe : colors.navy} style={[styles.bold, styles.headline]}>
           {headline}
         </AppText>
         <NarrowingChips />
       </View>
-      {category ? (
-        <AppText variant="secondary" color={colors.muted}>
-          {state?.categoryResult === 'UNCLEAR' ? t('live.unclearBody') : t('live.notMuscleBody')}
+      {list.length > 0 ? (
+        <AppText variant="secondary" color={colors.navy} numberOfLines={1} style={styles.names}>
+          {state?.provisional && !bands ? `${t('live.possibleSoFar')}: ` : ''}
+          {names}
         </AppText>
       ) : null}
-      {state && state.outcome !== 'muscle' && shownTypes.length > 0 ? (
-        <>
-          <CategoryRows categories={shownTypes} />
-          <AppText variant="secondary" color={colors.muted} style={styles.italic}>
-            {t('live.matchCaption')}
-          </AppText>
-        </>
-      ) : null}
-      {list.length > 0 ? (
-        <>
-          {list.map((c) => (
-            <View key={c.muscleId} style={styles.row}>
-              <View style={styles.rowTop}>
-                <AppText variant="bodyStrong" color={colors.navy} style={styles.name} numberOfLines={2}>
-                  {muscleName(c.muscleId)}
-                </AppText>
-                <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
-                  <AppText variant="secondary" color={colors.navy} style={styles.bold}>
-                    {t(`live.band.${c.band}` as const)}
-                  </AppText>
-                </View>
-              </View>
-              <MatchBar strength={c.strength} band={c.band} />
-            </View>
-          ))}
-          {state?.cluster ? (
-            <AppText variant="secondary" color={colors.muted}>
-              {t('live.clusterNote')}
-            </AppText>
-          ) : null}
-          <AppText variant="secondary" color={colors.muted} style={styles.italic}>
-            {t('live.matchCaption')}
-          </AppText>
-        </>
+      {bands && list.length > 0 ? (
+        <AppText variant="secondary" color={colors.muted} style={styles.italic} numberOfLines={1}>
+          {state?.cluster ? `${t('live.clusterNote')} ` : ''}
+          {t('live.matchCaption')}
+        </AppText>
       ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  strip: { gap: 6, padding: 10, borderRadius: radius.lg, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
-  head: { gap: 6 },
+  strip: { gap: 2, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.lg, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
+  head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  headline: { flex: 1 },
+  names: { fontWeight: '600' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 26, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 13 },
   bold: { fontWeight: '700' },

@@ -228,10 +228,11 @@ export const en = {
     none: 'No muscles to show for this area.',
   },
   live: {
+    possibleSoFar: 'Possible so far',
     typesSoFar: 'Types so far',
     notMuscleTitle: 'This may not be a muscle problem',
-    notMuscleBody: 'Your answers point away from a muscle. A doctor or physio can check this properly.',
-    unclearBody: 'Your answers do not point to one clear type. A doctor or physio can help find out more.',
+    notMuscleBody: 'Your answers do not point to a muscle. This tool only looks at muscles, so it cannot rule out a problem in a joint, a bone or a nerve. A doctor or physio can check this properly.',
+    unclearBody: 'Your answers do not point to one clear type. This tool only looks at muscles, so it cannot rule out a problem in a joint, a bone or a nerve. A doctor or physio can help find out more.',
     talkPhysio: 'Talk to a doctor or physio',
     approxArea: 'approximate area',
     approxNote: 'The highlighted area is approximate. This structure is not shown in the model.',

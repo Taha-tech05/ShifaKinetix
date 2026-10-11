@@ -166,30 +166,40 @@ describe('the structure step decides before any muscle is shown', () => {
     expect(s.candidates.length).toBeGreaterThan(0);
   });
 
+  /** Fill the structure questions that are left with "Not sure", up to the cap, so the question set is finished. */
+  const complete = (given: A[]) => [...given, ...structureIds().filter((id) => !given.some((a) => a.questionId === id)).slice(0, STRUCTURE.maxQuestions - given.length).map(unsure)];
+  const moves = () => [buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: false }), buildMovementResult('can_position_hold', { kind: 'felt', pain: true, weak: false, couldNot: false })];
+
   it.each([
     ['nerve or neck', NERVE, 'NERVE_NECK'],
     ['bone', BONE, 'BONE'],
     ['joint or capsule', JOINT, 'JOINT_CAPSULE'],
-  ] as const)('when %s leads there is a category result and NO muscle list, even with muscle evidence', (_n, answers, leader) => {
-    const moves = [buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: false }), buildMovementResult('can_position_hold', { kind: 'felt', pain: true, weak: false, couldNot: false })];
-    const s = evaluateLive(input(answers, { movementResults: moves }));
-    expect(s.structure.leader).toBe(leader);
-    expect(s.outcome).toBe('category');
-    expect(s.categoryResult).toBe(leader);
-    expect(s.stop).toBe(true);
-    expect(s.muscleAllowed).toBe(false);
-    expect(s.candidates).toEqual([]);
+  ] as const)('when %s leads early, NOTHING is concluded and the muscles stay provisional; the conclusion comes after every question', (_n, answers, leader) => {
+    const early = evaluateLive(input(answers, { movementResults: moves() }));
+    expect(early.structure.leader).toBe(leader); // the score keeps running silently
+    expect(early.outcome).toBe('pending'); // but no category conclusion yet
+    expect(early.categoryResult).toBeNull();
+    expect(early.stop).toBe(false);
+    expect(early.provisional).toBe(true);
+    expect(early.candidates.length).toBeGreaterThan(0); // possible muscles are still shown
+    const done = evaluateLive(input(complete(answers), { movementResults: moves() }));
+    expect(done.structure.asked).toBe(STRUCTURE.maxQuestions);
+    expect(done.outcome).toBe('category');
+    expect(done.categoryResult).toBe(leader);
+    expect(done.stop).toBe(true);
+    expect(done.provisional).toBe(false);
+    expect(done.muscleAllowed).toBe(false);
+    expect(done.candidates).toEqual([]);
   });
 
-  it('mixed answers (no category stands out): no muscle list, the flow keeps asking until the cap, then "unclear"', () => {
+  it('mixed answers (no category stands out): nothing concluded while asking; "unclear" only after every structure question', () => {
     const mixed = [yes('Q_ST_TINGLE'), yes('Q_ST_CROSS_BODY'), yes('Q_ST_PASSIVE_BETTER')];
     const during = evaluateLive(input(mixed));
     expect(during.structure.leader).toBeNull();
     expect(during.outcome).toBe('pending');
-    expect(during.candidates).toEqual([]);
+    expect(during.candidates.length).toBeGreaterThan(0);
     expect(during.stop).toBe(false);
-    const filler = structureIds().filter((id) => !mixed.some((a) => a.questionId === id)).slice(0, STRUCTURE.maxQuestions - mixed.length).map(unsure);
-    const capped = evaluateLive(input([...mixed, ...filler]));
+    const capped = evaluateLive(input(complete(mixed)));
     expect(capped.structure.asked).toBe(STRUCTURE.maxQuestions);
     expect(capped.outcome).toBe('category');
     expect(capped.categoryResult).toBe('UNCLEAR');
@@ -304,27 +314,28 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
 });
 
 describe('screens', () => {
-  it('the live screen shows the category result, "Talk to a doctor or physio", and no muscle', () => {
+  it('the live screen never shows the non-muscle card while asking; it offers the result only after every question', () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
-    // bone tenderness yes, passive no: bone leads
-    press(tree, 'Yes');
-    press(tree, 'No');
-    const all = textOf(tree.root);
+    press(tree, 'Yes'); // bone point
+    press(tree, 'No'); // passive better: bone now leads, silently
+    let all = textOf(tree.root);
+    expect(useSession.getState().liveState?.structure.leader).toBe('BONE');
+    expect(all).not.toContain('may not be a muscle problem');
+    expect(all).not.toContain('Talk to a doctor or physio');
+    expect(all).not.toContain('See result');
+    expect(all).toContain('Possible so far');
+    for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) press(tree, 'Not sure');
+    all = textOf(tree.root);
     expect(useSession.getState().liveState?.categoryResult).toBe('BONE');
-    expect(all).toContain('This may not be a muscle problem');
-    expect(all).toContain('Talk to a doctor or physio');
     expect(all).toContain('See result');
-    expect(all).toContain('Not a diagnosis');
-    expect(all).toContain('Estimate');
-    expect(all).toContain('match strength, not a probability');
-    expect(all).not.toMatch(/Supraspinatus|Deltoid|Infraspinatus/);
+    expect(all).not.toContain('may not be a muscle problem'); // the conclusion is on the result screen
     expect(all).not.toMatch(/%/);
   });
 
-  it('the result is titled "Structures that may be involved" and equals the last live state (nothing is computed again)', () => {
-    submitQuestion(yes('Q_ST_TINGLE') as never);
-    submitQuestion(yes('Q_ST_NECK') as never);
+  it('the result is titled "Structures that may be involved", explains the non-muscle outcome in plain words and equals the last live state', () => {
+    const chosen = [yes('Q_ST_TINGLE'), yes('Q_ST_NECK')];
+    for (const a of [...chosen, ...structureIds().filter((id) => !chosen.some((c) => c.questionId === id)).slice(0, STRUCTURE.maxQuestions - 2).map(unsure)]) submitQuestion(a as never);
     const live = useSession.getState().liveState!;
     expect(live.categoryResult).toBe('NERVE_NECK');
     narrowSpy.mockClear();
@@ -333,12 +344,15 @@ describe('screens', () => {
     expect(narrowSpy).not.toHaveBeenCalled();
     expect(all).toContain('Structures that may be involved');
     expect(all).toContain('This may not be a muscle problem');
+    expect(all).toContain('This tool only looks at muscles');
+    expect(all).toContain('cannot rule out a problem in a joint, a bone or a nerve');
     expect(all).toContain('Nerve or neck');
     expect(all).toContain('Talk to a doctor or physio');
     expect(all).toContain('Matched: Do you feel tingling in your arm?');
     expect(all).toContain('approximate');
-    expect(all).not.toMatch(/%/);
+    expect(all).not.toMatch(/%|emergency|1122|urgent|call/i);
     expect(all).not.toMatch(/Supraspinatus/);
+    expect(all).not.toMatch(/assistant/i);
   });
 
   it('muscle result: the strip and the result still list muscles when muscle or tendon leads', () => {

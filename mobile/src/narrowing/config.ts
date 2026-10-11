@@ -6,6 +6,8 @@ export const NARROWING_LABEL: string = config.label;
 export const NARROWING = {
   /** Before this many answers that are not "unknown", no ranked list is shown. */
   minNonUnknownAnswers: config.minNonUnknownAnswers,
+  /** Bands appear only after this many answers that are not unknown (movements and all questions together). */
+  minAnswersForBands: config.minAnswersForBands,
   /** The top candidate must lead the next one by at least this much (match strength, 0 to 1) to stop early. */
   leadMargin: config.leadMargin,
   /** ... and have at least this many matched criteria. */

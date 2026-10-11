@@ -179,26 +179,39 @@ describe('the narrowing interface is unchanged (a replacement can drop the optio
     }
   });
 
-  it('the live engine still works when the narrowing returns no matched / unmatched fields', () => {
+  it('the live engine still works when the narrowing returns no matched / unmatched fields and no categories', () => {
     narrowSpy.mockImplementationOnce(() => ({ candidates: [{ muscleId: 'supraspinatus_muscle_right', confidence: 0.9, reason: 'x' }], cluster: false }));
     const s = evaluateLive(input({ movementResults: [painful('sideways_raise'), painful('can_position_hold')] }));
-    expect(s.candidates).toEqual([]); // no matched criteria reported: nothing to claim
-    expect(s.status).toBe('continue');
+    expect(s.candidates.map((c) => c.muscleId)).toEqual(['supraspinatus_muscle_right']); // shown as possible so far
+    expect(s.provisional).toBe(true);
+    expect(s.stop).toBe(false); // nothing matched is reported, so it never claims "enough"
   });
 });
 
 describe('live narrowing: when the list appears, when it stops', () => {
-  it('shows NO list before two answers that are not unknown, however many were skipped', () => {
-    let s = evaluateLive(input());
-    expect(s.status).toBe('narrowing');
-    expect(s.candidates).toEqual([]);
-    s = evaluateLive(input({ movementResults: [painful('sideways_raise'), skipped('forward_raise'), skipped('can_position_hold')] }));
-    expect(counts(input({ movementResults: [painful('sideways_raise'), skipped('forward_raise'), skipped('can_position_hold')] }))).toEqual({ asked: 3, nonUnknown: 1 });
-    expect(s.status).toBe('narrowing');
-    expect(s.candidates).toEqual([]);
-    s = evaluateLive(input({ movementResults: [painful('sideways_raise'), painful('can_position_hold')] }));
-    expect(s.status).not.toBe('narrowing');
+  const bare = (over: Partial<NarrowingInput> = {}): NarrowingInput => ({ ...input(), answers: [], ...over });
+
+  it('shows provisional candidates from the first screen, seeded from the tapped area, with no bands before two real answers', () => {
+    let s = evaluateLive(bare());
     expect(s.candidates.length).toBeGreaterThan(0);
+    expect(s.candidates.length).toBeLessThanOrEqual(3);
+    expect(s.provisional).toBe(true);
+    expect(s.bandsVisible).toBe(false);
+    expect(s.status).toBe('narrowing');
+    s = evaluateLive(bare({ movementResults: [painful('sideways_raise'), skipped('forward_raise'), skipped('can_position_hold')] }));
+    expect(counts(bare({ movementResults: [painful('sideways_raise'), skipped('forward_raise'), skipped('can_position_hold')] }))).toEqual({ asked: 3, nonUnknown: 1 });
+    expect(s.candidates.length).toBeGreaterThan(0); // after a skip too, without waiting for the end
+    expect(s.bandsVisible).toBe(false);
+    s = evaluateLive(bare({ movementResults: [painful('sideways_raise'), painful('can_position_hold')] }));
+    expect(s.bandsVisible).toBe(true); // two answers that are not unknown (movements and questions together)
+    expect(s.provisional).toBe(true);
+  });
+
+  it('the tapped muscle is the seed in exact mode, and the candidates are the muscles of the tapped area otherwise', () => {
+    const mesh = REGION_MAP.structures.teres_minor_muscle_right.meshNames[0];
+    expect(evaluateLive(bare({ hitMeshName: mesh, subRegionId: 'back' })).candidates[0].muscleId).toBe('teres_minor_muscle_right');
+    const area = new Set(['supraspinatus_muscle_right', 'acromial_part_of_deltoid_muscle_right', 'descending_part_of_trapezius_muscle_right', 'levator_scapulae_right', 'omohyoid_muscle_right']);
+    for (const c of evaluateLive(bare({ subRegionId: 'top' })).candidates) expect(area.has(c.muscleId)).toBe(true);
   });
 
   it('stops early when the top candidate leads by the margin with enough matched criteria: one muscle', () => {
@@ -237,11 +250,11 @@ describe('live narrowing: when the list appears, when it stops', () => {
     expect(before.stop).toBe(false); // one question fewer: not at the cap
   });
 
-  it('at the cap with fewer than two answers there is still no list', () => {
+  it('when the question set is finished the candidates stop being provisional', () => {
     const results = ['sideways_raise', 'forward_raise', 'can_position_hold', 'outward_push_elbow_at_side', 'belly_press', 'hand_behind_back'].map(skipped);
     const s = evaluateLive(input({ movementResults: results, answers: [unknown(q('Q_DQ_OVERHEAD')), unknown(q('Q_DQ_NIGHT')), unknown(q('Q_DQ_CARRY'))] }));
     expect(s.stop).toBe(true);
-    expect(s.candidates).toEqual([]);
+    expect(s.provisional).toBe(false);
   });
 
   it('bands are qualitative: low, moderate, higher', () => {
@@ -403,16 +416,18 @@ describe('what the patient sees: bands only, no numbers, no percentages', () => 
     expect(all).toContain('match strength, not a probability');
   });
 
-  it('before two answers the strip says "Still narrowing - keep going" and lists nothing', () => {
-    const state = evaluateLive(input({ movementResults: [painful('sideways_raise')] }));
+  it('before two answers the strip says "Still narrowing - keep going", names the possible muscles, and shows no band', () => {
+    const state = evaluateLive({ ...input({ movementResults: [painful('sideways_raise')] }), answers: [] });
     let tree!: ReturnType<typeof create>;
     act(() => {
       tree = create(<CandidateStrip state={state} />);
     });
     const all = texts(tree.root).join(' ');
     expect(all).toContain('Still narrowing - keep going');
-    expect(all).not.toContain('Supraspinatus');
-    expect(all).not.toContain('Deltoid');
+    expect(all).toContain('Possible so far');
+    expect(all).toMatch(/Supraspinatus|Deltoid/);
+    expect(all).not.toMatch(/Low|Moderate|Higher/);
+    expect(all).not.toMatch(/probability/);
   });
 
   it('no screen shows a rank number or a numbered list of candidates', () => {

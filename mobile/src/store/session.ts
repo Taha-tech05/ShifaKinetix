@@ -5,6 +5,8 @@ import { structuredGateInputs } from '../flow/gateInputs';
 import type { LiveState, NarrowingSnapshot } from '../narrowing/live';
 import { depthAnswerFrom } from '../dev/followUpQuestions';
 import type { NarrowingInput } from '../dev/narrowingStub';
+import { isDiscriminator } from '../narrowing/bank';
+import { isStructureQuestion } from '../narrowing/structureBank';
 import type { IntakeMode } from '../regions/regionMap';
 import type { BodySelection } from '../regions/types';
 
@@ -18,6 +20,35 @@ export interface MovementResult {
   unableToDo: boolean;
   measuredAngle: number | null;
   state: string;
+}
+
+/**
+ * One entry of the ordered answer history of the live flow. Nothing is deleted: an answer that is changed or undone stays in the
+ * log with `supersededAt` set, so a doctor view can see what the patient first said. The active entries (no `supersededAt`) are
+ * the current answers.
+ */
+export interface HistoryEntry {
+  /** 1, 2, 3, ... in the order the answers were given. */
+  seq: number;
+  kind: 'movement' | 'question';
+  /** movementId or questionId. */
+  id: string;
+  /** The answer in the shared format (questions). state "unknown" for "Not sure" and "Skip". */
+  answer: Answer | null;
+  /** The movement result (movements). */
+  movement: MovementResult | null;
+  /** A short label of the answer ("yes", "no", "unknown", "pain", ...). */
+  label: string;
+  at: string;
+  /** Set when the answer was changed or undone. */
+  supersededAt?: string;
+}
+
+/** A gate verdict other than SAFE that stopped the flow. It stays logged: going back never undoes it. */
+export interface Escalation {
+  verdict: Verdict;
+  afterId: string;
+  at: string;
 }
 
 export interface SessionState {
@@ -34,6 +65,10 @@ export interface SessionState {
   liveState: LiveState | null;
   /** One snapshot per answer, in order, so a doctor view can later show how the ranking evolved. */
   narrowingTrail: NarrowingSnapshot[];
+  /** Ordered answer history of the live flow, with superseded answers kept (audit trail). */
+  history: HistoryEntry[];
+  /** Set when the gate escalated during the live flow. */
+  escalation: Escalation | null;
 
   setMode: (mode: IntakeMode | null) => void;
   setReaskDone: (done: boolean) => void;
@@ -44,6 +79,13 @@ export interface SessionState {
   recordMovement: (result: MovementResult) => void;
   /** Stores the live state and appends the snapshot of this step. */
   recordNarrowing: (snapshot: NarrowingSnapshot) => void;
+  /** Appends an answer to the history; an active entry for the same question is superseded first. Returns the new entry. */
+  logAnswer: (entry: Pick<HistoryEntry, 'kind' | 'id' | 'answer' | 'movement' | 'label'>) => HistoryEntry;
+  /** Marks the most recent active entry (and its snapshots) as superseded and returns it, or null if there is none. */
+  supersedeLast: () => HistoryEntry | null;
+  /** Rebuilds `answers` and `movementResults` from the active history entries (other answers, such as the basics, are kept). */
+  rebuildFromHistory: () => void;
+  setEscalation: (e: Escalation) => void;
   reset: () => void;
 }
 
@@ -56,6 +98,8 @@ const initial = {
   movementResults: [] as MovementResult[],
   liveState: null as LiveState | null,
   narrowingTrail: [] as NarrowingSnapshot[],
+  history: [] as HistoryEntry[],
+  escalation: null as Escalation | null,
 };
 
 export const useSession = create<SessionState>((set, get) => ({
@@ -87,6 +131,41 @@ export const useSession = create<SessionState>((set, get) => ({
     })),
 
   recordNarrowing: (snapshot) => set((s) => ({ liveState: snapshot.state, narrowingTrail: [...s.narrowingTrail, snapshot] })),
+
+  logAnswer: (entry) => {
+    const now = new Date().toISOString();
+    const seq = get().history.length + 1;
+    const made: HistoryEntry = { seq, at: now, ...entry };
+    set((s) => ({
+      history: [...s.history.map((h) => (h.id === entry.id && !h.supersededAt ? { ...h, supersededAt: now } : h)), made],
+      narrowingTrail: s.narrowingTrail.map((t) => (t.afterId === entry.id && !t.supersededAt && t.seq !== undefined && t.seq !== seq ? { ...t, supersededAt: now } : t)),
+    }));
+    return made;
+  },
+
+  supersedeLast: () => {
+    const active = get().history.filter((h) => !h.supersededAt);
+    const last = active[active.length - 1];
+    if (!last) return null;
+    const now = new Date().toISOString();
+    set((s) => ({
+      history: s.history.map((h) => (h.seq === last.seq ? { ...h, supersededAt: now } : h)),
+      narrowingTrail: s.narrowingTrail.map((t) => (t.seq === last.seq && !t.supersededAt ? { ...t, supersededAt: now } : t)),
+    }));
+    return { ...last, supersededAt: now };
+  },
+
+  rebuildFromHistory: () =>
+    set((s) => {
+      const active = s.history.filter((h) => !h.supersededAt);
+      const isLive = (id: string) => isDiscriminator(id) || isStructureQuestion(id);
+      return {
+        answers: [...s.answers.filter((a) => !isLive(a.questionId)), ...active.filter((h) => h.kind === 'question' && h.answer).map((h) => h.answer as Answer)],
+        movementResults: active.filter((h) => h.kind === 'movement' && h.movement).map((h) => h.movement as MovementResult),
+      };
+    }),
+
+  setEscalation: (escalation) => set((s) => (s.escalation ? {} : { escalation })),
 
   reset: () => set({ ...initial }),
 }));
