@@ -213,6 +213,10 @@ export const en = {
     weak: 'Weak',
     couldNot: 'Could not do it',
     simplified: 'Simplified diagram',
+    replay: 'Replay',
+    resetView: 'Reset view',
+    viewHint: 'Drag to turn, pinch to zoom',
+    layerLabel: 'Layer',
   },
   result: {
     title: 'Muscles that may be involved',

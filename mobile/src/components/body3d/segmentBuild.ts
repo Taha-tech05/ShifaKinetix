@@ -1,0 +1,106 @@
+// Builds the segment meshes of the animated body from the pack, and fades a structure's material. No React or GL here, so
+// it can be tested. The base material is the same one the picker uses (viewerSetup.createBodyMaterial): opaque, depth
+// written. Only a tracked structure gets a material of its own, and only that one is ever tinted or ghosted.
+import * as THREE from 'three';
+import { ARM_RIG } from '../../movement/rig';
+import { groupLookup, splitIndicesTagged } from '../../movement/split';
+import type { Group } from '../../movement/split';
+import { structureIdOfMesh } from '../../regions/regionMap';
+import { layerVisible } from '../../regions/select';
+import type { BodyLayer } from '../../regions/types';
+import type { LoadedPack } from '../../screens/model3d/loadPack';
+import { GHOST_OPACITY } from './highlightPlan';
+import { createBodyMaterial } from './viewerSetup';
+
+export const GROUPS: Group[] = ['trunk', 'girdle', 'upper', 'forearm'];
+const TINT_COLOR = new THREE.Color(0.35, 0.95, 1.0);
+const TINT_EMISSIVE = new THREE.Color(0.0, 0.3, 0.42);
+const WHITE = new THREE.Color(1, 1, 1);
+const BLACK = new THREE.Color(0, 0, 0);
+
+export type Built = {
+  root: THREE.Group;
+  groups: Record<Group, THREE.Group>;
+  materials: Map<string, THREE.MeshStandardMaterial>;
+  dispose: () => void;
+  triangles: number;
+  meshes: number;
+};
+
+/**
+ * Build segment meshes from the pack parts of the visible layer. Triangles of the `tracked` structures get their own
+ * mesh and material (by structure id); everything else uses one base material made from the same parameters as the picker.
+ */
+export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer, tracked: ReadonlySet<string> = new Set()): Built {
+  const groupOf = groupLookup(ARM_RIG);
+  const tagOf = (name: string) => {
+    if (tracked.size === 0) return null;
+    const id = structureIdOfMesh(name);
+    return id && tracked.has(id) ? id : null;
+  };
+  const root = new THREE.Group();
+  const groups = {} as Record<Group, THREE.Group>;
+  for (const g of GROUPS) {
+    groups[g] = new THREE.Group();
+    groups[g].matrixAutoUpdate = false;
+    root.add(groups[g]);
+  }
+  const base = createBodyMaterial();
+  const materials = new Map<string, THREE.MeshStandardMaterial>();
+  const geometries: THREE.BufferGeometry[] = [];
+  let triangles = 0;
+  let meshes = 0;
+  for (const part of pack.parts) {
+    if (!layerVisible(part.layer, layer)) continue;
+    const pieces = splitIndicesTagged({ names: part.names, triStart: part.triStart, triCount: part.triCount, indices: part.indices }, groupOf, tagOf);
+    const src = part.mesh.geometry;
+    const onlyTrunk = pieces.length === 1 && pieces[0].group === 'trunk' && pieces[0].tag === null;
+    for (const piece of pieces) {
+      const g = new THREE.BufferGeometry();
+      for (const name of ['position', 'normal', 'color']) g.setAttribute(name, src.getAttribute(name));
+      // an untouched part reuses the pack's own index buffer; only split parts get new, smaller ones
+      g.setIndex(onlyTrunk ? src.getIndex() : new THREE.BufferAttribute(piece.index, 1));
+      g.boundingBox = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
+      g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(3));
+      geometries.push(g);
+      let material = base;
+      if (piece.tag !== null) {
+        material = materials.get(piece.tag) ?? createBodyMaterial();
+        materials.set(piece.tag, material);
+      }
+      const mesh = new THREE.Mesh(g, material);
+      mesh.position.copy(part.mesh.position);
+      mesh.scale.copy(part.mesh.scale);
+      mesh.frustumCulled = false;
+      groups[piece.group].add(mesh);
+      triangles += piece.triangles;
+      meshes++;
+    }
+  }
+  return {
+    root,
+    groups,
+    materials,
+    triangles,
+    meshes,
+    dispose: () => {
+      // shared attributes belong to the pack; only the geometries and materials created here are released
+      geometries.forEach((g) => g.dispose());
+      base.dispose();
+      materials.forEach((m) => m.dispose());
+    },
+  };
+}
+
+/** Set one structure's material to a tint amount and a ghost amount (both 0 to 1). At 0 and 0 it is the picker's look. */
+export function fadeMaterial(m: THREE.MeshStandardMaterial, tint: number, ghost: number): void {
+  m.color.copy(WHITE).lerp(TINT_COLOR, tint);
+  m.emissive.copy(BLACK).lerp(TINT_EMISSIVE, tint);
+  const transparent = ghost > 0.001;
+  if (m.transparent !== transparent) {
+    m.transparent = transparent;
+    m.needsUpdate = true;
+  }
+  m.opacity = 1 - (1 - GHOST_OPACITY) * ghost;
+  m.depthWrite = ghost < 0.5;
+}

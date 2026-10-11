@@ -27,6 +27,7 @@ export default function MovementScreen() {
   const mode = useSession((s) => s.mode);
   const recordMovement = useSession((s) => s.recordMovement);
   const [cameraNote, setCameraNote] = useState(false);
+  const [touching, setTouching] = useState(false);
   const i = Math.max(0, Math.min(MOVEMENT_COUNT - 1, Number(params.i ?? 0) || 0));
   const movement = MOVEMENTS[i];
 
@@ -36,6 +37,7 @@ export default function MovementScreen() {
         <Redirect href="/report/followup" />
       ) : (
         <Screen
+          scrollEnabled={!touching}
           onBack={() => router.back()}
           banner={<CautionStrip text={localized(movement.caution)} />}
           footer={
@@ -56,7 +58,7 @@ export default function MovementScreen() {
           <AppText variant="h1" color={colors.navy}>
             {localized(movement.name)}
           </AppText>
-          <MovementStage movement={movement} />
+          <MovementStage movement={movement} height={360} onInteract={setTouching} />
           <Card row>
             <IconTile icon="information-circle-outline" tone="teal" />
             <AppText variant="body" style={styles.col}>

@@ -8,6 +8,8 @@ import { PanResponder, Pressable, ScrollView, StyleSheet, View } from 'react-nat
 import type { LayoutChangeEvent } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Boundary } from '../../components/body3d/Boundary';
+import { createCameraRig, presetFacing, resetView, setPreset } from '../../components/body3d/cameraRig';
+import type { CameraRig } from '../../components/body3d/cameraRig';
 import { SegmentedBody } from '../../components/body3d/SegmentedBody';
 import type { AnimControl, FrameInfo } from '../../components/body3d/SegmentedBody';
 import { usePack } from '../../components/body3d/usePack';
@@ -68,6 +70,12 @@ export default function DevAnim() {
   const lastLog = useRef(0);
   const control = useRef<AnimControl>({ playing: params.paused !== '1', speed, seek: startT, t: startT });
   const movement = MOVEMENTS.find((m) => m.id === id) ?? MOVEMENTS[0];
+  const rig = useRef<CameraRig | null>(null);
+  if (rig.current === null) rig.current = createCameraRig(view ? presetFacing(movement.camera, view) : movement.camera);
+  // a movement or a Front/Side choice sets the preset; a touch on the model stops it until Reset view
+  useEffect(() => {
+    setPreset(rig.current!, view ? presetFacing(movement.camera, view) : movement.camera);
+  }, [movement, view]);
 
   // The router can fill the link parameters in after the first render, so apply them whenever they change.
   useEffect(() => {
@@ -133,7 +141,7 @@ export default function DevAnim() {
       <View style={styles.stage}>
         {pack.status === 'ready' && pack.pack && focused && !failed ? (
           <Boundary onError={() => setFailed(true)}>
-            <SegmentedBody pack={pack.pack} movement={movement} layer={layer} control={control} view={view ?? undefined} onFrame={onFrame} />
+            <SegmentedBody pack={pack.pack} movement={movement} layer={layer} control={control} cameraRig={rig as React.MutableRefObject<CameraRig>} onFrame={onFrame} />
           </Boundary>
         ) : (
           <View style={styles.center}>
@@ -164,8 +172,9 @@ export default function DevAnim() {
         ))}
       </View>
       <View style={styles.row}>
-        <Chip label="Front" on={(view ?? movement.view) === 'front'} onPress={() => setView('front')} />
-        <Chip label="Side" on={(view ?? movement.view) === 'side'} onPress={() => setView('side')} />
+        <Chip label="Front" on={view === 'front'} onPress={() => { setView('front'); resetView(rig.current!); }} />
+        <Chip label="Side" on={view === 'side'} onPress={() => { setView('side'); resetView(rig.current!); }} />
+        <Chip label="Reset view" on={false} onPress={() => resetView(rig.current!)} />
         <Chip label="Muscle" on={layer === 'muscle'} onPress={() => setLayer('muscle')} />
         <Chip label="Bone" on={layer === 'bone'} onPress={() => setLayer('bone')} />
       </View>

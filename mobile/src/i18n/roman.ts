@@ -215,6 +215,10 @@ export const roman: Translations = {
     weak: 'Kamzori',
     couldNot: 'Nahi kar saka',
     simplified: 'Saada khaka',
+    replay: 'Dobara chalayein',
+    resetView: 'View reset karein',
+    viewHint: 'Ghumane ke liye drag karein, bara karne ke liye pinch karein',
+    layerLabel: 'Tah',
   },
   result: {
     title: 'Woh pattho jo shamil ho sakte hain',

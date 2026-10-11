@@ -215,6 +215,10 @@ export const ur: Translations = {
     weak: 'کمزوری',
     couldNot: 'نہیں کر سکا',
     simplified: 'سادہ خاکہ',
+    replay: 'دوبارہ چلائیں',
+    resetView: 'منظر ری سیٹ کریں',
+    viewHint: 'گھمانے کے لیے ڈریگ کریں، بڑا کرنے کے لیے دو انگلیوں سے چٹکی لگائیں',
+    layerLabel: 'تہہ',
   },
   result: {
     title: 'وہ پٹھے جو شامل ہو سکتے ہیں',

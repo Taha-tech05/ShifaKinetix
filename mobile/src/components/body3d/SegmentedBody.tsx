@@ -1,34 +1,36 @@
-// The real 3D body (lite pack) animated with rigid segments, pivots and keyframes.
+// The real 3D body (lite pack) animated with rigid segments, pivots and keyframes, in the same viewer setup as the picker.
 // The pack is NOT changed or rebuilt. Each moving segment is a new mesh that shares the pack's vertex, normal and colour
 // buffers and has its own index list (see movement/split.ts). The segments sit under groups whose matrices come from
-// movement/rig.ts. Trunk and the left side never move. Muscles use rigid assignment, so a muscle that crosses a joint
-// is cut at the joint instead of stretching (no skinning).
+// movement/rig.ts. Trunk and the other arm never move. Muscles use rigid assignment, so a muscle that crosses a joint is
+// cut at the joint instead of stretching (no skinning).
+//
+// Three things are kept apart on purpose:
+//  - the ANIMATION only writes segment matrices (stepClock + armTransforms), never the camera;
+//  - the CAMERA is a state object (cameraRig.ts) changed only by the user's touch and by "Reset view";
+//  - EMPHASIS (tint, ghost) is a per-structure material, so the model as a whole is never made transparent.
 import { Canvas, useFrame, useThree } from '@react-three/fiber/native';
 import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as THREE from 'three';
+import { stepClock } from '../../movement/animationStep';
+import type { AnimControl } from '../../movement/animationStep';
 import { apply, armTransforms, arrowDirection, ARM_RIG, jointPositions, lengthOf, sub3 } from '../../movement/rig';
 import type { Mat4, Vec3 } from '../../movement/rig';
-import { groupLookup, splitIndices } from '../../movement/split';
-import type { Group } from '../../movement/split';
 import { poseAt } from '../../movement/pose';
 import type { Pose } from '../../movement/pose';
 import type { Movement } from '../../movement/movements';
-import { layerVisible } from '../../regions/select';
-import { meshNamesOfStructures } from '../../regions/regionMap';
 import type { BodyLayer } from '../../regions/types';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
+import { positionOf, stepFraming } from './cameraRig';
+import type { CameraRig } from './cameraRig';
+import { NO_EMPHASIS } from './highlightPlan';
+import type { Emphasis } from './highlightPlan';
+import { useViewerGestures } from './useViewerGestures';
+import { buildSegments, fadeMaterial } from './segmentBuild';
+import { AMBIENT_INTENSITY, KEY_LIGHT, VIEWER_FOV } from './viewerSetup';
 
-/** Playback state, changed by the screen and read every frame. */
-export interface AnimControl {
-  playing: boolean;
-  /** 0.25, 0.5 or 1 for the dev screen; 1 for patients. */
-  speed: number;
-  /** Set to a loop fraction (0 to 1) to jump there (scrubbing); the scene clears it. */
-  seek: number | null;
-  /** Current loop fraction, written by the scene. */
-  t: number;
-}
+export type { AnimControl } from '../../movement/animationStep';
+export { buildSegments, fadeMaterial } from './segmentBuild';
 
 export interface FrameInfo {
   t: number;
@@ -43,103 +45,69 @@ export interface SegmentedBodyProps {
   movement: Movement;
   layer: BodyLayer;
   control: React.MutableRefObject<AnimControl>;
-  view?: 'front' | 'side';
-  /** Dim the muscles that are not suggested (only in the Muscle layer). */
-  dimOthers?: boolean;
+  /** Camera state, owned by the screen (so its buttons can reset it). Only the user's touch and "Reset view" change it. */
+  cameraRig: React.MutableRefObject<CameraRig>;
+  /** Structures that can be tinted or ghosted. Each gets its own material; the rest share the base material. */
+  tracked?: string[];
+  /** What to tint and ghost right now. Changes cross-fade. */
+  emphasis?: Emphasis;
+  /** Called with true while a finger is on the model, false when it lifts (the screen switches its scrolling off). */
+  onInteract?: (active: boolean) => void;
   onFrame?: (info: FrameInfo) => void;
   onFirstFrame?: () => void;
 }
 
-const FOV = 45;
-const TARGET: Vec3 = [-0.25, 1.33, -0.03]; // middle of the right shoulder and arm
-const DISTANCE = 1.9;
-const GROUPS: Group[] = ['trunk', 'girdle', 'upper', 'forearm'];
 const ARROW_LENGTH = 0.16;
-
-type Built = { root: THREE.Group; groups: Record<Group, THREE.Group>; dispose: () => void; triangles: number; meshes: number };
-
-/** Build segment meshes from the pack parts of the visible layer. */
-export function buildSegments(pack: LoadedPack, layer: BodyLayer, highlight: Set<string>, dim: boolean): Built {
-  const groupOf = groupLookup(ARM_RIG);
-  const root = new THREE.Group();
-  const groups = {} as Record<Group, THREE.Group>;
-  for (const g of GROUPS) {
-    groups[g] = new THREE.Group();
-    groups[g].matrixAutoUpdate = false;
-    root.add(groups[g]);
-  }
-  const normal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.05 });
-  const dimmed = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.05, transparent: true, opacity: 0.25, depthWrite: false });
-  const hl = new THREE.MeshStandardMaterial({ color: '#00E5FF', emissive: '#007A99', emissiveIntensity: 0.6, roughness: 0.4, metalness: 0.0 });
-  const geometries: THREE.BufferGeometry[] = [];
-  let triangles = 0;
-  let meshes = 0;
-  for (const part of pack.parts) {
-    if (!layerVisible(part.layer, layer)) continue;
-    const pieces = splitIndices({ names: part.names, triStart: part.triStart, triCount: part.triCount, indices: part.indices }, groupOf, (n) => highlight.has(n));
-    const src = part.mesh.geometry;
-    const onlyTrunk = pieces.length === 1 && pieces[0].group === 'trunk' && !pieces[0].highlight;
-    for (const piece of pieces) {
-      const g = new THREE.BufferGeometry();
-      for (const name of ['position', 'normal', 'color']) g.setAttribute(name, src.getAttribute(name));
-      // an untouched part reuses the pack's own index buffer; only split parts get new, smaller ones
-      g.setIndex(onlyTrunk ? src.getIndex() : new THREE.BufferAttribute(piece.index, 1));
-      g.boundingBox = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
-      g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(3));
-      geometries.push(g);
-      const material = piece.highlight ? hl : dim && layer === 'muscle' ? dimmed : normal;
-      const mesh = new THREE.Mesh(g, material);
-      mesh.position.copy(part.mesh.position);
-      mesh.scale.copy(part.mesh.scale);
-      mesh.frustumCulled = false;
-      groups[piece.group].add(mesh);
-      triangles += piece.triangles;
-      meshes++;
-    }
-  }
-  return {
-    root,
-    groups,
-    triangles,
-    meshes,
-    dispose: () => {
-      // shared attributes belong to the pack; only the geometries and materials created here are released
-      geometries.forEach((g) => g.dispose());
-      normal.dispose();
-      dimmed.dispose();
-      hl.dispose();
-    },
-  };
-}
+/** Seconds for a tint or ghost to fade in or out. */
+const FADE_SECONDS = 0.35;
 
 function setMatrix(g: THREE.Group, m: Mat4) {
   g.matrix.fromArray(m);
   g.matrixWorldNeedsUpdate = true;
 }
 
-function Scene({ pack, movement, layer, control, view, dimOthers = true, onFrame, onFirstFrame }: SegmentedBodyProps) {
+/** Applies the camera state to the three.js camera and keeps the key light on the camera side, as in the picker. */
+function CameraDriver({ rig, light }: { rig: React.MutableRefObject<CameraRig>; light: THREE.DirectionalLight }) {
   const { camera } = useThree();
-  const light = useRef<THREE.DirectionalLight>(null);
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  useFrame((_, dt) => {
+    const r = rig.current;
+    stepFraming(r, dt);
+    const v = r.view;
+    const p = positionOf(v);
+    camera.position.set(p[0], p[1], p[2]);
+    camera.lookAt(v.target[0], v.target[1], v.target[2]);
+    const cam = camera as THREE.PerspectiveCamera;
+    if (cam.fov !== v.fov || cam.zoom !== v.zoom) {
+      cam.fov = v.fov;
+      cam.zoom = v.zoom;
+      cam.updateProjectionMatrix();
+    }
+    camera.updateMatrixWorld();
+    light.target.position.set(v.target[0], v.target[1], v.target[2]);
+    tmp.set(KEY_LIGHT.position[0], KEY_LIGHT.position[1], KEY_LIGHT.position[2]).applyQuaternion(camera.quaternion);
+    light.position.set(v.target[0] + tmp.x, v.target[1] + tmp.y, v.target[2] + tmp.z);
+    light.updateMatrixWorld();
+    light.target.updateMatrixWorld();
+  });
+  return null;
+}
+
+function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = NO_EMPHASIS, onFrame, onFirstFrame }: SegmentedBodyProps) {
   const arrow = useRef<THREE.ArrowHelper | null>(null);
   const frames = useRef(0);
   const fps = useRef({ n: 0, t0: 0, value: 0 });
   const lastReport = useRef(0);
-  const effectiveView = view ?? movement.view;
-
-  const highlight = useMemo(() => new Set(layer === 'muscle' ? meshNamesOfStructures(movement.suggestsStructures) : []), [movement, layer]);
-  const built = useMemo(() => buildSegments(pack, layer, highlight, dimOthers && highlight.size > 0), [pack, layer, highlight, dimOthers]);
+  const light = useMemo(() => new THREE.DirectionalLight(0xffffff, KEY_LIGHT.intensity), []);
+  const trackedKey = (tracked ?? []).join('|');
+  const trackedSet = useMemo(() => new Set(tracked ?? []), [trackedKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const built = useMemo(() => buildSegments(pack, layer, trackedSet), [pack, layer, trackedSet]);
   useEffect(() => () => built.dispose(), [built]);
 
-  // camera: front looks at the right shoulder from the front, side from the patient's right
-  useEffect(() => {
-    const t = new THREE.Vector3(...TARGET);
-    if (effectiveView === 'front') camera.position.set(t.x, t.y, t.z + DISTANCE);
-    else camera.position.set(t.x - DISTANCE, t.y, t.z);
-    camera.lookAt(t);
-    camera.updateProjectionMatrix();
-    if (effectiveView === 'front') light.current?.position.set(0.5, 2, 3);
-    else light.current?.position.set(-3, 2, 0.5);
-  }, [camera, effectiveView]);
+  // current and target emphasis per tracked structure (a ref: it changes every frame while fading)
+  const target = useRef<Emphasis>(emphasis);
+  target.current = emphasis;
+  const current = useRef(new Map<string, { tint: number; ghost: number }>());
 
   // resist arrow
   useEffect(() => {
@@ -159,14 +127,10 @@ function Scene({ pack, movement, layer, control, view, dimOthers = true, onFrame
   }, [built, movement]);
 
   useFrame((state, dt) => {
+    // ---- animation: time -> pose -> segment matrices. Nothing here reads or writes the camera. ----
     const c = control.current;
-    if (c.seek !== null) {
-      c.t = c.seek;
-      c.seek = null;
-    } else if (c.playing) {
-      c.t = (c.t + (dt * c.speed) / movement.loopSeconds) % 1;
-    }
-    const pose = poseAt(movement, c.t);
+    const t = stepClock(c, dt, movement.loopSeconds);
+    const pose = poseAt(movement, t);
     const tr = armTransforms(pose);
     setMatrix(built.groups.girdle, tr.girdle);
     setMatrix(built.groups.upper, tr.upper);
@@ -186,6 +150,20 @@ function Scene({ pack, movement, layer, control, view, dimOthers = true, onFrame
         a.setDirection(new THREE.Vector3(...dir));
       }
     }
+
+    // ---- emphasis: cross-fade tint and ghost per structure ----
+    const step = Math.min(1, dt / FADE_SECONDS);
+    built.materials.forEach((m, id) => {
+      const cur = current.current.get(id) ?? { tint: 0, ghost: 0 };
+      const wantTint = target.current.tint[id] ?? 0;
+      const wantGhost = target.current.ghost[id] ?? 0;
+      const nt = cur.tint + Math.max(-step, Math.min(step, wantTint - cur.tint));
+      const ng = cur.ghost + Math.max(-step, Math.min(step, wantGhost - cur.ghost));
+      if (nt !== cur.tint || ng !== cur.ghost || !current.current.has(id)) {
+        current.current.set(id, { tint: nt, ghost: ng });
+        fadeMaterial(m, nt, ng);
+      }
+    });
 
     frames.current++;
     if (frames.current === 2) onFirstFrame?.();
@@ -209,18 +187,23 @@ function Scene({ pack, movement, layer, control, view, dimOthers = true, onFrame
 
   return (
     <>
-      <ambientLight intensity={1.2} />
-      <directionalLight ref={light} intensity={2} position={[0.5, 2, 3]} />
+      <CameraDriver rig={cameraRig} light={light} />
+      <ambientLight intensity={AMBIENT_INTENSITY} />
+      <primitive object={light} />
+      <primitive object={light.target} />
       <primitive object={built.root} />
     </>
   );
 }
 
-/** Canvas with the animated, segmented body. */
+/** Canvas with the animated, segmented body. One finger turns the view, two fingers zoom and pan. */
 export function SegmentedBody(props: SegmentedBodyProps) {
+  const { panHandlers, onLayout } = useViewerGestures(props.cameraRig, props.onInteract);
+  const v = props.cameraRig.current.view;
+  const p = positionOf(v);
   return (
-    <View style={styles.fill}>
-      <Canvas camera={{ fov: FOV, near: 0.05, far: 20, position: [TARGET[0], TARGET[1], TARGET[2] + DISTANCE] }}>
+    <View style={styles.fill} onLayout={onLayout} {...panHandlers}>
+      <Canvas camera={{ fov: VIEWER_FOV, near: 0.05, far: 20, position: p }}>
         <Scene {...props} />
       </Canvas>
     </View>

@@ -18,6 +18,8 @@ export interface SplitPiece {
   group: Group;
   /** Triangles of structures that are highlighted (they get their own mesh and material). */
   highlight: boolean;
+  /** Tag of the triangles' structures (a structure id), or null for the untagged rest. Each tag gets its own material. */
+  tag: string | null;
   index: Uint32Array;
   triangles: number;
 }
@@ -33,16 +35,17 @@ export function groupLookup(rig: Pick<ArmRig, 'segments'>): (meshName: string) =
 }
 
 /**
- * Split the triangles of a part into pieces by (group, highlight). The pieces together hold every triangle exactly once.
- * `highlight` names are matched against mesh names.
+ * Split the triangles of a part into pieces by (group, tag). The pieces together hold every triangle exactly once.
+ * `tagOf` maps a mesh name to a tag (or null); each tag can then get its own material (tint, ghost) without changing
+ * the base material of the rest of the model.
  */
-export function splitIndices(input: SplitInput, groupOf: (meshName: string) => Group, isHighlight: (meshName: string) => boolean = () => false): SplitPiece[] {
-  const buckets = new Map<string, { group: Group; highlight: boolean; ranges: [number, number][] }>();
+export function splitIndicesTagged(input: SplitInput, groupOf: (meshName: string) => Group, tagOf: (meshName: string) => string | null): SplitPiece[] {
+  const buckets = new Map<string, { group: Group; tag: string | null; ranges: [number, number][] }>();
   for (let m = 0; m < input.names.length; m++) {
     const group = groupOf(input.names[m]);
-    const highlight = isHighlight(input.names[m]);
-    const key = `${group}|${highlight ? 1 : 0}`;
-    if (!buckets.has(key)) buckets.set(key, { group, highlight, ranges: [] });
+    const tag = tagOf(input.names[m]);
+    const key = `${group}|${tag ?? ''}`;
+    if (!buckets.has(key)) buckets.set(key, { group, tag, ranges: [] });
     buckets.get(key)!.ranges.push([input.triStart[m], input.triCount[m]]);
   }
   const pieces: SplitPiece[] = [];
@@ -56,7 +59,12 @@ export function splitIndices(input: SplitInput, groupOf: (meshName: string) => G
       index.set(input.indices.subarray(s * 3, (s + c) * 3), o);
       o += c * 3;
     }
-    pieces.push({ group: b.group, highlight: b.highlight, index, triangles });
+    pieces.push({ group: b.group, highlight: b.tag !== null, tag: b.tag, index, triangles });
   }
   return pieces;
+}
+
+/** Like splitIndicesTagged with one tag ("highlight") for the names that are highlighted. */
+export function splitIndices(input: SplitInput, groupOf: (meshName: string) => Group, isHighlight: (meshName: string) => boolean = () => false): SplitPiece[] {
+  return splitIndicesTagged(input, groupOf, (n) => (isHighlight(n) ? 'highlight' : null));
 }
