@@ -1,27 +1,13 @@
-Shoulder intake previously contained placeholder questions and a gate that
-could clear incomplete input. This change adds 20 sourced draft questions,
-19 rules, strict typed-answer validation, and clarification/referral handling.
-Missing required answers cannot be SAFE. A second uncertain safety response
-routes to clinical review.
+The shoulder safety flow now runs inside Taha's merged app (PRs #3?#5), replacing the runtime gate stub. It uses 20 sourced draft questions, 19 canonical rules, strict safety-answer validation, persisted clarification and a conservative adapter for app safety signals. Incomplete or uncertain safety input cannot grant SAFE.
 
-Answers, clarification state, content and pending updates persist in SQLite.
-The gate re-evaluates saved answers without network access. Question screens
-run in an Expo Router demo; the doctor report component has no patient route
-and awaits an authenticated server loader. Clinical review materials and
-integration instructions are included. All clinical content remains draft,
-awaiting clinician review; use fictional data only.
+Safety answers and retry events persist transactionally in SQLite. Explicit resume restores the same assessment and recomputes its gate; protected screens verify saved clearance before displaying movements. B's result, movement, live driver, theme and components remain unchanged; the store change is the agreed evaluator import only. Clinical material remains draft, awaiting clinician review.
 
-Validation: 67 TypeScript tests, 8 real SQLite tests, 80 Python source/health
-checks, lint, typecheck and Android bundle export passed locally. CI adds real
-SQLite testing and complete output comparison between both gate evaluators.
+Validation: 388 mobile tests and 11 actual SQLite tests; TypeScript and targeted safety lint pass. The combined Android Metro export passes (not an APK or phone test). Narrowing/UI unit tests inject a gate outcome; separate integration tests exercise the real gate/store/guard/live submit functions.
 
-**Draft / do not merge:** C's existing Python evaluator does not implement the
-new shared contract: all 40 parity cases currently fail. C must implement
-`docs/gate-contract.md` and approve the rule changes; do not skip or weaken
-these tests. B must integrate the screens and authorized doctor flow into the
-shell. Server sync, real-device airplane-mode testing, clinician review and
-administrator verification of branch protection remain pending.
+**Draft ? do not merge:**
+- C's Python placeholder still fails all 40 parity fixtures (KeyError: when). Implement docs/gate-contract.md and review shared rules plus the app-signal adapter policy.
+- Full lint has 75 errors in nine unchanged B-owned files. Keep lint enabled; see docs/person-a-handoff.md.
+- B must move initial/fallback narrowing behind verified clearance and await safety checkpoints in the live submit/back flow. Current route checkpoints are not a complete durable live-event/audit pipeline.
+- Server transport/doctor authorization, real-device airplane-mode acceptance, clinician review and administrator verification of protection remain pending.
 
-Zaid has push access but cannot administer branch protection. No server
-implementation files were changed. Preserve the sequential commits with a
-normal merge after the required independent reviews and green checks.
+See docs/safety-integration.md and docs/person-a-handoff.md for the exact interfaces and ownership handoffs. Preserve sequential commits with a normal merge after required independent reviews and green checks.

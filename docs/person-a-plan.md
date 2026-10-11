@@ -7,6 +7,14 @@ Start point: PR #1 merged into develop at 27455cb. Work lives on
 feature/A-gate; never push directly to develop or main. Preserve small commits
 with a normal merge, without Co-authored-by trailers.
 
+## Integration update (2026-10-12)
+
+PRs #3?#5 are merged. A has merged develop into feature/A-gate and replaced the
+runtime gate stub in the team app. See person-a-handoff.md for current results
+and safety-integration.md for the adapter, SQLite and remaining B/C work.
+The original standalone-demo delivery below records the first implementation;
+it is no longer the current app entry flow.
+
 ## Delivery sequence
 
 1. Document scope, sources, and shared gate contract.
