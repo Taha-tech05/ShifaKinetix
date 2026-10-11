@@ -39,7 +39,7 @@ export default function DevSeed() {
     const side = p.side === 'left' ? 'left' : 'right';
     s.setSelection({ regionId: `shoulder_${side}`, subRegionId: (p.sub as SubRegionId) ?? 'top', point: { x: side === 'left' ? 0.17 : -0.17, y: 1.4, z: -0.03 }, hitStructure: null, layer: 'muscle' });
     s.setMode(p.mode === 'exact' ? 'exact' : 'region');
-    useSession.setState({ gateVerdict: 'SAFE' });
+    useSession.setState({ gateOutput: { verdict: 'SAFE', firedRules: [] }, gateVerdict: 'SAFE' });
     if (p.lang === 'ur' || p.lang === 'roman' || p.lang === 'en') {
       useSettings.getState().chooseLanguage(p.lang as Language);
     }

@@ -18,6 +18,7 @@ describe('session store', () => {
       selection: null,
       answers: [],
       gateVerdict: null,
+      gateOutput: null,
       movementResults: [],
     });
   });
@@ -88,6 +89,40 @@ describe('session store', () => {
     expect(useSession.getState().runGate()).toBe('CLARIFY');
   });
 
+  it('keeps the complete { verdict, firedRules } and keeps gateVerdict equal to its verdict', () => {
+    expect(useSession.getState().gateOutput).toBeNull();
+    useSession.getState().recordAnswer(yes('Q_DANGER_A', true));
+    useSession.getState().runGate();
+    const s = useSession.getState();
+    expect(s.gateOutput).toEqual({ verdict: 'RED_FLAG', firedRules: [{ ruleId: 'STUB_FLAGGED', matchedAnswers: ['Q_DANGER_A'], source: 'stub' }] });
+    expect(s.gateVerdict).toBe(s.gateOutput!.verdict);
+  });
+
+  it('a SAFE result is not valid after an answer or a movement changes: the gate has to run again', () => {
+    const s = useSession.getState();
+    s.recordAnswer(yes('Q1'));
+    expect(s.runGate()).toBe('SAFE');
+    s.recordAnswer(yes('Q2'));
+    expect(useSession.getState().gateOutput).toBeNull();
+    expect(useSession.getState().gateVerdict).toBeNull();
+    s.runGate();
+    expect(useSession.getState().gateVerdict).toBe('SAFE');
+    s.recordMovement({ movementId: 'M1', painful: false, weak: false, unableToDo: false, measuredAngle: null, state: 'done' });
+    expect(useSession.getState().gateOutput).toBeNull();
+    s.runGate();
+    s.rebuildFromHistory();
+    expect(useSession.getState().gateOutput).toBeNull();
+  });
+
+  it('a non-SAFE result stays until the gate runs again (the re-ask screen depends on it)', () => {
+    const s = useSession.getState();
+    s.recordAnswer({ questionId: 'Q_DANGER_A', type: 'yesno', value: null, state: 'unknown', flagged: true } as Answer);
+    expect(s.runGate()).toBe('CLARIFY');
+    s.recordAnswer(yes('Q_DANGER_A', true));
+    expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+    expect(s.runGate()).toBe('RED_FLAG');
+  });
+
   it('reset clears everything', () => {
     const s = useSession.getState();
     s.setSelection({ regionId: 'shoulder_left', subRegionId: 'back', point: { x: 0, y: 0, z: 0 }, hitStructure: null, layer: 'bone' });
@@ -96,6 +131,7 @@ describe('session store', () => {
     s.reset();
     expect(useSession.getState().answers).toEqual([]);
     expect(useSession.getState().gateVerdict).toBeNull();
+    expect(useSession.getState().gateOutput).toBeNull();
     expect(useSession.getState().selection).toBeNull();
   });
 });
