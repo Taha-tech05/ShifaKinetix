@@ -45,7 +45,7 @@ adds a structure-type step first, and shows muscles only when the answers point 
 
 ## 2. Design and what was built
 
-**Flow.** The structure-type questions are asked first, one per screen, with the same tap-to-answer chips, and the gate and narrowing run
+**Flow.** In guided-movement (region) mode the six animated movements come first, then the structure-type questions, then the muscle questions (exact mode has no movements, so it starts with the structure-type questions). They are asked one per screen, with the same tap-to-answer chips, and the gate and narrowing run
 after every one (`flow/live.ts`, unchanged mechanism). The state after each answer says which type leads:
 
 * fewer than 2 answers that are not unknown: "Still narrowing - keep going", nothing shown;
@@ -102,7 +102,7 @@ Categories: MUSCLE_TENDON, JOINT_CAPSULE, BONE, NERVE_NECK. UNCLEAR is the outco
 ### Deviations to be aware of
 
 1. `Candidate.kind` is a new optional field and `narrow()` returns extra candidates (the categories). Anything that reads `candidates` as all muscles must filter on `kind`. The live engine does.
-2. The step order changed: structure questions first. Tests that started with the first movement now answer two structure questions first.
+2. The step order: movements, then structure-type questions, then muscle questions. (A first version put the structure questions before the movements, so guided movements opened on questions instead of the animation; fixed.) While the movements are being done the strip says "Still narrowing", because muscles may be shown only once muscle or tendon leads.
 3. The depth question is still not asked; this step replaces what it was meant to do.
 4. Bone tenderness "after trauma" uses the basics answer "after an injury" or "suddenly" as trauma (a placeholder choice).
 

@@ -222,27 +222,31 @@ describe('the structure step decides before any muscle is shown', () => {
 });
 
 describe('steps: structure questions first, the rest are skipped once muscle leads', () => {
-  it('the structure questions come first, in every mode, then movements (region) and muscle questions', () => {
-    for (const mode of ['region', 'exact'] as const) {
-      const steps = liveSteps(mode);
-      const firstOther = steps.findIndex((s) => s.kind !== 'structure');
-      expect(steps.slice(0, firstOther).every((s) => s.kind === 'structure')).toBe(true);
-      expect(firstMuscleStep(mode)).toBe(firstOther);
-      expect(totalSteps(mode)).toBeGreaterThan(STRUCTURE.maxQuestions);
-    }
-    expect(liveSteps('exact').some((s) => s.kind === 'movement')).toBe(false);
+  it('region mode: movements first, then the structure-type questions, then the muscle questions; exact mode has no movements', () => {
+    const kinds = liveSteps('region').map((x) => x.kind);
+    expect(kinds.slice(0, 6)).toEqual(Array(6).fill('movement'));
+    expect(kinds.slice(6, 6 + structureIds().length)).toEqual(Array(structureIds().length).fill('structure'));
+    expect(kinds.slice(6 + structureIds().length).every((k) => k === 'question')).toBe(true);
+    expect(firstMuscleStep('region')).toBe(6 + structureIds().length);
+    const exact = liveSteps('exact').map((x) => x.kind);
+    expect(exact[0]).toBe('structure');
+    expect(exact.includes('movement')).toBe(false);
+    expect(firstMuscleStep('exact')).toBe(structureIds().length);
+    expect(totalSteps('region')).toBeGreaterThan(STRUCTURE.maxQuestions);
   });
 
   it('after muscle leads, the remaining structure questions are skipped; otherwise the next structure question follows', () => {
     submitQuestion(no('Q_ST_BONE_POINT') as never);
     const out = submitQuestion(yes('Q_ST_PASSIVE_BETTER') as never);
     expect(out.state?.muscleAllowed).toBe(true);
-    expect(nextStepIndex('region', 1, out)).toBe(firstMuscleStep('region'));
+    expect(nextStepIndex('exact', 1, out)).toBe(firstMuscleStep('exact'));
     useSession.getState().reset();
     useSession.getState().setSelection(selection);
     useSession.setState({ gateVerdict: 'SAFE' });
     const first = submitQuestion(yes('Q_ST_TINGLE') as never);
-    expect(nextStepIndex('region', 2, first)).toBe(3);
+    expect(nextStepIndex('exact', 2, first)).toBe(3);
+    // in region mode a movement is followed by the next step in order
+    expect(nextStepIndex('region', 0, first)).toBe(1);
   });
 });
 
@@ -301,6 +305,7 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
 
 describe('screens', () => {
   it('the live screen shows the category result, "Talk to a doctor or physio", and no muscle', () => {
+    useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
     // bone tenderness yes, passive no: bone leads
     press(tree, 'Yes');

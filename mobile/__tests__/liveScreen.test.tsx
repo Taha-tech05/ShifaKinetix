@@ -49,6 +49,8 @@ const textOf = (root: ReactTestInstance): string => {
 };
 const button = (tree: ReturnType<typeof create>, label: string) =>
   tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label)[0];
+const yes = (id: string) => ({ questionId: id, type: 'yesno', value: true, state: 'answered' as const });
+const no = (id: string) => ({ questionId: id, type: 'yesno', value: false, state: 'answered' as const });
 const press = (tree: ReturnType<typeof create>, label: string) => {
   const el = button(tree, label);
   if (!el) throw new Error(`no button "${label}" in: ${textOf(tree.root)}`);
@@ -61,6 +63,12 @@ const passStructure = (tree: ReturnType<typeof create>) => {
   press(tree, 'No'); // a sore spot on a bone?
   press(tree, 'Yes'); // does it go higher with the other hand's help?
   narrowSpy.mockClear(); // two answers are enough for muscle or tendon to lead by the margin
+};
+/** Region mode asks the movements first. To test the muscle steps, make muscle or tendon lead before the screen opens. */
+const seedMuscleLeads = () => {
+  submitQuestion(no('Q_ST_BONE_POINT'));
+  submitQuestion(yes('Q_ST_PASSIVE_BETTER'));
+  narrowSpy.mockClear();
 };
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
@@ -82,22 +90,29 @@ beforeEach(() => {
 });
 
 describe('live screen: one idea at a time, tap to answer', () => {
-  it('starts with the structure-type questions, then the first movement: caution line, instruction, "I tried it" and "Skip"', () => {
+  it('region mode starts with the animated movements: caution line, instruction, "I tried it" and "Skip"', () => {
     const tree = render(createElement(LiveScreen));
-    expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
-    expect(button(tree, 'I tried it')).toBeUndefined();
-    passStructure(tree);
     const all = textOf(tree.root);
     expect(all).toContain('Raise your arm sideways');
     expect(all).toContain('Move only as far as comfortable. Stop if pain is sharp or severe.');
     expect(button(tree, 'I tried it')).toBeDefined();
     expect(button(tree, 'Skip')).toBeDefined();
-    expect(all).toContain('Still narrowing - keep going');
+    expect(all).not.toContain('Is there one small spot on a bone');
+  });
+
+  it('all six movements come first; then the structure-type questions; muscle questions only if muscle or tendon leads', () => {
+    const tree = render(createElement(LiveScreen));
+    for (let i = 0; i < 6; i++) press(tree, 'Skip'); // six movements, skipped
+    expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
+    press(tree, 'No');
+    press(tree, 'Yes');
+    expect(useSession.getState().liveState?.muscleAllowed).toBe(true);
+    expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
   });
 
   it('the model is on top and about 55 percent of the height; it is the same stage on every step', () => {
+    seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
     const holder = tree.root.findAll((n: ReactTestInstance) => typeof n.props.onLayout === 'function' && (n.type as unknown) === 'View')[0];
     act(() => {
       holder.props.onLayout({ nativeEvent: { layout: { height: 800, width: 360 } } });
@@ -109,21 +124,21 @@ describe('live screen: one idea at a time, tap to answer', () => {
   });
 
   it('"I tried it", then a chip: the answer is stored, the gate and narrowing run, and the next movement shows', () => {
+    seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
     press(tree, 'I tried it');
     expect(textOf(tree.root)).toContain('What did you feel?');
     press(tree, 'No pain');
     const s = useSession.getState();
     expect(s.movementResults).toEqual([expect.objectContaining({ movementId: 'sideways_raise', state: 'answered', painful: false })]);
-    expect(s.narrowingTrail).toHaveLength(3); // 2 structure answers + 1 movement
+    expect(s.narrowingTrail).toHaveLength(3); // 2 structure answers (seeded) + 1 movement
     expect(narrowSpy).toHaveBeenCalledTimes(1);
     expect(textOf(tree.root)).toContain('Raise your arm forward');
   });
 
   it('"Not sure" and "Skip" are stored as unknown, never as "no pain", and also run the narrowing', () => {
+    seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
     press(tree, 'I tried it');
     press(tree, 'Not sure');
     press(tree, 'Skip'); // second movement, skipped without trying
@@ -138,8 +153,8 @@ describe('live screen: one idea at a time, tap to answer', () => {
   });
 
   it('pain, weak and could-not-do-it can be combined and are sent with "Next"', () => {
+    seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
     press(tree, 'I tried it');
     press(tree, 'Pain');
     press(tree, 'Weak');
@@ -148,8 +163,8 @@ describe('live screen: one idea at a time, tap to answer', () => {
   });
 
   it('stops early with "Thanks, that\'s enough to go on" and offers the result', () => {
+    seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
     const move = (chips: string[]) => {
       press(tree, 'I tried it');
       chips.forEach((c) => press(tree, c));
@@ -199,7 +214,8 @@ describe('live screen: one idea at a time, tap to answer', () => {
     const replace = jest.spyOn(router.router, 'replace');
     useSession.setState({ runGate: jest.fn(() => 'RED_FLAG' as const) });
     const tree = render(createElement(LiveScreen));
-    press(tree, 'No'); // the first answer (a structure-type question) already runs the gate
+    press(tree, 'I tried it');
+    press(tree, 'No pain');
     expect(replace).toHaveBeenCalledWith('/report/urgent');
     expect(narrowSpy).not.toHaveBeenCalled();
     replace.mockRestore();

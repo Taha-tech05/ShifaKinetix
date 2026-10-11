@@ -21,11 +21,15 @@ import { isSafe, RESULT_ROUTE, routeAfterGate } from './intake';
 
 export type LiveStep = { kind: 'structure'; id: string } | { kind: 'movement'; id: string } | { kind: 'question'; id: string };
 
-/** The structure-type questions come first. Then region mode asks the six movements and the questions; exact mode asks only the questions. */
+/**
+ * Region mode (guided movements) starts with the six animated movements, then the structure-type questions, then the muscle
+ * questions. Exact mode has no movements: structure-type questions, then the muscle questions. Muscles are shown only if
+ * muscle or tendon leads after the structure-type questions.
+ */
 export function liveSteps(mode: IntakeMode): LiveStep[] {
   const structure: LiveStep[] = structureIds().map((id) => ({ kind: 'structure', id }));
   const moves: LiveStep[] = mode === 'region' ? MOVEMENTS.map((m) => ({ kind: 'movement', id: m.id })) : [];
-  return [...structure, ...moves, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
+  return [...moves, ...structure, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
 }
 
 /** The first step that has no answer yet (so coming back to the screen continues where the patient left off). */
@@ -42,9 +46,9 @@ export function totalSteps(mode: IntakeMode): number {
   return Math.min(STRUCTURE.maxQuestions, structure) + Math.min(NARROWING.maxQuestions, steps.length - structure);
 }
 
-/** Index of the first step that is not a structure-type question. */
+/** Index of the first muscle question: the first step after the movements and the structure-type questions. */
 export function firstMuscleStep(mode: IntakeMode): number {
-  return liveSteps(mode).findIndex((st) => st.kind !== 'structure');
+  return liveSteps(mode).findIndex((st) => st.kind === 'question');
 }
 
 export interface LiveOutcome {
@@ -79,8 +83,8 @@ export function submitQuestion(answer: Answer): LiveOutcome {
 
 /**
  * After an outcome with no stop: the index of the next step, or null when there is none or the flow should end.
- * While the structure type is being decided the next structure question follows; once muscle or tendon leads, the structure
- * questions that are left are skipped and the movements and muscle questions follow.
+ * The movements come first (region mode), then the structure-type questions. Once muscle or tendon leads, the structure-type
+ * questions that are left are skipped and the muscle questions follow.
  */
 export function nextStepIndex(mode: IntakeMode, current: number, outcome: LiveOutcome): number | null {
   if (outcome.route) return null;
