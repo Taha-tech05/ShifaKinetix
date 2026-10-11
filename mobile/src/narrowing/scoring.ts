@@ -13,6 +13,7 @@ import type { Answer } from '../gate/evaluate';
 import type { MovementResult } from '../store/session';
 import type { Side } from '../regions/types';
 import { discriminatorIds, supportsOf } from './bank';
+import { structureIds, structureMuscles } from './structureBank';
 import { NARROWING } from './config';
 
 export interface Evidence {
@@ -39,6 +40,14 @@ export function evidenceFrom(movementResults: MovementResult[], answers: Answer[
     if (!ids.has(a.questionId) || a.state !== 'answered') continue; // unknown: no criterion
     if (a.value !== true && a.value !== false) continue; // anything but a clear yes or no is not a criterion
     out.push({ id: a.questionId, kind: 'question', answer: a.value ? 'yes' : 'no', supports: supportsOf(a.questionId, side) });
+  }
+  // the structure-type questions also speak about some muscles, so the candidates move with those answers too
+  const sids = new Set(structureIds());
+  for (const a of answers) {
+    if (!sids.has(a.questionId) || a.state !== 'answered') continue;
+    if (a.value !== true && a.value !== false) continue;
+    const supports = structureMuscles(a.questionId, side);
+    if (supports.length > 0) out.push({ id: a.questionId, kind: 'question', answer: a.value ? 'yes' : 'no', supports });
   }
   return out;
 }

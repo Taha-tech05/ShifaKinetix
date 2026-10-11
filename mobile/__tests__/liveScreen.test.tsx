@@ -66,8 +66,7 @@ const passStructure = (tree: ReturnType<typeof create>) => {
 };
 /** Region mode asks the movements first. To test the muscle steps, make muscle or tendon lead before the screen opens. */
 const seedMuscleLeads = () => {
-  submitQuestion(no('Q_ST_BONE_POINT'));
-  submitQuestion(yes('Q_ST_PASSIVE_BETTER'));
+  for (const id of ['Q_ST_BONE_POINT', 'Q_ST_TINGLE', 'Q_ST_NECK', 'Q_ST_NUMB']) submitQuestion(no(id)); // muscle or tendon leads, no muscle is favoured
   narrowSpy.mockClear();
 };
 const render = (el: React.ReactElement) => {
@@ -130,7 +129,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
     press(tree, 'No pain');
     const s = useSession.getState();
     expect(s.movementResults).toEqual([expect.objectContaining({ movementId: 'sideways_raise', state: 'answered', painful: false })]);
-    expect(s.narrowingTrail).toHaveLength(3); // 2 structure answers (seeded) + 1 movement
+    expect(s.narrowingTrail).toHaveLength(5); // 4 structure answers (seeded) + 1 movement
     expect(narrowSpy).toHaveBeenCalledTimes(1);
     expect(textOf(tree.root)).toContain('Raise your arm forward');
   });
@@ -148,7 +147,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
     ]);
     expect(r.every((x) => x.painful === false && x.weak === false && x.unableToDo === false)).toBe(true); // only because there is no answer
     expect(narrowSpy).toHaveBeenCalledTimes(2);
-    expect(useSession.getState().narrowingTrail.slice(2).map((x) => x.answer)).toEqual(['unknown', 'unknown']);
+    expect(useSession.getState().narrowingTrail.slice(4).map((x) => x.answer)).toEqual(['unknown', 'unknown']);
   });
 
   it('pain, weak and could-not-do-it can be combined and are sent with "Next"', () => {
@@ -236,7 +235,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
 
 describe('result screen = the last live state', () => {
   const run = () => {
-    for (const [id, v] of [['Q_ST_PASSIVE_BETTER', true], ['Q_ST_BONE_POINT', false], ['Q_ST_TINGLE', false]] as const) submitQuestion({ questionId: id, type: 'yesno', value: v, state: 'answered' });
+    for (const [id, v] of [['Q_ST_BONE_POINT', false], ['Q_ST_TINGLE', false], ['Q_ST_NECK', false], ['Q_ST_NUMB', false]] as const) submitQuestion({ questionId: id, type: 'yesno', value: v, state: 'answered' });
     submitMovement(buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: false }), 'pain');
     submitQuestion(answered(q('Q_DQ_OVERHEAD'), true));
     submitMovement(buildMovementResult('forward_raise', { kind: 'skip' }), 'skip');

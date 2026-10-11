@@ -55,9 +55,10 @@ const skipped = (movementId: string) => buildMovementResult(movementId, { kind: 
 const q = (id: string) => discriminatorQuestions().find((x) => x.questionId === id)!;
 /** Structure-type answers under which muscle or tendon leads, so that muscles may be shown (shared/structure_type_bank_shoulder.json). */
 const MT = (): NarrowingInput['answers'] => [
-  { questionId: 'Q_ST_PASSIVE_BETTER', type: 'yesno', value: true, state: 'answered' },
   { questionId: 'Q_ST_BONE_POINT', type: 'yesno', value: false, state: 'answered' },
   { questionId: 'Q_ST_TINGLE', type: 'yesno', value: false, state: 'answered' },
+  { questionId: 'Q_ST_NECK', type: 'yesno', value: false, state: 'answered' },
+  { questionId: 'Q_ST_NUMB', type: 'yesno', value: false, state: 'answered' },
 ];
 const input = (over: Partial<NarrowingInput> = {}): NarrowingInput => ({
   layer: 'muscle',

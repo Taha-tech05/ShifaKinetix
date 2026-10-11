@@ -81,7 +81,7 @@ const press = (tree: ReturnType<typeof create>, label: string) => {
 };
 
 // answers under which each type leads (placeholder table in shared/structure_type_bank_shoulder.json)
-const MUSCLE = [yes('Q_ST_PASSIVE_BETTER'), no('Q_ST_BONE_POINT'), no('Q_ST_TINGLE')];
+const MUSCLE = [no('Q_ST_BONE_POINT'), no('Q_ST_TINGLE'), no('Q_ST_NECK'), no('Q_ST_NUMB')];
 const NERVE = [yes('Q_ST_TINGLE'), yes('Q_ST_NECK')];
 const BONE = [yes('Q_ST_BONE_POINT'), no('Q_ST_PASSIVE_BETTER')];
 const JOINT = [yes('Q_ST_STUCK_ASSISTED'), yes('Q_ST_CROSS_BODY')];

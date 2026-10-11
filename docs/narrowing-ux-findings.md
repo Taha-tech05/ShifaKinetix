@@ -129,3 +129,14 @@ Commits are small and in order: `git log --oneline 3e4e7dc..HEAD`. Nothing is pu
 ## 6. Follow-up: layout was too tight
 
 The first one-glance layout gave the viewer a fixed 43 % and cut the muscle names to one line, so on some phones the names and the option text were cut. Now the viewer takes the height that is left (minimum 80 dp), the strip lists each possible muscle by its full name (two on short screens, three otherwise), and the answer chips are 52 dp with larger text that wraps instead of being cut. Checked by hand by the owner on a phone; covered by tests for the full names and option labels and by the size arithmetic.
+
+## 7. Follow-up: the muscle candidates stayed Low and never moved
+
+**Root cause (found by reading the code, then tested):**
+1. The structure-type questions (the first 2 to 8 questions) said nothing about muscles. `narrowing/scoring.ts` read only the movements and the muscle questions, so during the whole structure phase every muscle kept its seed value (prior 0.15 or 0.05, band Low), the candidate set never changed, and the auto-focus (which runs only when the set changes) never fired.
+2. In exact mode, when the structure answers did not point to muscle or tendon, the muscle questions were never asked at all, so no muscle could ever get evidence.
+3. A strength needed 3 matching answers for a full match (`fullMatchCriteria` 3), so even real evidence moved the bands slowly.
+
+**Fix:** each structure-type question now lists the muscles it speaks about (`muscles` in `shared/structure_type_bank_shoulder.json`: for example night pain and "does the other hand help" speak about the rotator cuff and deltoid, neck and tingling about the muscles at the side of the neck). A yes supports them, a no goes against them, a skip adds nothing (`scoring.ts`). `fullMatchCriteria` is now 2, so one matching answer gives Moderate and two give Higher. Tests: `__tests__/narrowingSignal.test.ts` (candidates change with the answers, two matching answers reach Higher, a no lowers, a skip changes nothing, the auto-focus plan triggers on each change).
+
+**Clinician review (placeholder):** the muscle lists of the structure-type questions and `fullMatchCriteria` = 2 (was 3).

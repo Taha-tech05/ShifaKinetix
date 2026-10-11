@@ -19,6 +19,8 @@ interface BankQuestion {
   text: Localized;
   yes: Weights;
   no: Weights;
+  /** Muscles (right-side ids) that a yes supports and a no goes against. */
+  muscles?: string[];
   source: string;
   label: string;
 }
@@ -57,4 +59,10 @@ export function structureQuestionText(questionId: string, lang: Language = getLa
 export function categoryName(c: CategoryOrUnclear, lang: Language = getLanguage()): string {
   const names = bank.categories as unknown as Record<string, Localized>;
   return pick(names[c], lang);
+}
+
+/** The muscles a structure-type question speaks about (a yes supports them, a no goes against them), for a side. */
+export function structureMuscles(questionId: string, side: 'right' | 'left'): string[] {
+  const ids = QUESTIONS.find((x) => x.questionId === questionId)?.muscles ?? [];
+  return side === 'right' ? ids : ids.map((id) => id.replace(/_right$/, '_left'));
 }

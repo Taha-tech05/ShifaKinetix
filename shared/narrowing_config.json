@@ -5,7 +5,7 @@
   "leadMargin": 0.3,
   "minMatchedCriteria": 2,
   "maxQuestions": 9,
-  "fullMatchCriteria": 3,
+  "fullMatchCriteria": 2,
   "contradictionWeight": 0.5,
   "maxCandidatesShown": 3,
   "priors": {

@@ -1,6 +1,6 @@
 {
   "label": "placeholder - draft from published sources, awaiting clinician review",
-  "note": "PLACEHOLDER, Person C replaces. Fixed questions for the structure-type step, one idea each, one structured answer each {questionId, type, value, state}. 'yes' and 'no' give each category a signed weight (the expected-response table); 'Not sure' and 'Skip' are state unknown, add nothing and never lower a category. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
+  "note": "PLACEHOLDER, Person C replaces. Fixed questions for the structure-type step, one idea each, one structured answer each {questionId, type, value, state}. 'yes' and 'no' give each category a signed weight (the expected-response table); 'Not sure' and 'Skip' are state unknown, add nothing and never lower a category. Urdu and Roman Urdu are machine-written and need a native speaker's review. 'muscles' lists the muscles (right-side ids; the left side uses the matching left ones) that a 'yes' supports and a 'no' goes against, so the muscle candidates move with these answers too (placeholder).",
   "categories": {
     "MUSCLE_TENDON": {
       "en": "Muscle or tendon",
@@ -66,7 +66,12 @@
         "JOINT_CAPSULE": 0.5
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right",
+        "acromial_part_of_deltoid_muscle_right"
+      ]
     },
     {
       "questionId": "Q_ST_TINGLE",
@@ -85,7 +90,11 @@
         "NERVE_NECK": -0.5
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
     },
     {
       "questionId": "Q_ST_NUMB",
@@ -104,7 +113,11 @@
         "NERVE_NECK": -0.5
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
     },
     {
       "questionId": "Q_ST_NECK",
@@ -124,7 +137,11 @@
         "NERVE_NECK": -0.5
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
     },
     {
       "questionId": "Q_ST_STUCK_ASSISTED",
@@ -161,7 +178,11 @@
       },
       "no": {},
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right"
+      ]
     },
     {
       "questionId": "Q_ST_CROSS_BODY",
@@ -180,7 +201,11 @@
         "MUSCLE_TENDON": 0.25
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "acromial_part_of_deltoid_muscle_right",
+        "descending_part_of_trapezius_muscle_right"
+      ]
     },
     {
       "questionId": "Q_ST_CATCH",
@@ -198,7 +223,11 @@
         "MUSCLE_TENDON": 0.25
       },
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "subscapular_muscle_right",
+        "long_head_of_biceps_brachii_muscle_right"
+      ]
     },
     {
       "questionId": "Q_ST_GIVEWAY",
@@ -215,7 +244,12 @@
       },
       "no": {},
       "source": "PLACEHOLDER, Person C replaces",
-      "label": "placeholder - draft from published sources, awaiting clinician review"
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "subscapular_muscle_right",
+        "infraspinatus_muscle_right",
+        "teres_minor_muscle_right"
+      ]
     },
     {
       "questionId": "Q_ST_CLICK",
