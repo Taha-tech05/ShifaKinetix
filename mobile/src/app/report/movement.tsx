@@ -10,7 +10,7 @@ import { CandidateStrip } from '../../components/narrowing/CandidateStrip';
 import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
 import type { TKey } from '../../i18n';
-import { LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, submitMovement, submitQuestion, totalSteps } from '../../flow/live';
+import { firstOpenStep, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, submitMovement, submitQuestion, totalSteps } from '../../flow/live';
 import type { LiveOutcome } from '../../flow/live';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
@@ -58,10 +58,11 @@ export default function LiveScreen() {
   const steps = useMemo(() => liveSteps(mode ?? 'region'), [mode]);
   const total = totalSteps(mode ?? 'region');
   const questions = useMemo(() => discriminatorQuestions(), [t]);
-  const [index, setIndex] = useState(0);
+  // continue where the patient left off (the answers are in the session), not from the start
+  const [index, setIndex] = useState(() => firstOpenStep(steps, useSession.getState().movementResults.map((m) => m.movementId), useSession.getState().answers.map((a) => a.questionId)));
   const [phase, setPhase] = useState<'try' | 'feel'>('try');
   const [picked, setPicked] = useState<Set<Key>>(new Set());
-  const [finished, setFinished] = useState(false);
+  const [finished, setFinished] = useState(() => useSession.getState().liveState?.stop === true);
   const [touching, setTouching] = useState(false);
   const [cameraNote, setCameraNote] = useState(false);
   const [height, setHeight] = useState(0);

@@ -141,7 +141,7 @@ export default function Result() {
             {candidates.map((c) => (
               <CandidateRow key={c.muscleId} c={c} />
             ))}
-            <AppText variant="secondary" color={colors.muted}>
+            <AppText variant="secondary" color={colors.muted} style={styles.italic}>
               {t('live.matchCaption')}
             </AppText>
           </>
@@ -154,6 +154,7 @@ export default function Result() {
 const styles = StyleSheet.create({
   title: { paddingTop: 4 },
   bold: { fontWeight: '700' },
+  italic: { fontStyle: 'italic' },
   col: { flex: 1 },
   item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, ...shadows.card },
   itemTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },

@@ -26,6 +26,13 @@ export function liveSteps(mode: IntakeMode): LiveStep[] {
   return [...moves, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
 }
 
+/** The first step that has no answer yet (so coming back to the screen continues where the patient left off). */
+export function firstOpenStep(steps: LiveStep[], movementIds: string[], questionIds: string[]): number {
+  const asked = new Set([...movementIds, ...questionIds]);
+  const i = steps.findIndex((st) => !asked.has(st.id));
+  return i === -1 ? steps.length - 1 : i;
+}
+
 /** Steps that can still be asked: never more than the cap in total. */
 export function totalSteps(mode: IntakeMode): number {
   return Math.min(NARROWING.maxQuestions, liveSteps(mode).length);
