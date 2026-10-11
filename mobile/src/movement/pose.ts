@@ -54,3 +54,14 @@ export function poseAt(m: Pick<Movement, 'frames'>, t: number): Pose {
 export function restPose(m: Pick<Movement, 'frames'>): Pose {
   return poseOf(m.frames[0]);
 }
+
+/**
+ * The end pose of a movement: the frame where it holds (two equal frames in a row, away from the ends), or else the
+ * frame furthest from rest. Used for the faint "where it ends" ghost.
+ */
+export function endPose(m: Pick<Movement, 'frames'>): Pose {
+  const k = m.frames;
+  for (let i = 1; i < k.length - 1; i++) if (same(k[i], k[i + 1])) return poseOf(k[i]);
+  const far = k.reduce((b, f) => (Math.abs(f.elevation) + Math.abs(f.rotation) + f.elbow > Math.abs(b.elevation) + Math.abs(b.rotation) + b.elbow ? f : b), k[0]);
+  return poseOf(far);
+}

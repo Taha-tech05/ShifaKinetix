@@ -100,7 +100,8 @@
         "outSeconds": 2.0,
         "holdSeconds": 1.0,
         "returnSeconds": 3.0
-      }
+      },
+      "trail": false
     },
     {
       "id": "forward_raise",
@@ -192,7 +193,8 @@
         "outSeconds": 2.0,
         "holdSeconds": 1.0,
         "returnSeconds": 3.0
-      }
+      },
+      "trail": false
     },
     {
       "id": "can_position_hold",
@@ -291,7 +293,8 @@
         "outSeconds": 2.0,
         "holdSeconds": 2.0,
         "returnSeconds": 3.0
-      }
+      },
+      "trail": false
     },
     {
       "id": "outward_push_elbow_at_side",
@@ -400,7 +403,8 @@
         "outSeconds": 1.5,
         "holdSeconds": 1.0,
         "returnSeconds": 2.0
-      }
+      },
+      "trail": false
     },
     {
       "id": "belly_press",
@@ -507,7 +511,8 @@
         "outSeconds": 1.5,
         "holdSeconds": 1.0,
         "returnSeconds": 2.0
-      }
+      },
+      "trail": false
     },
     {
       "id": "hand_behind_back",
@@ -521,49 +526,77 @@
       "view": "side",
       "allowed": {
         "elevation": [
-          -45,
+          -55,
           0
         ],
         "rotation": [
-          -80,
+          -100,
           0
         ],
         "elbow": [
-          80,
+          0,
           110
         ]
       },
       "frames": [
         {
-          "t": 0,
+          "t": 0.0,
           "elevation": 0,
-          "plane": 0,
+          "plane": 80,
           "rotation": 0,
           "elbow": 0
         },
         {
-          "t": 0.286,
-          "elevation": -30,
-          "plane": 0,
-          "rotation": -70,
-          "elbow": 100
+          "t": 0.167,
+          "elevation": -35,
+          "plane": 80,
+          "rotation": -80,
+          "elbow": 0
         },
         {
-          "t": 0.429,
+          "t": 0.289,
           "elevation": -30,
-          "plane": 0,
-          "rotation": -70,
-          "elbow": 100
+          "plane": 80,
+          "rotation": -80,
+          "elbow": 50
         },
         {
-          "t": 1,
+          "t": 0.389,
+          "elevation": -50,
+          "plane": 80,
+          "rotation": -90,
+          "elbow": 85
+        },
+        {
+          "t": 0.5,
+          "elevation": -50,
+          "plane": 80,
+          "rotation": -90,
+          "elbow": 85
+        },
+        {
+          "t": 0.667,
+          "elevation": -30,
+          "plane": 80,
+          "rotation": -80,
+          "elbow": 50
+        },
+        {
+          "t": 0.822,
+          "elevation": -35,
+          "plane": 80,
+          "rotation": -80,
+          "elbow": 0
+        },
+        {
+          "t": 1.0,
           "elevation": 0,
-          "plane": 0,
+          "plane": 80,
           "rotation": 0,
           "elbow": 0
         }
       ],
-      "loopSeconds": 7,
+      "loopSeconds": 9.0,
       "suggests": [
         "subscapularis",
         "internal rotation range"
@@ -575,9 +608,9 @@
       "cameraMeasurable": false,
       "valuesLabel": "test values, replace with researched data",
       "instruction": {
-        "en": "Slowly reach your hand up your back, as high as is comfortable, then lower it.",
-        "ur": "آہستہ سے اپنا ہاتھ پیٹھ کے پیچھے اوپر کی طرف لے جائیں، جتنا آرام دہ ہو، پھر نیچے لائیں۔",
-        "roman": "Aahista se apna haath peeth ke peeche upar ki taraf le jayein, jitna araam deh ho, phir neeche layein."
+        "en": "Slowly take your hand behind your back, past your hip, then slide it up your back as far as is comfortable. Then lower it the same way.",
+        "ur": "آہستہ سے اپنا ہاتھ پیٹھ کے پیچھے کولہے سے گزار کر لے جائیں، پھر جتنا آرام دہ ہو پیٹھ پر اوپر سرکائیں۔ پھر اسی طرح نیچے لائیں۔",
+        "roman": "Aahista se apna haath peeth ke peeche, kulhe se guzaar kar le jayein, phir jitna araam deh ho peeth par upar sarkayein. Phir isi tarah neeche layein."
       },
       "caution": {
         "en": "Move only as far as comfortable. Stop if pain is sharp or severe.",
@@ -592,23 +625,41 @@
       "review": "draft, awaiting clinician review",
       "camera": {
         "position": [
-          -1.069,
-          1.37,
+          -1.049,
+          1.42,
           -1.386
         ],
         "target": [
-          -0.1,
-          1.2,
+          -0.08,
+          1.25,
           0.0
         ],
         "fov": 45,
         "zoom": 1.0
       },
       "timing": {
-        "outSeconds": 2.0,
+        "outSeconds": 3.5,
         "holdSeconds": 1.0,
-        "returnSeconds": 4.0
-      }
+        "returnSeconds": 4.5
+      },
+      "kinematicsNote": "PLACEHOLDER values, flagged for physiotherapist review. Shoulder extension about 30 to 50 degrees with a little adduction (plane 80), internal rotation 80 to 90 degrees, elbow flexion up to about 85 degrees. The order matters: the arm goes back first, then rotates inward, then the elbow bends so the hand passes behind the pelvis, then it slides up the lower back to about lumbar level, holds about 1 second, and returns by the same way, slower. Checked against the trunk surface for interpenetration (see docs/movement-ux-findings.md).",
+      "movementNote": "Adapted from clinician-administered positions (lift-off / Apley scratch); self-administered version not validated.",
+      "trail": true,
+      "appendixAllowed": {
+        "elevation": [
+          -45,
+          0
+        ],
+        "rotation": [
+          -80,
+          0
+        ],
+        "elbow": [
+          80,
+          110
+        ]
+      },
+      "allowedNote": "The ranges of Appendix A (appendixAllowed) are for the final position only. This movement now passes through the path described in kinematicsNote, so its working ranges are wider (elevation to -50, rotation to -90, elbow from 0). A physiotherapist must confirm both."
     }
   ],
   "cameraNote": "Camera presets are for the RIGHT side (position, target, fov, zoom; metres). The left side mirrors x. They are placeholder framings, to be reviewed on a phone. Timing: out, hold about 1 second at the end pose, slower return."

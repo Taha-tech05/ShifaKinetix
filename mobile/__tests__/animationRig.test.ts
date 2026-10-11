@@ -131,8 +131,8 @@ describe('segment transforms', () => {
     expect(side[0]).toBeLessThan(rest[0] - 0.1);
     // forward raise: the arm goes forward (+z)
     expect(wristAt(mk(90, 90))[2]).toBeGreaterThan(rest[2] + 0.2);
-    // negative elevation: the arm goes backward (-z)
-    expect(wristAt(mk(-30, 0))[2]).toBeLessThan(rest[2] - 0.05);
+    // negative elevation in the forward plane (90): the arm goes backward (-z)
+    expect(wristAt(mk(-30, 90))[2]).toBeLessThan(rest[2] - 0.05);
     // elbow flexion: the forearm swings forward
     const bent = armTransforms(mk(0, 0, 0, 90));
     expect(apply(bent.forearm, P.wrist)[2]).toBeGreaterThan(P.elbow[2] + 0.15);

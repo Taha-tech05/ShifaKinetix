@@ -14,11 +14,9 @@ const MAX_ACCEL = 800; // degrees per second squared, for the arm channels
 // short acceleration spike in that channel only. It is allowed a higher limit and reported.
 const MAX_ACCEL_SCAPULA = 1600;
 
-// Known conflict in the appendix data (reported, values not changed): hand_behind_back allows an elbow of 80 to 110, but
-// its rest frames (t=0 and t=1) have the elbow at 0. Nothing else is outside its allowed range.
-const KNOWN_ALLOWED_CONFLICTS: Record<string, string[]> = {
-  hand_behind_back: ['elbow 0 at t=0 is outside [80, 110]', 'elbow 0 at t=1 is outside [80, 110]'],
-};
+// hand_behind_back: the movement was redesigned (docs/movement-ux-findings.md). Its working ranges are wider than Appendix A
+// (kept as appendixAllowed). Every frame is inside the working ranges.
+const KNOWN_ALLOWED_CONFLICTS: Record<string, string[]> = {};
 const MAX_FRAME_JUMP = 2; // degrees between two frames at 60 Hz (90 deg/s is 1.5)
 
 /** Sample a movement at 60 Hz over its whole loop, including the last frame. */
@@ -56,7 +54,11 @@ describe('movements_shoulder.json', () => {
     expect(by.can_position_hold).toEqual({ elevation: [0, 90] });
     expect(by.outward_push_elbow_at_side).toEqual({ elevation: [0, 15], rotation: [0, 30], elbow: [85, 95] });
     expect(by.belly_press).toEqual({ elevation: [0, 25], rotation: [-60, 0], elbow: [85, 100] });
-    expect(by.hand_behind_back).toEqual({ elevation: [-45, 0], rotation: [-80, 0], elbow: [80, 110] });
+    // hand_behind_back: Appendix A ranges are kept as metadata, the working ranges are wider (flagged for physio review)
+    const hbb = MOVEMENTS.find((m) => m.id === 'hand_behind_back')!;
+    expect(hbb.appendixAllowed).toEqual({ elevation: [-45, 0], rotation: [-80, 0], elbow: [80, 110] });
+    expect(hbb.allowed).toEqual({ elevation: [-55, 0], rotation: [-100, 0], elbow: [0, 110] });
+    expect(hbb.allowedNote).toMatch(/physiotherapist must confirm/);
   });
 
   it('keyframe times increase and cover 0 to 1', () => {
@@ -136,7 +138,7 @@ describe('pose function', () => {
     }
   });
 
-  it('never goes outside the allowed range between keyframes (apart from the known conflict at rest)', () => {
+  it('never goes outside the allowed range between keyframes ', () => {
     const eps = 1e-9;
     for (const m of MOVEMENTS) {
       const a = m.allowed;
@@ -149,11 +151,10 @@ describe('pose function', () => {
           expect(pose.rotation).toBeGreaterThanOrEqual(a.rotation[0] - eps);
           expect(pose.rotation).toBeLessThanOrEqual(a.rotation[1] + eps);
         }
-        if (a.elbow && m.id !== 'hand_behind_back') {
+        if (a.elbow) {
           expect(pose.elbow).toBeGreaterThanOrEqual(a.elbow[0] - eps);
           expect(pose.elbow).toBeLessThanOrEqual(a.elbow[1] + eps);
         }
-        if (a.elbow && m.id === 'hand_behind_back') expect(pose.elbow).toBeLessThanOrEqual(a.elbow[1] + eps); // never above 110
       }
     }
   });
@@ -213,19 +214,21 @@ describe('smoothness at 60 Hz', () => {
     expect(holds).toBeGreaterThanOrEqual(5); // sideways, forward, can, push, belly, behind back all hold
   });
 
-  it('plays out, holds about 1 second at the end pose, then returns more slowly (loop 4 to 7.5 seconds)', () => {
+  it('plays out, holds about 1 second at the end pose, then returns more slowly (loop 4 to 9 seconds)', () => {
     for (const m of MOVEMENTS) {
       expect(m.loopSeconds).toBeGreaterThanOrEqual(4);
-      expect(m.loopSeconds).toBeLessThanOrEqual(7.5);
-      const [rest, peak, peakEnd, last] = m.frames;
-      expect(m.frames).toHaveLength(4);
-      expect(peak.elevation).toBe(peakEnd.elevation); // the hold
-      expect(rest.t).toBe(0);
-      expect(last.t).toBe(1);
-      const out = peak.t * m.loopSeconds;
-      const hold = (peakEnd.t - peak.t) * m.loopSeconds;
-      const back = (1 - peakEnd.t) * m.loopSeconds;
+      expect(m.loopSeconds).toBeLessThanOrEqual(9);
+      const k = m.frames;
+      // the hold is the pair of equal frames away from the ends
+      const h = k.findIndex((f, i) => i > 0 && i < k.length - 1 && f.elevation === k[i + 1].elevation && f.rotation === k[i + 1].rotation && f.elbow === k[i + 1].elbow && f.plane === k[i + 1].plane);
+      expect(h).toBeGreaterThan(0);
+      expect(k[0].t).toBe(0);
+      expect(k[k.length - 1].t).toBe(1);
+      const out = k[h].t * m.loopSeconds;
+      const hold = (k[h + 1].t - k[h].t) * m.loopSeconds;
+      const back = (1 - k[h + 1].t) * m.loopSeconds;
       expect(hold).toBeGreaterThanOrEqual(0.95);
+      expect(hold).toBeLessThanOrEqual(2.5);
       expect(back).toBeGreaterThan(out * 1.2); // "return slowly"
     }
   });

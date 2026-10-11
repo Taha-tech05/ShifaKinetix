@@ -46,6 +46,15 @@ export interface Movement {
   /** Camera preset for the RIGHT side (position, target, fov, zoom). The left side mirrors x. Placeholder framing. */
   camera: CameraPreset;
   /** Seconds of the move out, the hold at the end pose and the return (the loop is their sum). */
+  /** Appendix A ranges, kept where the working ranges (allowed) had to be widened. */
+  appendixAllowed?: Movement['allowed'];
+  allowedNote?: string;
+  /** Draw a thin line along the path of the hand (clarity aid for movements where the arm is hard to follow). */
+  trail?: boolean;
+  /** Metadata note shown with the movement data (not patient text). */
+  movementNote?: string;
+  /** Why the angles are what they are, and what a physiotherapist must confirm. */
+  kinematicsNote?: string;
   timing?: { outSeconds: number; holdSeconds: number; returnSeconds: number };
   valuesLabel: string;
   instruction: Localized;
@@ -109,4 +118,9 @@ export function mannequinKeyframes(m: Movement): MannequinKeyframe[] {
     scapulaDeg: scapulaFor(f.elevation),
     forearmRotationDeg: m.id === 'outward_push_elbow_at_side' ? f.rotation : 0,
   }));
+}
+
+/** The structures a movement suggests for a side. The data names the right-side structures; the left side uses the matching left ones. */
+export function suggestsFor(m: Pick<Movement, 'suggestsStructures'>, side: 'right' | 'left'): string[] {
+  return side === 'right' ? m.suggestsStructures : m.suggestsStructures.map((id) => id.replace(/_right$/, '_left'));
 }
