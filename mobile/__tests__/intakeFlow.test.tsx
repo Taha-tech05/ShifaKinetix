@@ -183,15 +183,16 @@ describe('dummy narrowing', () => {
     expect(narrow(input())).toEqual(narrow(input()));
   });
 
-  it('lowers confidence when answers are unknown', () => {
-    const known = narrow(input());
-    const unsure = narrow(input({ depthAnswer: { state: 'unknown', value: null }, movementResults: [{ movementId: 'm', painful: false, weak: false, unableToDo: false, measuredAngle: null, state: 'unknown' }] }));
+  it('unknown answers never change the candidates: a skip or "Not sure" is not a "no" and lowers nothing', () => {
+    const base = narrow(input());
+    const unsure = narrow(input({ depthAnswer: { state: 'unknown', value: null }, movementResults: [{ movementId: 'sideways_raise', painful: false, weak: false, unableToDo: false, measuredAngle: null, state: 'unknown' }] }));
+    expect(unsure).toEqual(base); // same muscles, same strengths, same order
     expect(unknownCount(input())).toBe(0);
-    expect(known.candidates[0].confidence).toBeGreaterThan(unsure.candidates[0].confidence);
   });
 
   it('puts the muscle under the finger first in exact mode', () => {
-    expect(narrow(input()).candidates[0].muscleId).toBe('infraspinatus_muscle_right');
+    const mesh = REGION_MAP.structures.teres_minor_muscle_right.meshNames[0];
+    expect(narrow(input({ hitMeshName: mesh })).candidates[0].muscleId).toBe('teres_minor_muscle_right');
   });
 
   it('returns a cluster when two candidates tie, and suggests a doctor', () => {

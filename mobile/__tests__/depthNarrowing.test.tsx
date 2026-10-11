@@ -92,6 +92,7 @@ describe('narrowing input', () => {
       hitMeshName: 'Trapezius_muscler_Plane1',
       depthAnswer: { state: 'unknown', value: null },
       movementResults: [move],
+      answers: [{ questionId: DEPTH_QUESTION_ID, type: 'chooseone', value: null, state: 'unknown' }], // optional field: the answers, for the discriminator questions
     });
   });
 
