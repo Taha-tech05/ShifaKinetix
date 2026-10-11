@@ -1,5 +1,10 @@
 # Movement animation on the real 3D body
 
+> **Update (branch `feature/B-movement-ux-fixes`)**: parts of this report are out of date. The movement view now has orbit and zoom,
+> per-movement camera presets, the same opaque material as the body picker (the dimming of non-suggested muscles is gone), a left-arm
+> rig, a redesigned hand behind back, and loops of 4.5 to 9 s (out, hold, slower return). See `docs/movement-ux-findings.md`.
+> The frame-rate numbers below are from the earlier build.
+
 Status: **draft**. All angles are **test values, replace with researched data** (Appendix A of the brief, kept in
 `mobile/src/data/movements_shoulder.json`, labelled "draft, awaiting clinician review"). Nothing here is clinical advice.
 Nothing has been pushed. The 3D pack files are unchanged (SHA-256 checked at the end, see "Pack unchanged").
