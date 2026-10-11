@@ -126,7 +126,7 @@ export default function Result() {
             {t('live.enough')}
           </AppText>
         ) : null}
-        {doctor ? (
+        {doctor && !categoryResult ? (
           <Card tone="mint" row>
             <Ionicons name="medkit-outline" size={24} color={colors.tealDark} />
             <AppText variant="body" color={colors.navy} style={styles.col}>

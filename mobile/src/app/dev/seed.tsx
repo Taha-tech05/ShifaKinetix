@@ -11,6 +11,7 @@ import { submitMovement, submitQuestion } from '../../flow/live';
 import { buildMovementResult } from '../../movement/result';
 import type { Feel } from '../../movement/result';
 import { discriminatorQuestions } from '../../narrowing/bank';
+import { structureQuestions } from '../../narrowing/structureBank';
 import { answered, unknown } from '../../questions/answer';
 import type { SubRegionId } from '../../regions/types';
 import { useSession } from '../../store/session';
@@ -46,7 +47,7 @@ export default function DevSeed() {
       const [id, feel] = item.split(':');
       submitMovement(buildMovementResult(id, FEEL[feel] ?? FEEL.skip), feel);
     }
-    const qs = discriminatorQuestions();
+    const qs = [...structureQuestions(), ...discriminatorQuestions()];
     for (const item of (p.qs ?? '').split(',').filter(Boolean)) {
       const [id, a] = item.split(':');
       const q = qs.find((x) => x.questionId === id);
