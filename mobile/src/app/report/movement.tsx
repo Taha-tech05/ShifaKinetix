@@ -17,6 +17,9 @@ import { MOVEMENTS, localized, movementById } from '../../movement/movements';
 import { buildMovementResult } from '../../movement/result';
 import type { Feel } from '../../movement/result';
 import { discriminatorQuestions } from '../../narrowing/bank';
+import { approxAreaIds } from '../../narrowing/approxArea';
+import { structureQuestions } from '../../narrowing/structureBank';
+import type { Category } from '../../narrowing/structureBank';
 import { answered, unknown } from '../../questions/answer';
 import { sideOfRegion } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
@@ -57,9 +60,9 @@ export default function LiveScreen() {
   const side = sideOfRegion(selection?.regionId);
   const steps = useMemo(() => liveSteps(mode ?? 'region'), [mode]);
   const total = totalSteps(mode ?? 'region');
-  const questions = useMemo(() => discriminatorQuestions(), [t]);
+  const questions = useMemo(() => [...structureQuestions(), ...discriminatorQuestions()], [t]);
   // continue where the patient left off (the answers are in the session), not from the start
-  const [index, setIndex] = useState(() => firstOpenStep(steps, useSession.getState().movementResults.map((m) => m.movementId), useSession.getState().answers.map((a) => a.questionId)));
+  const [index, setIndex] = useState(() => firstOpenStep(steps, useSession.getState().movementResults.map((m) => m.movementId), useSession.getState().answers.map((a) => a.questionId), useSession.getState().liveState?.muscleAllowed === true));
   const [phase, setPhase] = useState<'try' | 'feel'>('try');
   const [picked, setPicked] = useState<Set<Key>>(new Set());
   const [finished, setFinished] = useState(() => useSession.getState().liveState?.stop === true);
@@ -72,8 +75,13 @@ export default function LiveScreen() {
   const onMovement = step.kind === 'movement' && !finished;
   const current = step.kind === 'movement' ? movementById(step.id) ?? MOVEMENTS[0] : lastMovement.current;
   if (step.kind === 'movement') lastMovement.current = current;
-  const question = step.kind === 'question' ? questions.find((q) => q.questionId === step.id) : undefined;
-  const highlightIds = useMemo(() => liveState?.candidates.map((c) => c.muscleId) ?? [], [liveState]);
+  const question = step.kind !== 'movement' ? questions.find((q) => q.questionId === step.id) : undefined;
+  // muscles when they may be shown; for a structure type with no mesh, the nearest area (labelled approximate)
+  const approxCategory = liveState?.outcome === 'category' && liveState.categoryResult && liveState.categoryResult !== 'UNCLEAR' ? (liveState.categoryResult as Category) : null;
+  const highlightIds = useMemo(
+    () => (approxCategory ? approxAreaIds(approxCategory, side, selection?.subRegionId ?? null) : liveState?.candidates.map((c) => c.muscleId) ?? []),
+    [liveState, approxCategory, side, selection?.subRegionId],
+  );
 
   const handle = (out: LiveOutcome) => {
     if (out.route) {
@@ -110,13 +118,16 @@ export default function LiveScreen() {
     <SafeGuard>
       <Screen scroll={false} onBack={() => router.back()} banner={<CautionStrip text={t('moveSafely')} />}>
         <View style={styles.fill} onLayout={(e: LayoutChangeEvent) => setHeight(e.nativeEvent.layout.height)}>
-          <MovementStage movement={current} side={side} height={modelHeight} paused={!onMovement} highlightIds={highlightIds} onInteract={setTouching} />
+          <MovementStage movement={current} side={side} height={modelHeight} paused={!onMovement} highlightIds={highlightIds} approx={approxCategory !== null} onInteract={setTouching} />
           <ScrollView style={styles.fill} contentContainerStyle={styles.lower} scrollEnabled={!touching} showsVerticalScrollIndicator={false}>
-            <StepProgress step={Math.min(index + 1, total)} total={total} label={t('live.questionOf', { n: Math.min(index + 1, total), total })} />
+            <StepProgress step={Math.min(index + 1, total)} total={total} label={t('live.questionOf', { n: Math.min((liveState ? liveState.structure.asked + liveState.asked : 0) + 1, total), total })} />
             <CandidateStrip state={liveState} />
             <View style={styles.card}>
               {finished ? (
-                <Button label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
+                <>
+                  {liveState?.outcome === 'category' ? <Button label={t('live.talkPhysio')} onPress={() => router.replace('/report/doctor' as never)} /> : null}
+                  <Button variant={liveState?.outcome === 'category' ? 'outline' : 'primary'} label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
+                </>
               ) : step.kind === 'movement' && phase === 'try' ? (
                 <>
                   <AppText variant="h2" color={colors.navy}>

@@ -21,6 +21,7 @@ import { deepStructureIds, structureAnchors } from '../body3d/packLayers';
 import { LeaderLabels } from '../narrowing/LeaderLabels';
 import { muscleName } from '../narrowing/CandidateStrip';
 import { musclePool } from '../../dev/narrowingStub';
+import { approxTrackedIds, layerFor } from '../../narrowing/approxArea';
 import { SegmentedBody } from '../body3d/SegmentedBody';
 import { usePack } from '../body3d/usePack';
 import { useScreenFocused } from '../body3d/useScreenFocused';
@@ -51,6 +52,8 @@ interface Props {
   highlightIds?: string[];
   /** Muscles to label with a leader line (name only). */
   labelIds?: string[];
+  /** True when the highlighted area stands in for a structure that has no mesh (joint, capsule, nerve, bone): labelled "approximate area". */
+  approx?: boolean;
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
 }
@@ -62,7 +65,7 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, onReady }: Props) {
+export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, onReady }: Props) {
   const preset = cameraPreset ?? movement.camera;
   const t = useT();
   const focused = useScreenFocused();
@@ -113,7 +116,13 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   }, [firstFrame]);
 
   const loaded = pack.status === 'ready' ? pack.pack : null;
-  const trackedIds = useMemo(() => tracked ?? (highlightIds !== undefined || labelIds !== undefined ? musclePool(side) : undefined), [tracked, highlightIds, labelIds, side]);
+  const trackedIds = useMemo(() => tracked ?? (highlightIds !== undefined || labelIds !== undefined ? [...musclePool(side), ...approxTrackedIds(side)] : undefined), [tracked, highlightIds, labelIds, side]);
+
+  // an approximate area made of bones is shown in the bone layer, anything else in the muscle layer
+  const hintKey = (highlightIds ?? []).join('|');
+  useEffect(() => {
+    if (highlightIds && highlightIds.length > 0) setLayer(layerFor(highlightIds));
+  }, [hintKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const emph = useMemo(() => {
     if (emphasis) return emphasis;
     if (!loaded || !highlightIds) return undefined;
@@ -182,7 +191,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
         </View>
       ) : (
         <>
-          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: muscleName(p.id) }))} /> : null}
+          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null}
           <View style={styles.layers} accessibilityLabel={t('movement.layerLabel')}>
             {layers.map((l) => {
               const on = l.value === layer;

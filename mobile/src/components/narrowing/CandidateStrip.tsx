@@ -1,11 +1,42 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
-import type { LiveState } from '../../narrowing/live';
+import type { LiveCategory, LiveState } from '../../narrowing/live';
 import { REGION_MAP } from '../../regions/regionMap';
 import { useT } from '../../store/settings';
 import { colors, radius } from '../../theme';
 import { AppText } from '../AppText';
 import { MatchBar } from './MatchBar';
+
+/** The name of a structure category in the current language. */
+export function useCategoryName() {
+  const t = useT();
+  return (c: LiveCategory['category'] | 'UNCLEAR') => t(`live.category.${c}` as const);
+}
+
+/** The categories with a band and a match bar (no numbers, no ranks). */
+export function CategoryRows({ categories }: { categories: LiveCategory[] }) {
+  const t = useT();
+  const name = useCategoryName();
+  return (
+    <>
+      {categories.map((c) => (
+        <View key={c.category} style={styles.row}>
+          <View style={styles.rowTop}>
+            <AppText variant="bodyStrong" color={colors.navy} style={styles.name} numberOfLines={2}>
+              {name(c.category)}
+            </AppText>
+            <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
+              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+                {t(`live.band.${c.band}` as const)}
+              </AppText>
+            </View>
+          </View>
+          <MatchBar strength={c.strength} band={c.band} />
+        </View>
+      ))}
+    </>
+  );
+}
 
 export const muscleName = (id: string) => REGION_MAP.structures[id]?.name ?? id;
 
@@ -39,16 +70,48 @@ export function NarrowingChips() {
 export function CandidateStrip({ state }: { state: LiveState | null }) {
   const t = useT();
   const stop = state?.stop === true;
-  const list = state && state.status !== 'narrowing' ? state.candidates : [];
-  const headline = stop ? t('live.enough') : !state || state.status === 'narrowing' ? t('live.stillNarrowing') : list.length === 0 ? t('live.noMatchYet') : t('live.candidatesSoFar');
+  const category = state?.outcome === 'category';
+  const types = state && state.structure.categories.length > 0 ? state.structure.categories.filter((c) => c.strength > 0) : [];
+  const list = state && state.outcome === 'muscle' && state.status !== 'narrowing' ? state.candidates : [];
+  const headline = category
+    ? state?.categoryResult === 'UNCLEAR'
+      ? t('live.category.UNCLEAR')
+      : t('live.notMuscleTitle')
+    : stop
+      ? t('live.enough')
+      : !state
+        ? t('live.stillNarrowing')
+        : state.outcome === 'pending'
+          ? types.length > 0
+            ? t('live.typesSoFar')
+            : t('live.stillNarrowing')
+          : state.status === 'narrowing'
+            ? t('live.stillNarrowing')
+            : list.length === 0
+              ? t('live.noMatchYet')
+              : t('live.candidatesSoFar');
+  const shownTypes = category && state?.categoryResult && state.categoryResult !== 'UNCLEAR' ? types.filter((c) => c.category === state.categoryResult) : types;
   return (
     <View style={styles.strip} accessibilityLiveRegion="polite">
       <View style={styles.head}>
-        <AppText variant="secondary" color={stop ? colors.safe : colors.navy} style={styles.bold} numberOfLines={2}>
+        <AppText variant="secondary" color={stop && !category ? colors.safe : colors.navy} style={styles.bold} numberOfLines={3}>
           {headline}
         </AppText>
         <NarrowingChips />
       </View>
+      {category ? (
+        <AppText variant="secondary" color={colors.muted}>
+          {state?.categoryResult === 'UNCLEAR' ? t('live.unclearBody') : t('live.notMuscleBody')}
+        </AppText>
+      ) : null}
+      {state && state.outcome !== 'muscle' && shownTypes.length > 0 ? (
+        <>
+          <CategoryRows categories={shownTypes} />
+          <AppText variant="secondary" color={colors.muted} style={styles.italic}>
+            {t('live.matchCaption')}
+          </AppText>
+        </>
+      ) : null}
       {list.length > 0 ? (
         <>
           {list.map((c) => (

@@ -8,12 +8,15 @@ import { Card } from '../../components/Card';
 import { CautionStrip } from '../../components/CautionStrip';
 import { MovementStage } from '../../components/movement/MovementStage';
 import { MatchBar } from '../../components/narrowing/MatchBar';
-import { muscleName, NarrowingChips } from '../../components/narrowing/CandidateStrip';
+import { CategoryRows, muscleName, NarrowingChips, useCategoryName } from '../../components/narrowing/CandidateStrip';
 import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
+import { approxAreaIds } from '../../narrowing/approxArea';
 import { questionText } from '../../narrowing/bank';
+import { structureQuestionText } from '../../narrowing/structureBank';
+import type { Category } from '../../narrowing/structureBank';
 import { evaluateLive } from '../../narrowing/live';
 import type { LiveCandidate, LiveState } from '../../narrowing/live';
 import { regionLabel } from '../../regions/shoulder';
@@ -30,7 +33,7 @@ const BACK: CameraPreset = { position: [-0.55, 1.35, -1.35], target: [-0.12, 1.2
 /** The names of the movements and questions behind a candidate, in the current language. */
 function evidenceName(id: string): string {
   const m = movementById(id);
-  return m ? localized(m.name) : questionText(id) ?? id;
+  return m ? localized(m.name) : questionText(id) ?? structureQuestionText(id) ?? id;
 }
 
 function CandidateRow({ c }: { c: LiveCandidate }) {
@@ -62,6 +65,7 @@ function CandidateRow({ c }: { c: LiveCandidate }) {
 
 /** A doctor is suggested when the candidates are one cluster, when none stands out, or when the best match is only Low. */
 export function suggestDoctorLive(s: LiveState | null): boolean {
+  if (s?.outcome === 'category') return true; // not a muscle problem, or unclear: a doctor or physio
   return !s || s.candidates.length === 0 || s.cluster || s.candidates[0].band === 'low';
 }
 
@@ -84,7 +88,15 @@ export default function Result() {
   }
   const state = saved ?? fallback.current;
   const candidates = state?.candidates ?? [];
-  const ids = useMemo(() => candidates.map((c) => c.muscleId), [state]); // eslint-disable-line react-hooks/exhaustive-deps
+  const categoryResult = state?.outcome === 'category' ? state.categoryResult : null;
+  const approxCategory = categoryResult && categoryResult !== 'UNCLEAR' ? (categoryResult as Category) : null;
+  const sideNow = sideOfRegion(sel?.regionId);
+  const ids = useMemo(
+    () => (approxCategory ? approxAreaIds(approxCategory, sideNow, sel?.subRegionId ?? null) : candidates.map((c) => c.muscleId)),
+    [state], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const categoryName = useCategoryName();
+  const leadCategories = (state?.structure.categories ?? []).filter((c) => c.strength > 0).filter((c) => (approxCategory ? c.category === approxCategory : categoryResult === 'UNCLEAR' ? true : c.category === state?.structure.leader));
   const where = sel ? regionLabel(sel.regionId, sel.subRegionId) : null;
   const side = sideOfRegion(sel?.regionId);
   const behind = sel?.subRegionId === 'back' || sel?.subRegionId === 'scapular';
@@ -99,7 +111,7 @@ export default function Result() {
         footer={
           <>
             <Button label={t('result.seeAdvice')} onPress={() => router.push('/report/choice')} />
-            <Button variant="text" label={t('result.talkDoctor')} onPress={() => router.push('/report/doctor')} />
+            <Button variant="text" label={categoryResult ? t('live.talkPhysio') : t('result.talkDoctor')} onPress={() => router.push('/report/doctor')} />
           </>
         }
       >
@@ -108,7 +120,7 @@ export default function Result() {
           {t('result.title')}
         </AppText>
         <NarrowingChips />
-        <MovementStage movement={MOVEMENTS[0]} side={side} height={320} paused cameraPreset={behind ? BACK : FRONT} highlightIds={ids} labelIds={ids} onInteract={setTouching} />
+        <MovementStage movement={MOVEMENTS[0]} side={side} height={320} paused cameraPreset={behind ? BACK : FRONT} highlightIds={ids} labelIds={approxCategory ? ids.slice(0, 1) : ids} approx={approxCategory !== null} onInteract={setTouching} />
         {state?.stop ? (
           <AppText variant="secondary" color={colors.safe} style={styles.bold}>
             {t('live.enough')}
@@ -122,12 +134,47 @@ export default function Result() {
             </AppText>
           </Card>
         ) : null}
-        {candidates.length === 0 ? (
+        {categoryResult ? (
+          <>
+            <AppText variant="h2" color={colors.navy}>
+              {categoryResult === 'UNCLEAR' ? categoryName('UNCLEAR') : t('live.notMuscleTitle')}
+            </AppText>
+            <AppText variant="body" color={colors.muted}>
+              {categoryResult === 'UNCLEAR' ? t('live.unclearBody') : t('live.notMuscleBody')}
+            </AppText>
+            {leadCategories.length > 0 ? (
+              <>
+                {leadCategories.map((c) => (
+                  <View key={c.category} style={styles.item}>
+                    <CategoryRows categories={[c]} />
+                    <AppText variant="secondary" color={colors.muted}>
+                      {c.matched.length > 0 ? t('live.matched', { items: c.matched.map(evidenceName).join(', ') }) : t('live.noWhy')}
+                    </AppText>
+                    {c.unmatched.length > 0 ? (
+                      <AppText variant="secondary" color={colors.muted}>
+                        {t('live.unmatched', { items: c.unmatched.map(evidenceName).join(', ') })}
+                      </AppText>
+                    ) : null}
+                  </View>
+                ))}
+                {approxCategory ? (
+                  <AppText variant="secondary" color={colors.muted}>
+                    {t('live.approxNote')}
+                  </AppText>
+                ) : null}
+                <AppText variant="secondary" color={colors.muted} style={styles.italic}>
+                  {t('live.matchCaption')}
+                </AppText>
+              </>
+            ) : null}
+          </>
+        ) : candidates.length === 0 ? (
           <AppText variant="body" color={colors.muted}>
             {t('result.none')}
           </AppText>
         ) : (
           <>
+            {state?.structure.leader ? <CategoryRows categories={(state.structure.categories ?? []).filter((c) => c.category === state.structure.leader)} /> : null}
             {state?.cluster ? (
               <AppText variant="secondary" color={colors.muted}>
                 {t('live.clusterNote')}
