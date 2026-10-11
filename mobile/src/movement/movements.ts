@@ -3,6 +3,7 @@
 // Patient-facing text stays "draft, awaiting clinician review".
 import { getLanguage } from '../i18n';
 import type { Language } from '../i18n';
+import type { CameraPreset } from '../components/body3d/cameraRig';
 import data from '../data/movements_shoulder.json';
 
 type Localized = { en: string; ur: string; roman: string };
@@ -42,6 +43,10 @@ export interface Movement {
   suggestsStructures: string[];
   resistArrow: ResistArrow | null;
   cameraMeasurable: boolean;
+  /** Camera preset for the RIGHT side (position, target, fov, zoom). The left side mirrors x. Placeholder framing. */
+  camera: CameraPreset;
+  /** Seconds of the move out, the hold at the end pose and the return (the loop is their sum). */
+  timing?: { outSeconds: number; holdSeconds: number; returnSeconds: number };
   valuesLabel: string;
   instruction: Localized;
   caution: Localized;

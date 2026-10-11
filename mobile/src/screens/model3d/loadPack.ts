@@ -1,6 +1,7 @@
 import { Asset } from 'expo-asset';
 import { File } from 'expo-file-system';
 import * as THREE from 'three';
+import { createBodyMaterial } from '../../components/body3d/viewerSetup';
 import type { PackPart as GenericPart } from './pick';
 
 export type PackPart = GenericPart<THREE.Mesh>;
@@ -90,7 +91,7 @@ export async function loadPack(binModule: number, meta: PackMeta): Promise<Loade
   console.log('[BodyViewer] pack read', buffer.byteLength, 'bytes in', t2 - t1, 'ms');
 
   // Parse = wrap typed-array views over the one buffer (no copies) and build geometries.
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.05 });
+  const material = createBodyMaterial();
   const root = new THREE.Group();
   const parts: PackPart[] = [];
   for (const m of meta.parts) {

@@ -11,8 +11,9 @@ import { applyLayer, resolveRay } from '../../regions/select';
 import type { BodyLayer, BodySelection, Point3D } from '../../regions/types';
 import { disposeOutline, highlightMesh, makeOutline, restoreMesh } from '../../screens/model3d/loadPack';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
+import { StudioLights } from './StudioLights';
+import { VIEWER_FOV as FOV } from './viewerSetup';
 
-const FOV = 45;
 /** More outlines than this is too many extra meshes for a phone; the fill highlight still shows. */
 const MAX_OUTLINES = 60;
 
@@ -192,8 +193,7 @@ export function Body3D(props: Body3DProps) {
   return (
     <View style={styles.fill} {...responder.panHandlers}>
       <Canvas camera={{ position: [0, 0, 5], fov: FOV, near: 0.05, far: 100 }}>
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[3, 5, 4]} intensity={2} />
+        <StudioLights />
         <Scene {...props} control={control} />
       </Canvas>
     </View>

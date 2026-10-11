@@ -1,5 +1,5 @@
 import movementsFile from '../src/data/movements_shoulder.json';
-import { CAUTION_EN, DEFAULT_LOOP_SECONDS, MOVEMENTS, VALUES_LABEL, allowedViolations, mannequinKeyframes, scapulaFor } from '../src/movement/movements';
+import { CAUTION_EN, MOVEMENTS, VALUES_LABEL, allowedViolations, mannequinKeyframes, scapulaFor } from '../src/movement/movements';
 import { RAMP, easeTrap, poseAt, restPose } from '../src/movement/pose';
 import type { Pose } from '../src/movement/pose';
 import { buildMovementResult } from '../src/movement/result';
@@ -117,8 +117,8 @@ describe('pose function', () => {
       const p = poseAt(m, peak.t);
       expect(p.elevation).toBeCloseTo(peak.elevation, 9);
     }
-    expect(poseAt(MOVEMENTS[0], 0.45).elevation).toBe(120);
-    expect(poseAt(MOVEMENTS[2], 0.3).elevation).toBe(90);
+    expect(poseAt(MOVEMENTS[0], MOVEMENTS[0].frames[1].t).elevation).toBe(120);
+    expect(poseAt(MOVEMENTS[2], MOVEMENTS[2].frames[1].t).elevation).toBe(90);
   });
 
   it('the shoulder blade follows (elevation - 30) / 3 above 30 degrees and is 0 below', () => {
@@ -213,9 +213,21 @@ describe('smoothness at 60 Hz', () => {
     expect(holds).toBeGreaterThanOrEqual(5); // sideways, forward, can, push, belly, behind back all hold
   });
 
-  it('the loop is about 4 seconds (5 for the can position, so its return stays under the speed limit)', () => {
-    expect(DEFAULT_LOOP_SECONDS).toBe(4);
-    for (const m of MOVEMENTS) expect(m.loopSeconds).toBe(m.id === 'can_position_hold' ? 5 : 4);
+  it('plays out, holds about 1 second at the end pose, then returns more slowly (loop 4 to 7.5 seconds)', () => {
+    for (const m of MOVEMENTS) {
+      expect(m.loopSeconds).toBeGreaterThanOrEqual(4);
+      expect(m.loopSeconds).toBeLessThanOrEqual(7.5);
+      const [rest, peak, peakEnd, last] = m.frames;
+      expect(m.frames).toHaveLength(4);
+      expect(peak.elevation).toBe(peakEnd.elevation); // the hold
+      expect(rest.t).toBe(0);
+      expect(last.t).toBe(1);
+      const out = peak.t * m.loopSeconds;
+      const hold = (peakEnd.t - peak.t) * m.loopSeconds;
+      const back = (1 - peakEnd.t) * m.loopSeconds;
+      expect(hold).toBeGreaterThanOrEqual(0.95);
+      expect(back).toBeGreaterThan(out * 1.2); // "return slowly"
+    }
   });
 
   afterAll(() => console.log('SMOOTHNESS (limits: speed < ' + MAX_SPEED + ' deg/s, acceleration < ' + MAX_ACCEL + ' (scapula ' + MAX_ACCEL_SCAPULA + ') deg/s^2, jump < ' + MAX_FRAME_JUMP + ' deg/frame)\n' + report.join('\n')));
