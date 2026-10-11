@@ -1,0 +1,172 @@
+{
+  "label": "placeholder - draft from published sources, awaiting clinician review",
+  "note": "PLACEHOLDER, Person C replaces. One idea per question; each stores one structured answer {questionId, type, value, state}. 'Not sure' and 'Skip' are state unknown and never count as 'no'. 'supports' lists the muscles (right-side ids; the left side uses the matching left ids) for which a 'yes' is a matching criterion and a 'no' is a non-matching one. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
+  "audit": {
+    "checked": "shared/questions_shoulder.json and mobile/src/dev/followUpQuestionsStub.json",
+    "doubleBarrelled": [],
+    "split": [
+      {
+        "from": "Is it worse lifting overhead or rotating outward? (example in the brief, not present in the repo)",
+        "into": [
+          "Q_DQ_OVERHEAD",
+          "Q_DQ_ROTATE_OUT"
+        ]
+      }
+    ],
+    "result": "No double-barrelled item was found in the existing bank. The follow-up 'Does lifting your arm make it worse?' is one idea (replaced by the narrower Q_DQ_OVERHEAD); the depth question has one idea (depth) with exclusive answers and is not part of the live flow."
+  },
+  "questions": [
+    {
+      "questionId": "Q_DQ_OVERHEAD",
+      "order": 1,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you lift your arm overhead?",
+        "ur": "کیا بازو سر سے اوپر اٹھانے پر تکلیف بڑھتی ہے؟",
+        "roman": "Kya bazu sar se upar uthane par takleef barhti hai?"
+      },
+      "supports": [
+        "acromial_part_of_deltoid_muscle_right",
+        "supraspinatus_muscle_right",
+        "descending_part_of_trapezius_muscle_right"
+      ],
+      "why": {
+        "en": "Pain with lifting overhead matches muscles that raise the arm.",
+        "ur": "سر سے اوپر اٹھانے پر درد ان پٹھوں سے ملتا ہے جو بازو اٹھاتے ہیں۔",
+        "roman": "Sar se upar uthane par dard un patthon se milta hai jo bazu uthate hain."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_ROTATE_OUT",
+      "order": 2,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you turn your arm outward?",
+        "ur": "کیا بازو کو باہر کی طرف گھمانے پر تکلیف بڑھتی ہے؟",
+        "roman": "Kya bazu ko bahar ki taraf ghumane par takleef barhti hai?"
+      },
+      "supports": [
+        "infraspinatus_muscle_right",
+        "teres_minor_muscle_right"
+      ],
+      "why": {
+        "en": "Pain turning the arm outward matches the muscles at the back of the shoulder blade.",
+        "ur": "بازو باہر گھمانے پر درد کندھے کی ہڈی کے پیچھے کے پٹھوں سے ملتا ہے۔",
+        "roman": "Bazu bahar ghumane par dard kandhe ki haddi ke peeche ke patthon se milta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_ROTATE_IN",
+      "order": 3,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you turn your arm inward?",
+        "ur": "کیا بازو کو اندر کی طرف گھمانے پر تکلیف بڑھتی ہے؟",
+        "roman": "Kya bazu ko andar ki taraf ghumane par takleef barhti hai?"
+      },
+      "supports": [
+        "subscapular_muscle_right",
+        "teres_major_muscle_right",
+        "latissimus_dorsi_muscle_right"
+      ],
+      "why": {
+        "en": "Pain turning the arm inward matches the muscle at the front of the shoulder blade.",
+        "ur": "بازو اندر گھمانے پر درد کندھے کی ہڈی کے سامنے کے پٹھے سے ملتا ہے۔",
+        "roman": "Bazu andar ghumane par dard kandhe ki haddi ke samne ke pathe se milta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_REACH_FORWARD",
+      "order": 4,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you reach forward?",
+        "ur": "کیا آگے کی طرف ہاتھ بڑھانے پر تکلیف بڑھتی ہے؟",
+        "roman": "Kya aage ki taraf haath barhane par takleef barhti hai?"
+      },
+      "supports": [
+        "clavicular_part_of_deltoid_muscle_right",
+        "long_head_of_biceps_brachii_muscle_right",
+        "coracobrachialis_muscle_right"
+      ],
+      "why": {
+        "en": "Pain reaching forward matches muscles at the front of the shoulder.",
+        "ur": "آگے ہاتھ بڑھانے پر درد کندھے کے سامنے کے پٹھوں سے ملتا ہے۔",
+        "roman": "Aage haath barhane par dard kandhe ke samne ke patthon se milta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_NIGHT",
+      "order": 5,
+      "type": "yesno",
+      "text": {
+        "en": "Does it bother you at night?",
+        "ur": "کیا یہ رات کو آپ کو تنگ کرتا ہے؟",
+        "roman": "Kya yeh raat ko aap ko tang karta hai?"
+      },
+      "supports": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right"
+      ],
+      "why": {
+        "en": "Night pain often goes with the muscles that hold the shoulder joint.",
+        "ur": "رات کا درد اکثر کندھے کے جوڑ کو سنبھالنے والے پٹھوں سے ملتا ہے۔",
+        "roman": "Raat ka dard aksar kandhe ke jod ko sambhalne wale patthon se milta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_LYING_SIDE",
+      "order": 6,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you lie on that side?",
+        "ur": "کیا اس طرف لیٹنے سے تکلیف بڑھتی ہے؟",
+        "roman": "Kya is taraf letne se takleef barhti hai?"
+      },
+      "supports": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right",
+        "acromial_part_of_deltoid_muscle_right"
+      ],
+      "why": {
+        "en": "Pain lying on the side can go with the muscles on top of the shoulder.",
+        "ur": "اس طرف لیٹنے پر درد کندھے کے اوپر کے پٹھوں سے مل سکتا ہے۔",
+        "roman": "Is taraf letne par dard kandhe ke upar ke patthon se mil sakta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_DQ_CARRY",
+      "order": 7,
+      "type": "yesno",
+      "text": {
+        "en": "Is it worse when you carry something heavy?",
+        "ur": "کیا بھاری چیز اٹھانے سے تکلیف بڑھتی ہے؟",
+        "roman": "Kya bhari cheez uthane se takleef barhti hai?"
+      },
+      "supports": [
+        "long_head_of_biceps_brachii_muscle_right",
+        "acromial_part_of_deltoid_muscle_right",
+        "clavicular_part_of_deltoid_muscle_right"
+      ],
+      "why": {
+        "en": "Pain carrying a load can go with the muscles at the front of the arm.",
+        "ur": "بوجھ اٹھانے پر درد بازو کے سامنے کے پٹھوں سے مل سکتا ہے۔",
+        "roman": "Bojh uthane par dard bazu ke samne ke patthon se mil sakta hai."
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    }
+  ]
+}

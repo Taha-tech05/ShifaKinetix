@@ -1,0 +1,2 @@
+# Binary data: never diff or normalise line endings
+*.bin binary

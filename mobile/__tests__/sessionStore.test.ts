@@ -15,24 +15,23 @@ beforeEach(() => useSession.getState().reset());
 describe('session store', () => {
   it('starts empty', () => {
     expect(useSession.getState()).toMatchObject({
-      regionId: null,
-      point: null,
-      depth: null,
+      selection: null,
       answers: [],
       gateVerdict: null,
       movementResults: [],
     });
   });
 
-  it('stores region, tapped point and depth', () => {
-    const s = useSession.getState();
-    s.setRegion('shoulder_right_front', { x: 1, y: 2, z: 3 });
-    s.setDepth('deep');
-    expect(useSession.getState()).toMatchObject({
-      regionId: 'shoulder_right_front',
+  it('stores the selection: side, sub-region, point, closest structure and layer', () => {
+    const selection = {
+      regionId: 'shoulder_right',
+      subRegionId: 'top' as const,
       point: { x: 1, y: 2, z: 3 },
-      depth: 'deep',
-    });
+      hitStructure: { meshName: 'M', name: 'Trapezius', kind: 'muscle' as const },
+      layer: 'muscle' as const,
+    };
+    useSession.getState().setSelection(selection);
+    expect(useSession.getState().selection).toEqual(selection);
   });
 
   it('replaces an earlier answer to the same question', () => {
@@ -91,13 +90,13 @@ describe('session store', () => {
 
   it('reset clears everything', () => {
     const s = useSession.getState();
-    s.setRegion('r');
+    s.setSelection({ regionId: 'shoulder_left', subRegionId: 'back', point: { x: 0, y: 0, z: 0 }, hitStructure: null, layer: 'bone' });
     s.recordAnswer(yes('Q1', true));
     s.runGate();
     s.reset();
     expect(useSession.getState().answers).toEqual([]);
     expect(useSession.getState().gateVerdict).toBeNull();
-    expect(useSession.getState().regionId).toBeNull();
+    expect(useSession.getState().selection).toBeNull();
   });
 });
 

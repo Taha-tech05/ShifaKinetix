@@ -1,14 +1,16 @@
 import { create } from 'zustand';
 import type { Answer, Verdict } from '../gate/evaluate';
 import { evaluateStub } from '../gate/stub';
+import { structuredGateInputs } from '../flow/gateInputs';
+import type { LiveState, NarrowingSnapshot } from '../narrowing/live';
+import { depthAnswerFrom } from '../dev/followUpQuestions';
+import type { NarrowingInput } from '../dev/narrowingStub';
+import { isDiscriminator } from '../narrowing/bank';
+import { isStructureQuestion } from '../narrowing/structureBank';
+import type { IntakeMode } from '../regions/regionMap';
+import type { BodySelection } from '../regions/types';
 
-export type Depth = 'surface' | 'middle' | 'deep';
-
-export interface Point3D {
-  x: number;
-  y: number;
-  z: number;
-}
+export type { Point3D } from '../regions/types';
 
 /** Shared format 3: movement result. */
 export interface MovementResult {
@@ -20,37 +22,92 @@ export interface MovementResult {
   state: string;
 }
 
+/**
+ * One entry of the ordered answer history of the live flow. Nothing is deleted: an answer that is changed or undone stays in the
+ * log with `supersededAt` set, so a doctor view can see what the patient first said. The active entries (no `supersededAt`) are
+ * the current answers.
+ */
+export interface HistoryEntry {
+  /** 1, 2, 3, ... in the order the answers were given. */
+  seq: number;
+  kind: 'movement' | 'question';
+  /** movementId or questionId. */
+  id: string;
+  /** The answer in the shared format (questions). state "unknown" for "Not sure" and "Skip". */
+  answer: Answer | null;
+  /** The movement result (movements). */
+  movement: MovementResult | null;
+  /** A short label of the answer ("yes", "no", "unknown", "pain", ...). */
+  label: string;
+  at: string;
+  /** Set when the answer was changed or undone. */
+  supersededAt?: string;
+}
+
+/** A gate verdict other than SAFE that stopped the flow. It stays logged: going back never undoes it. */
+export interface Escalation {
+  verdict: Verdict;
+  afterId: string;
+  at: string;
+}
+
 export interface SessionState {
-  regionId: string | null;
-  point: Point3D | null;
-  depth: Depth | null;
+  /** What the patient tapped on the body: side, sub-region, point, closest structure and layer. */
+  /** "exact" when the patient can point to the spot, "region" for the whole area (also when not sure). */
+  mode: IntakeMode | null;
+  selection: BodySelection | null;
   answers: Answer[];
   gateVerdict: Verdict | null;
+  /** True once the clarifying re-ask has been used (it is offered only once). */
+  reaskDone: boolean;
   movementResults: MovementResult[];
+  /** What the live strip last showed. The result screen shows exactly this (it does not compute again). */
+  liveState: LiveState | null;
+  /** One snapshot per answer, in order, so a doctor view can later show how the ranking evolved. */
+  narrowingTrail: NarrowingSnapshot[];
+  /** Ordered answer history of the live flow, with superseded answers kept (audit trail). */
+  history: HistoryEntry[];
+  /** Set when the gate escalated during the live flow. */
+  escalation: Escalation | null;
 
-  setRegion: (regionId: string | null, point?: Point3D | null) => void;
-  setDepth: (depth: Depth | null) => void;
+  setMode: (mode: IntakeMode | null) => void;
+  setReaskDone: (done: boolean) => void;
+  setSelection: (selection: BodySelection | null) => void;
   /** Adds an answer, replacing any earlier answer to the same question. */
   recordAnswer: (answer: Answer) => void;
   runGate: () => Verdict;
   recordMovement: (result: MovementResult) => void;
+  /** Stores the live state and appends the snapshot of this step. */
+  recordNarrowing: (snapshot: NarrowingSnapshot) => void;
+  /** Appends an answer to the history; an active entry for the same question is superseded first. Returns the new entry. */
+  logAnswer: (entry: Pick<HistoryEntry, 'kind' | 'id' | 'answer' | 'movement' | 'label'>) => HistoryEntry;
+  /** Marks the most recent active entry (and its snapshots) as superseded and returns it, or null if there is none. */
+  supersedeLast: () => HistoryEntry | null;
+  /** Rebuilds `answers` and `movementResults` from the active history entries (other answers, such as the basics, are kept). */
+  rebuildFromHistory: () => void;
+  setEscalation: (e: Escalation) => void;
   reset: () => void;
 }
 
 const initial = {
-  regionId: null,
-  point: null,
-  depth: null,
+  mode: null,
+  selection: null,
   answers: [] as Answer[],
   gateVerdict: null,
+  reaskDone: false,
   movementResults: [] as MovementResult[],
+  liveState: null as LiveState | null,
+  narrowingTrail: [] as NarrowingSnapshot[],
+  history: [] as HistoryEntry[],
+  escalation: null as Escalation | null,
 };
 
 export const useSession = create<SessionState>((set, get) => ({
   ...initial,
 
-  setRegion: (regionId, point = null) => set({ regionId, point }),
-  setDepth: (depth) => set({ depth }),
+  setMode: (mode) => set({ mode }),
+  setReaskDone: (reaskDone) => set({ reaskDone }),
+  setSelection: (selection) => set({ selection }),
 
   recordAnswer: (answer) =>
     set((s) => ({
@@ -58,7 +115,9 @@ export const useSession = create<SessionState>((set, get) => ({
     })),
 
   runGate: () => {
-    const { verdict } = evaluateStub(get().answers);
+    // The gate sees the answers plus the structured onset and unable-to-move inputs derived from them (flow/gateInputs.ts).
+    const { answers, movementResults } = get();
+    const { verdict } = evaluateStub([...answers, ...structuredGateInputs(answers, movementResults)]);
     set({ gateVerdict: verdict });
     return verdict;
   },
@@ -71,5 +130,59 @@ export const useSession = create<SessionState>((set, get) => ({
       ],
     })),
 
+  recordNarrowing: (snapshot) => set((s) => ({ liveState: snapshot.state, narrowingTrail: [...s.narrowingTrail, snapshot] })),
+
+  logAnswer: (entry) => {
+    const now = new Date().toISOString();
+    const seq = get().history.length + 1;
+    const made: HistoryEntry = { seq, at: now, ...entry };
+    set((s) => ({
+      history: [...s.history.map((h) => (h.id === entry.id && !h.supersededAt ? { ...h, supersededAt: now } : h)), made],
+      narrowingTrail: s.narrowingTrail.map((t) => (t.afterId === entry.id && !t.supersededAt && t.seq !== undefined && t.seq !== seq ? { ...t, supersededAt: now } : t)),
+    }));
+    return made;
+  },
+
+  supersedeLast: () => {
+    const active = get().history.filter((h) => !h.supersededAt);
+    const last = active[active.length - 1];
+    if (!last) return null;
+    const now = new Date().toISOString();
+    set((s) => ({
+      history: s.history.map((h) => (h.seq === last.seq ? { ...h, supersededAt: now } : h)),
+      narrowingTrail: s.narrowingTrail.map((t) => (t.seq === last.seq && !t.supersededAt ? { ...t, supersededAt: now } : t)),
+    }));
+    return { ...last, supersededAt: now };
+  },
+
+  rebuildFromHistory: () =>
+    set((s) => {
+      const active = s.history.filter((h) => !h.supersededAt);
+      const isLive = (id: string) => isDiscriminator(id) || isStructureQuestion(id);
+      return {
+        answers: [...s.answers.filter((a) => !isLive(a.questionId)), ...active.filter((h) => h.kind === 'question' && h.answer).map((h) => h.answer as Answer)],
+        movementResults: active.filter((h) => h.kind === 'movement' && h.movement).map((h) => h.movement as MovementResult),
+      };
+    }),
+
+  setEscalation: (escalation) => set((s) => (s.escalation ? {} : { escalation })),
+
   reset: () => set({ ...initial }),
 }));
+
+/** Input for the narrowing step, or null until the patient has chosen a spot. */
+export function narrowingInputFrom(
+  s: Pick<SessionState, 'selection' | 'answers' | 'movementResults'>,
+): NarrowingInput | null {
+  if (!s.selection) return null;
+  return {
+    layer: s.selection.layer,
+    regionId: s.selection.regionId,
+    subRegionId: s.selection.subRegionId,
+    point: s.selection.point,
+    hitMeshName: s.selection.hitStructure?.meshName ?? null,
+    depthAnswer: depthAnswerFrom(s.answers),
+    movementResults: s.movementResults,
+    answers: s.answers,
+  };
+}

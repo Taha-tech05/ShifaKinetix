@@ -23,3 +23,9 @@ export const I18nManager = {
   },
 };
 export const Linking = { openURL: async (_url: string) => undefined };
+
+// back button, alert and accessibility settings, as no-ops that tests can replace
+export const BackHandler = { addEventListener: (_name: string, _cb: () => boolean) => ({ remove: () => undefined }) };
+export const Alert = { alert: (_title: string, _message?: string, _buttons?: { text: string; onPress?: () => void }[]) => undefined };
+export const AccessibilityInfo = { isReduceMotionEnabled: async () => false };
+export const LogBox = { ignoreLogs: (_l: string[]) => undefined };

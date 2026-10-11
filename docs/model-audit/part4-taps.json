@@ -1,0 +1,50 @@
+{
+ "infraspinatus": {
+  "yawDeg": 180,
+  "pitchDeg": 0,
+  "successfulPoints": 181,
+  "point": [
+   -0.11407671123743057,
+   1.3224271535873413,
+   -0.08983665704727173
+  ],
+  "tapPx": [
+   596,
+   911
+  ],
+  "swipePxForYaw": 825,
+  "swipePxForPitch": 0
+ },
+ "teres-minor": {
+  "yawDeg": 180,
+  "pitchDeg": 0,
+  "successfulPoints": 117,
+  "point": [
+   -0.12990045547485352,
+   1.318792700767517,
+   -0.08076908439397812
+  ],
+  "tapPx": [
+   604,
+   914
+  ],
+  "swipePxForYaw": 825,
+  "swipePxForPitch": 0
+ },
+ "subscapularis": {
+  "yawDeg": 30,
+  "pitchDeg": -30,
+  "successfulPoints": 26,
+  "point": [
+   -0.1238517090678215,
+   1.350108027458191,
+   -0.05471087619662285
+  ],
+  "tapPx": [
+   480,
+   953
+  ],
+  "swipePxForYaw": 137,
+  "swipePxForPitch": -137
+ }
+}

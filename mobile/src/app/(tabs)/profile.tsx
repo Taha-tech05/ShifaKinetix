@@ -33,6 +33,7 @@ export default function Profile() {
           {t('profile.restartNote')}
         </AppText>
       ) : null}
+      <Button label={t('profile.about')} variant="outline" onPress={() => router.push('/about')} />
       <Button
         label={t('profile.signOut')}
         variant="outline"
