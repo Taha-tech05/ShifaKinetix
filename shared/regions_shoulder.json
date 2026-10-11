@@ -1,0 +1,2098 @@
+{
+ "label": "draft, awaiting clinician review",
+ "note": "Built by mobile/scripts/build-region-map.mjs from the structure names in body-lite.json with name rules only. A structure can belong to several sub-regions. Unmapped shoulder-area structures are listed in \"unmapped\" and in docs/region-map-report.md. Urdu and Roman Urdu labels need a native speaker's review.",
+ "source": "name rules in mobile/scripts/build-region-map.mjs; Z-Anatomy \"Myology\" structure names (see docs/3d-model.md)",
+ "generatedFrom": "mobile/assets/models/pack/body-lite.json",
+ "subRegions": [
+  {
+   "id": "top",
+   "labels": {
+    "en": "top",
+    "ur": "اوپر",
+    "roman": "upar"
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  },
+  {
+   "id": "front",
+   "labels": {
+    "en": "front",
+    "ur": "سامنے",
+    "roman": "samne"
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  },
+  {
+   "id": "side",
+   "labels": {
+    "en": "side",
+    "ur": "پہلو",
+    "roman": "pehlu"
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  },
+  {
+   "id": "back",
+   "labels": {
+    "en": "back",
+    "ur": "پیچھے",
+    "roman": "peeche"
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  },
+  {
+   "id": "scapular",
+   "labels": {
+    "en": "shoulder blade",
+    "ur": "کندھے کی ہڈی",
+    "roman": "kandhe ki haddi"
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  }
+ ],
+ "regions": [
+  {
+   "id": "shoulder_right",
+   "side": "right",
+   "labels": {
+    "en": "Right shoulder",
+    "ur": "دایاں کندھا",
+    "roman": "Dayan kandha"
+   },
+   "subRegions": {
+    "top": [
+     "acromial_part_of_deltoid_muscle_right",
+     "acromioclavicular_joint_s_capsule_right",
+     "acromioclavicular_ligament_right",
+     "articular_capsule_of_glenohumeral_joint_right",
+     "articular_disc_of_acromioclavicular_joint_right",
+     "clavicle_right",
+     "coraco_acromial_ligament_right",
+     "descending_part_of_trapezius_muscle_right",
+     "glenoid_labrum_right",
+     "humerus_right",
+     "inferior_glenohumeral_ligament_right",
+     "inferior_transverse_scapular_ligament_right",
+     "levator_scapulae_right",
+     "middle_glenohumeral_ligament_right",
+     "omohyoid_muscle_right",
+     "scapula_right",
+     "superior_glenohumeral_ligament_right",
+     "superior_transverse_scapular_ligament_right",
+     "supraspinatus_muscle_right"
+    ],
+    "front": [
+     "abdominal_part_of_pectoralis_major_muscle_right",
+     "anterior_sternoclavicular_ligament_right",
+     "articular_capsule_of_glenohumeral_joint_right",
+     "articular_capsule_of_sternoclavicular_joint_right",
+     "articular_disc_of_sternoclavicular_joint_right",
+     "clavicle_right",
+     "clavicular_head_of_pectoralis_major_muscle_right",
+     "clavicular_part_of_deltoid_muscle_right",
+     "coraco_acromial_ligament_right",
+     "coracobrachialis_muscle_right",
+     "coracohumeral_ligament_right",
+     "costoclavicular_ligament_right",
+     "glenoid_labrum_right",
+     "humerus_right",
+     "inferior_glenohumeral_ligament_right",
+     "interclavicular_ligament_right",
+     "long_head_of_biceps_brachii_right",
+     "long_head_of_biceps_brachii_muscle_right",
+     "medial_head_of_biceps_brachii_muscle_right",
+     "middle_glenohumeral_ligament_right",
+     "pectoralis_minor_muscle_right",
+     "posterior_sternoclavicular_ligament_right",
+     "short_head_of_biceps_brachii_right",
+     "sternocostal_head_of_pectoralis_major_muscle_right",
+     "subscapular_muscle_right",
+     "superior_glenohumeral_ligament_right",
+     "transverse_humeral_ligament_right"
+    ],
+    "side": [
+     "acromial_part_of_deltoid_muscle_right",
+     "articular_capsule_of_glenohumeral_joint_right",
+     "glenoid_labrum_right",
+     "humerus_right",
+     "inferior_glenohumeral_ligament_right",
+     "lateral_head_of_triceps_brachii_muscle_right",
+     "latissimus_dorsi_muscle_right",
+     "middle_glenohumeral_ligament_right",
+     "serratus_anterior_muscle_right",
+     "superior_glenohumeral_ligament_right"
+    ],
+    "back": [
+     "articular_capsule_of_glenohumeral_joint_right",
+     "glenoid_labrum_right",
+     "humerus_right",
+     "inferior_glenohumeral_ligament_right",
+     "infraspinatus_muscle_right",
+     "lateral_head_of_triceps_brachii_muscle_right",
+     "latissimus_dorsi_muscle_right",
+     "middle_glenohumeral_ligament_right",
+     "scapula_right",
+     "scapular_part_of_deltoid_muscle_right",
+     "superior_glenohumeral_ligament_right",
+     "teres_major_muscle_right",
+     "teres_minor_muscle_right",
+     "transverse_part_of_trapezius_muscle_right"
+    ],
+    "scapular": [
+     "ascending_part_of_trapezius_muscle_right",
+     "descending_part_of_trapezius_muscle_right",
+     "inferior_transverse_scapular_ligament_right",
+     "infraspinatus_muscle_right",
+     "levator_scapulae_right",
+     "rhomboid_major_muscle_right",
+     "rhomboid_minor_muscle_right",
+     "scapula_right",
+     "serratus_anterior_muscle_right",
+     "subscapular_muscle_right",
+     "superior_transverse_scapular_ligament_right",
+     "supraspinatus_muscle_right",
+     "teres_major_muscle_right",
+     "teres_minor_muscle_right",
+     "transverse_part_of_trapezius_muscle_right"
+    ]
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  },
+  {
+   "id": "shoulder_left",
+   "side": "left",
+   "labels": {
+    "en": "Left shoulder",
+    "ur": "بایاں کندھا",
+    "roman": "Bayan kandha"
+   },
+   "subRegions": {
+    "top": [
+     "acromial_part_of_deltoid_muscle_left",
+     "acromioclavicular_joint_s_capsule_left",
+     "acromioclavicular_ligament_left",
+     "articular_capsule_of_glenohumeral_joint_left",
+     "articular_disc_of_acromioclavicular_joint_left",
+     "clavicle_left",
+     "coraco_acromial_ligament_left",
+     "descending_part_of_trapezius_muscle_left",
+     "glenoid_labrum_left",
+     "humerus_left",
+     "inferior_glenohumeral_ligament_left",
+     "inferior_transverse_scapular_ligament_left",
+     "levator_scapulae_left",
+     "middle_glenohumeral_ligament_left",
+     "omohyoid_muscle_left",
+     "scapula_left",
+     "superior_glenohumeral_ligament_left",
+     "superior_transverse_scapular_ligament_left",
+     "supraspinatus_muscle_left"
+    ],
+    "front": [
+     "abdominal_part_of_pectoralis_major_muscle_left",
+     "anterior_sternoclavicular_ligament_left",
+     "articular_capsule_of_glenohumeral_joint_left",
+     "articular_capsule_of_sternoclavicular_joint_left",
+     "articular_disc_of_sternoclavicular_joint_left",
+     "clavicle_left",
+     "clavicular_head_of_pectoralis_major_muscle_left",
+     "clavicular_part_of_deltoid_muscle_left",
+     "coraco_acromial_ligament_left",
+     "coracobrachialis_muscle_left",
+     "coracohumeral_ligament_left",
+     "costoclavicular_ligament_left",
+     "glenoid_labrum_left",
+     "humerus_left",
+     "inferior_glenohumeral_ligament_left",
+     "interclavicular_ligament_left",
+     "long_head_of_biceps_brachii_left",
+     "long_head_of_biceps_brachii_muscle_left",
+     "medial_head_of_biceps_brachii_muscle_left",
+     "middle_glenohumeral_ligament_left",
+     "pectoralis_minor_muscle_left",
+     "posterior_sternoclavicular_ligament_left",
+     "short_head_of_biceps_brachii_left",
+     "sternocostal_head_of_pectoralis_major_muscle_left",
+     "subscapular_muscle_left",
+     "superior_glenohumeral_ligament_left",
+     "transverse_humeral_ligament_left"
+    ],
+    "side": [
+     "acromial_part_of_deltoid_muscle_left",
+     "articular_capsule_of_glenohumeral_joint_left",
+     "glenoid_labrum_left",
+     "humerus_left",
+     "inferior_glenohumeral_ligament_left",
+     "lateral_head_of_triceps_brachii_muscle_left",
+     "latissimus_dorsi_muscle_left",
+     "middle_glenohumeral_ligament_left",
+     "serratus_anterior_muscle_left",
+     "superior_glenohumeral_ligament_left"
+    ],
+    "back": [
+     "articular_capsule_of_glenohumeral_joint_left",
+     "glenoid_labrum_left",
+     "humerus_left",
+     "inferior_glenohumeral_ligament_left",
+     "infraspinatus_muscle_left",
+     "lateral_head_of_triceps_brachii_muscle_left",
+     "latissimus_dorsi_muscle_left",
+     "middle_glenohumeral_ligament_left",
+     "scapula_left",
+     "scapular_part_of_deltoid_muscle_left",
+     "superior_glenohumeral_ligament_left",
+     "teres_major_muscle_left",
+     "teres_minor_muscle_left",
+     "transverse_part_of_trapezius_muscle_left"
+    ],
+    "scapular": [
+     "ascending_part_of_trapezius_muscle_left",
+     "descending_part_of_trapezius_muscle_left",
+     "inferior_transverse_scapular_ligament_left",
+     "infraspinatus_muscle_left",
+     "levator_scapulae_left",
+     "rhomboid_major_muscle_left",
+     "rhomboid_minor_muscle_left",
+     "scapula_left",
+     "serratus_anterior_muscle_left",
+     "subscapular_muscle_left",
+     "superior_transverse_scapular_ligament_left",
+     "supraspinatus_muscle_left",
+     "teres_major_muscle_left",
+     "teres_minor_muscle_left",
+     "transverse_part_of_trapezius_muscle_left"
+    ]
+   },
+   "review": "draft, awaiting clinician review",
+   "urduNeedsNativeReview": true
+  }
+ ],
+ "structures": {
+  "abdominal_part_of_pectoralis_major_muscle_left": {
+   "label": "Abdominal Part Of Pectoralis Major Muscle (Left)",
+   "name": "Abdominal Part Of Pectoralis Major Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Abdominal_part_of_pectoralis_major_musclel_Generated_Mesh_From_X3D1020_1",
+    "Abdominal_part_of_pectoralis_major_musclel_Generated_Mesh_From_X3D1020_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "abdominal_part_of_pectoralis_major_muscle_right": {
+   "label": "Abdominal Part Of Pectoralis Major Muscle (Right)",
+   "name": "Abdominal Part Of Pectoralis Major Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Abdominal_part_of_pectoralis_major_muscler_Generated_Mesh_From_X3D1020_1",
+    "Abdominal_part_of_pectoralis_major_muscler_Generated_Mesh_From_X3D1020_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromial_part_of_deltoid_muscle_left": {
+   "label": "Acromial Part Of Deltoid Muscle (Left)",
+   "name": "Acromial Part Of Deltoid Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "side",
+    "top"
+   ],
+   "rules": [
+    "deltoid-acromial"
+   ],
+   "meshNames": [
+    "Acromial_part_of_deltoid_musclel_Generated_Mesh_From_X3D1014_1",
+    "Acromial_part_of_deltoid_musclel_Generated_Mesh_From_X3D1014_2"
+   ],
+   "source": "name rule deltoid-acromial: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromial_part_of_deltoid_muscle_right": {
+   "label": "Acromial Part Of Deltoid Muscle (Right)",
+   "name": "Acromial Part Of Deltoid Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "side",
+    "top"
+   ],
+   "rules": [
+    "deltoid-acromial"
+   ],
+   "meshNames": [
+    "Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_1",
+    "Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_2"
+   ],
+   "source": "name rule deltoid-acromial: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromioclavicular_joint_s_capsule_left": {
+   "label": "Acromioclavicular Joint S Capsule (Left)",
+   "name": "Acromioclavicular Joint S Capsule",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Acromioclavicular_joint_s_capsule_l_Cube106"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromioclavicular_joint_s_capsule_right": {
+   "label": "Acromioclavicular Joint S Capsule (Right)",
+   "name": "Acromioclavicular Joint S Capsule",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Acromioclavicular_joint_s_capsule_r_Cube106"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromioclavicular_ligament_left": {
+   "label": "Acromioclavicular Ligament (Left)",
+   "name": "Acromioclavicular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Acromioclavicular_ligamentl_Cube105"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "acromioclavicular_ligament_right": {
+   "label": "Acromioclavicular Ligament (Right)",
+   "name": "Acromioclavicular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Acromioclavicular_ligamentr_Cube105"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "anterior_sternoclavicular_ligament_left": {
+   "label": "Anterior Sternoclavicular Ligament (Left)",
+   "name": "Anterior Sternoclavicular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Anterior_sternoclavicular_ligamentl_Cube104"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "anterior_sternoclavicular_ligament_right": {
+   "label": "Anterior Sternoclavicular Ligament (Right)",
+   "name": "Anterior Sternoclavicular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Anterior_sternoclavicular_ligamentr_Cube104"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_capsule_of_glenohumeral_joint_left": {
+   "label": "Articular Capsule Of Glenohumeral Joint (Left)",
+   "name": "Articular Capsule Of Glenohumeral Joint",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Articular_capsule_of_glenohumeral_jointl_Generated_Mesh_From_X3D1006"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_capsule_of_glenohumeral_joint_right": {
+   "label": "Articular Capsule Of Glenohumeral Joint (Right)",
+   "name": "Articular Capsule Of Glenohumeral Joint",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Articular_capsule_of_glenohumeral_jointr_Generated_Mesh_From_X3D1006"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_capsule_of_sternoclavicular_joint_left": {
+   "label": "Articular Capsule Of Sternoclavicular Joint (Left)",
+   "name": "Articular Capsule Of Sternoclavicular Joint",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Articular_capsule_of_sternoclavicular_joint_l_Cube101"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_capsule_of_sternoclavicular_joint_right": {
+   "label": "Articular Capsule Of Sternoclavicular Joint (Right)",
+   "name": "Articular Capsule Of Sternoclavicular Joint",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Articular_capsule_of_sternoclavicular_joint_r_Cube101"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_disc_of_acromioclavicular_joint_left": {
+   "label": "Articular Disc Of Acromioclavicular Joint (Left)",
+   "name": "Articular Disc Of Acromioclavicular Joint",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Articular_disc_of_acromioclavicular_jointl001_Cube092",
+    "Articular_disc_of_acromioclavicular_jointl_Cube058"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_disc_of_acromioclavicular_joint_right": {
+   "label": "Articular Disc Of Acromioclavicular Joint (Right)",
+   "name": "Articular Disc Of Acromioclavicular Joint",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "acromioclavicular"
+   ],
+   "meshNames": [
+    "Articular_disc_of_acromioclavicular_jointr001_Cube092",
+    "Articular_disc_of_acromioclavicular_jointr_Cube058"
+   ],
+   "source": "name rule acromioclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_disc_of_sternoclavicular_joint_left": {
+   "label": "Articular Disc Of Sternoclavicular Joint (Left)",
+   "name": "Articular Disc Of Sternoclavicular Joint",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Articular_disc_of_sternoclavicular_jointl001_Cube091",
+    "Articular_disc_of_sternoclavicular_jointl_Cube057"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "articular_disc_of_sternoclavicular_joint_right": {
+   "label": "Articular Disc Of Sternoclavicular Joint (Right)",
+   "name": "Articular Disc Of Sternoclavicular Joint",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Articular_disc_of_sternoclavicular_jointr001_Cube091",
+    "Articular_disc_of_sternoclavicular_jointr_Cube057"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "ascending_part_of_trapezius_muscle_left": {
+   "label": "Ascending Part Of Trapezius Muscle (Left)",
+   "name": "Ascending Part Of Trapezius Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-ascending"
+   ],
+   "meshNames": [
+    "Ascending_part_of_trapezius_musclel_Generated_Mesh_From_X3D1002_1",
+    "Ascending_part_of_trapezius_musclel_Generated_Mesh_From_X3D1002_2"
+   ],
+   "source": "name rule trapezius-ascending: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "ascending_part_of_trapezius_muscle_right": {
+   "label": "Ascending Part Of Trapezius Muscle (Right)",
+   "name": "Ascending Part Of Trapezius Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-ascending"
+   ],
+   "meshNames": [
+    "Ascending_part_of_trapezius_muscler_Generated_Mesh_From_X3D1002_1",
+    "Ascending_part_of_trapezius_muscler_Generated_Mesh_From_X3D1002_2"
+   ],
+   "source": "name rule trapezius-ascending: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicle_left": {
+   "label": "Clavicle (Left)",
+   "name": "Clavicle",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "top",
+    "front"
+   ],
+   "rules": [
+    "clavicle"
+   ],
+   "meshNames": [
+    "Claviclel_Cone010_1",
+    "Claviclel_Cone010_2"
+   ],
+   "source": "name rule clavicle: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicle_right": {
+   "label": "Clavicle (Right)",
+   "name": "Clavicle",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "top",
+    "front"
+   ],
+   "rules": [
+    "clavicle"
+   ],
+   "meshNames": [
+    "Clavicler_Cone010_1",
+    "Clavicler_Cone010_2"
+   ],
+   "source": "name rule clavicle: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicular_head_of_pectoralis_major_muscle_left": {
+   "label": "Clavicular Head Of Pectoralis Major Muscle (Left)",
+   "name": "Clavicular Head Of Pectoralis Major Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Clavicular_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D997_1",
+    "Clavicular_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D997_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicular_head_of_pectoralis_major_muscle_right": {
+   "label": "Clavicular Head Of Pectoralis Major Muscle (Right)",
+   "name": "Clavicular Head Of Pectoralis Major Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Clavicular_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D997_1",
+    "Clavicular_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D997_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicular_part_of_deltoid_muscle_left": {
+   "label": "Clavicular Part Of Deltoid Muscle (Left)",
+   "name": "Clavicular Part Of Deltoid Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "deltoid-clavicular"
+   ],
+   "meshNames": [
+    "Clavicular_part_of_deltoid_musclel_Generated_Mesh_From_X3D996_1",
+    "Clavicular_part_of_deltoid_musclel_Generated_Mesh_From_X3D996_2"
+   ],
+   "source": "name rule deltoid-clavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "clavicular_part_of_deltoid_muscle_right": {
+   "label": "Clavicular Part Of Deltoid Muscle (Right)",
+   "name": "Clavicular Part Of Deltoid Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "deltoid-clavicular"
+   ],
+   "meshNames": [
+    "Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_1",
+    "Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_2"
+   ],
+   "source": "name rule deltoid-clavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coraco_acromial_ligament_left": {
+   "label": "Coraco Acromial Ligament (Left)",
+   "name": "Coraco Acromial Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "front"
+   ],
+   "rules": [
+    "coraco-acromial"
+   ],
+   "meshNames": [
+    "Coraco_acromial_ligamentl_Plane343"
+   ],
+   "source": "name rule coraco-acromial: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coraco_acromial_ligament_right": {
+   "label": "Coraco Acromial Ligament (Right)",
+   "name": "Coraco Acromial Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "front"
+   ],
+   "rules": [
+    "coraco-acromial"
+   ],
+   "meshNames": [
+    "Coraco_acromial_ligamentr_Plane343"
+   ],
+   "source": "name rule coraco-acromial: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coracobrachialis_muscle_left": {
+   "label": "Coracobrachialis Muscle (Left)",
+   "name": "Coracobrachialis Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "coracobrachialis"
+   ],
+   "meshNames": [
+    "Coracobrachialis_musclel_Generated_Mesh_From_X3D994_2",
+    "Coracobrachialis_musclel_Generated_Mesh_From_X3D994_1"
+   ],
+   "source": "name rule coracobrachialis: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coracobrachialis_muscle_right": {
+   "label": "Coracobrachialis Muscle (Right)",
+   "name": "Coracobrachialis Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "coracobrachialis"
+   ],
+   "meshNames": [
+    "Coracobrachialis_muscler_Generated_Mesh_From_X3D994_1",
+    "Coracobrachialis_muscler_Generated_Mesh_From_X3D994_2"
+   ],
+   "source": "name rule coracobrachialis: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coracohumeral_ligament_left": {
+   "label": "Coracohumeral Ligament (Left)",
+   "name": "Coracohumeral Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "coracohumeral"
+   ],
+   "meshNames": [
+    "Coracohumeral_ligamentl_Generated_Mesh_From_X3D993"
+   ],
+   "source": "name rule coracohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "coracohumeral_ligament_right": {
+   "label": "Coracohumeral Ligament (Right)",
+   "name": "Coracohumeral Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "coracohumeral"
+   ],
+   "meshNames": [
+    "Coracohumeral_ligamentr_Generated_Mesh_From_X3D993"
+   ],
+   "source": "name rule coracohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "costoclavicular_ligament_left": {
+   "label": "Costoclavicular Ligament (Left)",
+   "name": "Costoclavicular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Costoclavicular_ligamentl_Cube086"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "costoclavicular_ligament_right": {
+   "label": "Costoclavicular Ligament (Right)",
+   "name": "Costoclavicular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Costoclavicular_ligamentr_Cube086"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "descending_part_of_trapezius_muscle_left": {
+   "label": "Descending Part Of Trapezius Muscle (Left)",
+   "name": "Descending Part Of Trapezius Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-descending"
+   ],
+   "meshNames": [
+    "Descending_part_of_trapezius_musclel_Generated_Mesh_From_X3D982_1",
+    "Descending_part_of_trapezius_musclel_Generated_Mesh_From_X3D982_2"
+   ],
+   "source": "name rule trapezius-descending: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "descending_part_of_trapezius_muscle_right": {
+   "label": "Descending Part Of Trapezius Muscle (Right)",
+   "name": "Descending Part Of Trapezius Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-descending"
+   ],
+   "meshNames": [
+    "Descending_part_of_trapezius_muscler_Generated_Mesh_From_X3D982_1",
+    "Descending_part_of_trapezius_muscler_Generated_Mesh_From_X3D982_2"
+   ],
+   "source": "name rule trapezius-descending: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "glenoid_labrum_left": {
+   "label": "Glenoid Labrum (Left)",
+   "name": "Glenoid Labrum",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenoid-labrum"
+   ],
+   "meshNames": [
+    "Glenoid_labruml001_Generated_Mesh_From_X3D489",
+    "Glenoid_labruml_Generated_Mesh_From_X3D101"
+   ],
+   "source": "name rule glenoid-labrum: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "glenoid_labrum_right": {
+   "label": "Glenoid Labrum (Right)",
+   "name": "Glenoid Labrum",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenoid-labrum"
+   ],
+   "meshNames": [
+    "Glenoid_labrumr001_Generated_Mesh_From_X3D489",
+    "Glenoid_labrumr_Generated_Mesh_From_X3D101"
+   ],
+   "source": "name rule glenoid-labrum: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "humerus_left": {
+   "label": "Humerus (Left)",
+   "name": "Humerus",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "top",
+    "front",
+    "side",
+    "back"
+   ],
+   "rules": [
+    "humerus"
+   ],
+   "meshNames": [
+    "Humerusl001_Generated_Mesh_From_X3D720_1",
+    "Humerusl001_Generated_Mesh_From_X3D720_2"
+   ],
+   "source": "name rule humerus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "humerus_right": {
+   "label": "Humerus (Right)",
+   "name": "Humerus",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "top",
+    "front",
+    "side",
+    "back"
+   ],
+   "rules": [
+    "humerus"
+   ],
+   "meshNames": [
+    "Humerusr023_Cone017_1",
+    "Humerusr023_Cone017_2"
+   ],
+   "source": "name rule humerus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "inferior_glenohumeral_ligament_left": {
+   "label": "Inferior Glenohumeral Ligament (Left)",
+   "name": "Inferior Glenohumeral Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Inferior_glenohumeral_ligamentl_Generated_Mesh_From_X3D466"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "inferior_glenohumeral_ligament_right": {
+   "label": "Inferior Glenohumeral Ligament (Right)",
+   "name": "Inferior Glenohumeral Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Inferior_glenohumeral_ligamentr_Generated_Mesh_From_X3D466"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "inferior_transverse_scapular_ligament_left": {
+   "label": "Inferior Transverse Scapular Ligament (Left)",
+   "name": "Inferior Transverse Scapular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "transverse-scapular"
+   ],
+   "meshNames": [
+    "Inferior_transverse_scapular_ligamentl_Plane322"
+   ],
+   "source": "name rule transverse-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "inferior_transverse_scapular_ligament_right": {
+   "label": "Inferior Transverse Scapular Ligament (Right)",
+   "name": "Inferior Transverse Scapular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "transverse-scapular"
+   ],
+   "meshNames": [
+    "Inferior_transverse_scapular_ligamentr_Plane322"
+   ],
+   "source": "name rule transverse-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "infraspinatus_muscle_left": {
+   "label": "Infraspinatus Muscle (Left)",
+   "name": "Infraspinatus Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "infraspinatus"
+   ],
+   "meshNames": [
+    "Infraspinatus_musclel_Generated_Mesh_From_X3D462_1",
+    "Infraspinatus_musclel_Generated_Mesh_From_X3D462_2"
+   ],
+   "source": "name rule infraspinatus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "infraspinatus_muscle_right": {
+   "label": "Infraspinatus Muscle (Right)",
+   "name": "Infraspinatus Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "infraspinatus"
+   ],
+   "meshNames": [
+    "Infraspinatus_muscler_Generated_Mesh_From_X3D462_1",
+    "Infraspinatus_muscler_Generated_Mesh_From_X3D462_2"
+   ],
+   "source": "name rule infraspinatus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "interclavicular_ligament_left": {
+   "label": "Interclavicular Ligament (Left)",
+   "name": "Interclavicular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Interclavicular_ligamentl_Cube082"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "interclavicular_ligament_right": {
+   "label": "Interclavicular Ligament (Right)",
+   "name": "Interclavicular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Interclavicular_ligamentr_Cube082"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "lateral_head_of_triceps_brachii_muscle_left": {
+   "label": "Lateral Head Of Triceps Brachii Muscle (Left)",
+   "name": "Lateral Head Of Triceps Brachii Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "side"
+   ],
+   "rules": [
+    "triceps-brachii"
+   ],
+   "meshNames": [
+    "Lateral_head_of_triceps_brachii_musclel_Generated_Mesh_From_X3D404_1",
+    "Lateral_head_of_triceps_brachii_musclel_Generated_Mesh_From_X3D404_2"
+   ],
+   "source": "name rule triceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "lateral_head_of_triceps_brachii_muscle_right": {
+   "label": "Lateral Head Of Triceps Brachii Muscle (Right)",
+   "name": "Lateral Head Of Triceps Brachii Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "side"
+   ],
+   "rules": [
+    "triceps-brachii"
+   ],
+   "meshNames": [
+    "Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_1",
+    "Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_2"
+   ],
+   "source": "name rule triceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "latissimus_dorsi_muscle_left": {
+   "label": "Latissimus Dorsi Muscle (Left)",
+   "name": "Latissimus Dorsi Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "side"
+   ],
+   "rules": [
+    "latissimus-dorsi"
+   ],
+   "meshNames": [
+    "Latissimus_dorsi_musclel001_Generated_Mesh_From_X3D398_1",
+    "Latissimus_dorsi_musclel001_Generated_Mesh_From_X3D398_2",
+    "Latissimus_dorsi_musclel_Generated_Mesh_From_X3D398_1",
+    "Latissimus_dorsi_musclel_Generated_Mesh_From_X3D398_2",
+    "Latissimus_dorsi_muscle_l_Generated_Mesh_From_X3D400_1",
+    "Latissimus_dorsi_muscle_l_Generated_Mesh_From_X3D400_2"
+   ],
+   "source": "name rule latissimus-dorsi: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "latissimus_dorsi_muscle_right": {
+   "label": "Latissimus Dorsi Muscle (Right)",
+   "name": "Latissimus Dorsi Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "side"
+   ],
+   "rules": [
+    "latissimus-dorsi"
+   ],
+   "meshNames": [
+    "Latissimus_dorsi_muscle_r_Generated_Mesh_From_X3D400_1",
+    "Latissimus_dorsi_muscle_r_Generated_Mesh_From_X3D400_2",
+    "Latissimus_dorsi_muscler004_Generated_Mesh_From_X3D396_1",
+    "Latissimus_dorsi_muscler004_Generated_Mesh_From_X3D396_2",
+    "Latissimus_dorsi_muscler_Generated_Mesh_From_X3D396_1",
+    "Latissimus_dorsi_muscler_Generated_Mesh_From_X3D396_2"
+   ],
+   "source": "name rule latissimus-dorsi: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "levator_scapulae_left": {
+   "label": "Levator Scapulae (Left)",
+   "name": "Levator Scapulae",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "levator-scapulae"
+   ],
+   "meshNames": [
+    "Levator_scapulael_Generated_Mesh_From_X3D388_1",
+    "Levator_scapulael_Generated_Mesh_From_X3D388_2"
+   ],
+   "source": "name rule levator-scapulae: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "levator_scapulae_right": {
+   "label": "Levator Scapulae (Right)",
+   "name": "Levator Scapulae",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "levator-scapulae"
+   ],
+   "meshNames": [
+    "Levator_scapulaer_Generated_Mesh_From_X3D388_1",
+    "Levator_scapulaer_Generated_Mesh_From_X3D388_2"
+   ],
+   "source": "name rule levator-scapulae: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "long_head_of_biceps_brachii_left": {
+   "label": "Long Head Of Biceps Brachii (Left)",
+   "name": "Long Head Of Biceps Brachii",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Long_head_of_biceps_brachiil_Generated_Mesh_From_X3D381_1",
+    "Long_head_of_biceps_brachiil_Generated_Mesh_From_X3D381_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "long_head_of_biceps_brachii_right": {
+   "label": "Long Head Of Biceps Brachii (Right)",
+   "name": "Long Head Of Biceps Brachii",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_1",
+    "Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "long_head_of_biceps_brachii_muscle_left": {
+   "label": "Long Head Of Biceps Brachii Muscle (Left)",
+   "name": "Long Head Of Biceps Brachii Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Long_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D382_1",
+    "Long_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D382_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "long_head_of_biceps_brachii_muscle_right": {
+   "label": "Long Head Of Biceps Brachii Muscle (Right)",
+   "name": "Long Head Of Biceps Brachii Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_1",
+    "Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "medial_head_of_biceps_brachii_muscle_left": {
+   "label": "Medial Head Of Biceps Brachii Muscle (Left)",
+   "name": "Medial Head Of Biceps Brachii Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Medial_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D359_1",
+    "Medial_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D359_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "medial_head_of_biceps_brachii_muscle_right": {
+   "label": "Medial Head Of Biceps Brachii Muscle (Right)",
+   "name": "Medial Head Of Biceps Brachii Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_1",
+    "Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "middle_glenohumeral_ligament_left": {
+   "label": "Middle Glenohumeral Ligament (Left)",
+   "name": "Middle Glenohumeral Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Middle_glenohumeral_ligamentl_Generated_Mesh_From_X3D347"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "middle_glenohumeral_ligament_right": {
+   "label": "Middle Glenohumeral Ligament (Right)",
+   "name": "Middle Glenohumeral Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Middle_glenohumeral_ligamentr_Generated_Mesh_From_X3D347"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "omohyoid_muscle_left": {
+   "label": "Omohyoid Muscle (Left)",
+   "name": "Omohyoid Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "omohyoid"
+   ],
+   "meshNames": [
+    "Omohyoid_musclel_Generated_Mesh_From_X3D319"
+   ],
+   "source": "name rule omohyoid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "omohyoid_muscle_right": {
+   "label": "Omohyoid Muscle (Right)",
+   "name": "Omohyoid Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top"
+   ],
+   "rules": [
+    "omohyoid"
+   ],
+   "meshNames": [
+    "Omohyoid_muscler_Generated_Mesh_From_X3D319"
+   ],
+   "source": "name rule omohyoid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "pectoralis_minor_muscle_left": {
+   "label": "Pectoralis Minor Muscle (Left)",
+   "name": "Pectoralis Minor Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-minor"
+   ],
+   "meshNames": [
+    "Pectoralis_minor_musclel_Generated_Mesh_From_X3D300"
+   ],
+   "source": "name rule pectoralis-minor: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "pectoralis_minor_muscle_right": {
+   "label": "Pectoralis Minor Muscle (Right)",
+   "name": "Pectoralis Minor Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-minor"
+   ],
+   "meshNames": [
+    "Pectoralis_minor_muscler_Generated_Mesh_From_X3D300"
+   ],
+   "source": "name rule pectoralis-minor: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "posterior_sternoclavicular_ligament_left": {
+   "label": "Posterior Sternoclavicular Ligament (Left)",
+   "name": "Posterior Sternoclavicular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Posterior_sternoclavicular_ligamentl_Cube077"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "posterior_sternoclavicular_ligament_right": {
+   "label": "Posterior Sternoclavicular Ligament (Right)",
+   "name": "Posterior Sternoclavicular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "sternoclavicular"
+   ],
+   "meshNames": [
+    "Posterior_sternoclavicular_ligamentr_Cube077"
+   ],
+   "source": "name rule sternoclavicular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "rhomboid_major_muscle_left": {
+   "label": "Rhomboid Major Muscle (Left)",
+   "name": "Rhomboid Major Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "rhomboid"
+   ],
+   "meshNames": [
+    "Rhomboid_major_musclel_Generated_Mesh_From_X3D241_1",
+    "Rhomboid_major_musclel_Generated_Mesh_From_X3D241_2"
+   ],
+   "source": "name rule rhomboid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "rhomboid_major_muscle_right": {
+   "label": "Rhomboid Major Muscle (Right)",
+   "name": "Rhomboid Major Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "rhomboid"
+   ],
+   "meshNames": [
+    "Rhomboid_major_muscler_Generated_Mesh_From_X3D241_1",
+    "Rhomboid_major_muscler_Generated_Mesh_From_X3D241_2"
+   ],
+   "source": "name rule rhomboid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "rhomboid_minor_muscle_left": {
+   "label": "Rhomboid Minor Muscle (Left)",
+   "name": "Rhomboid Minor Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "rhomboid"
+   ],
+   "meshNames": [
+    "Rhomboid_minor_musclel_Generated_Mesh_From_X3D240_1",
+    "Rhomboid_minor_musclel_Generated_Mesh_From_X3D240_2"
+   ],
+   "source": "name rule rhomboid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "rhomboid_minor_muscle_right": {
+   "label": "Rhomboid Minor Muscle (Right)",
+   "name": "Rhomboid Minor Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "scapular"
+   ],
+   "rules": [
+    "rhomboid"
+   ],
+   "meshNames": [
+    "Rhomboid_minor_muscler_Generated_Mesh_From_X3D240_1",
+    "Rhomboid_minor_muscler_Generated_Mesh_From_X3D240_2"
+   ],
+   "source": "name rule rhomboid: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "scapula_left": {
+   "label": "Scapula (Left)",
+   "name": "Scapula",
+   "side": "left",
+   "kind": "bone",
+   "subRegions": [
+    "scapular",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "scapula"
+   ],
+   "meshNames": [
+    "Scapulal_Generated_Mesh_From_X3D703_1",
+    "Scapulal_Generated_Mesh_From_X3D703_2"
+   ],
+   "source": "name rule scapula: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "scapula_right": {
+   "label": "Scapula (Right)",
+   "name": "Scapula",
+   "side": "right",
+   "kind": "bone",
+   "subRegions": [
+    "scapular",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "scapula"
+   ],
+   "meshNames": [
+    "Scapular_Cone013_1",
+    "Scapular_Cone013_2"
+   ],
+   "source": "name rule scapula: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "scapular_part_of_deltoid_muscle_left": {
+   "label": "Scapular Part Of Deltoid Muscle (Left)",
+   "name": "Scapular Part Of Deltoid Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back"
+   ],
+   "rules": [
+    "deltoid-scapular"
+   ],
+   "meshNames": [
+    "Scapular_part_of_deltoid_usclel_Generated_Mesh_From_X3D231_1",
+    "Scapular_part_of_deltoid_usclel_Generated_Mesh_From_X3D231_2"
+   ],
+   "source": "name rule deltoid-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "scapular_part_of_deltoid_muscle_right": {
+   "label": "Scapular Part Of Deltoid Muscle (Right)",
+   "name": "Scapular Part Of Deltoid Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back"
+   ],
+   "rules": [
+    "deltoid-scapular"
+   ],
+   "meshNames": [
+    "Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_1",
+    "Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_2"
+   ],
+   "source": "name rule deltoid-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "serratus_anterior_muscle_left": {
+   "label": "Serratus Anterior Muscle (Left)",
+   "name": "Serratus Anterior Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "side",
+    "scapular"
+   ],
+   "rules": [
+    "serratus-anterior"
+   ],
+   "meshNames": [
+    "Serratus_anterior_musclel_Generated_Mesh_From_X3D222"
+   ],
+   "source": "name rule serratus-anterior: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "serratus_anterior_muscle_right": {
+   "label": "Serratus Anterior Muscle (Right)",
+   "name": "Serratus Anterior Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "side",
+    "scapular"
+   ],
+   "rules": [
+    "serratus-anterior"
+   ],
+   "meshNames": [
+    "Serratus_anterior_muscler_Generated_Mesh_From_X3D222"
+   ],
+   "source": "name rule serratus-anterior: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "short_head_of_biceps_brachii_left": {
+   "label": "Short Head Of Biceps Brachii (Left)",
+   "name": "Short Head Of Biceps Brachii",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Short_head_of_biceps_brachiil_Generated_Mesh_From_X3D216_1",
+    "Short_head_of_biceps_brachiil_Generated_Mesh_From_X3D216_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "short_head_of_biceps_brachii_right": {
+   "label": "Short Head Of Biceps Brachii (Right)",
+   "name": "Short Head Of Biceps Brachii",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "biceps-brachii"
+   ],
+   "meshNames": [
+    "Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_1",
+    "Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_2"
+   ],
+   "source": "name rule biceps-brachii: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "sternocostal_head_of_pectoralis_major_muscle_left": {
+   "label": "Sternocostal Head Of Pectoralis Major Muscle (Left)",
+   "name": "Sternocostal Head Of Pectoralis Major Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Sternocostal_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D196_1",
+    "Sternocostal_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D196_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "sternocostal_head_of_pectoralis_major_muscle_right": {
+   "label": "Sternocostal Head Of Pectoralis Major Muscle (Right)",
+   "name": "Sternocostal Head Of Pectoralis Major Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "pectoralis-major"
+   ],
+   "meshNames": [
+    "Sternocostal_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D196_1",
+    "Sternocostal_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D196_2"
+   ],
+   "source": "name rule pectoralis-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "subscapular_muscle_left": {
+   "label": "Subscapular Muscle (Left)",
+   "name": "Subscapular Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "scapular"
+   ],
+   "rules": [
+    "subscapularis"
+   ],
+   "meshNames": [
+    "Subscapular_musclel_Generated_Mesh_From_X3D186"
+   ],
+   "source": "name rule subscapularis: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "subscapular_muscle_right": {
+   "label": "Subscapular Muscle (Right)",
+   "name": "Subscapular Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "scapular"
+   ],
+   "rules": [
+    "subscapularis"
+   ],
+   "meshNames": [
+    "Subscapular_muscler_Generated_Mesh_From_X3D186"
+   ],
+   "source": "name rule subscapularis: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "superior_glenohumeral_ligament_left": {
+   "label": "Superior Glenohumeral Ligament (Left)",
+   "name": "Superior Glenohumeral Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Superior_glenohumeral_ligamentl_Generated_Mesh_From_X3D176"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "superior_glenohumeral_ligament_right": {
+   "label": "Superior Glenohumeral Ligament (Right)",
+   "name": "Superior Glenohumeral Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front",
+    "side",
+    "back",
+    "top"
+   ],
+   "rules": [
+    "glenohumeral"
+   ],
+   "meshNames": [
+    "Superior_glenohumeral_ligamentr_Generated_Mesh_From_X3D176"
+   ],
+   "source": "name rule glenohumeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "superior_transverse_scapular_ligament_left": {
+   "label": "Superior Transverse Scapular Ligament (Left)",
+   "name": "Superior Transverse Scapular Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "transverse-scapular"
+   ],
+   "meshNames": [
+    "Superior_transverse_scapular_ligamentl_Plane261"
+   ],
+   "source": "name rule transverse-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "superior_transverse_scapular_ligament_right": {
+   "label": "Superior Transverse Scapular Ligament (Right)",
+   "name": "Superior Transverse Scapular Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "transverse-scapular"
+   ],
+   "meshNames": [
+    "Superior_transverse_scapular_ligamentr_Plane261"
+   ],
+   "source": "name rule transverse-scapular: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "supraspinatus_muscle_left": {
+   "label": "Supraspinatus Muscle (Left)",
+   "name": "Supraspinatus Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "supraspinatus"
+   ],
+   "meshNames": [
+    "Supraspinatus_musclel_Generated_Mesh_From_X3D170"
+   ],
+   "source": "name rule supraspinatus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "supraspinatus_muscle_right": {
+   "label": "Supraspinatus Muscle (Right)",
+   "name": "Supraspinatus Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "top",
+    "scapular"
+   ],
+   "rules": [
+    "supraspinatus"
+   ],
+   "meshNames": [
+    "Supraspinatus_muscler_Generated_Mesh_From_X3D170"
+   ],
+   "source": "name rule supraspinatus: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "teres_major_muscle_left": {
+   "label": "Teres Major Muscle (Left)",
+   "name": "Teres Major Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "teres-major"
+   ],
+   "meshNames": [
+    "Teres_major_musclel_Generated_Mesh_From_X3D160"
+   ],
+   "source": "name rule teres-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "teres_major_muscle_right": {
+   "label": "Teres Major Muscle (Right)",
+   "name": "Teres Major Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "teres-major"
+   ],
+   "meshNames": [
+    "Teres_major_muscler_Generated_Mesh_From_X3D160"
+   ],
+   "source": "name rule teres-major: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "teres_minor_muscle_left": {
+   "label": "Teres Minor Muscle (Left)",
+   "name": "Teres Minor Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "teres-minor"
+   ],
+   "meshNames": [
+    "Teres_minor_musclel_Generated_Mesh_From_X3D158"
+   ],
+   "source": "name rule teres-minor: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "teres_minor_muscle_right": {
+   "label": "Teres Minor Muscle (Right)",
+   "name": "Teres Minor Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "teres-minor"
+   ],
+   "meshNames": [
+    "Teres_minor_muscler_Generated_Mesh_From_X3D158"
+   ],
+   "source": "name rule teres-minor: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "transverse_humeral_ligament_left": {
+   "label": "Transverse Humeral Ligament (Left)",
+   "name": "Transverse Humeral Ligament",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "transverse-humeral"
+   ],
+   "meshNames": [
+    "Transverse_humeral_ligamentl_Plane254"
+   ],
+   "source": "name rule transverse-humeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "transverse_humeral_ligament_right": {
+   "label": "Transverse Humeral Ligament (Right)",
+   "name": "Transverse Humeral Ligament",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "front"
+   ],
+   "rules": [
+    "transverse-humeral"
+   ],
+   "meshNames": [
+    "Transverse_humeral_ligamentr_Plane254"
+   ],
+   "source": "name rule transverse-humeral: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "transverse_part_of_trapezius_muscle_left": {
+   "label": "Transverse Part Of Trapezius Muscle (Left)",
+   "name": "Transverse Part Of Trapezius Muscle",
+   "side": "left",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-transverse"
+   ],
+   "meshNames": [
+    "Transverse_part_of_trapezius_musclel_Generated_Mesh_From_X3D142_1",
+    "Transverse_part_of_trapezius_musclel_Generated_Mesh_From_X3D142_2"
+   ],
+   "source": "name rule trapezius-transverse: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  },
+  "transverse_part_of_trapezius_muscle_right": {
+   "label": "Transverse Part Of Trapezius Muscle (Right)",
+   "name": "Transverse Part Of Trapezius Muscle",
+   "side": "right",
+   "kind": "muscle",
+   "subRegions": [
+    "back",
+    "scapular"
+   ],
+   "rules": [
+    "trapezius-transverse"
+   ],
+   "meshNames": [
+    "Transverse_part_of_trapezius_muscler_Generated_Mesh_From_X3D142_1",
+    "Transverse_part_of_trapezius_muscler_Generated_Mesh_From_X3D142_2"
+   ],
+   "source": "name rule trapezius-transverse: anatomical location from the structure name (textbook), not from geometry",
+   "review": "draft, awaiting clinician review"
+  }
+ },
+ "unmapped": [
+  {
+   "id": "brachialis_muscle_left",
+   "label": "Brachialis Muscle (Left)",
+   "kind": "muscle",
+   "packRegions": [
+    "upper_arm"
+   ],
+   "meshCount": 2,
+   "reason": "shoulder-area name, no rule"
+  },
+  {
+   "id": "brachialis_muscle_right",
+   "label": "Brachialis Muscle (Right)",
+   "kind": "muscle",
+   "packRegions": [
+    "upper_arm"
+   ],
+   "meshCount": 2,
+   "reason": "shoulder-area name, no rule"
+  }
+ ]
+}

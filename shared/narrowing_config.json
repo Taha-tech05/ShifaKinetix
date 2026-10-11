@@ -1,0 +1,30 @@
+{
+  "label": "placeholder - draft from published sources, awaiting clinician review",
+  "note": "Single source of truth for the live narrowing: when the list may be shown, when the flow may stop, and the bands. All numbers are placeholders for the clinician to confirm. Strength is a match score from 0 to 1, NOT a probability, and is never shown as a number.",
+  "minNonUnknownAnswers": 2,
+  "leadMargin": 0.3,
+  "minMatchedCriteria": 2,
+  "maxQuestions": 9,
+  "fullMatchCriteria": 2,
+  "contradictionWeight": 0.5,
+  "maxCandidatesShown": 3,
+  "priors": {
+    "tappedStructure": 0.15,
+    "tappedSubRegion": 0.05,
+    "sameSide": 0.02
+  },
+  "bands": {
+    "moderateFrom": 0.35,
+    "higherFrom": 0.6
+  },
+  "structureType": {
+    "note": "Constants of the structure-type step that runs before muscle ranking. Placeholders for the clinician to confirm. Strength is a match score, not a probability.",
+    "minNonUnknownAnswers": 2,
+    "leadMargin": 0.25,
+    "minLeaderScore": 0.3,
+    "maxQuestions": 8,
+    "fullScore": 3
+  },
+  "minAnswersForBands": 2,
+  "bandsNote": "Bands (Low / Moderate / Higher) are shown only after this many answers that are not unknown (movements and questions together). Before that the model highlights the provisional candidates and the strip says 'Still narrowing'."
+}

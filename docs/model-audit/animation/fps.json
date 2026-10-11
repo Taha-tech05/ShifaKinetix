@@ -1,0 +1,196 @@
+{
+ "sideways_raise": {
+  "load_seconds_after_start": 10.1,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     25,
+     27,
+     25,
+     24
+    ],
+    "fps_mean": 25.2,
+    "fps_min": 24,
+    "ui_frames_rendered": 293,
+    "janky_frames": 194,
+    "janky_percent": 66.21
+   },
+   "bone": {
+    "fps_samples": [
+     27,
+     15,
+     26,
+     26
+    ],
+    "fps_mean": 23.5,
+    "fps_min": 15,
+    "ui_frames_rendered": 290,
+    "janky_frames": 188,
+    "janky_percent": 64.83
+   }
+  }
+ },
+ "forward_raise": {
+  "load_seconds_after_start": 7.1,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     27,
+     26,
+     17,
+     27,
+     24
+    ],
+    "fps_mean": 24.2,
+    "fps_min": 17,
+    "ui_frames_rendered": 294,
+    "janky_frames": 200,
+    "janky_percent": 68.03
+   },
+   "bone": {
+    "fps_samples": [
+     24,
+     26,
+     24,
+     24
+    ],
+    "fps_mean": 24.5,
+    "fps_min": 24,
+    "ui_frames_rendered": 291,
+    "janky_frames": 189,
+    "janky_percent": 64.95
+   }
+  }
+ },
+ "can_position_hold": {
+  "load_seconds_after_start": 8.1,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     28,
+     18,
+     24,
+     25
+    ],
+    "fps_mean": 23.8,
+    "fps_min": 18,
+    "ui_frames_rendered": 295,
+    "janky_frames": 196,
+    "janky_percent": 66.44
+   },
+   "bone": {
+    "fps_samples": [
+     22,
+     26,
+     24,
+     20,
+     27
+    ],
+    "fps_mean": 23.8,
+    "fps_min": 20,
+    "ui_frames_rendered": 298,
+    "janky_frames": 186,
+    "janky_percent": 62.42
+   }
+  }
+ },
+ "outward_push_elbow_at_side": {
+  "load_seconds_after_start": 8.1,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     24,
+     26,
+     22,
+     25,
+     26
+    ],
+    "fps_mean": 24.6,
+    "fps_min": 22,
+    "ui_frames_rendered": 279,
+    "janky_frames": 159,
+    "janky_percent": 56.99
+   },
+   "bone": {
+    "fps_samples": [
+     17,
+     26,
+     17,
+     24,
+     26
+    ],
+    "fps_mean": 22.0,
+    "fps_min": 17,
+    "ui_frames_rendered": 295,
+    "janky_frames": 174,
+    "janky_percent": 58.98
+   }
+  }
+ },
+ "belly_press": {
+  "load_seconds_after_start": 7.0,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     19,
+     24,
+     15,
+     27,
+     26
+    ],
+    "fps_mean": 22.2,
+    "fps_min": 15,
+    "ui_frames_rendered": 286,
+    "janky_frames": 165,
+    "janky_percent": 57.69
+   },
+   "bone": {
+    "fps_samples": [
+     21,
+     25,
+     19,
+     25,
+     24
+    ],
+    "fps_mean": 22.8,
+    "fps_min": 19,
+    "ui_frames_rendered": 298,
+    "janky_frames": 197,
+    "janky_percent": 66.11
+   }
+  }
+ },
+ "hand_behind_back": {
+  "load_seconds_after_start": 7.1,
+  "fps": {
+   "muscle": {
+    "fps_samples": [
+     21,
+     24,
+     21,
+     24,
+     26
+    ],
+    "fps_mean": 23.2,
+    "fps_min": 21,
+    "ui_frames_rendered": 291,
+    "janky_frames": 174,
+    "janky_percent": 59.79
+   },
+   "bone": {
+    "fps_samples": [
+     26,
+     26,
+     27,
+     24,
+     26
+    ],
+    "fps_mean": 25.8,
+    "fps_min": 24,
+    "ui_frames_rendered": 293,
+    "janky_frames": 175,
+    "janky_percent": 59.73
+   }
+  }
+ }
+}

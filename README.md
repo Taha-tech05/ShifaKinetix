@@ -40,3 +40,9 @@ remain team dependencies. Do not merge while gate parity fails.
 - Open pull requests into `develop`. Never push directly to `main` or `develop`.
 - Every PR needs one approval from a different person than the author, and CI must pass.
 - Commit prefixes: `feat:`, `fix:`, `test:`, `docs:`, `ci:`, `chore:`.
+
+## Credits
+
+The 3D body in the app is a simplified (decimated, merged, quantized) version of a model, shared under the same licence. Details: [docs/3d-model.md](docs/3d-model.md).
+
+This work is based on "Myology" (https://sketchfab.com/3d-models/myology-31b40fd809b14665b93773936d67c52c) by Z-Anatomy (https://sketchfab.com/Z-Anatomy) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
