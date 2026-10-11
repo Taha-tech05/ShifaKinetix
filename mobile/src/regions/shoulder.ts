@@ -35,3 +35,8 @@ export function regionLabel(regionId: string, subRegionId: SubRegionId): string 
   if (!key) return null;
   return t('regions.label', { region: t(key), sub: t(SUB_KEYS[subRegionId]) });
 }
+
+/** The side of a region id: "shoulder_left" is left, anything else right. */
+export function sideOfRegion(regionId: string | null | undefined): Side {
+  return regionId === 'shoulder_left' ? 'left' : 'right';
+}

@@ -13,6 +13,7 @@ import { MOVEMENT_COUNT, routeAfterMovement } from '../../flow/intake';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized } from '../../movement/movements';
 import { buildMovementResult } from '../../movement/result';
+import { sideOfRegion } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
@@ -25,6 +26,7 @@ export default function MovementScreen() {
   const t = useT();
   const params = useLocalSearchParams<{ i?: string }>();
   const mode = useSession((s) => s.mode);
+  const side = sideOfRegion(useSession((s) => s.selection?.regionId));
   const recordMovement = useSession((s) => s.recordMovement);
   const [cameraNote, setCameraNote] = useState(false);
   const [touching, setTouching] = useState(false);
@@ -58,7 +60,7 @@ export default function MovementScreen() {
           <AppText variant="h1" color={colors.navy}>
             {localized(movement.name)}
           </AppText>
-          <MovementStage movement={movement} height={360} onInteract={setTouching} />
+          <MovementStage movement={movement} side={side} height={360} onInteract={setTouching} />
           <Card row>
             <IconTile icon="information-circle-outline" tone="teal" />
             <AppText variant="body" style={styles.col}>

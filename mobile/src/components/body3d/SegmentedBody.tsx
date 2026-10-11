@@ -14,9 +14,9 @@ import { StyleSheet, View } from 'react-native';
 import * as THREE from 'three';
 import { stepClock } from '../../movement/animationStep';
 import type { AnimControl } from '../../movement/animationStep';
-import { apply, armTransforms, arrowDirection, ARM_RIG, jointPositions, lengthOf, sub3 } from '../../movement/rig';
-import type { Mat4, Vec3 } from '../../movement/rig';
-import { poseAt } from '../../movement/pose';
+import { apply, armTransforms, arrowDirection, jointPositions, lengthOf, rigFor, sub3 } from '../../movement/rig';
+import type { Mat4, Side, Vec3 } from '../../movement/rig';
+import { endPose, poseAt } from '../../movement/pose';
 import type { Pose } from '../../movement/pose';
 import type { Movement } from '../../movement/movements';
 import type { BodyLayer } from '../../regions/types';
@@ -44,6 +44,12 @@ export interface SegmentedBodyProps {
   pack: LoadedPack;
   movement: Movement;
   layer: BodyLayer;
+  /** Which arm moves. The left arm is the mirror image of the right. Default right. */
+  side?: Side;
+  /** Tint the moving arm segments with a distinct colour (opacity stays 1). Default true. */
+  armTint?: boolean;
+  /** Show a faint translucent copy of the arm at the end pose. Default true. */
+  endGhost?: boolean;
   control: React.MutableRefObject<AnimControl>;
   /** Camera state, owned by the screen (so its buttons can reset it). Only the user's touch and "Reset view" change it. */
   cameraRig: React.MutableRefObject<CameraRig>;
@@ -93,7 +99,28 @@ function CameraDriver({ rig, light }: { rig: React.MutableRefObject<CameraRig>; 
   return null;
 }
 
-function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = NO_EMPHASIS, onFrame, onFirstFrame }: SegmentedBodyProps) {
+/** The path of the palm over one loop, as a thin line (a clarity aid; it does not touch the model's material). */
+function buildTrail(movement: Movement, side: Side): { line: THREE.Line; dispose: () => void } {
+  const rig = rigFor(side);
+  const p = rig.pivots;
+  const palm: Vec3 = [p.wrist[0] + (p.wrist[0] - p.elbow[0]) * 0.35, p.wrist[1] + (p.wrist[1] - p.elbow[1]) * 0.35, p.wrist[2] + (p.wrist[2] - p.elbow[2]) * 0.35];
+  const n = 120;
+  const pos = new Float32Array((n + 1) * 3);
+  for (let i = 0; i <= n; i++) {
+    const q = apply(armTransforms(poseAt(movement, i / n), rig).forearm, palm);
+    pos.set(q, i * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const m = new THREE.LineBasicMaterial({ color: 0xff9f1c, depthTest: false });
+  const line = new THREE.Line(g, m);
+  line.renderOrder = 10;
+  line.frustumCulled = false;
+  return { line, dispose: () => { g.dispose(); m.dispose(); } };
+}
+
+function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost = true, control, cameraRig, tracked, emphasis = NO_EMPHASIS, onFrame, onFirstFrame }: SegmentedBodyProps) {
+  const rig = rigFor(side);
   const arrow = useRef<THREE.ArrowHelper | null>(null);
   const frames = useRef(0);
   const fps = useRef({ n: 0, t0: 0, value: 0 });
@@ -101,8 +128,20 @@ function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = 
   const light = useMemo(() => new THREE.DirectionalLight(0xffffff, KEY_LIGHT.intensity), []);
   const trackedKey = (tracked ?? []).join('|');
   const trackedSet = useMemo(() => new Set(tracked ?? []), [trackedKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  const built = useMemo(() => buildSegments(pack, layer, trackedSet), [pack, layer, trackedSet]);
+  const built = useMemo(() => buildSegments(pack, layer, trackedSet, { side, tintArm: armTint, endGhost }), [pack, layer, trackedSet, side, armTint, endGhost]);
   useEffect(() => () => built.dispose(), [built]);
+
+  // the end pose is fixed for a movement: pose the ghost copy once
+  useEffect(() => {
+    if (!endGhost) return;
+    const tr = armTransforms(endPose(movement), rig);
+    setMatrix(built.ghostGroups.upper, tr.upper);
+    setMatrix(built.ghostGroups.forearm, tr.forearm);
+  }, [built, movement, rig, endGhost]);
+
+  // the hand path, for movements that ask for it
+  const trail = useMemo(() => (movement.trail ? buildTrail(movement, side) : null), [movement, side]);
+  useEffect(() => () => trail?.dispose(), [trail]);
 
   // current and target emphasis per tracked structure (a ref: it changes every frame while fading)
   const target = useRef<Emphasis>(emphasis);
@@ -131,7 +170,7 @@ function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = 
     const c = control.current;
     const t = stepClock(c, dt, movement.loopSeconds);
     const pose = poseAt(movement, t);
-    const tr = armTransforms(pose);
+    const tr = armTransforms(pose, rig);
     setMatrix(built.groups.girdle, tr.girdle);
     setMatrix(built.groups.upper, tr.upper);
     setMatrix(built.groups.forearm, tr.forearm);
@@ -142,10 +181,10 @@ function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = 
       const show = c.t >= ra.during[0] && c.t <= ra.during[1];
       a.visible = show;
       if (show) {
-        const p = ARM_RIG.pivots;
+        const p = rig.pivots;
         const rest: Vec3 = ra.segment === 'hand' ? [p.wrist[0] + (p.wrist[0] - p.elbow[0]) * 0.3, p.wrist[1] + (p.wrist[1] - p.elbow[1]) * 0.3, p.wrist[2] + (p.wrist[2] - p.elbow[2]) * 0.3] : [(p.elbow[0] + p.wrist[0]) / 2, (p.elbow[1] + p.wrist[1]) / 2, (p.elbow[2] + p.wrist[2]) / 2];
         const tip = apply(tr.forearm, rest);
-        const dir = arrowDirection(ra.direction);
+        const dir = arrowDirection(ra.direction, side);
         a.position.set(tip[0] - dir[0] * ARROW_LENGTH, tip[1] - dir[1] * ARROW_LENGTH, tip[2] - dir[2] * ARROW_LENGTH);
         a.setDirection(new THREE.Vector3(...dir));
       }
@@ -180,7 +219,7 @@ function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = 
     }
     if (onFrame && now - lastReport.current > 0.2) {
       lastReport.current = now;
-      const j = jointPositions(pose);
+      const j = jointPositions(pose, rig);
       onFrame({ t: c.t, pose, fps: f.value, gapMm: Math.round(lengthOf(sub3(j.humeralHead, j.glenoid)) * 1000 * 10) / 10 });
     }
   });
@@ -192,6 +231,8 @@ function Scene({ pack, movement, layer, control, cameraRig, tracked, emphasis = 
       <primitive object={light} />
       <primitive object={light.target} />
       <primitive object={built.root} />
+      {endGhost ? <primitive object={built.ghostRoot} /> : null}
+      {trail ? <primitive object={trail.line} /> : null}
     </>
   );
 }

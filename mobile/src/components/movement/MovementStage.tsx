@@ -6,12 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { replay } from '../../movement/animationStep';
 import type { AnimControl } from '../../movement/animationStep';
 import type { Movement } from '../../movement/movements';
+import type { Side } from '../../movement/rig';
 import type { BodyLayer } from '../../regions/types';
 import { useT } from '../../store/settings';
 import { colors, gradients } from '../../theme';
 import { AppText } from '../AppText';
 import { Boundary } from '../body3d/Boundary';
-import { createCameraRig, resetView, setPreset } from '../body3d/cameraRig';
+import { createCameraRig, presetForSide, resetView, setPreset } from '../body3d/cameraRig';
 import type { CameraRig } from '../body3d/cameraRig';
 import type { Emphasis } from '../body3d/highlightPlan';
 import { SegmentedBody } from '../body3d/SegmentedBody';
@@ -25,6 +26,8 @@ const LOAD_TIMEOUT_MS = 25000;
 
 interface Props {
   movement: Movement;
+  /** The selected side. The left arm is the mirror image of the right. Default right. */
+  side?: Side;
   /** Fixed height, or leave out to fill the parent (flex: 1). */
   height?: number;
   style?: StyleProp<ViewStyle>;
@@ -44,7 +47,7 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, height, style, tracked, emphasis, onInteract, onReady }: Props) {
+export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, onReady }: Props) {
   const t = useT();
   const focused = useScreenFocused();
   const pack = usePack(!FORCE_SIMPLE && focused);
@@ -54,7 +57,7 @@ export function MovementStage({ movement, height, style, tracked, emphasis, onIn
   const [layer, setLayer] = useState<BodyLayer>('muscle');
   const control = useRef<AnimControl>({ playing: true, speed: 1, seek: null, t: 0 });
   const rig = useRef<CameraRig | null>(null);
-  if (rig.current === null) rig.current = createCameraRig(movement.camera);
+  if (rig.current === null) rig.current = createCameraRig(presetForSide(movement.camera, side));
 
   useEffect(() => {
     if (FORCE_SIMPLE || pack.status !== 'loading') return;
@@ -66,8 +69,8 @@ export function MovementStage({ movement, height, style, tracked, emphasis, onIn
   useEffect(() => {
     control.current.seek = 0;
     control.current.playing = true;
-    setPreset(rig.current!, movement.camera);
-  }, [movement.id, movement.camera]);
+    setPreset(rig.current!, presetForSide(movement.camera, side));
+  }, [movement.id, movement.camera, side]);
 
   const simple = FORCE_SIMPLE || crashed || pack.status === 'failed' || (timedOut && pack.status === 'loading');
   useEffect(() => {
@@ -108,6 +111,7 @@ export function MovementStage({ movement, height, style, tracked, emphasis, onIn
           <SegmentedBody
             pack={pack.pack!}
             movement={movement}
+            side={side}
             layer={layer}
             control={control}
             cameraRig={rig as React.MutableRefObject<CameraRig>}

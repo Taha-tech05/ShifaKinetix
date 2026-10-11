@@ -2,7 +2,8 @@
 // it can be tested. The base material is the same one the picker uses (viewerSetup.createBodyMaterial): opaque, depth
 // written. Only a tracked structure gets a material of its own, and only that one is ever tinted or ghosted.
 import * as THREE from 'three';
-import { ARM_RIG } from '../../movement/rig';
+import { rigFor } from '../../movement/rig';
+import type { Side } from '../../movement/rig';
 import { groupLookup, splitIndicesTagged } from '../../movement/split';
 import type { Group } from '../../movement/split';
 import { structureIdOfMesh } from '../../regions/regionMap';
@@ -13,6 +14,12 @@ import { GHOST_OPACITY } from './highlightPlan';
 import { createBodyMaterial } from './viewerSetup';
 
 export const GROUPS: Group[] = ['trunk', 'girdle', 'upper', 'forearm'];
+const MOVING: Group[] = ['girdle', 'upper', 'forearm'];
+/** Colour of the moving arm (a multiplier on the pack's own colours, plus a little glow). Opacity stays 1. */
+const ARM_TINT = new THREE.Color(0.78, 0.92, 1.0);
+const ARM_GLOW = new THREE.Color(0.0, 0.07, 0.12);
+export const GHOST_BODY_COLOR = '#2aa6a6';
+export const GHOST_BODY_OPACITY = 0.16;
 const TINT_COLOR = new THREE.Color(0.35, 0.95, 1.0);
 const TINT_EMISSIVE = new THREE.Color(0.0, 0.3, 0.42);
 const WHITE = new THREE.Color(1, 1, 1);
@@ -22,6 +29,9 @@ export type Built = {
   root: THREE.Group;
   groups: Record<Group, THREE.Group>;
   materials: Map<string, THREE.MeshStandardMaterial>;
+  /** Translucent copy of the moving segments, posed once at the end pose (empty when not asked for). */
+  ghostRoot: THREE.Group;
+  ghostGroups: Record<Group, THREE.Group>;
   dispose: () => void;
   triangles: number;
   meshes: number;
@@ -31,8 +41,17 @@ export type Built = {
  * Build segment meshes from the pack parts of the visible layer. Triangles of the `tracked` structures get their own
  * mesh and material (by structure id); everything else uses one base material made from the same parameters as the picker.
  */
-export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer, tracked: ReadonlySet<string> = new Set()): Built {
-  const groupOf = groupLookup(ARM_RIG);
+export interface BuildOptions {
+  side?: Side;
+  /** Tint the moving arm segments with a distinct colour (the material is still opaque). */
+  tintArm?: boolean;
+  /** Add a faint translucent copy of the moving segments for the end pose. */
+  endGhost?: boolean;
+}
+
+export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer, tracked: ReadonlySet<string> = new Set(), options: BuildOptions = {}): Built {
+  const { side = 'right', tintArm = false, endGhost = false } = options;
+  const groupOf = groupLookup(rigFor(side));
   const tagOf = (name: string) => {
     if (tracked.size === 0) return null;
     const id = structureIdOfMesh(name);
@@ -45,7 +64,18 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
     groups[g].matrixAutoUpdate = false;
     root.add(groups[g]);
   }
+  const ghostRoot = new THREE.Group();
+  const ghostGroups = {} as Record<Group, THREE.Group>;
+  for (const g of GROUPS) {
+    ghostGroups[g] = new THREE.Group();
+    ghostGroups[g].matrixAutoUpdate = false;
+    ghostRoot.add(ghostGroups[g]);
+  }
   const base = createBodyMaterial();
+  const armMaterial = createBodyMaterial();
+  armMaterial.color.copy(ARM_TINT);
+  armMaterial.emissive.copy(ARM_GLOW);
+  const ghostMaterial = new THREE.MeshStandardMaterial({ color: GHOST_BODY_COLOR, transparent: true, opacity: GHOST_BODY_OPACITY, depthWrite: false, roughness: 0.8, metalness: 0 });
   const materials = new Map<string, THREE.MeshStandardMaterial>();
   const geometries: THREE.BufferGeometry[] = [];
   let triangles = 0;
@@ -63,7 +93,7 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
       g.boundingBox = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
       g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(3));
       geometries.push(g);
-      let material = base;
+      let material = tintArm && piece.group !== 'trunk' ? armMaterial : base;
       if (piece.tag !== null) {
         material = materials.get(piece.tag) ?? createBodyMaterial();
         materials.set(piece.tag, material);
@@ -73,6 +103,13 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
       mesh.scale.copy(part.mesh.scale);
       mesh.frustumCulled = false;
       groups[piece.group].add(mesh);
+      if (endGhost && MOVING.includes(piece.group) && piece.group !== 'girdle') {
+        const ghost = new THREE.Mesh(g, ghostMaterial);
+        ghost.position.copy(part.mesh.position);
+        ghost.scale.copy(part.mesh.scale);
+        ghost.frustumCulled = false;
+        ghostGroups[piece.group].add(ghost);
+      }
       triangles += piece.triangles;
       meshes++;
     }
@@ -81,12 +118,16 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
     root,
     groups,
     materials,
+    ghostRoot,
+    ghostGroups,
     triangles,
     meshes,
     dispose: () => {
       // shared attributes belong to the pack; only the geometries and materials created here are released
       geometries.forEach((g) => g.dispose());
       base.dispose();
+      armMaterial.dispose();
+      ghostMaterial.dispose();
       materials.forEach((m) => m.dispose());
     },
   };
