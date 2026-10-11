@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { Answer, Verdict } from '../gate/evaluate';
 import { evaluateStub } from '../gate/stub';
+import { structuredGateInputs } from '../flow/gateInputs';
+import type { LiveState, NarrowingSnapshot } from '../narrowing/live';
 import { depthAnswerFrom } from '../dev/followUpQuestions';
 import type { NarrowingInput } from '../dev/narrowingStub';
 import type { IntakeMode } from '../regions/regionMap';
@@ -28,6 +30,10 @@ export interface SessionState {
   /** True once the clarifying re-ask has been used (it is offered only once). */
   reaskDone: boolean;
   movementResults: MovementResult[];
+  /** What the live strip last showed. The result screen shows exactly this (it does not compute again). */
+  liveState: LiveState | null;
+  /** One snapshot per answer, in order, so a doctor view can later show how the ranking evolved. */
+  narrowingTrail: NarrowingSnapshot[];
 
   setMode: (mode: IntakeMode | null) => void;
   setReaskDone: (done: boolean) => void;
@@ -36,6 +42,8 @@ export interface SessionState {
   recordAnswer: (answer: Answer) => void;
   runGate: () => Verdict;
   recordMovement: (result: MovementResult) => void;
+  /** Stores the live state and appends the snapshot of this step. */
+  recordNarrowing: (snapshot: NarrowingSnapshot) => void;
   reset: () => void;
 }
 
@@ -46,6 +54,8 @@ const initial = {
   gateVerdict: null,
   reaskDone: false,
   movementResults: [] as MovementResult[],
+  liveState: null as LiveState | null,
+  narrowingTrail: [] as NarrowingSnapshot[],
 };
 
 export const useSession = create<SessionState>((set, get) => ({
@@ -61,7 +71,9 @@ export const useSession = create<SessionState>((set, get) => ({
     })),
 
   runGate: () => {
-    const { verdict } = evaluateStub(get().answers);
+    // The gate sees the answers plus the structured onset and unable-to-move inputs derived from them (flow/gateInputs.ts).
+    const { answers, movementResults } = get();
+    const { verdict } = evaluateStub([...answers, ...structuredGateInputs(answers, movementResults)]);
     set({ gateVerdict: verdict });
     return verdict;
   },
@@ -73,6 +85,8 @@ export const useSession = create<SessionState>((set, get) => ({
         result,
       ],
     })),
+
+  recordNarrowing: (snapshot) => set((s) => ({ liveState: snapshot.state, narrowingTrail: [...s.narrowingTrail, snapshot] })),
 
   reset: () => set({ ...initial }),
 }));
@@ -90,5 +104,6 @@ export function narrowingInputFrom(
     hitMeshName: s.selection.hitStructure?.meshName ?? null,
     depthAnswer: depthAnswerFrom(s.answers),
     movementResults: s.movementResults,
+    answers: s.answers,
   };
 }
