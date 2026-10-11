@@ -20,10 +20,17 @@ const ARM_TINT = new THREE.Color(0.78, 0.92, 1.0);
 const ARM_GLOW = new THREE.Color(0.0, 0.07, 0.12);
 export const GHOST_BODY_COLOR = '#2aa6a6';
 export const GHOST_BODY_OPACITY = 0.16;
-const TINT_COLOR = new THREE.Color(0.35, 0.95, 1.0);
-const TINT_EMISSIVE = new THREE.Color(0.0, 0.3, 0.42);
+// A candidate is drawn cyan: the pack's own colour is almost multiplied away and a glow is added, so it stays visible on top
+// of the orange muscles and the pale bones. Its opacity stays 1.
+const TINT_COLOR = new THREE.Color(0.06, 0.42, 0.5);
+const TINT_EMISSIVE = new THREE.Color(0.0, 0.38, 0.52);
 const WHITE = new THREE.Color(1, 1, 1);
 const BLACK = new THREE.Color(0, 0, 0);
+
+/** Key of a tracked structure's material in Built.materials: the structure id, plus "|arm" on the tinted moving arm. */
+export const materialKey = (id: string, arm: boolean) => (arm ? `${id}|arm` : id);
+export const structureOfKey = (key: string) => key.replace(/\|arm$/, '');
+export const isArmKey = (key: string) => key.endsWith('|arm');
 
 export type Built = {
   root: THREE.Group;
@@ -32,6 +39,8 @@ export type Built = {
   /** Translucent copy of the moving segments, posed once at the end pose (empty when not asked for). */
   ghostRoot: THREE.Group;
   ghostGroups: Record<Group, THREE.Group>;
+  /** The material of the end-pose ghost, so its opacity can follow how far the arm is from the end pose. */
+  ghostMaterial: THREE.MeshStandardMaterial;
   dispose: () => void;
   triangles: number;
   meshes: number;
@@ -93,10 +102,13 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
       g.boundingBox = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
       g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(3));
       geometries.push(g);
-      let material = tintArm && piece.group !== 'trunk' ? armMaterial : base;
+      const armPiece = tintArm && piece.group !== 'trunk';
+      let material = armPiece ? armMaterial : base;
       if (piece.tag !== null) {
-        material = materials.get(piece.tag) ?? createBodyMaterial();
-        materials.set(piece.tag, material);
+        // a tracked structure has one material per look: as drawn on the trunk, and as drawn on the moving arm (tinted)
+        const key = materialKey(piece.tag, armPiece);
+        material = materials.get(key) ?? createBodyMaterial();
+        materials.set(key, material);
       }
       const mesh = new THREE.Mesh(g, material);
       mesh.position.copy(part.mesh.position);
@@ -120,6 +132,7 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
     materials,
     ghostRoot,
     ghostGroups,
+    ghostMaterial,
     triangles,
     meshes,
     dispose: () => {
@@ -133,10 +146,10 @@ export function buildSegments(pack: Pick<LoadedPack, 'parts'>, layer: BodyLayer,
   };
 }
 
-/** Set one structure's material to a tint amount and a ghost amount (both 0 to 1). At 0 and 0 it is the picker's look. */
-export function fadeMaterial(m: THREE.MeshStandardMaterial, tint: number, ghost: number): void {
-  m.color.copy(WHITE).lerp(TINT_COLOR, tint);
-  m.emissive.copy(BLACK).lerp(TINT_EMISSIVE, tint);
+/** Set one structure's material to a tint amount and a ghost amount (both 0 to 1). At 0 and 0 it is the picker's look (or the arm tint on the moving arm). */
+export function fadeMaterial(m: THREE.MeshStandardMaterial, tint: number, ghost: number, arm = false): void {
+  m.color.copy(arm ? ARM_TINT : WHITE).lerp(TINT_COLOR, tint);
+  m.emissive.copy(arm ? ARM_GLOW : BLACK).lerp(TINT_EMISSIVE, tint);
   const transparent = ghost > 0.001;
   if (m.transparent !== transparent) {
     m.transparent = transparent;
@@ -144,4 +157,14 @@ export function fadeMaterial(m: THREE.MeshStandardMaterial, tint: number, ghost:
   }
   m.opacity = 1 - (1 - GHOST_OPACITY) * ghost;
   m.depthWrite = ghost < 0.5;
+}
+
+/**
+ * Opacity of the end-pose ghost for an arm that is `distanceDeg` degrees (summed over the joint angles) from the end pose.
+ * Far from it the ghost shows at its full faint strength; as the arm arrives it fades out, so at the end pose it does not
+ * wash the arm that is now in the same place. Only the ghost's own material changes, never the body's.
+ */
+export function ghostOpacityFor(distanceDeg: number): number {
+  const x = Math.min(1, Math.max(0, (distanceDeg - 4) / 26));
+  return GHOST_BODY_OPACITY * x * x * (3 - 2 * x);
 }

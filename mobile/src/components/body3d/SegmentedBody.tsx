@@ -26,7 +26,7 @@ import type { CameraRig } from './cameraRig';
 import { NO_EMPHASIS } from './highlightPlan';
 import type { Emphasis } from './highlightPlan';
 import { useViewerGestures } from './useViewerGestures';
-import { buildSegments, fadeMaterial } from './segmentBuild';
+import { buildSegments, fadeMaterial, ghostOpacityFor, isArmKey, structureOfKey } from './segmentBuild';
 import { AMBIENT_INTENSITY, KEY_LIGHT, VIEWER_FOV } from './viewerSetup';
 
 export type { AnimControl } from '../../movement/animationStep';
@@ -157,6 +157,8 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
     setMatrix(built.ghostGroups.forearm, tr.forearm);
   }, [built, movement, rig, endGhost]);
 
+  const end = useMemo(() => endPose(movement), [movement]);
+
   // the hand path, for movements that ask for it
   const trail = useMemo(() => (movement.trail ? buildTrail(movement, side) : null), [movement, side]);
   useEffect(() => () => trail?.dispose(), [trail]);
@@ -192,6 +194,7 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
     setMatrix(built.groups.girdle, tr.girdle);
     setMatrix(built.groups.upper, tr.upper);
     setMatrix(built.groups.forearm, tr.forearm);
+    if (endGhost) built.ghostMaterial.opacity = ghostOpacityFor(Math.abs(pose.elevation - end.elevation) + Math.abs(pose.rotation - end.rotation) + Math.abs(pose.elbow - end.elbow));
 
     const ra = movement.resistArrow;
     const a = arrow.current;
@@ -210,15 +213,16 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
 
     // ---- emphasis: cross-fade tint and ghost per structure ----
     const step = Math.min(1, dt / FADE_SECONDS);
-    built.materials.forEach((m, id) => {
-      const cur = current.current.get(id) ?? { tint: 0, ghost: 0 };
+    built.materials.forEach((m, key) => {
+      const id = structureOfKey(key);
+      const cur = current.current.get(key) ?? { tint: 0, ghost: 0 };
       const wantTint = target.current.tint[id] ?? 0;
       const wantGhost = target.current.ghost[id] ?? 0;
       const nt = cur.tint + Math.max(-step, Math.min(step, wantTint - cur.tint));
       const ng = cur.ghost + Math.max(-step, Math.min(step, wantGhost - cur.ghost));
-      if (nt !== cur.tint || ng !== cur.ghost || !current.current.has(id)) {
-        current.current.set(id, { tint: nt, ghost: ng });
-        fadeMaterial(m, nt, ng);
+      if (nt !== cur.tint || ng !== cur.ghost || !current.current.has(key)) {
+        current.current.set(key, { tint: nt, ghost: ng });
+        fadeMaterial(m, nt, ng, isArmKey(key));
       }
     });
 

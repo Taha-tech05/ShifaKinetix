@@ -1,10 +1,14 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { LogBox, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Banner } from '../components/Banner';
 import { useSettings } from '../store/settings';
 import { colors } from '../theme';
+
+// Development builds print these two warnings from the three.js library on every start. They need no action and they cover the
+// buttons at the bottom of the screen while testing, so they are not shown in the on-screen log (they stay in the Metro log).
+if (__DEV__) LogBox.ignoreLogs(['THREE.Clock: This module has been deprecated', 'THREE.WebGLRenderer: WEBGL_lose_context']);
 
 function Shell() {
   const insets = useSafeAreaInsets();

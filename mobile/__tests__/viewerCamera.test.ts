@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createCameraRig, isAtHome, orbit, pan, pinch, PAN_LIMIT, PITCH_MAX, PITCH_MIN, positionOf, presetForSide, resetView, setPreset, stepFraming, viewFromPreset, ZOOM_MAX_FACTOR, ZOOM_MIN_FACTOR } from '../src/components/body3d/cameraRig';
 import type { CameraPreset } from '../src/components/body3d/cameraRig';
-import { buildSegments, fadeMaterial } from '../src/components/body3d/segmentBuild';
+import { buildSegments, fadeMaterial, ghostOpacityFor, GHOST_BODY_OPACITY, materialKey, structureOfKey, isArmKey } from '../src/components/body3d/segmentBuild';
 import { GHOST_OPACITY, overlyingOf, planEmphasis } from '../src/components/body3d/highlightPlan';
 import { BODY_MATERIAL_PARAMS, createBodyMaterial, VIEWER_FOV } from '../src/components/body3d/viewerSetup';
 import { replay, stepClock } from '../src/movement/animationStep';
@@ -283,5 +283,61 @@ describe('deep candidate: overlying muscles are ghosted, nothing else changes', 
     expect(GHOST_OPACITY).toBeGreaterThan(0);
     expect(GHOST_OPACITY).toBeLessThan(1);
     expect(BODY_MATERIAL_PARAMS.opacity).toBe(1);
+  });
+});
+
+describe('clarity aids never change the base look', () => {
+  it('the end-pose ghost fades out as the arm arrives, and is at most as strong as its own faint setting', () => {
+    expect(ghostOpacityFor(0)).toBe(0);
+    expect(ghostOpacityFor(3)).toBe(0);
+    expect(ghostOpacityFor(200)).toBeCloseTo(GHOST_BODY_OPACITY, 9);
+    let last = -1;
+    for (let d = 0; d <= 40; d += 2) {
+      expect(ghostOpacityFor(d)).toBeGreaterThanOrEqual(last);
+      last = ghostOpacityFor(d);
+    }
+    expect(GHOST_BODY_OPACITY).toBeLessThan(0.3);
+  });
+
+  it('the ghost is its own material: translucent copies of the moving segments, base material untouched', () => {
+    const names = REGION_MAP.structures.acromial_part_of_deltoid_muscle_right.meshNames;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Int16Array(names.length * 9), 3, true));
+    g.setAttribute('normal', new THREE.BufferAttribute(new Int8Array(names.length * 9), 3, true));
+    g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(names.length * 9), 3, true));
+    const idx = new Uint32Array(names.length * 3).map((_, i) => i);
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    const pack = {
+      parts: [{ mesh: new THREE.Mesh(g, createBodyMaterial()), layer: 'superficial', region: 'shoulder', names, vStart: Int32Array.from(names, (_, i) => i * 3), vCount: Int32Array.from(names, () => 3), triStart: Int32Array.from(names, (_, i) => i), triCount: Int32Array.from(names, () => 1), bounds: new Float32Array(0), positions: new Int16Array(0), indices: idx, originalColors: new Uint8Array(0) }],
+    } as never;
+    const built = buildSegments(pack, 'muscle', new Set(), { tintArm: true, endGhost: true });
+    expect(built.ghostMaterial.transparent).toBe(true);
+    expect(built.ghostMaterial.depthWrite).toBe(false);
+    const moving = [...built.groups.upper.children, ...built.groups.forearm.children] as THREE.Mesh[];
+    expect(moving.length).toBeGreaterThan(0);
+    // the real arm is tinted but opaque; the ghost copy is the translucent one
+    for (const m of moving) {
+      const mat = m.material as THREE.MeshStandardMaterial;
+      expect(mat.transparent).toBe(false);
+      expect(mat.opacity).toBe(1);
+      expect(mat.depthWrite).toBe(true);
+    }
+    const ghosts = [...built.ghostGroups.upper.children, ...built.ghostGroups.forearm.children] as THREE.Mesh[];
+    expect(ghosts).toHaveLength(moving.length);
+    for (const m of ghosts) expect(m.material).toBe(built.ghostMaterial);
+    built.dispose();
+  });
+
+  it('a tracked structure on the moving arm keeps the arm tint and has its own material', () => {
+    expect(materialKey('a', true)).toBe('a|arm');
+    expect(materialKey('a', false)).toBe('a');
+    expect(structureOfKey('a|arm')).toBe('a');
+    expect(isArmKey('a|arm')).toBe(true);
+    const m = createBodyMaterial();
+    fadeMaterial(m, 0, 0, true);
+    expect(m.color.getHex()).not.toBe(0xffffff); // the arm tint
+    expect(m.opacity).toBe(1);
+    fadeMaterial(m, 0, 0, false);
+    expect(m.color.getHex()).toBe(0xffffff);
   });
 });

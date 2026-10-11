@@ -66,8 +66,12 @@ export function CandidateStrip({ state }: { state: LiveState | null }) {
               <MatchBar strength={c.strength} band={c.band} />
             </View>
           ))}
-          <AppText variant="secondary" color={colors.muted}>
-            {state?.cluster ? `${t('live.clusterNote')} ` : ''}
+          {state?.cluster ? (
+            <AppText variant="secondary" color={colors.muted}>
+              {t('live.clusterNote')}
+            </AppText>
+          ) : null}
+          <AppText variant="secondary" color={colors.muted} style={styles.italic}>
             {t('live.matchCaption')}
           </AppText>
         </>
@@ -82,6 +86,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 26, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 13 },
   bold: { fontWeight: '700' },
+  italic: { fontStyle: 'italic' },
   row: { gap: 4 },
   rowTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   name: { flex: 1 },
