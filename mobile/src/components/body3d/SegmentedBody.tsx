@@ -59,6 +59,9 @@ export interface SegmentedBodyProps {
   emphasis?: Emphasis;
   /** Called with true while a finger is on the model, false when it lifts (the screen switches its scrolling off). */
   onInteract?: (active: boolean) => void;
+  /** Points to follow on screen (for leader-line labels): model-space positions, reported as pixels inside the viewer. */
+  anchors?: { id: string; point: Vec3 }[];
+  onProject?: (points: { id: string; x: number; y: number }[]) => void;
   onFrame?: (info: FrameInfo) => void;
   onFirstFrame?: () => void;
 }
@@ -73,10 +76,11 @@ function setMatrix(g: THREE.Group, m: Mat4) {
 }
 
 /** Applies the camera state to the three.js camera and keeps the key light on the camera side, as in the picker. */
-function CameraDriver({ rig, light }: { rig: React.MutableRefObject<CameraRig>; light: THREE.DirectionalLight }) {
+function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRefObject<CameraRig>; light: THREE.DirectionalLight; anchors?: { id: string; point: Vec3 }[]; onProject?: (points: { id: string; x: number; y: number }[]) => void }) {
   const { camera } = useThree();
   const tmp = useMemo(() => new THREE.Vector3(), []);
-  useFrame((_, dt) => {
+  const last = useRef({ at: 0, key: '' });
+  useFrame((state, dt) => {
     const r = rig.current;
     stepFraming(r, dt);
     const v = r.view;
@@ -95,6 +99,20 @@ function CameraDriver({ rig, light }: { rig: React.MutableRefObject<CameraRig>; 
     light.position.set(v.target[0] + tmp.x, v.target[1] + tmp.y, v.target[2] + tmp.z);
     light.updateMatrixWorld();
     light.target.updateMatrixWorld();
+
+    // screen positions of the anchors, a few times a second and only when they moved
+    if (anchors && anchors.length > 0 && onProject && state.clock.elapsedTime - last.current.at > 0.12) {
+      last.current.at = state.clock.elapsedTime;
+      const pts = anchors.map((a) => {
+        tmp.set(a.point[0], a.point[1], a.point[2]).project(camera);
+        return { id: a.id, x: Math.round((tmp.x * 0.5 + 0.5) * state.size.width), y: Math.round((-tmp.y * 0.5 + 0.5) * state.size.height) };
+      });
+      const key = pts.map((q) => `${q.id}:${q.x}:${q.y}`).join('|');
+      if (key !== last.current.key) {
+        last.current.key = key;
+        onProject(pts);
+      }
+    }
   });
   return null;
 }
@@ -119,7 +137,7 @@ function buildTrail(movement: Movement, side: Side): { line: THREE.Line; dispose
   return { line, dispose: () => { g.dispose(); m.dispose(); } };
 }
 
-function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost = true, control, cameraRig, tracked, emphasis = NO_EMPHASIS, onFrame, onFirstFrame }: SegmentedBodyProps) {
+function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost = true, control, cameraRig, tracked, emphasis = NO_EMPHASIS, anchors, onProject, onFrame, onFirstFrame }: SegmentedBodyProps) {
   const rig = rigFor(side);
   const arrow = useRef<THREE.ArrowHelper | null>(null);
   const frames = useRef(0);
@@ -226,7 +244,7 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
 
   return (
     <>
-      <CameraDriver rig={cameraRig} light={light} />
+      <CameraDriver rig={cameraRig} light={light} anchors={anchors} onProject={onProject} />
       <ambientLight intensity={AMBIENT_INTENSITY} />
       <primitive object={light} />
       <primitive object={light.target} />

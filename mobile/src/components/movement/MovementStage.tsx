@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,8 +14,13 @@ import { colors, gradients } from '../../theme';
 import { AppText } from '../AppText';
 import { Boundary } from '../body3d/Boundary';
 import { createCameraRig, presetForSide, resetView, setPreset } from '../body3d/cameraRig';
-import type { CameraRig } from '../body3d/cameraRig';
+import type { CameraPreset, CameraRig } from '../body3d/cameraRig';
+import { planEmphasis } from '../body3d/highlightPlan';
 import type { Emphasis } from '../body3d/highlightPlan';
+import { deepStructureIds, structureAnchors } from '../body3d/packLayers';
+import { LeaderLabels } from '../narrowing/LeaderLabels';
+import { muscleName } from '../narrowing/CandidateStrip';
+import { musclePool } from '../../dev/narrowingStub';
 import { SegmentedBody } from '../body3d/SegmentedBody';
 import { usePack } from '../body3d/usePack';
 import { useScreenFocused } from '../body3d/useScreenFocused';
@@ -36,6 +42,14 @@ interface Props {
   emphasis?: Emphasis;
   /** True while a finger is on the model (the screen switches its own scrolling off). */
   onInteract?: (active: boolean) => void;
+  /** Hold the arm at rest instead of playing the movement (question steps and the result). Replay is then hidden. */
+  paused?: boolean;
+  /** A camera preset to use instead of the movement's own (right-side values; the left side mirrors them). */
+  cameraPreset?: CameraPreset;
+  /** Muscles to tint (the live candidates). If one lies deep, the muscles over it are ghosted. Every muscle of the side can be tinted. */
+  highlightIds?: string[];
+  /** Muscles to label with a leader line (name only). */
+  labelIds?: string[];
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
 }
@@ -47,7 +61,8 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, onReady }: Props) {
+export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, onReady }: Props) {
+  const preset = cameraPreset ?? movement.camera;
   const t = useT();
   const focused = useScreenFocused();
   const pack = usePack(!FORCE_SIMPLE && focused);
@@ -55,9 +70,11 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const [crashed, setCrashed] = useState(false);
   const [firstFrame, setFirstFrame] = useState(false);
   const [layer, setLayer] = useState<BodyLayer>('muscle');
+  const [boxWidth, setBoxWidth] = useState(0);
+  const [screenPts, setScreenPts] = useState<{ id: string; x: number; y: number }[]>([]);
   const control = useRef<AnimControl>({ playing: true, speed: 1, seek: null, t: 0 });
   const rig = useRef<CameraRig | null>(null);
-  if (rig.current === null) rig.current = createCameraRig(presetForSide(movement.camera, side));
+  if (rig.current === null) rig.current = createCameraRig(presetForSide(preset, side));
 
   useEffect(() => {
     if (FORCE_SIMPLE || pack.status !== 'loading') return;
@@ -68,9 +85,9 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   // next movement: play it from the start; the camera eases to its preset unless the user has moved it
   useEffect(() => {
     control.current.seek = 0;
-    control.current.playing = true;
-    setPreset(rig.current!, presetForSide(movement.camera, side));
-  }, [movement.id, movement.camera, side]);
+    control.current.playing = !paused;
+    setPreset(rig.current!, presetForSide(preset, side));
+  }, [movement.id, preset, side, paused]);
 
   const simple = FORCE_SIMPLE || crashed || pack.status === 'failed' || (timedOut && pack.status === 'loading');
   useEffect(() => {
@@ -84,6 +101,23 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
       onReady?.();
     }
   }, [ready, firstFrame, onReady]);
+
+  const loaded = pack.status === 'ready' ? pack.pack : null;
+  const trackedIds = useMemo(() => tracked ?? (highlightIds !== undefined || labelIds !== undefined ? musclePool(side) : undefined), [tracked, highlightIds, labelIds, side]);
+  const emph = useMemo(() => {
+    if (emphasis) return emphasis;
+    if (!loaded || !highlightIds) return undefined;
+    const deep = deepStructureIds(loaded);
+    return planEmphasis(highlightIds, (id) => deep.has(id));
+  }, [emphasis, loaded, highlightIds]);
+  const anchorKey = (labelIds ?? []).join('|');
+  const anchors = useMemo(() => {
+    if (!loaded || !labelIds || labelIds.length === 0) return undefined;
+    return Object.entries(structureAnchors(loaded, labelIds)).map(([id, point]) => ({ id, point }));
+  }, [loaded, anchorKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!anchors) setScreenPts([]);
+  }, [anchors]);
 
   const layers = useMemo(
     () => [
@@ -105,7 +139,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   }
 
   return (
-    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]}>
+    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => setBoxWidth(e.nativeEvent.layout.width)}>
       {ready ? (
         <Boundary onError={() => setCrashed(true)}>
           <SegmentedBody
@@ -115,8 +149,10 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
             layer={layer}
             control={control}
             cameraRig={rig as React.MutableRefObject<CameraRig>}
-            tracked={tracked}
-            emphasis={emphasis}
+            tracked={trackedIds}
+            emphasis={emph}
+            anchors={anchors}
+            onProject={setScreenPts}
             onInteract={onInteract}
             onFirstFrame={() => setFirstFrame(true)}
           />
@@ -131,6 +167,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
         </View>
       ) : (
         <>
+          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: muscleName(p.id) }))} /> : null}
           <View style={styles.layers} accessibilityLabel={t('movement.layerLabel')}>
             {layers.map((l) => {
               const on = l.value === layer;
@@ -144,12 +181,14 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
             })}
           </View>
           <View style={styles.buttons}>
+            {paused ? null : (
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.replay')} onPress={() => replay(control.current)} style={styles.pill}>
               <Ionicons name="refresh" size={18} color={colors.navy} />
               <AppText variant="secondary" color={colors.navy} style={styles.bold}>
                 {t('movement.replay')}
               </AppText>
             </Pressable>
+            )}
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.resetView')} onPress={() => resetView(rig.current!)} style={styles.pill}>
               <Ionicons name="locate" size={18} color={colors.navy} />
               <AppText variant="secondary" color={colors.navy} style={styles.bold}>

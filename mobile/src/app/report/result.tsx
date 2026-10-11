@@ -1,41 +1,101 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
-import { ResultBody } from '../../components/body3d/ResultBody';
+import { CautionStrip } from '../../components/CautionStrip';
+import { MovementStage } from '../../components/movement/MovementStage';
+import { MatchBar } from '../../components/narrowing/MatchBar';
+import { muscleName, NarrowingChips } from '../../components/narrowing/CandidateStrip';
 import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
-import { runNarrowing, suggestDoctor } from '../../flow/intake';
 import { SafeGuard } from '../../flow/SafeGuard';
-import { REGION_MAP, meshNamesOfStructures } from '../../regions/regionMap';
+import { MOVEMENTS, localized, movementById } from '../../movement/movements';
+import { questionText } from '../../narrowing/bank';
+import { evaluateLive } from '../../narrowing/live';
+import type { LiveCandidate, LiveState } from '../../narrowing/live';
 import { regionLabel } from '../../regions/shoulder';
-import { useSession } from '../../store/session';
+import { sideOfRegion } from '../../regions/shoulder';
+import { narrowingInputFrom, useSession } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors, radius, shadows } from '../../theme';
+import type { CameraPreset } from '../../components/body3d/cameraRig';
+
+/** Upper-body camera for the result (right-side values; the left side mirrors them): front-oblique, or from behind. */
+const FRONT: CameraPreset = { position: [-0.55, 1.35, 1.35], target: [-0.12, 1.25, 0], fov: 45, zoom: 1 };
+const BACK: CameraPreset = { position: [-0.55, 1.35, -1.35], target: [-0.12, 1.25, 0], fov: 45, zoom: 1 };
+
+/** The names of the movements and questions behind a candidate, in the current language. */
+function evidenceName(id: string): string {
+  const m = movementById(id);
+  return m ? localized(m.name) : questionText(id) ?? id;
+}
+
+function CandidateRow({ c }: { c: LiveCandidate }) {
+  const t = useT();
+  return (
+    <View style={styles.item}>
+      <View style={styles.itemTop}>
+        <AppText variant="bodyStrong" color={colors.navy} style={styles.col}>
+          {muscleName(c.muscleId)}
+        </AppText>
+        <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
+          <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+            {t(`live.band.${c.band}` as const)}
+          </AppText>
+        </View>
+      </View>
+      <MatchBar strength={c.strength} band={c.band} />
+      <AppText variant="secondary" color={colors.muted}>
+        {c.matched.length > 0 ? t('live.matched', { items: c.matched.map(evidenceName).join(', ') }) : t('live.noWhy')}
+      </AppText>
+      {c.unmatched.length > 0 ? (
+        <AppText variant="secondary" color={colors.muted}>
+          {t('live.unmatched', { items: c.unmatched.map(evidenceName).join(', ') })}
+        </AppText>
+      ) : null}
+    </View>
+  );
+}
+
+/** A doctor is suggested when the candidates are one cluster, when none stands out, or when the best match is only Low. */
+export function suggestDoctorLive(s: LiveState | null): boolean {
+  return !s || s.candidates.length === 0 || s.cluster || s.candidates[0].band === 'low';
+}
 
 /**
- * Result (design P13): "Muscles that may be involved. Not a diagnosis. Estimate", highlighted on the body.
- * The numbers come from the dummy narrowing (dev/narrowingStub.ts, Person C replaces). Low confidence or a cluster
- * adds a suggestion to see a doctor. Reachable only after the verdict SAFE.
+ * Result (design P13): "Muscles that may be involved. Not a diagnosis. Estimate", tinted on the body with a label for each.
+ * It shows EXACTLY what the live strip showed last (the state kept in the session store): nothing is computed again, so
+ * the two cannot drift. Each candidate has a band, a match bar (not a probability) and a short "why". Nothing is numbered.
+ * Reachable only after the verdict SAFE.
  */
 export default function Result() {
   const t = useT();
-  const state = useSession();
-  const out = useMemo(() => runNarrowing(state), [state.gateVerdict, state.selection, state.answers, state.movementResults]);
-  const sel = state.selection;
+  const saved = useSession((s) => s.liveState);
+  const sel = useSession((s) => s.selection);
+  const [touching, setTouching] = useState(false);
+  // Only if the screen is opened without a live run (a direct link): evaluate once, from the stored answers.
+  const fallback = useRef<LiveState | null>(null);
+  if (!saved && fallback.current === null) {
+    const input = narrowingInputFrom(useSession.getState());
+    fallback.current = input ? evaluateLive(input) : null;
+  }
+  const state = saved ?? fallback.current;
+  const candidates = state?.candidates ?? [];
+  const ids = useMemo(() => candidates.map((c) => c.muscleId), [state]); // eslint-disable-line react-hooks/exhaustive-deps
   const where = sel ? regionLabel(sel.regionId, sel.subRegionId) : null;
-  const candidates = out?.candidates ?? [];
-  const names = useMemo(() => meshNamesOfStructures(candidates.map((c) => c.muscleId)), [out]);
-  const doctor = out ? suggestDoctor(out) : true;
+  const side = sideOfRegion(sel?.regionId);
   const behind = sel?.subRegionId === 'back' || sel?.subRegionId === 'scapular';
+  const doctor = suggestDoctorLive(state);
 
   return (
     <SafeGuard>
       <Screen
+        scrollEnabled={!touching}
         onBack={() => router.back()}
+        banner={<CautionStrip text={t('moveSafely')} />}
         footer={
           <>
             <Button label={t('result.seeAdvice')} onPress={() => router.push('/report/choice')} />
@@ -44,24 +104,16 @@ export default function Result() {
         }
       >
         <StepProgress step={5} total={5} />
-        <AppText variant="h1" color={colors.navy}>
+        <AppText variant="h1" color={colors.navy} style={styles.title}>
           {t('result.title')}
         </AppText>
-        <View style={styles.chips}>
-          <View style={[styles.chip, { backgroundColor: colors.cautionTint }]}>
-            <Ionicons name="information-circle-outline" size={16} color={colors.caution} />
-            <AppText variant="secondary" color={colors.caution} style={styles.bold}>
-              {t('result.notDiagnosis')}
-            </AppText>
-          </View>
-          <View style={[styles.chip, { backgroundColor: colors.tealTint }]}>
-            <Ionicons name="analytics-outline" size={16} color={colors.tealDark} />
-            <AppText variant="secondary" color={colors.tealDark} style={styles.bold}>
-              {t('result.estimate')}
-            </AppText>
-          </View>
-        </View>
-        <ResultBody highlightNames={names} initialYaw={behind ? Math.PI : 0} />
+        <NarrowingChips />
+        <MovementStage movement={MOVEMENTS[0]} side={side} height={320} paused cameraPreset={behind ? BACK : FRONT} highlightIds={ids} labelIds={ids} onInteract={setTouching} />
+        {state?.stop ? (
+          <AppText variant="secondary" color={colors.safe} style={styles.bold}>
+            {t('live.enough')}
+          </AppText>
+        ) : null}
         {doctor ? (
           <Card tone="mint" row>
             <Ionicons name="medkit-outline" size={24} color={colors.tealDark} />
@@ -75,25 +127,24 @@ export default function Result() {
             {t('result.none')}
           </AppText>
         ) : (
-          candidates.map((c, i) => (
-            <View key={c.muscleId} style={styles.item}>
-              <View style={[styles.rank, { backgroundColor: i === 0 ? colors.teal : colors.tealSoft }]}>
-                <AppText variant="bodyStrong" color={colors.white}>
-                  {i + 1}
-                </AppText>
-              </View>
-              <View style={styles.col}>
-                <AppText variant="bodyStrong" color={colors.navy}>
-                  {REGION_MAP.structures[c.muscleId]?.name ?? c.muscleId}
-                </AppText>
-                {where ? (
-                  <AppText variant="secondary" color={colors.muted}>
-                    {where}
-                  </AppText>
-                ) : null}
-              </View>
-            </View>
-          ))
+          <>
+            {state?.cluster ? (
+              <AppText variant="secondary" color={colors.muted}>
+                {t('live.clusterNote')}
+              </AppText>
+            ) : null}
+            {where ? (
+              <AppText variant="secondary" color={colors.muted}>
+                {where}
+              </AppText>
+            ) : null}
+            {candidates.map((c) => (
+              <CandidateRow key={c.muscleId} c={c} />
+            ))}
+            <AppText variant="secondary" color={colors.muted}>
+              {t('live.matchCaption')}
+            </AppText>
+          </>
         )}
       </Screen>
     </SafeGuard>
@@ -101,10 +152,13 @@ export default function Result() {
 }
 
 const styles = StyleSheet.create({
-  chips: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 32, paddingHorizontal: 10, borderRadius: 16 },
+  title: { paddingTop: 4 },
   bold: { fontWeight: '700' },
   col: { flex: 1 },
-  item: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, ...shadows.card },
-  rank: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, ...shadows.card },
+  itemTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  band: { paddingHorizontal: 10, minHeight: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  bandLow: { backgroundColor: colors.neutralTint },
+  bandModerate: { backgroundColor: colors.cautionTint },
+  bandHigher: { backgroundColor: colors.tealTint },
 });
