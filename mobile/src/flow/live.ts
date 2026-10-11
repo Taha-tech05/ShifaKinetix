@@ -9,7 +9,8 @@
 //      a snapshot of it is appended to the trail for the doctor view.
 import type { Answer, Verdict } from '../gate/evaluate';
 import { discriminatorIds } from '../narrowing/bank';
-import { NARROWING } from '../narrowing/config';
+import { NARROWING, STRUCTURE } from '../narrowing/config';
+import { structureIds } from '../narrowing/structureBank';
 import { evaluateLive, snapshotOf } from '../narrowing/live';
 import type { LiveState } from '../narrowing/live';
 import { MOVEMENTS } from '../movement/movements';
@@ -18,24 +19,32 @@ import { narrowingInputFrom, useSession } from '../store/session';
 import type { IntakeMode } from '../regions/regionMap';
 import { isSafe, RESULT_ROUTE, routeAfterGate } from './intake';
 
-export type LiveStep = { kind: 'movement'; id: string } | { kind: 'question'; id: string };
+export type LiveStep = { kind: 'structure'; id: string } | { kind: 'movement'; id: string } | { kind: 'question'; id: string };
 
-/** The steps in order: region mode asks the six movements and then the questions; exact mode asks only the questions. */
+/** The structure-type questions come first. Then region mode asks the six movements and the questions; exact mode asks only the questions. */
 export function liveSteps(mode: IntakeMode): LiveStep[] {
+  const structure: LiveStep[] = structureIds().map((id) => ({ kind: 'structure', id }));
   const moves: LiveStep[] = mode === 'region' ? MOVEMENTS.map((m) => ({ kind: 'movement', id: m.id })) : [];
-  return [...moves, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
+  return [...structure, ...moves, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
 }
 
 /** The first step that has no answer yet (so coming back to the screen continues where the patient left off). */
-export function firstOpenStep(steps: LiveStep[], movementIds: string[], questionIds: string[]): number {
+export function firstOpenStep(steps: LiveStep[], movementIds: string[], questionIds: string[], skipStructure = false): number {
   const asked = new Set([...movementIds, ...questionIds]);
-  const i = steps.findIndex((st) => !asked.has(st.id));
+  const i = steps.findIndex((st) => !asked.has(st.id) && !(skipStructure && st.kind === 'structure'));
   return i === -1 ? steps.length - 1 : i;
 }
 
-/** Steps that can still be asked: never more than the cap in total. */
+/** Steps that can still be asked: never more than the caps (structure-type questions and muscle questions each have one). */
 export function totalSteps(mode: IntakeMode): number {
-  return Math.min(NARROWING.maxQuestions, liveSteps(mode).length);
+  const steps = liveSteps(mode);
+  const structure = steps.filter((st) => st.kind === 'structure').length;
+  return Math.min(STRUCTURE.maxQuestions, structure) + Math.min(NARROWING.maxQuestions, steps.length - structure);
+}
+
+/** Index of the first step that is not a structure-type question. */
+export function firstMuscleStep(mode: IntakeMode): number {
+  return liveSteps(mode).findIndex((st) => st.kind !== 'structure');
 }
 
 export interface LiveOutcome {
@@ -68,12 +77,20 @@ export function submitQuestion(answer: Answer): LiveOutcome {
   return afterAnswer(answer.questionId, answer.state === 'unknown' ? 'unknown' : answer.value === true ? 'yes' : 'no');
 }
 
-/** After an outcome with no stop: the index of the next step, or null when there is none or the flow should end. */
+/**
+ * After an outcome with no stop: the index of the next step, or null when there is none or the flow should end.
+ * While the structure type is being decided the next structure question follows; once muscle or tendon leads, the structure
+ * questions that are left are skipped and the movements and muscle questions follow.
+ */
 export function nextStepIndex(mode: IntakeMode, current: number, outcome: LiveOutcome): number | null {
   if (outcome.route) return null;
   if (outcome.state?.stop) return null;
-  const next = current + 1;
-  return next < totalSteps(mode) ? next : null;
+  const steps = liveSteps(mode);
+  const here = steps[current];
+  let next = current + 1;
+  if (here?.kind === 'structure' && outcome.state?.muscleAllowed) next = firstMuscleStep(mode);
+  if (next < 0 || next >= steps.length) return null;
+  return next;
 }
 
 export const LIVE_RESULT_ROUTE = RESULT_ROUTE;

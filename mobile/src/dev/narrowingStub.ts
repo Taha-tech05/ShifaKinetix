@@ -8,6 +8,7 @@
 // Output shape is the agreed one: {candidates: [{muscleId, confidence, reason}], cluster} (shared/formats.md, format 4).
 import { NARROWING } from '../narrowing/config';
 import { evidenceFrom, scoreCandidates } from '../narrowing/scoring';
+import { categoryScores } from '../narrowing/structureType';
 import { REGION_MAP, structuresIn } from '../regions/regionMap';
 import type { Answer } from '../gate/evaluate';
 import type { BodyLayer, Point3D, Side, SubRegionId } from '../regions/types';
@@ -35,7 +36,12 @@ export interface NarrowingInput {
 }
 
 export interface Candidate {
-  /** Id of a structure in shared/regions_shoulder.json. */
+  /**
+   * OPTIONAL. "muscle" (or missing): a muscle, muscleId is a structure id in shared/regions_shoulder.json.
+   * "category": a structure type (MUSCLE_TENDON, JOINT_CAPSULE, BONE, NERVE_NECK), muscleId is the category id.
+   */
+  kind?: 'muscle' | 'category';
+  /** Id of a structure in shared/regions_shoulder.json, or of a structure category when kind is "category". */
   muscleId: string;
   /** Match strength from 0 to 1. NOT a probability; the screens show a band, never this number. */
   confidence: number;
@@ -89,5 +95,14 @@ export function narrow(input: NarrowingInput): NarrowingOutput {
     matched: s.matched,
     unmatched: s.unmatched,
   }));
-  return { candidates, cluster: isCluster(candidates) };
+  // the structure types, from the structure-type answers (strongest first); the screens decide whether muscles may be shown
+  const categories: Candidate[] = categoryScores(input.answers ?? []).map((c) => ({
+    kind: 'category',
+    muscleId: c.category,
+    confidence: c.strength,
+    reason: 'May be involved.',
+    matched: c.matched,
+    unmatched: c.unmatched,
+  }));
+  return { candidates: [...candidates, ...categories], cluster: isCluster(candidates) };
 }
