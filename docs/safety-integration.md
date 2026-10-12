@@ -73,21 +73,24 @@ invalidates the active intake. Invalid/corrupt saved content fails closed.
 After app restart, select the same shoulder and use Resume saved assessment on
 the safety page. This resumes safety, not B's complete narrowing/history UI.
 
-## Remaining B integration work (owned files intentionally unchanged)
+## B integration work: items 1 and 2 are done
 
-1. flow/live.ts seedLiveState() and the fallback in report/result.tsx currently
-   calculate narrowing before their enclosing SafeGuard renders. Move those calls
-   behind verified SAFE clearance; a child guard cannot prevent a parent's computation.
-2. The live submit/back API is synchronous. Await
-   `(await openSafetySession()).checkpoint()` after changing an answer/movement and
-   before advancing/narrowing; handle persistence failure by stopping. Current
-   SafeGuard/stop-route checkpoints do not make that entire synchronous operation
-   durable. A forced kill before the checkpoint can lose the newest live event.
-   B should coordinate an async entry point in flow/live.ts and its movement callers.
-3. Full live history/narrowing snapshots are still B's in-memory state. The safety
+1. Done. `report/movement.tsx` and `report/result.tsx` are now a thin screen that renders `SafeGuard`
+   around a body component. `seedLiveState()` and the result fallback run inside the body, so they
+   only run after the guard has confirmed the saved SAFE verdict.
+2. Done. `flow/live.ts` has `submitMovementDurable`, `submitQuestionDurable` and `goBackDurable`.
+   Each stores the answer, awaits `(await openSafetySession()).checkpoint()`, and only then runs
+   the gate and the narrowing. If the save fails the outcome has `persistFailed: true`, `route:
+   '/report/danger'` and no state, so nothing is narrowed from an unsaved answer. The live screen
+   uses these and ignores further taps while one is being saved. The synchronous functions remain
+   for tests and the dev seeder.
+
+Still open:
+
+1. Full live history/narrowing snapshots are still B's in-memory state. The safety
    context is not a complete persistent doctor audit log. Coordinate its server
    audit transport with C rather than assuming safety-context storage provides it.
-4. Fix lint failures in B-owned files listed in person-a-handoff.md. Keep lint enabled.
+2. Lint failures in B-owned files: fixed in PR #6. Keep lint enabled.
 
 ## Test boundaries
 

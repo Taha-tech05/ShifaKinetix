@@ -117,18 +117,27 @@ export function suggestDoctorLive(s: LiveState | null): boolean {
  * Reachable only after the verdict SAFE.
  */
 export default function Result() {
+  // The body, and its fallback narrowing from the stored answers, only exist once the guard has confirmed the saved SAFE verdict.
+  return (
+    <SafeGuard>
+      <ResultBody />
+    </SafeGuard>
+  );
+}
+
+function ResultBody() {
   const t = useT();
   const saved = useSession((s) => s.liveState);
   const history = useSession((s) => s.history);
   const sel = useSession((s) => s.selection);
   const [touching, setTouching] = useState(false);
   // Only if the screen is opened without a live run (a direct link): evaluate once, from the stored answers.
-  const fallback = useRef<LiveState | null>(null);
-  if (!saved && fallback.current === null) {
+  const fallback = useMemo<LiveState | null>(() => {
+    if (saved) return null;
     const input = narrowingInputFrom(useSession.getState());
-    fallback.current = input ? evaluateLive(input) : null;
-  }
-  const state = saved ?? fallback.current;
+    return input ? evaluateLive(input) : null;
+  }, [saved]);
+  const state = saved ?? fallback;
   const candidates = state?.candidates ?? [];
   const categoryResult = state?.outcome === 'category' ? state.categoryResult : null;
   const approxCategory = categoryResult && categoryResult !== 'UNCLEAR' ? (categoryResult as Category) : null;
@@ -145,7 +154,7 @@ export default function Result() {
   const doctor = suggestDoctorLive(state);
 
   return (
-    <SafeGuard>
+    <>
       <Screen
         scrollEnabled={!touching}
         onBack={() => router.back()}
@@ -247,7 +256,7 @@ export default function Result() {
       */}
       {ASSISTANT_ENABLED ? null : null}
       </Screen>
-    </SafeGuard>
+    </>
   );
 }
 
