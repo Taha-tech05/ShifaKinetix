@@ -26,7 +26,7 @@ from app.audit import AuditLog
 from app.gate import QUESTIONS
 from app.narrowing import MOVEMENTS, narrow, observed_movements
 from app.ranking import rank
-from app.report import REFERRAL, build_doctor_report, build_patient_report
+from app.report import REFERRAL, UNCLEAR, build_doctor_report, build_patient_report
 from app.session_gate import evaluate_session_gate
 from app.writeup import LLM
 
@@ -52,6 +52,7 @@ class AgentState(TypedDict, total=False):
     report: dict[str, Any] | None
     next_tool: str
     pending: dict[str, Any] | None  # what the app should do next
+    reviewed: list[str]  # follow-up questions answered for the current evidence; supplied by the server
     trace: list[str]
 
 
@@ -114,8 +115,9 @@ def build_agent(audit: AuditLog, pick_next: Picker | None = None, writer: LLM | 
         return [*state.get("trace", []), entry]
 
     def gate_node(state: AgentState) -> dict[str, Any]:  # runs in code, always
-        # Canonical rules plus live app signals and movement uncertainty (docs/safety-integration.md).
-        gate = evaluate_session_gate(state["answers"], state["movements"])
+        # Canonical rules plus focused follow-ups for live app signals and raw movement results
+        # (docs/safety-integration.md). The server derives the signals from the movements itself.
+        gate = evaluate_session_gate(state["answers"], state["movements"], state.get("reviewed", ()))
         audit.record(state["thread_id"], gate, state["answers"])
         return {"gate": gate, "trace": log(state, f"gate: {gate['verdict']}")}
 
@@ -139,12 +141,19 @@ def build_agent(audit: AuditLog, pick_next: Picker | None = None, writer: LLM | 
         }
 
     def safety_question(state: AgentState) -> dict[str, Any]:
-        rule = state["gate"]["firedRules"][0]  # only M_<id> and U_<id> rules exist under CLARIFY
+        cleared = {"narrowing": None, "ranking": None, "report": None}
+        rules = state["gate"]["firedRules"]  # only M_<id> and U_<id> rules exist under CLARIFY
+        # Ask what can still be answered. Uncertainty that persists after its clarification is not asked a
+        # third time: the patient is told it is unclear, and movements stay blocked (contract v1.1).
+        askable = [r for r in rules if not r["reason"].startswith("Uncertainty persists")]
+        if not askable:
+            unclear = [r["matchedAnswers"][0] for r in rules]
+            return {**cleared, "pending": {"action": "unclear", "questionIds": unclear, "message": UNCLEAR},
+                    "trace": log(state, f"unclear: {', '.join(unclear)}")}
+        rule = askable[0]
         question_id = rule["matchedAnswers"][0]
         return {
-            "narrowing": None,
-            "ranking": None,
-            "report": None,
+            **cleared,
             "pending": {
                 "action": "ask_question",
                 "questionId": question_id,
@@ -223,6 +232,7 @@ def run_turn(
     movements: list[dict[str, Any]] | None = None,
     region_id: str | None = None,
     message: str = "",
+    reviewed: tuple[str, ...] | list[str] = (),
 ) -> AgentState:
     """Run the agent on the complete saved state of one intake until it needs the patient or is done.
 
@@ -239,6 +249,7 @@ def run_turn(
             "movements": movements or [],
             "region_id": region_id,
             "message": message,
+            "reviewed": list(reviewed),
             "narrowing": None,
             "ranking": None,
             "report": None,

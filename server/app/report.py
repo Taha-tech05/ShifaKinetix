@@ -18,6 +18,10 @@ GUIDANCE = (
 )
 NO_MUSCLES = "The movements did not point to a specific muscle. This is not a diagnosis."
 REFERRAL = "Please talk to a doctor about your shoulder before trying any movements."
+UNCLEAR = (
+    "Some safety answers are still unclear, so we cannot continue to the movements. "
+    "You can review your answers, or talk to a doctor about your shoulder."
+)
 
 
 def build_patient_report(narrowing: dict[str, Any]) -> dict[str, Any]:

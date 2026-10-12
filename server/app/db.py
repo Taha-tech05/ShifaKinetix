@@ -24,6 +24,7 @@ from sqlalchemy import (
     Text,
     create_engine,
     func,
+    inspect,
     text,
 )
 
@@ -76,6 +77,9 @@ context_events = Table(
     Column("idempotency_key", String(200), nullable=False, unique=True),
     Column("intake_id", String(200), ForeignKey("intakes.id"), nullable=False, index=True),
     Column("context_json", Text, nullable=False),
+    # Highest answer_events.seq the server had stored when this snapshot arrived. An answer with a higher seq
+    # was received after this evidence, which is how the server decides a follow-up was answered for it.
+    Column("answer_seq_before", Integer, nullable=False, server_default="0"),
     Column("content_version", String(100), nullable=False),
     Column("request_hash", String(64), nullable=False),
     Column("received_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
@@ -140,6 +144,9 @@ def make_engine(url: str | None = None) -> Engine:
     engine = create_engine(url, **options)
     metadata.create_all(engine)
     with engine.begin() as connection:
+        # Databases created before answer_seq_before existed get the column added; existing rows keep 0.
+        if "answer_seq_before" not in {c["name"] for c in inspect(connection).get_columns("context_events")}:
+            connection.execute(text("ALTER TABLE context_events ADD COLUMN answer_seq_before INTEGER NOT NULL DEFAULT 0"))
         for statement in _append_only_sql(engine.dialect.name):
             connection.execute(text(statement))
     return engine

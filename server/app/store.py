@@ -12,7 +12,7 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import Connection, insert, select
+from sqlalchemy import Connection, func, insert, select
 
 from app import db
 from app.audit import build_row
@@ -22,6 +22,7 @@ from app.session_gate import (
     CANONICAL_IDS,
     COMPLETED_MOVEMENT_STATES,
     evaluate_session_gate,
+    followup_evidence,
 )
 
 SESSION_HOURS = 12
@@ -102,10 +103,11 @@ def add_answer_event(c: Connection, event: dict[str, Any]) -> int:
 
 
 def add_context_event(c: Connection, event: dict[str, Any]) -> int:
+    watermark = c.execute(select(func.coalesce(func.max(db.answer_events.c.seq), 0))).scalar()
     result = c.execute(insert(db.context_events).values(
         idempotency_key=event["idempotencyKey"], intake_id=event["intakeId"],
         context_json=json.dumps(event["context"]), content_version=event["contentVersion"],
-        request_hash=request_hash(event)))
+        request_hash=request_hash(event), answer_seq_before=watermark))
     return result.inserted_primary_key[0]
 
 
@@ -133,23 +135,58 @@ def current_context(c: Connection, intake_id: str) -> dict[str, Any]:
 # ---------------------------------------------------------------- gate and audit
 
 
-def gate_inputs(c: Connection, intake_id: str) -> tuple[Any, Any]:
-    """(answers, movements) exactly as the session gate needs them. Malformed context stays malformed."""
-    answers = current_answers(c, intake_id)
-    context = current_context(c, intake_id)
+def _app_inputs(context: dict[str, Any]) -> tuple[Any, Any]:
+    """(raw app answers, raw movements) from one context snapshot. Malformed content stays malformed."""
     app_answers = context.get("appAnswers", [])
     movements = context.get("movements", [])
     if not isinstance(app_answers, list):
         return None, movements
     # Canonical answers come only from answer events; a copy inside the context snapshot is not a second answer.
-    extra = [a for a in app_answers if not (isinstance(a, dict) and a.get("questionId") in CANONICAL_IDS)]
-    return answers + extra, movements
+    return [a for a in app_answers if not (isinstance(a, dict) and a.get("questionId") in CANONICAL_IDS)], movements
+
+
+def gate_inputs(c: Connection, intake_id: str) -> tuple[Any, Any]:
+    """(answers, movements) exactly as the session gate needs them."""
+    app_answers, movements = _app_inputs(current_context(c, intake_id))
+    if app_answers is None:
+        return None, movements
+    return current_answers(c, intake_id) + app_answers, movements
+
+
+def reviewed_followups(c: Connection, intake_id: str) -> set[str]:
+    """Canonical questions the patient answered after the app evidence that asks about them.
+
+    Decided from the order in which the server received things, never from a
+    client review token. The evidence for a question starts at the first of
+    the latest run of context snapshots that carry it unchanged; evidence that
+    changed and then changed back therefore starts again. The follow-up counts
+    only if an answer to that question was stored after that snapshot.
+    """
+    snapshots = c.execute(
+        select(db.context_events.c.context_json, db.context_events.c.answer_seq_before)
+        .where(db.context_events.c.intake_id == intake_id).order_by(db.context_events.c.seq)
+    ).all()
+    if not snapshots:
+        return set()
+    evidence = [followup_evidence(*_app_inputs(json.loads(context_json))) for context_json, _ in snapshots]
+    latest_answer = dict(c.execute(
+        select(db.answer_events.c.question_id, func.max(db.answer_events.c.seq))
+        .where(db.answer_events.c.intake_id == intake_id).group_by(db.answer_events.c.question_id)
+    ).all())
+    reviewed = set()
+    for question_id, fingerprint in evidence[-1].items():
+        start = len(evidence) - 1
+        while start > 0 and evidence[start - 1].get(question_id) == fingerprint:
+            start -= 1
+        if latest_answer.get(question_id, 0) > snapshots[start][1]:
+            reviewed.add(question_id)
+    return reviewed
 
 
 def run_gate(c: Connection, intake_id: str, cause: str) -> dict[str, Any]:
     """Recompute the gate from stored data and write one audit row, whatever the verdict."""
     answers, movements = gate_inputs(c, intake_id)
-    gate = evaluate_session_gate(answers, movements)
+    gate = evaluate_session_gate(answers, movements, reviewed_followups(c, intake_id))
     row = build_row(intake_id, gate, answers)
     c.execute(insert(db.audit_log).values(
         intake_id=intake_id, cause=cause, verdict=row["verdict"],

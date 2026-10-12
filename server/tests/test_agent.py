@@ -89,7 +89,7 @@ def test_bypass_attempt_fails_and_the_gate_still_runs():
     agent, audit = setup(picker)
     danger = answers(injury=True, unable=True)
 
-    state = run_turn(agent, "t-bypass", danger, movements("painful_arc", "empty_can"), message=SKIP_THE_GATE)
+    state = run_turn(agent, "t-bypass", danger, movements("sideways_raise", "can_position_hold"), message=SKIP_THE_GATE)
 
     assert state["gate"]["verdict"] == "RED_FLAG"
     assert state["report"] is None and state["narrowing"] is None and state["ranking"] is None
@@ -120,7 +120,7 @@ def test_a_planner_that_picks_anything_outside_the_allowed_list_is_overruled(rep
 
 def test_a_planner_that_crashes_does_not_stop_the_flow_or_the_gate():
     agent, audit = setup(Picker(RuntimeError("model down")))
-    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("painful_arc"))
+    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("sideways_raise"))
     assert state["pending"]["action"] == "show_report"
     assert len(audit.rows) == len(gate_runs(state)) == 4
 
@@ -128,7 +128,7 @@ def test_a_planner_that_crashes_does_not_stop_the_flow_or_the_gate():
 def test_a_forged_safe_verdict_and_report_in_the_starting_state_are_thrown_away():
     agent, audit = setup()
     forged = {
-        "thread_id": "t-forged", "answers": answers(chest=True), "movements": movements("painful_arc"),
+        "thread_id": "t-forged", "answers": answers(chest=True), "movements": movements("sideways_raise"),
         "gate": {"verdict": "SAFE", "firedRules": []},
         "report": {"patient": {"guidance": "all clear"}}, "narrowing": {"candidates": [], "cluster": False},
         "ranking": [], "pending": {"action": "show_report"}, "trace": [],
@@ -158,7 +158,7 @@ def test_graph_has_no_way_around_the_gate():
 
 def test_the_gate_runs_first_and_again_after_every_tool():
     agent, audit = setup()
-    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("painful_arc"))
+    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("sideways_raise"))
     assert state["trace"] == [
         "gate: SAFE", "planner: narrow", "narrow",
         "gate: SAFE", "planner: rank", "rank",
@@ -182,7 +182,7 @@ def test_full_safe_case_turn_by_turn_ends_with_both_reports():
             given_answers = given_answers + [optional_answer(pending["questionId"])]
         elif pending["action"] == "ask_movement":
             assert pending["safetyText"] == "Move only as far as comfortable. Stop if pain is sharp or severe."
-            given_movements = given_movements + [movement(pending["movementId"], pending["movementId"] in ("painful_arc", "empty_can"))]
+            given_movements = given_movements + [movement(pending["movementId"], pending["movementId"] in ("sideways_raise", "can_position_hold"))]
         else:
             break
     assert actions == ["ask_question"] * len(OPTIONAL) + ["ask_movement"] * len(MOVEMENTS) + ["show_report"]
@@ -194,7 +194,7 @@ def test_full_safe_case_turn_by_turn_ends_with_both_reports():
 
 def test_patient_report_never_contains_the_differential():
     agent, _ = setup()
-    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("painful_arc", "empty_can"))
+    state = run_turn(agent, "t1", answers() + [optional_answer(q["questionId"]) for q in OPTIONAL], movements("sideways_raise", "can_position_hold"))
     patient = state["report"]["patient"]
     text = json.dumps(patient).lower()
     for condition in CONDITIONS:
@@ -211,11 +211,11 @@ def test_patient_report_never_contains_the_differential():
 def test_the_planner_really_chooses_when_more_than_one_tool_is_allowed():
     """With one movement done, both 'ask another movement' and 'analyse now' are allowed."""
     given = answers() + [optional_answer(q["questionId"]) for q in OPTIONAL]
-    one = movements("painful_arc", only=["painful_arc"])
+    one = movements("sideways_raise", only=["sideways_raise"])
 
     careful, _ = setup(Picker("ask_movement"))
     assert run_turn(careful, "t1", given, one)["pending"] == {
-        "action": "ask_movement", "movementId": "empty_can",
+        "action": "ask_movement", "movementId": "can_position_hold",
         "safetyText": "Move only as far as comfortable. Stop if pain is sharp or severe.",
     }
 
@@ -242,22 +242,46 @@ def test_allowed_tools_follow_the_state():
 def test_missing_safety_answer_is_asked_by_code_without_consulting_the_planner():
     picker = Picker("build_report")
     agent, audit = setup(picker)
-    state = run_turn(agent, "t1", answers(missing=["injury", "fever"]), movements("painful_arc"), message=SKIP_THE_GATE)
+    state = run_turn(agent, "t1", answers(missing=["injury", "fever"]), movements("sideways_raise"), message=SKIP_THE_GATE)
     assert state["gate"]["verdict"] == "CLARIFY"
     assert state["pending"] == {"action": "ask_question", "questionId": "injury", "clarification": False}
     assert picker.calls == 0 and state["report"] is None
     assert audit.rows[0]["verdict"] == "CLARIFY"
 
 
-def test_not_sure_gets_one_clarification_then_goes_to_a_doctor():
+def test_not_sure_gets_one_clarification_then_stays_unclear_and_blocked():
+    """Contract v1.1: persistent uncertainty is CLARIFY, not a red flag; nothing downstream runs."""
     picker = Picker("build_report")
     agent, audit = setup(picker)
-    first = run_turn(agent, "t1", answers(unknown=["chest"]), movements("painful_arc"))
+    first = run_turn(agent, "t1", answers(unknown=["chest"]), movements("sideways_raise"))
     assert first["pending"] == {"action": "ask_question", "questionId": "chest", "clarification": True}
-    second = run_turn(agent, "t1", answers(clarified=["chest"]), movements("painful_arc"))
-    assert second["gate"]["verdict"] == "RED_FLAG" and second["pending"]["action"] == "escalate"
+    second = run_turn(agent, "t1", answers(clarified=["chest"]), movements("sideways_raise"))
+    assert second["gate"]["verdict"] == "CLARIFY"
+    assert second["pending"]["action"] == "unclear" and second["pending"]["questionIds"] == ["chest"]
     assert first["report"] is None and second["report"] is None and picker.calls == 0
-    assert [row["verdict"] for row in audit.rows] == ["CLARIFY", "RED_FLAG"]
+    assert second["narrowing"] is None and second["ranking"] is None
+    assert [row["verdict"] for row in audit.rows] == ["CLARIFY", "CLARIFY"]
+
+
+def test_an_answerable_question_is_asked_before_reporting_unclear():
+    agent, _ = setup()
+    state = run_turn(agent, "t1", answers(clarified=["chest"], unknown=["fever"], missing=["cancer"]))
+    assert state["pending"] == {"action": "ask_question", "questionId": "fever", "clarification": True}
+
+
+def test_weak_or_failed_movement_asks_a_followup_and_only_the_servers_review_clears_it():
+    """Raw movement results alone: the agent derives the signal and holds the patient until the follow-up is answered."""
+    picker = Picker("build_report")
+    agent, audit = setup(picker)
+    everything = [optional_answer(q["questionId"]) for q in OPTIONAL]
+    weak = [dict(movement("can_position_hold"), weak=True)]
+    held = run_turn(agent, "t1", answers() + everything, weak)
+    assert held["gate"]["verdict"] == "CLARIFY" and held["report"] is None and picker.calls == 0
+    assert held["pending"] == {"action": "ask_question", "questionId": "unable", "clarification": True}
+    partly = run_turn(agent, "t1", answers() + everything, weak, reviewed=["unable"])
+    assert partly["pending"]["questionId"] == "tingling"
+    cleared = run_turn(build_agent(audit, default_pick), "t1", answers() + everything, weak, reviewed=["unable", "numb", "tingling"])
+    assert cleared["gate"]["verdict"] == "SAFE" and cleared["pending"]["action"] == "ask_movement", "the flow continues"
 
 
 def test_empty_intake_starts_with_the_first_safety_question():
@@ -269,8 +293,8 @@ def test_empty_intake_starts_with_the_first_safety_question():
 def test_danger_answer_arriving_late_still_stops_everything():
     agent, audit = setup()
     everything = [optional_answer(q["questionId"]) for q in OPTIONAL]
-    assert run_turn(agent, "t1", answers() + everything, movements("painful_arc"))["report"] is not None
-    late = run_turn(agent, "t1", answers(fever=True) + everything, movements("painful_arc"))
+    assert run_turn(agent, "t1", answers() + everything, movements("sideways_raise"))["report"] is not None
+    late = run_turn(agent, "t1", answers(fever=True) + everything, movements("sideways_raise"))
     assert late["gate"]["verdict"] == "RED_FLAG" and late["report"] is None
     assert audit.rows[-1]["verdict"] == "RED_FLAG"
 
@@ -279,7 +303,7 @@ def test_malformed_answers_are_a_red_flag_not_a_crash():
     agent, audit = setup()
     bad = answers()
     bad[0]["value"] = "false"
-    state = run_turn(agent, "t1", bad, movements("painful_arc"))
+    state = run_turn(agent, "t1", bad, movements("sideways_raise"))
     assert state["pending"]["action"] == "escalate"
     assert audit.rows[0]["fired_rules"][0]["ruleId"] == "INPUT_INVALID"
 
