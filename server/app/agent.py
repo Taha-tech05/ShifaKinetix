@@ -23,10 +23,11 @@ from langgraph.graph import END, StateGraph
 
 from app import llm as groq_llm
 from app.audit import AuditLog
-from app.gate import QUESTIONS, evaluate
+from app.gate import QUESTIONS
 from app.narrowing import MOVEMENTS, narrow, observed_movements
 from app.ranking import rank
 from app.report import REFERRAL, build_doctor_report, build_patient_report
+from app.session_gate import evaluate_session_gate
 from app.writeup import LLM
 
 TOOLS = ("ask_question", "ask_movement", "narrow", "rank", "build_report")
@@ -113,7 +114,8 @@ def build_agent(audit: AuditLog, pick_next: Picker | None = None, writer: LLM | 
         return [*state.get("trace", []), entry]
 
     def gate_node(state: AgentState) -> dict[str, Any]:  # runs in code, always
-        gate = evaluate(state["answers"])
+        # Canonical rules plus live app signals and movement uncertainty (docs/safety-integration.md).
+        gate = evaluate_session_gate(state["answers"], state["movements"])
         audit.record(state["thread_id"], gate, state["answers"])
         return {"gate": gate, "trace": log(state, f"gate: {gate['verdict']}")}
 
