@@ -7,6 +7,12 @@ This answers `docs/person-c-integration-request.md`. Everything under
 `server/tests/test_api.py`. "Proposed" items are for A and B to agree before
 anyone builds on them.
 
+Updated 2026-10-13 for gate contract v1.2 (content `shoulder-2`): persistent
+uncertainty stays CLARIFY, `infection_risk` is required when `redness` is yes,
+app signals ask focused follow-ups instead of `APP_REVIEW_*` stops, the server
+derives safety signals from raw movement results, and movement ids are the
+app's ids.
+
 ## Running it
 
 ```powershell
@@ -68,7 +74,7 @@ POST /sync/answers            patient accounts only
 {
   "idempotencyKey": "b1f0c1e2-...",
   "intakeId": "intake-7f3a",
-  "contentVersion": "shoulder-1",
+  "contentVersion": "shoulder-2",
   "answer": {"questionId": "injury", "type": "yesno", "value": false, "state": "answered"}
 }
 
@@ -78,7 +84,7 @@ POST /sync/answers            patient accounts only
   "idempotencyKey": "b1f0c1e2-...",
   "intakeId": "intake-7f3a",
   "eventSeq": 42,
-  "contentVersion": "shoulder-1",
+  "contentVersion": "shoulder-2",
   "serverTime": "2026-10-12T14:03:11.120000+00:00",
   "answerValid": true,
   "gate": {"verdict": "CLARIFY", "firedRules": [ ... ]}
@@ -117,9 +123,12 @@ This is exactly the event `IntakeStore.sync(send)` already produces.
 Two policies worth agreeing explicitly:
 
 - **Content version.** The server evaluates one version, the one in
-  `shared/questions_shoulder.json`. An event written for another version is
-  refused and not stored, because its answers cannot be evaluated against
-  different rules. Until the app updates, those events stay in the phone queue.
+  `shared/questions_shoulder.json` (now `shoulder-2`). An event written for
+  another version is refused with 409 and not stored, because its answers
+  cannot be evaluated against different rules. This matches the current client,
+  whose sync stops at old-version records. Open with A: whether the server
+  should instead accept and archive old-version events without evaluating them,
+  so the phone queue can drain. Nothing is migrated automatically.
 - **Invalid answers.** An answer that fails validation (unknown question, wrong
   type, string instead of boolean) is still stored and acknowledged, with
   `"answerValid": false`, so one bad event cannot block the queue behind it.
@@ -136,11 +145,11 @@ POST /sync/context            patient accounts only
 {
   "idempotencyKey": "c7d9...",
   "intakeId": "intake-7f3a",
-  "contentVersion": "shoulder-1",
+  "contentVersion": "shoulder-2",
   "context": {
     "regionId": "shoulder_right_front",
     "appAnswers": [ {"questionId": "Q_UNABLE_TO_MOVE_ARM", "type": "yesno", "value": false, "state": "answered"} ],
-    "movements":  [ {"movementId": "painful_arc", "painful": true, "weak": false, "unableToDo": false,
+    "movements":  [ {"movementId": "sideways_raise", "painful": true, "weak": false, "unableToDo": false,
                      "measuredAngle": null, "state": "done"} ]
   }
 }
@@ -150,24 +159,90 @@ The response has the same shape as answer sync, without `answerValid`. Each
 snapshot is appended; the latest one is the current context. Idempotency,
 ownership and errors are the same as for answers.
 
+Send the RAW app answers (`Q_BASICS_HOW`, `Q_ST_NUMB`, `Q_ST_TINGLE`,
+`Q_ST_BONE_POINT`, the narrowing questions) and the RAW movement results. The
+app does not need to send derived answers such as `Q_UNABLE_TO_MOVE_ARM`.
+
 How the server uses it:
 
-- `appAnswers` and `movements` go through `server/app/session_gate.py`, the
-  Python equivalent of `sessionAdapter.ts` and `withMovementUncertainty`.
-  Positive signals add `APP_REVIEW_*` rules, unknown signals and unfinished
-  movements ask for the canonical clarification, and nothing unknown becomes
-  "no". `shared/app_signal_test_cases.json` (41 cases) is checked in both
-  languages by `scripts/check_app_signal_parity.py`.
+- `server/app/session_gate.py` runs the same pipeline as the phone:
+  `structuredGateInputs` (derive signals from the raw answers and movements),
+  `withMovementUncertainty`, then the session adapter, then the canonical gate.
+  Canonical negatives plus a raw `unableToDo: true` or `weak: true` therefore
+  give CLARIFY with the focused follow-ups, not SAFE.
+- Derived answers the app does send are kept alongside the server's own, so a
+  signal reported by either side is asked about.
 - Canonical question ids inside `appAnswers` are ignored. Safety answers come
   only from `/sync/answers`.
 - A malformed snapshot is stored and makes the gate fail closed.
+- `shared/app_signal_test_cases.json` (51 raw cases, danger first) is checked
+  in both languages by `scripts/check_app_signal_parity.py`, which runs the
+  real `gateInputs.ts`, `sessionEvaluator.ts` and `sessionAdapter.ts`.
 
-Open for B: the server's narrowing knows four movement ids (`painful_arc`,
-`empty_can`, `external_rotation`, `lift_off`). Other ids are stored and shown
-to the doctor as facts but are not used for server narrowing or ranking; the
-doctor report lists them in `movementsNotUsed`. The app's own live narrowing
-(`shared/narrowing_bank_shoulder.json`, marked "Person C replaces") and the
-server's are not yet reconciled.
+### Focused follow-ups are resolved by the server (implemented)
+
+A positive or unknown app signal asks the precise canonical question again.
+Until it is answered for the current evidence the gate presents that question
+as unknown (`U_<id>`, CLARIFY). A confirmed canonical "yes" always stays "yes".
+
+The phone marks a follow-up as answered with a review fingerprint
+(`Q_SAFETY_REVIEW_<id>`). The server does not read those records. It decides
+from the order in which it received things:
+
+1. For each canonical question, the evidence is the set of app signals asking
+   about it, plus the movement results for `unable`, `numb` and `tingling`.
+2. The evidence starts at the first of the latest run of context snapshots
+   that carry it unchanged. Evidence that changes and changes back starts
+   again, so an old answer is not revived.
+3. The follow-up is resolved only if an answer event for that question was
+   stored after that snapshot. The answer itself is then evaluated normally:
+   "no" can clear, "yes" fires the unchanged rule, "not sure" stays CLARIFY.
+
+| Sequence the server receives | Gate |
+| --- | --- |
+| `unable` = no, then a movement with `unableToDo` | CLARIFY `U_unable` (the old "no" cannot clear new evidence) |
+| ... then `unable` = no again | SAFE |
+| ... then a further movement result | CLARIFY `U_unable` (changed evidence) |
+| ... then `unable` = no again | SAFE |
+| Evidence removed, then the same evidence again | CLARIFY (not revived) |
+| Same snapshot re-sent, or only the region changed | Unchanged |
+
+**Ordering requirement for the app (to agree):** sync the context snapshot
+that contains the new evidence before the answer event that reviews it. If the
+answer arrives first, the server cannot tell it was given for that evidence and
+stays at CLARIFY until the question is answered again. That fails closed, but
+it would show the patient a different verdict from the phone. Simplest client
+rule: flush the context snapshot, then the answer outbox.
+
+Not covered: two requests for the same intake arriving at the same instant can
+be ordered either way. The demo has one phone per intake.
+
+### Movement ids (reconciled with the app)
+
+The server now uses the six ids in `mobile/src/data/movements_shoulder.json`.
+A test fails if the two sets ever differ.
+
+| App movement id | Clinical test it adapts | Used by server narrowing for |
+| --- | --- | --- |
+| `sideways_raise` | painful arc | supraspinatus |
+| `can_position_hold` | empty can | supraspinatus |
+| `outward_push_elbow_at_side` | resisted external rotation | infraspinatus, teres minor |
+| `hand_behind_back` | lift-off, self-administered | subscapularis |
+| `belly_press` | belly press | subscapularis |
+| `forward_raise` | none | recorded and shown to the doctor; no muscle profile yet |
+
+Movement `state` is `answered` or `unknown`, as in `mobile/src/movement/result.ts`.
+An id outside this list is stored, shown to the doctor as a fact and listed in
+`movementsNotUsed`.
+
+Each server muscle in `shared/narrowing_shoulder.json` now also names the app's
+structure ids (`structureIds.right` / `.left`, for example
+`supraspinatus_muscle_right`), checked against `shared/regions_shoulder.json`.
+
+Still open for B and C: the narrowing output still uses the short muscle id
+(`supraspinatus`), not the side-specific structure id; and the app's own live
+narrowing (`shared/narrowing_bank_shoulder.json`, marked "Person C replaces")
+is separate from the server's. We need to agree which one the patient sees.
 
 ## Server safety enforcement (implemented)
 
@@ -206,7 +281,7 @@ GET /intakes/{intakeId}/doctor-report   doctor accounts only
   "intakeId": "intake-7f3a",
   "facts": [ {"label": "Tapped region", "value": "shoulder_right_front"},
              {"label": "Do you have chest pressure or tightness now?", "value": "No"},
-             {"label": "Movement painful_arc", "value": "painful"} ],
+             {"label": "Movement sideways_raise", "value": "painful"} ],
   "gate": {"verdict": "SAFE", "firedRules": []},
   "differential": [
     {"condition": "Subacromial impingement",
@@ -234,11 +309,11 @@ on each differential item `conditionId`, `rank`, `flagged`, `score`,
 
 ```http
 GET /intakes/{intakeId}/audit           doctor accounts only
-200 {"intakeId": "...", "ruleVersion": "shoulder-1",
+200 {"intakeId": "...", "ruleVersion": "shoulder-2",
      "gateRuns": [ {"id": 1, "ts": "...", "cause": "answer_sync", "verdict": "CLARIFY",
-                    "firedRules": [...], "matchedAnswers": [...], "ruleVersion": "shoulder-1"} ],
+                    "firedRules": [...], "matchedAnswers": [...], "ruleVersion": "shoulder-2"} ],
      "answerHistory": [ {"seq": 1, "receivedAt": "...", "questionId": "injury", "answer": {...},
-                         "contentVersion": "shoulder-1", "idempotencyKey": "..."} ],
+                         "contentVersion": "shoulder-2", "idempotencyKey": "..."} ],
      "contextHistory": [ ... ],
      "doctorActions": [ {"id": 1, "at": "...", "doctorId": "demo-doctor", "action": "viewed_doctor_report"} ]}
 ```
@@ -270,13 +345,17 @@ What this does not cover yet:
 
 | Item from the request | State |
 | --- | --- |
-| Python gate, complete-output parity on 40 fixtures | Implemented |
+| Python gate, contract v1.2, complete-output parity on 47 fixtures | Implemented |
 | Rules review | Done: `docs/person-c-rules-review.md` |
-| Server handling of live app signals, with shared fixtures | Implemented, 41 fixtures in both languages |
+| Focused follow-ups for live app signals, with shared fixtures | Implemented, 51 raw fixtures in both languages |
+| Server derives safety signals from raw movement results | Implemented |
+| Server-owned follow-up resolution (no client review tokens) | Implemented; client sync order to agree |
+| Movement ids reconciled with the app | Done: six shared ids |
 | Answer sync endpoint with idempotency and durable ack | Implemented |
 | Movement and context sync | Implemented on the server; contract proposed, not yet agreed |
 | Doctor-only report endpoint, 401 and 403 tests | Implemented |
 | Server recomputes safety before narrowing and ranking | Implemented |
 | Append-only audit and history | Implemented on the server; app-side history upload proposed |
 | Real login, hosted URL, doctor-to-patient assignment | Not implemented |
-| Reconciling server narrowing with the app's live narrowing | Not started; needs B and C |
+| Old-version (`shoulder-1`) event handling | 409 today; archive option to agree with A |
+| One narrowing for the patient: app's live bank or the server's | Not agreed; needs B and C |
