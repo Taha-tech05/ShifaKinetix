@@ -34,14 +34,18 @@
     "meshoptimizer": "^1.3.0",
     "react-test-renderer": "^19.2.3",
     "ts-jest": "^29.4.14",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest",
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit"
   },
   "private": true
 }

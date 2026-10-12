@@ -40,10 +40,15 @@ function release(entry: NonNullable<typeof shared>) {
 /** Loads the lite pack (shared). `enabled` false skips loading and reports "failed". */
 export function usePack(enabled = true): PackState {
   const [state, setState] = useState<PackState>({ status: enabled ? 'loading' : 'failed', pack: null });
+  // a pack from before the screen was left may have been released, so switching back on starts from "loading"
+  const [wasEnabled, setWasEnabled] = useState(enabled);
+  if (wasEnabled !== enabled) {
+    setWasEnabled(enabled);
+    if (enabled) setState({ status: 'loading', pack: null });
+  }
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
-    setState({ status: 'loading', pack: null }); // a pack from before the screen was left may have been released
     const entry = acquire();
     entry.promise
       .then((p) => !cancelled && setState({ status: 'ready', pack: p }))

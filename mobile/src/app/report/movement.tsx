@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import { AppText } from '../../components/AppText';
@@ -98,7 +98,7 @@ export default function LiveScreen() {
   const [touching, setTouching] = useState(false);
   const [cameraNote, setCameraNote] = useState(false);
   const [height, setHeight] = useState(0);
-  const lastMovement = useRef(MOVEMENTS[0]);
+  const [lastMovement, setLastMovement] = useState(MOVEMENTS[0]);
 
   // the question screen draws one strip with both the demo and the caution message instead of two banners
   useEffect(() => {
@@ -109,6 +109,7 @@ export default function LiveScreen() {
   // opened from "Review answers": show that question again with the current answer selected
   useEffect(() => {
     if (reviewIndex < 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- opening a review link resets the screen to that question
     setIndex(reviewIndex);
     setFinished(false);
     setReviewing(true);
@@ -120,8 +121,8 @@ export default function LiveScreen() {
 
   const step = steps[Math.min(index, steps.length - 1)];
   const onMovement = step.kind === 'movement' && !finished;
-  const current = step.kind === 'movement' ? movementById(step.id) ?? MOVEMENTS[0] : lastMovement.current;
-  if (step.kind === 'movement') lastMovement.current = current;
+  const current = step.kind === 'movement' ? movementById(step.id) ?? MOVEMENTS[0] : lastMovement;
+  if (step.kind === 'movement' && lastMovement !== current) setLastMovement(current);
   const question = step.kind !== 'movement' ? questions.find((q) => q.questionId === step.id) : undefined;
   // the possible muscles are highlighted from the first screen and follow every answer
   const highlightIds = useMemo(() => liveState?.candidates.map((c) => c.muscleId) ?? [], [liveState]);

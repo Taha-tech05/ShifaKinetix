@@ -76,7 +76,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const [timedOut, setTimedOut] = useState(false);
   const [crashed, setCrashed] = useState(false);
   const [firstFrame, setFirstFrame] = useState(false);
-  const [layer, setLayer] = useState<BodyLayer>('muscle');
+  const [layer, setLayer] = useState<BodyLayer>(() => (highlightIds && highlightIds.length > 0 ? layerFor(highlightIds) : 'muscle'));
   const [boxWidth, setBoxWidth] = useState(0);
   const [boxHeight, setBoxHeight] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -130,9 +130,11 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
 
   // an approximate area made of bones is shown in the bone layer, anything else in the muscle layer
   const hintKey = (highlightIds ?? []).join('|');
-  useEffect(() => {
+  const [seenHint, setSeenHint] = useState(hintKey);
+  if (seenHint !== hintKey) {
+    setSeenHint(hintKey);
     if (highlightIds && highlightIds.length > 0) setLayer(layerFor(highlightIds));
-  }, [hintKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }
   const emph = useMemo(() => {
     if (emphasis) return emphasis;
     if (!loaded || !highlightIds) return undefined;
@@ -155,9 +157,6 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
     if (!loaded || !labelIds || labelIds.length === 0) return undefined;
     return Object.entries(structureAnchors(loaded, labelIds)).map(([id, point]) => ({ id, point }));
   }, [loaded, anchorKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!anchors) setScreenPts([]);
-  }, [anchors]);
 
   const layers = useMemo(
     () => [
