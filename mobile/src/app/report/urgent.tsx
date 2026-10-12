@@ -18,7 +18,7 @@ export default function Urgent() {
   const t = useT();
   return (
     <Screen
-      scroll={false}
+      scroll={true}
       footer={
         <>
           <Button label={t('urgent.doctor')} onPress={() => router.push('/report/doctor')} style={{ backgroundColor: colors.danger }} />

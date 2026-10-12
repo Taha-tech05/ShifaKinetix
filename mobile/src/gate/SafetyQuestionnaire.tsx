@@ -74,6 +74,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     {entry && <>
       <AppText variant="h1">Shoulder safety check</AppText>
       <AppText>Start a new assessment for new symptoms. Resume only to continue the same saved assessment.</AppText>
+      <AppText>We check your earlier symptom answers first. A safety concern may pause this assessment before more questions or movement checks.</AppText>
       <Button label="Start new safety check" disabled={busy || !useSession.getState().selection}
         onPress={() => { void perform(async () => { await (await openSafetySession()).start(randomUUID()); await load(); }); }} />
       <Button label="Resume saved assessment" variant="outline" disabled={busy}
