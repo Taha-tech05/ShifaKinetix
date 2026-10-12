@@ -2164,6 +2164,14 @@
             ],
             "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
             "reason": "Fever with a warm or red painful joint: seek urgent clinical assessment."
+          },
+          {
+            "ruleId": "M_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
           }
         ]
       },
@@ -4706,6 +4714,847 @@
       },
       "source": "docs/gate-contract.md",
       "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "conditional_infection_missing",
+      "description": "Conditional infection-risk completeness: missing",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "M_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Required safety answer is missing."
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "conditional_infection_unknown",
+      "description": "Conditional infection-risk completeness: unknown",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "unknown",
+          "value": null
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "U_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Safety answer is uncertain; ask the fixed clarification."
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "conditional_infection_persistent_unknown",
+      "description": "Conditional infection-risk completeness: persistent_unknown",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "unknown",
+          "value": null,
+          "clarificationAttempted": true
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "firedRules": [
+          {
+            "ruleId": "U_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Uncertainty persists after clarification; clinical review required."
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "conditional_infection_negative",
+      "description": "Conditional infection-risk completeness: negative",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "answered",
+          "value": false
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      }
+    },
+    {
+      "caseId": "conditional_infection_positive",
+      "description": "Conditional infection-risk completeness: positive",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "answered",
+          "value": true
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_local_infection_risk",
+            "matchedAnswers": [
+              "infection_risk",
+              "redness"
+            ],
+            "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+            "reason": "Joint infection risk with local redness or warmth: seek clinical assessment."
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "conditional_infection_not_triggered",
+      "description": "Conditional infection-risk completeness: not_triggered",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "unknown",
+          "value": null,
+          "clarificationAttempted": true
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "firedRules": []
+      }
+    },
+    {
+      "caseId": "conditional_infection_danger_priority",
+      "description": "Conditional infection-risk completeness: danger_priority",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "state": "unknown",
+          "value": null
+        }
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedOutput": {
+        "verdict": "RED_FLAG",
+        "firedRules": [
+          {
+            "ruleId": "R_chest",
+            "matchedAnswers": [
+              "chest"
+            ],
+            "source": "https://www.nhs.uk/conditions/heart-attack/",
+            "reason": "Reported concern: chest. Seek clinical assessment."
+          },
+          {
+            "ruleId": "U_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Safety answer is uncertain; ask the fixed clarification."
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,4 +1,4 @@
-# Shoulder gate contract v1.1
+# Shoulder gate contract v1.2
 
 Status: draft, awaiting clinician review. Demo only, not for real patients.
 
@@ -25,7 +25,7 @@ latest answer. Never mix intakes or accept an LLM-generated answer as consent.
    values and inconsistent states with `RED_FLAG`, rule `INPUT_INVALID`.
 2. Evaluate all clinical rules, each an `all` list of exact equality clauses.
    A clause matches only a valid `answered` record. Preserve JSON rule order.
-3. For each required safety question, in question order: missing becomes
+3. For each unconditionally or conditionally required safety question, in question order: missing becomes
    `CLARIFY` (`M_<id>`); unknown becomes `CLARIFY` (`U_<id>`); unknown after a
    clarification remains `CLARIFY` (`U_<id>`). The questionnaire routes persistent
    uncertainty to the unclear screen and withholds movements; uncertainty alone
@@ -71,3 +71,32 @@ APP_REVIEW_* RED_FLAG. Explicitly saved follow-ups can resolve those signals;
 old negatives cannot clear new evidence. See safety-integration.md for the local
 acknowledgment contract. Raw context and review metadata require a separate server
 transport contract; never trust a client acknowledgment as authorization.
+
+## v1.2 conditional completeness (2026-10-13)
+
+The shared content pair is now `shoulder-2`. There are 47 canonical fixtures.
+`required: true` always requires an answer. Otherwise, a nonempty `requiredWhen`
+list requires the question when ALL its clauses match valid, answered records
+using strict equality. Missing or unknown trigger answers do not match. An empty
+or absent list does not add a requirement. Evaluate completeness after clinical
+rules and append M_/U_ reasons in question order, even when a clinical rule fires.
+
+`infection_risk` remains optional unless `redness` is answered true. Then missing
+risk gives M_infection_risk; unknown gives U_infection_risk and a fixed re-ask;
+persistent unknown stays CLARIFY and routes to the unclear screen. An explicit
+negative can allow SAFE only if the rest of the gate clears. A positive plus
+redness fires the existing R_local_infection_risk. Redness alone adds no new
+clinical RED_FLAG rule. This is draft software completeness policy, not a
+validated diagnostic algorithm; the existing source and clinical-review label
+remain attached to the question/rule.
+
+Seven conditional fixtures supplement the original 40. fever_red_joint retains
+RED_FLAG and gains M_infection_risk in its complete expected output. Both engines
+must compare complete outputs, not verdicts alone. C must implement requiredWhen
+as well as v1.1 uncertainty and the app follow-up contract.
+
+Older saved intakes cannot be resumed under shoulder-2; start a new assessment.
+Existing old-version outbox records are preserved, but the current client sync
+stops at them rather than sending or silently deleting them. Explicit migration
+or version-aware sync is still required with C. No automatic migration is claimed.
+The shared version change requires A/C review before merge.

@@ -9,7 +9,7 @@ import { StepProgress } from '../components/StepProgress';
 import { colors } from '../theme';
 import { useSession } from '../store/session';
 import { structuredGateInputs } from '../flow/gateInputs';
-import { isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
+import { isRequiredQuestion, isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
 import { pendingSafetyFollowups, safetyAnswersFrom } from './sessionAdapter';
 import { questionHelp } from './questionHelp';
 import { openSafetySession } from './safetySession';
@@ -44,10 +44,10 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       [...state.answers, ...structuredGateInputs(state.answers, state.movementResults)], state.movementResults);
     const adapted = safetyAnswersFrom(input) ?? [];
     if (output.verdict === 'CLARIFY' && adapted.some((a) => a.state === 'unknown'
-      && a.clarificationAttempted && questions.some((q) => q.questionId === a.questionId && q.required))) {
+      && a.clarificationAttempted && questions.some((q) => q.questionId === a.questionId && isRequiredQuestion(q, adapted)))) {
       setQuestion(null); router.replace('/report/unclear'); return;
     }
-    const uncertain = questions.find((q) => q.required && adapted.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
+    const uncertain = questions.find((q) => isRequiredQuestion(q, adapted) && adapted.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
     const missing = questions.find((q) => !state.answers.some((a) => a.questionId === q.questionId));
     if (clarify && !uncertain) { router.replace(missing ? '/report/danger'
       : output.verdict === 'CLARIFY' ? '/report/unclear' : '/report/safe'); return; }

@@ -56,6 +56,23 @@ test('integrated intake resumes from SQLite after restart and retains repeated u
   expect(useSession.getState().answers[0].clarificationAttempted).toBe(true);
 });
 
+test('conditional infection uncertainty survives restart and requires an explicit resolution', async () => {
+  const session = selectedSession(); await session.start('conditional');
+  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  await session.save({ questionId: 'redness', type: 'yesno', state: 'answered', value: true });
+  expect((await session.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['M_infection_risk']);
+  await session.save({ questionId: 'infection_risk', type: 'yesno', state: 'unknown', value: null, clarificationAttempted: true });
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
+  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['U_infection_risk']);
+  await resumed.save({ questionId: 'infection_risk', type: 'yesno', state: 'answered', value: false, clarificationAttempted: true });
+  expect((await resumed.checkpoint()).verdict).toBe('SAFE');
+  resumed.dispose();
+});
+
 test('integrated SAFE requires saved answers and reset cannot reuse the prior intake', async () => {
   const session = selectedSession(); await session.start('integrated');
   for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
@@ -163,6 +180,21 @@ test('tampered cache blocks evaluation and bundled content restores it on restar
   await expect(store.savedGate('test-intake')).rejects.toThrow('Safety content');
   await store.initialize();
   expect(await store.cachedQuestions()).toHaveLength(20);
+});
+
+test('older content cannot resume or sync silently and its queued answers are preserved', async () => {
+  await store.saveAnswer('test-intake', no);
+  const pending = await store.pending();
+  const payload = JSON.parse(pending[0].payload);
+  payload.contentVersion = 'shoulder-1';
+  db.prepare('UPDATE intake_outbox SET payload = ?').run(JSON.stringify(payload));
+  db.exec("UPDATE intake_sessions SET content_version = 'shoulder-1'");
+  db.close(); open(); await store.initialize();
+  await expect(store.savedGate('test-intake')).rejects.toThrow('new intake');
+  const send = jest.fn();
+  await expect(store.sync(send)).rejects.toThrow('Sync stopped');
+  expect(send).not.toHaveBeenCalled();
+  expect(await store.pending()).toHaveLength(1);
 });
 
 test('corrupt saved values cannot silently become SAFE', async () => {

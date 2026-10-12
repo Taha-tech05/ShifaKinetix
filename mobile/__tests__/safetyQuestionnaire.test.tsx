@@ -45,13 +45,13 @@ async function press(label: string) {
   expect(button.props.disabled).toBe(false);
   await act(async () => { button.props.onPress(); });
 }
-async function complete(uncertain = false, optionalUnknown = false) {
+async function complete(uncertain = false, optionalUnknown = false, redness = false) {
   await act(async () => { tree = create(<SafetyQuestionnaire />); });
   await press('Start new safety check');
   for (const q of questions) {
     expect(JSON.stringify(tree.toJSON())).toContain(q.wording);
     if (uncertain || (optionalUnknown && !q.required)) await press('Not sure');
-    else if (q.type === 'yesno') await press(q.questionId === 'infection_risk' ? 'Yes' : 'No');
+    else if (q.type === 'yesno') await press(q.questionId === 'infection_risk' || (redness && q.questionId === 'redness') ? 'Yes' : 'No');
     else if (q.type === 'choice') await press(q.options!.find((o) => o.value === 'normal' || o.value === 'right')?.label ?? q.options![0].label);
     else {
       await act(async () => { tree.root.findByType('TextInput' as never).props.onChangeText(q.questionId === 'pain_score' ? '3' : String(q.min ?? 0)); });
@@ -104,6 +104,21 @@ test('confirmed accident/injury is still a stop, even with a low basics pain sco
 test('optional uncertainty does not prevent narrowing clearance', async () => {
   await complete(false, true);
   expect(useSession.getState().gateVerdict).toBe('SAFE');
+});
+
+test.each([
+  ['No', 'SAFE', '/report/safe'],
+  ['Yes', 'RED_FLAG', '/report/urgent'],
+  ['Not sure', 'CLARIFY', '/report/unclear'],
+])('redness makes uncertain infection risk a follow-up; %s resolves to %s', async (answer, verdict, destination) => {
+  await complete(false, true, true);
+  expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+  expect(replace).toHaveBeenLastCalledWith('/report/reask');
+  await act(async () => { tree.update(<SafetyQuestionnaire clarify />); });
+  expect(JSON.stringify(tree.toJSON())).toContain(questions.find((q) => q.questionId === 'infection_risk')!.wording);
+  await press(answer);
+  expect(useSession.getState().gateVerdict).toBe(verdict);
+  expect(replace).toHaveBeenLastCalledWith(destination);
 });
 
 test('movement weakness requests precise follow-ups, then resolved answers reopen narrowing', async () => {

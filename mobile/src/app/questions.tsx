@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Action, Page, styles } from '../components/SafetyUI';
-import { SafetyAnswer as Answer, isValidAnswer, Question } from '../gate/evaluate';
+import { SafetyAnswer as Answer, isRequiredQuestion, isValidAnswer, Question } from '../gate/evaluate';
 import { openIntakeStore } from '../storage/nativeStore';
 
 function QuestionInput({ question, busy, save }: { question: Question; busy: boolean; save: (value: Answer['value']) => void }) {
@@ -42,7 +42,11 @@ export default function QuestionScreen() {
     }
     const bank = await store.cachedQuestions();
     const answers = await store.answers(id);
-    const unknown = bank.find((q) => q.required && answers.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
+    if (answers.some((a) => a.state === 'unknown' && a.clarificationAttempted
+      && bank.some((q) => q.questionId === a.questionId && isRequiredQuestion(q, answers)))) {
+      router.replace({ pathname: '/result', params: { intakeId: id } }); return;
+    }
+    const unknown = bank.find((q) => isRequiredQuestion(q, answers) && answers.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
     const next = unknown ?? bank.find((q) => !answers.some((a) => a.questionId === q.questionId));
     if (!next) { router.replace({ pathname: '/result', params: { intakeId: id } }); return; }
     setCount(bank.length); setPosition(bank.indexOf(next) + 1); setQuestion(next); setClarifying(!!unknown);
