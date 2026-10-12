@@ -7,29 +7,30 @@ plus A's real shoulder safety integration and delayed-save guard fix. See [safet
 contracts, adapter policy, persistence boundaries and B-owned follow-up work.
 PR #2 remains draft and must not merge while required checks fail.
 
-## Injury-onset report from Taha
+## Current follow-up flow (2026-10-13)
 
-Rechecked NHS shoulder-pain urgent advice on 2026-10-12:
-https://www.nhs.uk/symptoms/shoulder-pain/ explicitly includes pain starting after
-an injury/accident and sudden shoulder pain. The earlier conversational suggestion
-that injury alone should not stop this prototype was incorrect. Shared clinical
-rules and adapter verdicts are retained. Any proposed triage refinement needs
-source justification, A/C review and clinician review; do not clear injury cases
-just to demonstrate narrowing.
+Supersedes the earlier immediate APP_REVIEW_* stop policy. Broad onset, sensory
+and movement signals now request precise follow-ups. The original answer stays
+in context; an explicitly saved clarification can correct it. Changed evidence
+invalidates an older clarification. Confirmed canonical danger signs still stop;
+clinical rule data was not relaxed and a low pain score does not override danger.
 
-The safety entry now explains that earlier answers are checked first. The urgent
-screen explains an onset-triggered stop, names the source, distinguishes referral
-from diagnosis, and explains why questions/movements/narrowing are paused. It is
-scrollable so the explanation remains accessible on small screens. The demo's
-gradual-onset/all-negative path still permits narrowing. Phone verification and
-clinical approval remain pending.
+Persistent uncertainty is CLARIFY rather than RED_FLAG, still without movement
+clearance. Stop screens explain the distinction and offer explicit answer review.
+Users can resolve uncertainty or correct a mistaken answer and proceed only after
+the complete saved gate returns SAFE. The 40 shared fixtures change only the
+persistent_unknown verdict; see gate-contract.md v1.1 and safety-integration.md.
 
-Follow-up verification (2026-10-13): all three real-questionnaire tests pass:
-20 non-danger answers -> SAFE -> Continue -> movement route; uncertain answers
--> clarification -> repeated uncertainty stop; positive danger answer -> urgent.
-These use the real gate/store/SafetySession, with native IO/navigation replaced.
-The 15 gate/stop-notice integration tests also pass. Typecheck and full lint pass
-(25 existing warnings). This does not replace reproducing Taha's exact phone inputs.
+Tested paths include broad onset corrected to gradual/no injury; unknown onset
+resolved; movement weakness clarified without inability/loss of feeling/persistent
+tingling then narrowing resumes; optional uncertainty; confirmed injury with low
+pain still stops; mistaken danger answer reviewed without skipping missing items;
+SQLite restart and changed evidence; failed context save cannot establish clearance.
+
+Saud must implement v1.1 and the app-signal follow-up policy. Review acknowledgments
+are currently local context metadata, not synced canonical answer events. No
+server authorization or clinician approval is implied. Taha should test the latest
+feature/A-gate branch on device, including both continued and stopped flows.
 
 ## Implemented by Zaid
 
@@ -52,8 +53,8 @@ result over B's narrowing result.
 ## Current verification
 
 - TypeScript: passes.
-- Mobile tests: 403 passing, including real-gate integration tests.
-- Actual SQLite tests: 11 passing, including restart and persistent clarification.
+- Mobile tests: 416 passing, including real-gate integration tests.
+- Actual SQLite tests: 13 passing, including restart and persistent clarification.
 - Full lint: passes with 0 errors and 25 warnings.
 - Combined Android Metro export: passes (not an APK/device test).
 - Python/TypeScript parity: 40/40 cases fail in C's placeholder Python gate with

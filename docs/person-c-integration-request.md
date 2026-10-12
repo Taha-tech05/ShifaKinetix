@@ -4,6 +4,17 @@ Status: draft, awaiting clinician review. Current integration: feature/A-gate,
 including Taha's PR #7 and its PR #6 lint fixes. Do not replace current shared
 contracts with the original develop placeholders. Preserve existing C work.
 
+## New contract update, 2026-10-13
+
+Use gate-contract.md v1.1: persistent uncertainty remains CLARIFY, not RED_FLAG;
+movements remain blocked. One of the 40 canonical expected outputs changed.
+APP_REVIEW_* automatic overrides have been replaced by focused follow-ups. A
+new positive/unknown app signal invalidates an older negative answer until the
+precise safety question is answered again. The local app preserves raw signals
+and context-bound review records. Implement equivalent server-owned resolution;
+do not trust client review tokens. These records are not yet in the answer outbox.
+See safety-integration.md and safetyQuestionnaire.test.tsx for paths and examples.
+
 ## Immediate merge blockers
 
 1. Implement the independent Python gate in server/app/gate.py using
@@ -19,7 +30,7 @@ contracts with the original develop placeholders. Preserve existing C work.
    labels draft, awaiting clinician review and retain source provenance.
 3. Agree equivalent handling of broader app signals in gate/sessionAdapter.ts,
    gate/sessionEvaluator.ts and docs/safety-integration.md. Canonical 40-case
-   parity does not cover movement uncertainty or APP_REVIEW_* stop policies.
+   parity does not cover movement uncertainty or the focused-follow-up adapter policy.
    Preserve positive trauma, inability and sensory/weakness signals, and unknown
    movement responses. Never turn unknown into false. Add agreed cross-platform
    fixtures for these policies; do not imply they are clinician-approved.

@@ -20,6 +20,14 @@ Current validation: 403 mobile tests, 11 SQLite tests, typecheck, full lint
 (0 errors, 25 warnings), and Android export pass. Python parity remains blocked
 by C's placeholder. See person-c-integration-request.md for backend dependencies.
 
+## Follow-up policy update (2026-10-13)
+
+Broad app signals now request precise, explicitly saved safety follow-ups rather
+than immediate APP_REVIEW_* stops. Persistent uncertainty stays CLARIFY. Review
+links permit corrections but cannot bypass the complete gate. Canonical clinical
+rules remain unchanged; C must adopt gate-contract.md v1.1 and current app-signal
+handling. Details and limitations: safety-integration.md.
+
 ## Delivery sequence
 
 1. Document scope, sources, and shared gate contract.

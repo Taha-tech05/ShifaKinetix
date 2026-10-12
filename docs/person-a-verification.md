@@ -2,6 +2,26 @@
 
 Draft, awaiting clinician review. Demo only, not for real patients.
 
+## Focused-follow-up verification, 2026-10-13
+
+- Full mobile suite: 416 tests in 25 suites pass.
+- Real SQLite suite: 13 tests pass, including follow-up restart, stale evidence
+  invalidation and failure to persist context.
+- TypeScript passes. Full lint passes; the newly introduced BOM warning was fixed
+  and that file re-linted, leaving the 25 existing warnings.
+- Android Metro export passes (.expo/followup-export); no actual phone run.
+- Python parity still fails all 40 cases with KeyError: when in C's placeholder.
+
+The v1.1 change is deliberate: persistent_unknown is CLARIFY, not RED_FLAG, but
+cannot grant movement clearance. All clinical-positive fixtures retain their
+expected outcomes. App follow-ups have real-questionnaire tests for corrected
+onset, resolved onset uncertainty, movement weakness clarified before narrowing,
+optional unknowns, confirmed injury despite low pain, and explicit correction of
+an accidental danger answer without bypassing remaining safety questions.
+
+These are engineering tests, not clinician approval or complete mobile/server
+parity. The older verification entries below are historical baselines.
+
 ## Current integration verification, 2026-10-12
 
 Integrated PR #7 head 52a5486, including PR #6 lint fixes, preserving Taha's commits.
