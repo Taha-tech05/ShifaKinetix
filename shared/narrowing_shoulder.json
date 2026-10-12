@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "shoulder-narrowing-1",
+  "label": "draft, awaiting clinician review",
+  "note": "Demo only, not for real patients. Weights and thresholds are engineering choices, not clinical measurements. Output is 'muscles that may be involved', never a diagnosis.",
+  "scoring": {
+    "minConfidence": 0.4,
+    "clusterMargin": 0.1,
+    "maxCandidates": 3
+  },
+  "movements": [
+    {
+      "id": "painful_arc",
+      "description": "Raise the arm out to the side and overhead.",
+      "positiveWhen": ["painful"],
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "empty_can",
+      "description": "Arm raised forward and out, thumb down, hold against gentle downward pressure.",
+      "positiveWhen": ["painful", "weak"],
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Empty Can Test' page (TO VERIFY exact page)",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "external_rotation",
+      "description": "Elbow at the side bent to 90 degrees, turn the forearm outward against gentle resistance.",
+      "positiveWhen": ["painful", "weak"],
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903 (external rotation resistance test); Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "lift_off",
+      "description": "Hand behind the lower back, lift the hand away from the back.",
+      "positiveWhen": ["painful", "weak", "unableToDo"],
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page)",
+      "label": "draft, awaiting clinician review"
+    }
+  ],
+  "muscles": [
+    {
+      "id": "supraspinatus",
+      "profile": {
+        "painful_arc": { "expect": true, "w": 2 },
+        "empty_can": { "expect": true, "w": 2 },
+        "external_rotation": { "expect": false, "w": 1 },
+        "lift_off": { "expect": false, "w": 1 }
+      },
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "infraspinatus",
+      "profile": {
+        "external_rotation": { "expect": true, "w": 2 },
+        "empty_can": { "expect": false, "w": 1 },
+        "lift_off": { "expect": false, "w": 1 }
+      },
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "teres_minor",
+      "profile": {
+        "external_rotation": { "expect": true, "w": 2 },
+        "empty_can": { "expect": false, "w": 1 },
+        "lift_off": { "expect": false, "w": 1 }
+      },
+      "source": "TO VERIFY (resisted external rotation loads infraspinatus and teres minor together; needs a citable page)",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "subscapularis",
+      "profile": {
+        "lift_off": { "expect": true, "w": 2 },
+        "empty_can": { "expect": false, "w": 1 },
+        "external_rotation": { "expect": false, "w": 1 }
+      },
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page)",
+      "label": "draft, awaiting clinician review"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "posterior_cuff_group",
+      "members": ["infraspinatus", "teres_minor"],
+      "source": "TO VERIFY (same as teres_minor)",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "rotator_cuff_group",
+      "members": ["supraspinatus", "infraspinatus", "teres_minor", "subscapularis"],
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review"
+    }
+  ]
+}
