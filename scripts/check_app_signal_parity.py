@@ -1,8 +1,13 @@
 """Cross-language contract test for live app signals (docs/safety-integration.md).
 
-Runs shared/app_signal_test_cases.json through the TypeScript session adapter
-and server/app/session_gate.py. Both must give the expected verdict and rule
-ids, and their complete outputs must be identical.
+Runs the raw fixtures in shared/app_signal_test_cases.json through the mobile
+pipeline (gateInputs, sessionEvaluator, sessionAdapter) and through
+server/app/session_gate.py. Both must give the expected verdict and rule ids,
+and their complete outputs must be identical.
+
+The mobile side marks a follow-up as answered with a review fingerprint; the
+server takes the list of answered follow-ups from its own history. The
+fixtures name the answered follow-ups, and each side represents them its way.
 """
 
 import json
@@ -24,7 +29,7 @@ def main():
     mobile = {item["caseId"]: item["output"] for item in json.loads(result.stdout)}
     failures = []
     for case in cases:
-        server = evaluate_session_gate(case["answers"], case["movements"])
+        server = evaluate_session_gate(case["answers"], case["movements"], case["reviewed"])
         for name, output in (("TypeScript", mobile[case["caseId"]]), ("Python", server)):
             if output["verdict"] != case["expectedVerdict"]:
                 failures.append(f"{case['caseId']}: {name} verdict {output['verdict']}, expected {case['expectedVerdict']}")
