@@ -1,5 +1,20 @@
 # Person A verification — 2026-10-10
 
+## Conditional completeness verification, 2026-10-13
+
+Contract v1.2; shared content shoulder-2. All 426 mobile tests in 25 suites pass,
+including 47 shared full-output fixtures and three real questionnaire paths for
+conditional infection-risk clarification (No, Yes, Not sure). All 15 real SQLite
+tests pass, including conditional uncertainty across restart and retention of
+old-version queued answers without silent sync. TypeScript and lint pass (zero
+errors, 25 existing warnings).
+
+No new native API was introduced and Android export was not repeated for this
+change. The earlier export below remains the previous artifact; no phone testing
+or server parity is implied. Saud is updating PR #8 independently. Clinical
+content remains draft, awaiting clinician review.
+
+
 Draft, awaiting clinician review. Demo only, not for real patients.
 
 ## Focused-follow-up verification, 2026-10-13
