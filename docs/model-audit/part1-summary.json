@@ -1,0 +1,236 @@
+{
+ "origMeshes": 1610,
+ "liteMeshes": 1610,
+ "origStructures": 1074,
+ "liteStructures": 1074,
+ "missingMeshes": [],
+ "extraMeshes": [],
+ "missingStructures": [],
+ "extraStructures": [],
+ "partialStructures": [],
+ "duplicateNamesOrig": [],
+ "duplicateNamesLite": [],
+ "parts": 46,
+ "rangeProblems": 0,
+ "shoulderChecks": [
+  {
+   "item": "supraspinatus",
+   "orig_meshes": 2,
+   "lite_meshes": 2,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "infraspinatus",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "teres minor",
+   "orig_meshes": 2,
+   "lite_meshes": 2,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "teres major",
+   "orig_meshes": 2,
+   "lite_meshes": 2,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "subscapularis",
+   "orig_meshes": 2,
+   "lite_meshes": 2,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "deltoid anterior (clavicular part)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "deltoid middle (acromial part)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "deltoid posterior (scapular spine part)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "trapezius, descending part",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "trapezius, transverse part",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "trapezius, ascending part",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "levator scapulae",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "rhomboid major",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "rhomboid minor",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "biceps brachii, long head",
+   "orig_meshes": 8,
+   "lite_meshes": 8,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "biceps brachii, short head",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "biceps brachii, medial head (as named in model)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "triceps brachii (any head)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "pectoralis major, clavicular head",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "pectoralis major, sternocostal head",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "pectoralis major, abdominal part",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "pectoralis minor",
+   "orig_meshes": 2,
+   "lite_meshes": 2,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "latissimus dorsi",
+   "orig_meshes": 12,
+   "lite_meshes": 12,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "clavicle (bone)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "scapula (bone)",
+   "orig_meshes": 8,
+   "lite_meshes": 8,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "humerus (bone)",
+   "orig_meshes": 4,
+   "lite_meshes": 4,
+   "status": "FOUND (all kept)"
+  },
+  {
+   "item": "acromion (separate mesh)",
+   "orig_meshes": 0,
+   "lite_meshes": 0,
+   "status": "NOT IN ORIGINAL"
+  }
+ ],
+ "relatedNotAsked": [
+  "Acromioclavicular Joint S Capsule (Left)",
+  "Acromioclavicular Joint S Capsule (Right)",
+  "Acromioclavicular Ligament (Left)",
+  "Acromioclavicular Ligament (Right)",
+  "Anterior Sternoclavicular Ligament (Left)",
+  "Anterior Sternoclavicular Ligament (Right)",
+  "Articular Capsule Of Glenohumeral Joint (Left)",
+  "Articular Capsule Of Glenohumeral Joint (Right)",
+  "Articular Capsule Of Sternoclavicular Joint (Left)",
+  "Articular Capsule Of Sternoclavicular Joint (Right)",
+  "Articular Disc Of Acromioclavicular Joint (Left)",
+  "Articular Disc Of Acromioclavicular Joint (Right)",
+  "Articular Disc Of Sternoclavicular Joint (Left)",
+  "Articular Disc Of Sternoclavicular Joint (Right)",
+  "Brachialis Muscle (Left)",
+  "Brachialis Muscle (Right)",
+  "Coraco Acromial Ligament (Left)",
+  "Coraco Acromial Ligament (Right)",
+  "Coracobrachialis Muscle (Left)",
+  "Coracobrachialis Muscle (Right)",
+  "Coracohumeral Ligament (Left)",
+  "Coracohumeral Ligament (Right)",
+  "Costoclavicular Ligament (Left)",
+  "Costoclavicular Ligament (Right)",
+  "Deep Head Of Prontaor Teres Muscle (Left)",
+  "Deep Head Of Prontaor Teres Muscle (Right)",
+  "Glenoid Labrum (Left)",
+  "Glenoid Labrum (Right)",
+  "Humeral Head Of Extensor Carpi Ulnarisl Grp1",
+  "Humeral Head Of Extensor Carpi Ulnarisr Grp1",
+  "Humeral Head Of Flexor Carpi Ulnaris (Left)",
+  "Humeral Head Of Flexor Carpi Ulnaris (Right)",
+  "Inferior Glenohumeral Ligament (Left)",
+  "Inferior Glenohumeral Ligament (Right)",
+  "Inferior Transverse Scapular Ligament (Left)",
+  "Inferior Transverse Scapular Ligament (Right)",
+  "Interclavicular Ligament (Left)",
+  "Interclavicular Ligament (Right)",
+  "Middle Glenohumeral Ligament (Left)",
+  "Middle Glenohumeral Ligament (Right)",
+  "Omohyoid Muscle (Left)",
+  "Omohyoid Muscle (Right)",
+  "Posterior Sternoclavicular Ligament (Left)",
+  "Posterior Sternoclavicular Ligament (Right)",
+  "Serratus Anterior Muscle (Left)",
+  "Serratus Anterior Muscle (Right)",
+  "Superficial Head Of Pronator Teres Muscle (Left)",
+  "Superficial Head Of Pronator Teres Muscle (Right)",
+  "Superior Glenohumeral Ligament (Left)",
+  "Superior Glenohumeral Ligament (Right)",
+  "Superior Transverse Scapular Ligament (Left)",
+  "Superior Transverse Scapular Ligament (Right)",
+  "Supraspinous Ligament (Right)",
+  "Transverse Humeral Ligament (Left)",
+  "Transverse Humeral Ligament (Right)"
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "all": {
+  "rays": 1760,
+  "both_hit": 1628,
+  "no_hit_in_both": 132,
+  "same_mesh": 1752,
+  "same_structure": 1752,
+  "missed_in_lite": 1,
+  "hit_in_one_only": 0
+ },
+ "random": {
+  "rays": 500,
+  "both_hit": 417,
+  "no_hit_in_both": 83,
+  "same_mesh": 497,
+  "same_structure": 497,
+  "missed_in_lite": 1,
+  "hit_in_one_only": 0
+ },
+ "shoulder": {
+  "rays": 1260,
+  "both_hit": 1211,
+  "no_hit_in_both": 49,
+  "same_mesh": 1255,
+  "same_structure": 1255,
+  "missed_in_lite": 0,
+  "hit_in_one_only": 0
+ },
+ "shoulderTargets": 63,
+ "shoulderTargetFirstHit": {
+  "rays": 1260,
+  "original": 189,
+  "lite": 188
+ },
+ "shoulderTargetHitAnywhere": {
+  "rays": 1260,
+  "original": 898,
+  "lite": 899,
+  "hitInOriginalButNotLite": [],
+  "hitInLiteButNotOriginal": 1
+ },
+ "disagreements": 8,
+ "missedSmall": [
+  {
+   "ray": "random-240",
+   "muscle": "Flexor Digitorum Profundus (Left)",
+   "tris": 7533,
+   "longest_m": "0.3651",
+   "thinnest_m": "0.10651",
+   "lite_first": "Proximal Phalanx Of 4th Finger (Left)"
+  }
+ ]
+}

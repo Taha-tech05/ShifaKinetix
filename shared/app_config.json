@@ -1,0 +1,5 @@
+{
+  "label": "placeholder - draft from published sources, awaiting clinician review",
+  "note": "Feature flags shared by the apps. ASSISTANT_ENABLED must stay false in this phase: no assistant button, screen or placeholder is shown.",
+  "ASSISTANT_ENABLED": false
+}

@@ -1,0 +1,47 @@
+{
+  "label": "PLACEHOLDER, Person C replaces",
+  "review": "draft, awaiting clinician review",
+  "note": "Fixed follow-up questions so the flow can be built. Not clinical content. Urdu and Roman Urdu are machine-written and need a native speaker's review.",
+  "questions": [
+    {
+      "questionId": "Q_FU_LIFTING_PLACEHOLDER",
+      "type": "yesno",
+      "text": {
+        "en": "Does lifting your arm make it worse?",
+        "ur": "کیا بازو اٹھانے سے تکلیف بڑھتی ہے؟",
+        "roman": "Kya bazu uthane se takleef barhti hai?"
+      },
+      "source": "PLACEHOLDER, Person C replaces"
+    },
+    {
+      "questionId": "Q_FU_NIGHT_PLACEHOLDER",
+      "type": "yesno",
+      "text": {
+        "en": "Does it bother you at night?",
+        "ur": "کیا یہ رات کو آپ کو تنگ کرتا ہے؟",
+        "roman": "Kya yeh raat ko aap ko tang karta hai?"
+      },
+      "source": "PLACEHOLDER, Person C replaces"
+    },
+    {
+      "questionId": "Q_DEPTH_PLACEHOLDER",
+      "type": "chooseone",
+      "text": {
+        "en": "Does it feel just under the skin, deep inside, or are you not sure?",
+        "ur": "کیا یہ جلد کے بالکل نیچے محسوس ہوتا ہے، اندر گہرائی میں، یا آپ کو یقین نہیں؟",
+        "roman": "Kya yeh jild ke bilkul neeche mehsoos hota hai, andar gehrai mein, ya aap ko yaqeen nahi?"
+      },
+      "options": [
+        {
+          "id": "just_under_skin",
+          "label": { "en": "Just under the skin", "ur": "جلد کے بالکل نیچے", "roman": "Jild ke bilkul neeche" }
+        },
+        {
+          "id": "deep_inside",
+          "label": { "en": "Deep inside", "ur": "اندر گہرائی میں", "roman": "Andar gehrai mein" }
+        }
+      ],
+      "source": "PLACEHOLDER, Person C replaces"
+    }
+  ]
+}

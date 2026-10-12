@@ -1,8 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "ShifaKinetix",
     "slug": "mobile",
-    "scheme": "shifakinetix",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,8 +22,10 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-sqlite",
-      "expo-router"
-    ]
+      "expo-router",
+      "expo-asset",
+      "expo-sqlite"
+    ],
+    "scheme": "shifakinetix"
   }
 }

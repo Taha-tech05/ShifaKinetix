@@ -1,8 +1,87 @@
-# Person A: running and integrating the shoulder demo
+# Person A handoff after integrating PR #7
 
 Draft, awaiting clinician review. Demo only, not for real patients.
 
-## Run
+A's feature/A-gate now includes PR #7 at 52a5486 and its PR #6 lint fixes,
+plus A's real shoulder safety integration and delayed-save guard fix. See [safety-integration.md](safety-integration.md) for the exact
+contracts, adapter policy, persistence boundaries and B-owned follow-up work.
+PR #2 remains draft and must not merge while required checks fail.
+
+## Implemented by Zaid
+
+- 20 sourced shoulder questions, 19 canonical rules and 40 shared parity fixtures.
+- Strict TypeScript evaluator and an adapter for B's broader answer templates.
+- Full gateOutput in B's store through the agreed one-import replacement.
+- Existing danger/reask/safe routes now use real questions, saved typed answers,
+  one-time clarification and guarded handoff into B's exact/region flow.
+- SQLite safety answers, trusted question/rule cache and transactional retry outbox.
+- Explicit start/resume, shoulder context restoration and fresh gate evaluation.
+- Protected screens wait for saved clearance; changed inputs invalidate it.
+- Doctor-report presentation component, review summary, review log and panel register.
+- Integration, evaluator and actual SQLite tests; CI retains parity and lint checks.
+
+The old top-level /questions and /result demo routes are not the team app's entry
+flow. B's report/result.tsx, report/movement.tsx, flow/live.ts, components and theme
+come from Taha's commits; A's follow-up changes the shared safety guard and tests. Do not integrate the old standalone
+result over B's narrowing result.
+
+## Current verification
+
+- TypeScript: passes.
+- Mobile tests: 403 passing, including real-gate integration tests.
+- Actual SQLite tests: 11 passing, including restart and persistent clarification.
+- Full lint: passes with 0 errors and 25 warnings.
+- Combined Android Metro export: passes (not an APK/device test).
+- Python/TypeScript parity: 40/40 cases fail in C's placeholder Python gate with
+  KeyError: when. Do not weaken the fixtures to accept the placeholder.
+
+## Taha: required follow-up
+
+PR #7 now guards initial/fallback narrowing and awaits live submit/back checkpoints.
+PR #6 fixes the blocking lint errors. A fixed the guard interaction that previously
+redirected a verified intake to danger while its new answer was still saving.
+Protected content waits, then the real gate decides whether to continue or stop.
+Tests cover delayed normal/unknown saves, failure and reset with the actual screen.
+
+Remaining:
+
+1. Verify protected branches require independent review and mobile, server,
+   gate-parity, offline-storage checks. Zaid does not have repository admin access.
+2. Build the APK and coordinate the real-device acceptance below.
+
+## Saud: required follow-up
+
+Full request and API contracts: [person-c-integration-request.md](person-c-integration-request.md).
+
+Implement docs/gate-contract.md in server/app/gate.py and run:
+
+```powershell
+python scripts/check_gate_parity.py
+```
+
+Review A's rules independently and review the app-signal adapter policy. Server
+handling must preserve these signals too; the 40 canonical fixtures do not by
+themselves prove full app-input parity. C also owns authenticated doctor-only
+responses, the independent server gate, ranking and the append-only audit log.
+
+Connect IntakeStore.sync(send) with an authenticated transport. Resolve send only
+after durable acknowledgment and deduplicate idempotencyKey. Failed requests
+remain queued. No successful upload or authentication is simulated.
+
+## Human checks and unfinished acceptance
+
+- Faculty supervisor and doctor review of clinician-shoulder-summary.md is pending;
+  reviewers are available, but availability is not approval. Names are omitted.
+- On an actual Android phone: complete a fictional all-negative intake, test
+  immediate danger, Not sure twice, a new positive/unknown live signal, and a
+  failed SQLite write. No movements should open without confirmed SAFE.
+- In airplane mode: force-close/relaunch and explicitly resume the same assessment.
+  Verify values, clarification attempts and outbox events survive. A new intake
+  must never inherit old clearance. Test the integrated live save/back/review flow on the device.
+- After C connects transport: test acknowledgment/retry and patient rejection
+  from doctor-only endpoints. Record device, build/commit and results.
+
+## Run locally
 
 ```powershell
 cd mobile
@@ -14,81 +93,7 @@ npm run test:storage
 npm start
 ```
 
-The app and ordinary CI use the team's Node 20 baseline. The real SQLite test
-suite (`test:storage`) uses Node 22.13+; CI runs it in a separate Node 22 job.
-This laptop has Node 22.16 and Python 3.12; CI retains Python 3.11. Tests here
-do not prove real Android rendering, installation, or airplane-mode behavior.
-
-The Expo Router entry launches a small A-owned safety demo. The original
-`App.tsx` is retained for B to reconcile with the full shell. There is no viewer,
-ranking, AI, login, server upload, or production doctor route in this demo.
-Patient screens have no differential data or doctor-role toggle.
-
-## B: mobile integration
-
-- Integrate `src/app/questions.tsx` and `result.tsx` after confirmed shoulder
-  selection. Pass a fresh persisted `intakeId`, not a verdict in route params.
-- Only allow downstream movement/AI after `store.savedGate(intakeId)` returns
-  SAFE. Repeat that check before committing any downstream response. Never
-  infer clearance from the fact a route was visited.
-- The question screen repeats a required unknown once and persists that fact.
-  A subsequent unknown routes to clinical review. Reloading cannot erase it.
-- SQLite errors stop the flow. Never replace a failed read with an empty or
-  negative answer list. New/follow-up symptoms require a new intake.
-- `DoctorReportScreen` is an integration component, not a patient route.
-  Supply authenticated doctor session access and an authorized API loader.
-  Server rejection must propagate. Do not provide a user-selectable role.
-  The client guard alone is not an authorization boundary.
-- Native SQLite is the target. The standalone demo does not configure web
-  SQLite/SharedArrayBuffer and must not be advertised as a working web app.
-
-## C: required backend work
-
-Implement `docs/gate-contract.md` in `server/app/gate.py`, then run:
-
-```powershell
-python scripts/check_gate_parity.py
-```
-
-All 40 shared cases assert complete outputs. The existing placeholder fails
-on the new `all` clauses; this is an explicit merge blocker, not a skipped test.
-C also owns authenticated doctor-only report responses, API authorization,
-the independent server gate, ranking and the append-only audit log.
-
-Connect `IntakeStore.sync(send)` with an authenticated transport. Resolve
-`send` only after a durable server acknowledgment. Deduplicate its
-`idempotencyKey`; an interrupted acknowledgment retries the same event.
-Payloads contain `intakeId`, `contentVersion`, and the typed `answer`. The
-queue sends in insertion order and never deletes unacknowledged entries.
-No endpoint or successful upload is simulated in the current app.
-
-## Real-device acceptance (pending)
-
-Record device model, Android version, APK/commit and observed results:
-
-1. Complete a fictional negative safety screen; see the non-diagnostic result.
-2. Start a fresh intake; an injury answer must stop the screen. At evaluator
-   level the injury-plus-inability fixture must match all applicable rules.
-3. Choose Not sure on a safety item twice; restart and confirm referral persists.
-4. Enable airplane mode; force-close and relaunch. Resume the saved intake.
-   Confirm typed values and verdict persist and pending updates remain queued.
-5. Complete another fictional negative screen entirely offline. Verify the
-   same verdict after restart. Never reuse old clearance for a new intake.
-6. With C's API connected, reconnect and verify acknowledgment/retry behavior,
-   server re-evaluation and rejection of patient access to differential data.
-
-## GitHub and review
-
-All commits belong on `feature/A-gate`. Push that branch and open a **draft** PR
-into develop. Request C's rule review through the team's normal process. Do
-not merge with failed server/parity checks. A's authorship/self-check is not
-a substitute for C's approval. Preserve history with a normal merge commit.
-
-Zaid's authenticated GitHub account has push access but no admin/maintain
-permission (checked 2026-10-10). Branch protection could not be inspected via
-the protected-settings API; a 404 does not prove protection is absent.
-Taha must verify both branches require PRs, independent approval, resolved
-conversations, and `mobile`, `server`, `gate-parity`, `offline-storage` checks;
-disable force pushes/deletion and direct pushes as appropriate for team roles.
-CODEOWNERS listing A and C does not by itself require both people to approve.
-Record their review explicitly and configure suitable rules if available.
+App/ordinary CI use Node 20; real SQLite tests use Node 22.13+. Local verification
+used Node 22.16/Python 3.12, while server CI uses Python 3.11. Native SQLite is the
+target; web SQLite is not configured. Dependency installation reported 56 audit
+findings (15 moderate, 41 high); no forced dependency upgrade was performed.

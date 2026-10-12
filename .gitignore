@@ -47,3 +47,11 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# 3D models: only the lite pack is committed. Full pack, GLB, OBJ, scene files stay local.
+mobile/assets/models/*
+!mobile/assets/models/pack/
+mobile/assets/models/pack/*
+!mobile/assets/models/pack/body-lite.bin
+!mobile/assets/models/pack/body-lite.json
+mobile/_web_reference/

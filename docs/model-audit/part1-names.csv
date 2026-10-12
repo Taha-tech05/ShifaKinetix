@@ -1,0 +1,1611 @@
+name,structure,material,orig_tris,in_lite
+1st_metacarpal_boner_Generated_Mesh_From_X3D742_1,1st Metacarpal Bone (Right),Bone,342,yes
+1st_metacarpal_boner_Generated_Mesh_From_X3D742_2,1st Metacarpal Bone (Right),Cartilage,340,yes
+1st_metatarsal_bonel_Generated_Mesh_From_X3D935_1,1st Metatarsal Bone (Left),Bone,744,yes
+1st_metatarsal_bonel_Generated_Mesh_From_X3D935_2,1st Metatarsal Bone (Left),Cartilage,340,yes
+1st_metatarsal_boner_Generated_Mesh_From_X3D935_1,1st Metatarsal Bone (Right),Bone,744,yes
+1st_metatarsal_boner_Generated_Mesh_From_X3D935_2,1st Metatarsal Bone (Right),Cartilage,340,yes
+1st_ribl_Generated_Mesh_From_X3D854_1,1st Rib (Left),Bone,2828,yes
+1st_ribl_Generated_Mesh_From_X3D854_2,1st Rib (Left),Cartilage,382,yes
+1st_ribr_Generated_Mesh_From_X3D854_1,1st Rib (Right),Bone,2828,yes
+1st_ribr_Generated_Mesh_From_X3D854_2,1st Rib (Right),Cartilage,382,yes
+2d_metacarpal_bonel_Generated_Mesh_From_X3D741_1,2d Metacarpal Bone (Left),Bone,544,yes
+2d_metacarpal_bonel_Generated_Mesh_From_X3D741_2,2d Metacarpal Bone (Left),Cartilage,220,yes
+2d_metacarpal_boner_Generated_Mesh_From_X3D741_1,2d Metacarpal Bone (Right),Bone,544,yes
+2d_metacarpal_boner_Generated_Mesh_From_X3D741_2,2d Metacarpal Bone (Right),Cartilage,220,yes
+2d_metatarsal_bonel_Generated_Mesh_From_X3D931_1,2d Metatarsal Bone (Left),Bone,511,yes
+2d_metatarsal_bonel_Generated_Mesh_From_X3D931_2,2d Metatarsal Bone (Left),Cartilage,179,yes
+2d_metatarsal_boner_Generated_Mesh_From_X3D931_1,2d Metatarsal Bone (Right),Bone,511,yes
+2d_metatarsal_boner_Generated_Mesh_From_X3D931_2,2d Metatarsal Bone (Right),Cartilage,179,yes
+2d_ribl_Generated_Mesh_From_X3D856_1,2d Rib (Left),Bone,4991,yes
+2d_ribl_Generated_Mesh_From_X3D856_2,2d Rib (Left),Cartilage,373,yes
+2d_ribr_Generated_Mesh_From_X3D856_1,2d Rib (Right),Bone,4991,yes
+2d_ribr_Generated_Mesh_From_X3D856_2,2d Rib (Right),Cartilage,373,yes
+3d_metacarpal_bonel_Generated_Mesh_From_X3D740_1,3d Metacarpal Bone (Left),Bone,568,yes
+3d_metacarpal_bonel_Generated_Mesh_From_X3D740_2,3d Metacarpal Bone (Left),Cartilage,140,yes
+3d_metacarpal_boner_Generated_Mesh_From_X3D740_1,3d Metacarpal Bone (Right),Bone,568,yes
+3d_metacarpal_boner_Generated_Mesh_From_X3D740_2,3d Metacarpal Bone (Right),Cartilage,140,yes
+3rd_metatarsal_bonel_Generated_Mesh_From_X3D929_1,3rd Metatarsal Bone (Left),Bone,588,yes
+3rd_metatarsal_bonel_Generated_Mesh_From_X3D929_2,3rd Metatarsal Bone (Left),Cartilage,134,yes
+3rd_metatarsal_boner_Generated_Mesh_From_X3D929_1,3rd Metatarsal Bone (Right),Bone,588,yes
+3rd_metatarsal_boner_Generated_Mesh_From_X3D929_2,3rd Metatarsal Bone (Right),Cartilage,134,yes
+3rd_ribl_Generated_Mesh_From_X3D858_1,3rd Rib (Left),Bone,6432,yes
+3rd_ribl_Generated_Mesh_From_X3D858_2,3rd Rib (Left),Cartilage,548,yes
+3rd_ribr_Generated_Mesh_From_X3D858_1,3rd Rib (Right),Bone,6432,yes
+3rd_ribr_Generated_Mesh_From_X3D858_2,3rd Rib (Right),Cartilage,548,yes
+4th_metacarpal_bonel_Generated_Mesh_From_X3D739_1,4th Metacarpal Bone (Left),Bone,542,yes
+4th_metacarpal_bonel_Generated_Mesh_From_X3D739_2,4th Metacarpal Bone (Left),Cartilage,100,yes
+4th_metacarpal_boner_Generated_Mesh_From_X3D739_1,4th Metacarpal Bone (Right),Bone,542,yes
+4th_metacarpal_boner_Generated_Mesh_From_X3D739_2,4th Metacarpal Bone (Right),Cartilage,100,yes
+4th_metatarsal_bonel_Generated_Mesh_From_X3D925_1,4th Metatarsal Bone (Left),Bone,662,yes
+4th_metatarsal_bonel_Generated_Mesh_From_X3D925_2,4th Metatarsal Bone (Left),Cartilage,172,yes
+4th_metatarsal_boner_Generated_Mesh_From_X3D925_1,4th Metatarsal Bone (Right),Bone,662,yes
+4th_metatarsal_boner_Generated_Mesh_From_X3D925_2,4th Metatarsal Bone (Right),Cartilage,172,yes
+4th_ribl_Generated_Mesh_From_X3D860_1,4th Rib (Left),Bone,7829,yes
+4th_ribl_Generated_Mesh_From_X3D860_2,4th Rib (Left),Cartilage,817,yes
+4th_ribr_Generated_Mesh_From_X3D860_1,4th Rib (Right),Bone,7829,yes
+4th_ribr_Generated_Mesh_From_X3D860_2,4th Rib (Right),Cartilage,817,yes
+5th_metacarpal_bonel_Generated_Mesh_From_X3D738_1,5th Metacarpal Bone (Left),Bone,339,yes
+5th_metacarpal_bonel_Generated_Mesh_From_X3D738_2,5th Metacarpal Bone (Left),Cartilage,155,yes
+5th_metacarpal_boner_Generated_Mesh_From_X3D738_1,5th Metacarpal Bone (Right),Bone,339,yes
+5th_metacarpal_boner_Generated_Mesh_From_X3D738_2,5th Metacarpal Bone (Right),Cartilage,155,yes
+5th_metatarsal_bonel_Generated_Mesh_From_X3D920_1,5th Metatarsal Bone (Left),Bone,658,yes
+5th_metatarsal_bonel_Generated_Mesh_From_X3D920_2,5th Metatarsal Bone (Left),Cartilage,236,yes
+5th_metatarsal_boner_Generated_Mesh_From_X3D920_1,5th Metatarsal Bone (Right),Bone,658,yes
+5th_metatarsal_boner_Generated_Mesh_From_X3D920_2,5th Metatarsal Bone (Right),Cartilage,236,yes
+5th_ribl_Generated_Mesh_From_X3D870_1,5th Rib (Left),Bone,8674,yes
+5th_ribl_Generated_Mesh_From_X3D870_2,5th Rib (Left),Cartilage,702,yes
+5th_ribr_Generated_Mesh_From_X3D870_1,5th Rib (Right),Bone,8674,yes
+5th_ribr_Generated_Mesh_From_X3D870_2,5th Rib (Right),Cartilage,702,yes
+6th_ribl_Generated_Mesh_From_X3D876_1,6th Rib (Left),Bone,9075,yes
+6th_ribl_Generated_Mesh_From_X3D876_2,6th Rib (Left),Cartilage,1057,yes
+6th_ribr_Cone019_1,6th Rib (Right),Bone,9075,yes
+6th_ribr_Cone019_2,6th Rib (Right),Cartilage,1057,yes
+7th_ribl_Generated_Mesh_From_X3D882_1,7th Rib (Left),Bone,9060,yes
+7th_ribl_Generated_Mesh_From_X3D882_2,7th Rib (Left),Cartilage,716,yes
+7th_ribr_Generated_Mesh_From_X3D882_1,7th Rib (Right),Bone,9060,yes
+7th_ribr_Generated_Mesh_From_X3D882_2,7th Rib (Right),Cartilage,716,yes
+8th_ribl_Generated_Mesh_From_X3D886_1,8th Rib (Left),Bone,7625,yes
+8th_ribl_Generated_Mesh_From_X3D886_2,8th Rib (Left),Cartilage,645,yes
+8th_ribr_Generated_Mesh_From_X3D886_1,8th Rib (Right),Bone,7625,yes
+8th_ribr_Generated_Mesh_From_X3D886_2,8th Rib (Right),Cartilage,645,yes
+9th_ribl_Generated_Mesh_From_X3D888_1,9th Rib (Left),Bone,7013,yes
+9th_ribl_Generated_Mesh_From_X3D888_2,9th Rib (Left),Cartilage,765,yes
+9th_ribr_Generated_Mesh_From_X3D888_1,9th Rib (Right),Bone,7013,yes
+9th_ribr_Generated_Mesh_From_X3D888_2,9th Rib (Right),Cartilage,765,yes
+10th_ribl_Generated_Mesh_From_X3D891_1,10th Rib (Left),Bone,6468,yes
+10th_ribl_Generated_Mesh_From_X3D891_2,10th Rib (Left),Cartilage,558,yes
+10th_ribr_Generated_Mesh_From_X3D891_1,10th Rib (Right),Bone,6468,yes
+10th_ribr_Generated_Mesh_From_X3D891_2,10th Rib (Right),Cartilage,558,yes
+11_Upper_medial_incisorl_Generated_Mesh_From_X3D664,11 Upper Medial Incisor (Left),Teeth,1288,yes
+11_Upper_medial_incisorr_Generated_Mesh_From_X3D664,11 Upper Medial Incisor (Right),Teeth,1288,yes
+11th_ribl_Generated_Mesh_From_X3D893_1,11th Rib (Left),Bone,4746,yes
+11th_ribl_Generated_Mesh_From_X3D893_2,11th Rib (Left),Cartilage,288,yes
+11th_ribr_Generated_Mesh_From_X3D893_1,11th Rib (Right),Bone,4746,yes
+11th_ribr_Generated_Mesh_From_X3D893_2,11th Rib (Right),Cartilage,288,yes
+12_Upper_lateral_incisorl_Generated_Mesh_From_X3D663,12 Upper Lateral Incisor (Left),Teeth,1368,yes
+12_Upper_lateral_incisorr_Generated_Mesh_From_X3D663,12 Upper Lateral Incisor (Right),Teeth,1368,yes
+12th_ribl_Generated_Mesh_From_X3D895_1,12th Rib (Left),Bone,2668,yes
+12th_ribl_Generated_Mesh_From_X3D895_2,12th Rib (Left),Cartilage,334,yes
+12th_ribr_Generated_Mesh_From_X3D895_1,12th Rib (Right),Bone,2668,yes
+12th_ribr_Generated_Mesh_From_X3D895_2,12th Rib (Right),Cartilage,334,yes
+13_Upper_caninel_Generated_Mesh_From_X3D685,13 Upper Canine (Left),Teeth,1392,yes
+13_Upper_caniner_Generated_Mesh_From_X3D685,13 Upper Canine (Right),Teeth,1392,yes
+14_Upper_first_premolarl_Generated_Mesh_From_X3D670,14 Upper First Premolar (Left),Teeth,1610,yes
+14_Upper_first_premolarr_Generated_Mesh_From_X3D670,14 Upper First Premolar (Right),Teeth,1610,yes
+15_Upper_second_premolarl_Generated_Mesh_From_X3D669,15 Upper Second Premolar (Left),Teeth,1466,yes
+15_Upper_second_premolarr_Generated_Mesh_From_X3D669,15 Upper Second Premolar (Right),Teeth,1466,yes
+16_Upper_first_molarl_Generated_Mesh_From_X3D678,16 Upper First Molar (Left),Teeth,2156,yes
+16_Upper_first_molarr_Generated_Mesh_From_X3D678,16 Upper First Molar (Right),Teeth,2156,yes
+17_Upper_second_molarl_Generated_Mesh_From_X3D677,17 Upper Second Molar (Left),Teeth,1838,yes
+17_Upper_second_molarr_Generated_Mesh_From_X3D677,17 Upper Second Molar (Right),Teeth,1838,yes
+31_Lower_medial_incisorl_Generated_Mesh_From_X3D689,31 Lower Medial Incisor (Left),Teeth,920,yes
+31_Lower_medial_incisorr_Generated_Mesh_From_X3D689,31 Lower Medial Incisor (Right),Teeth,920,yes
+32_Lower_lateral_incisorl_Generated_Mesh_From_X3D687,32 Lower Lateral Incisor (Left),Teeth,958,yes
+32_Lower_lateral_incisorr_Generated_Mesh_From_X3D687,32 Lower Lateral Incisor (Right),Teeth,958,yes
+33_Lower_caninel_Generated_Mesh_From_X3D667,33 Lower Canine (Left),Teeth,1178,yes
+33_Lower_caniner_Generated_Mesh_From_X3D667,33 Lower Canine (Right),Teeth,1178,yes
+34_Lower_first_premolarl_Generated_Mesh_From_X3D675,34 Lower First Premolar (Left),Teeth,1180,yes
+34_Lower_first_premolarr_Generated_Mesh_From_X3D675,34 Lower First Premolar (Right),Teeth,1180,yes
+35_Lower_second_premolarl_Generated_Mesh_From_X3D676,35 Lower Second Premolar (Left),Teeth,1124,yes
+35_Lower_second_premolarr_Generated_Mesh_From_X3D676,35 Lower Second Premolar (Right),Teeth,1124,yes
+36_Lower_first_molarl_Generated_Mesh_From_X3D683,36 Lower First Molar (Left),Teeth,1762,yes
+36_Lower_first_molarr_Generated_Mesh_From_X3D683,36 Lower First Molar (Right),Teeth,1762,yes
+37_Lower_second_molarl_Generated_Mesh_From_X3D684,37 Lower Second Molar (Left),Teeth,1620,yes
+37_Lower_second_molarr_Generated_Mesh_From_X3D684,37 Lower Second Molar (Right),Teeth,1620,yes
+Abdominal_part_of_pectoralis_major_musclel_Generated_Mesh_From_X3D1020_1,Abdominal Part Of Pectoralis Major Muscle (Left),Muscles.001,785,yes
+Abdominal_part_of_pectoralis_major_musclel_Generated_Mesh_From_X3D1020_2,Abdominal Part Of Pectoralis Major Muscle (Left),Tendon.001,723,yes
+Abdominal_part_of_pectoralis_major_muscler_Generated_Mesh_From_X3D1020_1,Abdominal Part Of Pectoralis Major Muscle (Right),Muscles.001,785,yes
+Abdominal_part_of_pectoralis_major_muscler_Generated_Mesh_From_X3D1020_2,Abdominal Part Of Pectoralis Major Muscle (Right),Tendon.001,723,yes
+Abductor_digiti_minimil_Generated_Mesh_From_X3D1018_1,Abductor Digiti Minimi (Left),Muscles.001,808,yes
+Abductor_digiti_minimil_Generated_Mesh_From_X3D1018_2,Abductor Digiti Minimi (Left),Tendon.001,538,yes
+Abductor_digiti_minimir_Generated_Mesh_From_X3D1018_1,Abductor Digiti Minimi (Right),Muscles.001,808,yes
+Abductor_digiti_minimir_Generated_Mesh_From_X3D1018_2,Abductor Digiti Minimi (Right),Tendon.001,538,yes
+Abductor_digiti_minimi_of_footl_Generated_Mesh_From_X3D1019,Abductor Digiti Minimi Of Foot (Left),Muscles.001,2560,yes
+Abductor_digiti_minimi_of_footr_Generated_Mesh_From_X3D1019,Abductor Digiti Minimi Of Foot (Right),Muscles.001,2560,yes
+Abductor_hallucisl_Generated_Mesh_From_X3D1017_1,Abductor Hallucis (Left),Muscles.001,1494,yes
+Abductor_hallucisl_Generated_Mesh_From_X3D1017_2,Abductor Hallucis (Left),Tendon.001,1884,yes
+Abductor_hallucisr_Generated_Mesh_From_X3D1017_1,Abductor Hallucis (Right),Muscles.001,1494,yes
+Abductor_hallucisr_Generated_Mesh_From_X3D1017_2,Abductor Hallucis (Right),Tendon.001,1884,yes
+Abductor_pollicis_brevisl_Generated_Mesh_From_X3D1016_1,Abductor Pollicis Brevis (Left),Muscles.001,1137,yes
+Abductor_pollicis_brevisl_Generated_Mesh_From_X3D1016_2,Abductor Pollicis Brevis (Left),Tendon.001,113,yes
+Abductor_pollicis_brevisr_Generated_Mesh_From_X3D1016_1,Abductor Pollicis Brevis (Right),Muscles.001,1137,yes
+Abductor_pollicis_brevisr_Generated_Mesh_From_X3D1016_2,Abductor Pollicis Brevis (Right),Tendon.001,113,yes
+Acetabular_labruml001_Generated_Mesh_From_X3D1015,Acetabular Labrum (Left),Cartilage.002,1408,yes
+Acetabular_labruml_Generated_Mesh_From_X3D120,Acetabular Labrum (Left),Cartilage.001,1408,yes
+Acetabular_labrumr001_Generated_Mesh_From_X3D1015,Acetabular Labrum (Right),Cartilage.002,1408,yes
+Acetabular_labrumr_Generated_Mesh_From_X3D120,Acetabular Labrum (Right),Cartilage.001,1408,yes
+Acromial_part_of_deltoid_musclel_Generated_Mesh_From_X3D1014_1,Acromial Part Of Deltoid Muscle (Left),Muscles.001,5676,yes
+Acromial_part_of_deltoid_musclel_Generated_Mesh_From_X3D1014_2,Acromial Part Of Deltoid Muscle (Left),Tendon.001,254,yes
+Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_1,Acromial Part Of Deltoid Muscle (Right),Muscles.001,5676,yes
+Acromial_part_of_deltoid_muscler_Generated_Mesh_From_X3D1014_2,Acromial Part Of Deltoid Muscle (Right),Tendon.001,254,yes
+Acromioclavicular_joint_s_capsule_l_Cube106,Acromioclavicular Joint S Capsule (Left),Ligament.002,1152,yes
+Acromioclavicular_joint_s_capsule_r_Cube106,Acromioclavicular Joint S Capsule (Right),Ligament.002,1152,yes
+Acromioclavicular_ligamentl_Cube105,Acromioclavicular Ligament (Left),Ligament.002,320,yes
+Acromioclavicular_ligamentr_Cube105,Acromioclavicular Ligament (Right),Ligament.002,320,yes
+Adductor_brevisl_Generated_Mesh_From_X3D1013,Adductor Brevis (Left),Muscles.001,4264,yes
+Adductor_brevisr_Generated_Mesh_From_X3D1013,Adductor Brevis (Right),Muscles.001,4264,yes
+Adductor_longusl_Generated_Mesh_From_X3D1012_1,Adductor Longus (Left),Muscles.001,6147,yes
+Adductor_longusl_Generated_Mesh_From_X3D1012_2,Adductor Longus (Left),Tendon.001,1281,yes
+Adductor_longusr_Generated_Mesh_From_X3D1012_1,Adductor Longus (Right),Muscles.001,6147,yes
+Adductor_longusr_Generated_Mesh_From_X3D1012_2,Adductor Longus (Right),Tendon.001,1281,yes
+Adductor_magnusl_Generated_Mesh_From_X3D1011_1,Adductor Magnus (Left),Muscles.001,7396,yes
+Adductor_magnusl_Generated_Mesh_From_X3D1011_2,Adductor Magnus (Left),Tendon.001,8988,yes
+Adductor_magnusr_Generated_Mesh_From_X3D1011_1,Adductor Magnus (Right),Muscles.001,7396,yes
+Adductor_magnusr_Generated_Mesh_From_X3D1011_2,Adductor Magnus (Right),Tendon.001,8988,yes
+Adductor_minimusl_Generated_Mesh_From_X3D1010,Adductor Minimus (Left),Muscles.001,1896,yes
+Adductor_minimusr_Generated_Mesh_From_X3D1010,Adductor Minimus (Right),Muscles.001,1896,yes
+Adductor_pollicis_longusl_Generated_Mesh_From_X3D1009_1,Adductor Pollicis Longus (Left),Muscles.001,3754,yes
+Adductor_pollicis_longusl_Generated_Mesh_From_X3D1009_2,Adductor Pollicis Longus (Left),Tendon.001,1170,yes
+Adductor_pollicis_longusr_Generated_Mesh_From_X3D1009_1,Adductor Pollicis Longus (Right),Muscles.001,3754,yes
+Adductor_pollicis_longusr_Generated_Mesh_From_X3D1009_2,Adductor Pollicis Longus (Right),Tendon.001,1170,yes
+Anconeus_musclel_Generated_Mesh_From_X3D1008_1,Anconeus Muscle (Left),Muscles.001,1744,yes
+Anconeus_musclel_Generated_Mesh_From_X3D1008_2,Anconeus Muscle (Left),Tendon.001,1140,yes
+Anconeus_muscler_Generated_Mesh_From_X3D1008_1,Anconeus Muscle (Right),Muscles.001,1744,yes
+Anconeus_muscler_Generated_Mesh_From_X3D1008_2,Anconeus Muscle (Right),Tendon.001,1140,yes
+Annular_ligament_of_radiusl_Cylinder006,Annular Ligament Of Radius (Left),Ligament.002,296,yes
+Annular_ligament_of_radiusr_Cylinder006,Annular Ligament Of Radius (Right),Ligament.002,296,yes
+Anterior_belly_of_digastric_musclel_Generated_Mesh_From_X3D1007,Anterior Belly Of Digastric Muscle (Left),Muscles.001,784,yes
+Anterior_belly_of_digastric_muscler_Generated_Mesh_From_X3D1007,Anterior Belly Of Digastric Muscle (Right),Muscles.001,784,yes
+Anterior_cruciate_ligamentl001_BezierCurve110,Anterior Cruciate Ligament (Left),None,1172,yes
+Anterior_cruciate_ligamentl_BezierCurve096,Anterior Cruciate Ligament (Left),None,1172,yes
+Anterior_cruciate_ligamentr001_BezierCurve110,Anterior Cruciate Ligament (Right),None,1172,yes
+Anterior_cruciate_ligamentr_BezierCurve096,Anterior Cruciate Ligament (Right),None,1172,yes
+Anterior_ligament_of_fibular_headl_Plane360,Anterior Ligament Of Fibular Head (Left),Ligament.002,104,yes
+Anterior_ligament_of_fibular_headr_Plane360,Anterior Ligament Of Fibular Head (Right),Ligament.002,104,yes
+Anterior_longitudinal_ligament_Plane359,Anterior Longitudinal Ligament,Ligament.002,18816,yes
+Anterior_meniscotibial_ligament__Lateral_meniscus_l_Plane358,Anterior Meniscotibial Ligament Lateral Meniscus (Left),Ligament.002,248,yes
+Anterior_meniscotibial_ligament__Lateral_meniscus_r_Plane358,Anterior Meniscotibial Ligament Lateral Meniscus (Right),Ligament.002,248,yes
+Anterior_meniscotibial_ligament__Medial_meniscus_l_Plane357,Anterior Meniscotibial Ligament Medial Meniscus (Left),Ligament.002,128,yes
+Anterior_meniscotibial_ligament__Medial_meniscus_r_Plane357,Anterior Meniscotibial Ligament Medial Meniscus (Right),Ligament.002,128,yes
+Anterior_sacro_iliac_ligamentl_Plane356,Anterior Sacro Iliac Ligament (Left),Ligament.002,504,yes
+Anterior_sacro_iliac_ligamentr_Plane356,Anterior Sacro Iliac Ligament (Right),Ligament.002,504,yes
+Anterior_sternoclavicular_ligamentl_Cube104,Anterior Sternoclavicular Ligament (Left),Ligament.002,320,yes
+Anterior_sternoclavicular_ligamentr_Cube104,Anterior Sternoclavicular Ligament (Right),Ligament.002,320,yes
+Anterior_talocalcaneal_ligamentl_Plane355,Anterior Talocalcaneal Ligament (Left),Ligament.002,104,yes
+Anterior_talocalcaneal_ligamentr_Plane355,Anterior Talocalcaneal Ligament (Right),Ligament.002,104,yes
+Anterior_talofibular_ligamentf001_Plane354,Anterior Talofibular Ligamentf,Ligament.002,32,yes
+Anterior_talofibular_ligamentf_Plane354,Anterior Talofibular Ligamentf,Ligament.002,32,yes
+Anterior_tibiofibular_ligamentl001_Plane352,Anterior Tibiofibular Ligament (Left),Ligament.002,248,yes
+Anterior_tibiofibular_ligamentl_Plane353,Anterior Tibiofibular Ligament (Left),Ligament.002,248,yes
+Anterior_tibiofibular_ligamentr001_Plane353,Anterior Tibiofibular Ligament (Right),Ligament.002,248,yes
+Anterior_tibiofibular_ligamentr_Plane352,Anterior Tibiofibular Ligament (Right),Ligament.002,248,yes
+Arcuate_ligamentl_Plane351,Arcuate Ligament (Left),Ligament.002,1288,yes
+Arcuate_ligamentr_Plane351,Arcuate Ligament (Right),Ligament.002,1288,yes
+Articular_capsule_of_elbowl_Cube103,Articular Capsule Of Elbow (Left),Articular_capsule.002,1728,yes
+Articular_capsule_of_elbowr_Cube103,Articular Capsule Of Elbow (Right),Articular_capsule.002,1728,yes
+Articular_capsule_of_glenohumeral_jointl_Generated_Mesh_From_X3D1006,Articular Capsule Of Glenohumeral Joint (Left),Articular_capsule.002,12360,yes
+Articular_capsule_of_glenohumeral_jointr_Generated_Mesh_From_X3D1006,Articular Capsule Of Glenohumeral Joint (Right),Articular_capsule.002,12360,yes
+Articular_capsule_of_hip_joint001_Generated_Mesh_From_X3D1004,Articular Capsule Of Hip Joint,Articular_capsule.002,1120,yes
+Articular_capsule_of_hip_joint_Generated_Mesh_From_X3D1004,Articular Capsule Of Hip Joint,Articular_capsule.002,1120,yes
+Articular_capsule_of_interphalangeal_joint_of_great_toel_Cube102,Articular Capsule Of Interphalangeal Joint Of Great Toe (Left),Articular_capsule.002,384,yes
+Articular_capsule_of_interphalangeal_joint_of_great_toer_Cube102,Articular Capsule Of Interphalangeal Joint Of Great Toe (Right),Articular_capsule.002,384,yes
+Articular_capsule_of_knee_jointl_Generated_Mesh_From_X3D1003,Articular Capsule Of Knee Joint (Left),Articular_capsule.002,2944,yes
+Articular_capsule_of_knee_jointr_Generated_Mesh_From_X3D1003,Articular Capsule Of Knee Joint (Right),Articular_capsule.002,2944,yes
+Articular_capsule_of_sternoclavicular_joint_l_Cube101,Articular Capsule Of Sternoclavicular Joint (Left),Articular_capsule.002,1008,yes
+Articular_capsule_of_sternoclavicular_joint_r_Cube101,Articular Capsule Of Sternoclavicular Joint (Right),Articular_capsule.002,1008,yes
+Articular_capsule_of_superior_tibiofibular_headl_Plane350,Articular Capsule Of Superior Tibiofibular Head (Left),Articular_capsule.002,560,yes
+Articular_capsule_of_superior_tibiofibular_headr_Plane350,Articular Capsule Of Superior Tibiofibular Head (Right),Articular_capsule.002,560,yes
+Articular_capsule_of_wristl_Cube100,Articular Capsule Of Wrist (Left),Articular_capsule.002,1342,yes
+Articular_capsule_of_wristr_Cube100,Articular Capsule Of Wrist (Right),Articular_capsule.002,1342,yes
+Articular_capsules_of_distal_interphalangeal_joints_l_Cube098,Articular Capsules Of Distal Interphalangeal Joints (Left),Articular_capsule.002,1504,yes
+Articular_capsules_of_distal_interphalangeal_joints_r_Cube098,Articular Capsules Of Distal Interphalangeal Joints (Right),Articular_capsule.002,1504,yes
+Articular_capsules_of_distal_interphalangeal_joints_of_footr_Cube099,Articular Capsules Of Distal Interphalangeal Joints Of Foot (Right),Articular_capsule.002,1424,yes
+Articular_capsules_of_distal_interphalangeal_joints_of_foot_Cube099,Articular Capsules Of Distal Interphalangeal Joints Of Foot,Articular_capsule.002,1424,yes
+Articular_capsules_of_metacarpophalangeal_joints_l001_Cube096,Articular Capsules Of Metacarpophalangeal Joints (Left),Articular_capsule.002,1568,yes
+Articular_capsules_of_metacarpophalangeal_joints_l_Cube097,Articular Capsules Of Metacarpophalangeal Joints (Left),Ligament.002,520,yes
+Articular_capsules_of_metacarpophalangeal_joints_r001_Cube097,Articular Capsules Of Metacarpophalangeal Joints (Right),Ligament.002,520,yes
+Articular_capsules_of_metacarpophalangeal_joints_r_Cube096,Articular Capsules Of Metacarpophalangeal Joints (Right),Articular_capsule.002,1568,yes
+Articular_capsules_of_metatarsophalangeal_joints_l_Cube095,Articular Capsules Of Metatarsophalangeal Joints (Left),Articular_capsule.002,1752,yes
+Articular_capsules_of_metatarsophalangeal_joints_r_Cube095,Articular Capsules Of Metatarsophalangeal Joints (Right),Articular_capsule.002,1752,yes
+Articular_capsules_of_proximal_interphalangeal_joints_l_Cube093,Articular Capsules Of Proximal Interphalangeal Joints (Left),Articular_capsule.002,1392,yes
+Articular_capsules_of_proximal_interphalangeal_joints_r_Cube093,Articular Capsules Of Proximal Interphalangeal Joints (Right),Articular_capsule.002,1392,yes
+Articular_capsules_of_proximal_interphalangeal_joints_of_fo_Cube094,Articular Capsules Of Proximal Interphalangeal Joints Of Fo,Articular_capsule.002,1464,yes
+Articular_capsules_of_proximal_interphalangeal_joints_of_footr_Cube094,Articular Capsules Of Proximal Interphalangeal Joints Of Foot (Right),Articular_capsule.002,1464,yes
+Articular_disc_of_acromioclavicular_jointl001_Cube092,Articular Disc Of Acromioclavicular Joint (Left),Cartilage.002,176,yes
+Articular_disc_of_acromioclavicular_jointl_Cube058,Articular Disc Of Acromioclavicular Joint (Left),Cartilage.001,176,yes
+Articular_disc_of_acromioclavicular_jointr001_Cube092,Articular Disc Of Acromioclavicular Joint (Right),Cartilage.002,176,yes
+Articular_disc_of_acromioclavicular_jointr_Cube058,Articular Disc Of Acromioclavicular Joint (Right),Cartilage.001,176,yes
+Articular_disc_of_distal_radio_ulnar_jointl_Plane349,Articular Disc Of Distal Radio Ulnar Joint (Left),Ligament.002,28,yes
+Articular_disc_of_distal_radio_ulnar_jointr_Plane349,Articular Disc Of Distal Radio Ulnar Joint (Right),Ligament.002,28,yes
+Articular_disc_of_sternoclavicular_jointl001_Cube091,Articular Disc Of Sternoclavicular Joint (Left),Cartilage.002,176,yes
+Articular_disc_of_sternoclavicular_jointl_Cube057,Articular Disc Of Sternoclavicular Joint (Left),Cartilage.001,176,yes
+Articular_disc_of_sternoclavicular_jointr001_Cube091,Articular Disc Of Sternoclavicular Joint (Right),Cartilage.002,176,yes
+Articular_disc_of_sternoclavicular_jointr_Cube057,Articular Disc Of Sternoclavicular Joint (Right),Cartilage.001,176,yes
+Ascending_part_of_trapezius_musclel_Generated_Mesh_From_X3D1002_1,Ascending Part Of Trapezius Muscle (Left),Muscles.001,4053,yes
+Ascending_part_of_trapezius_musclel_Generated_Mesh_From_X3D1002_2,Ascending Part Of Trapezius Muscle (Left),Tendon.001,5141,yes
+Ascending_part_of_trapezius_muscler_Generated_Mesh_From_X3D1002_1,Ascending Part Of Trapezius Muscle (Right),Muscles.001,4053,yes
+Ascending_part_of_trapezius_muscler_Generated_Mesh_From_X3D1002_2,Ascending Part Of Trapezius Muscle (Right),Tendon.001,5141,yes
+Atlas_Labels_Cone049_1,Atlas Labels,Bone,2078,yes
+Atlas_Labels_Cone049_2,Atlas Labels,Cartilage,116,yes
+Axis_Cone048_1,Axis,Bone,2100,yes
+Axis_Cone048_2,Axis,Cartilage,234,yes
+Brachialis_musclel_Generated_Mesh_From_X3D1001_1,Brachialis Muscle (Left),Muscles.001,4643,yes
+Brachialis_musclel_Generated_Mesh_From_X3D1001_2,Brachialis Muscle (Left),Tendon.001,2313,yes
+Brachialis_muscler_Generated_Mesh_From_X3D1001_1,Brachialis Muscle (Right),Muscles.001,4643,yes
+Brachialis_muscler_Generated_Mesh_From_X3D1001_2,Brachialis Muscle (Right),Tendon.001,2313,yes
+Brachioradialis_musclel_Generated_Mesh_From_X3D1000_1,Brachioradialis Muscle (Left),Muscles.001,10059,yes
+Brachioradialis_musclel_Generated_Mesh_From_X3D1000_2,Brachioradialis Muscle (Left),Tendon.001,4567,yes
+Brachioradialis_muscler_Generated_Mesh_From_X3D1000_1,Brachioradialis Muscle (Right),Muscles.001,10059,yes
+Brachioradialis_muscler_Generated_Mesh_From_X3D1000_2,Brachioradialis Muscle (Right),Tendon.001,4567,yes
+Bucinatorl_Generated_Mesh_From_X3D999,Bucinator (Left),Muscles.001,1770,yes
+Bucinatorr_Generated_Mesh_From_X3D999,Bucinator (Right),Muscles.001,1770,yes
+C3_Generated_Mesh_From_X3D011_1,C3,Bone,2224,yes
+C3_Generated_Mesh_From_X3D011_2,C3,Cartilage,216,yes
+C5_Generated_Mesh_From_X3D013_1,C5,Bone,2106,yes
+C5_Generated_Mesh_From_X3D013_2,C5,Cartilage,230,yes
+C6_Generated_Mesh_From_X3D014,C6,Bone,2304,yes
+C7_Generated_Mesh_From_X3D015,C7,Bone,2164,yes
+Calcaneal_tendonl_Generated_Mesh_From_X3D998,Calcaneal Tendon (Left),Tendon.001,9120,yes
+Calcaneal_tendonr_Generated_Mesh_From_X3D998,Calcaneal Tendon (Right),Tendon.001,9120,yes
+Calcaneocuboid_ligamentl_Plane348,Calcaneocuboid Ligament (Left),Ligament.002,96,yes
+Calcaneocuboid_ligamentr_Plane348,Calcaneocuboid Ligament (Right),Ligament.002,96,yes
+Calcaneofibular_ligamentl_Plane347,Calcaneofibular Ligament (Left),Ligament.002,32,yes
+Calcaneofibular_ligamentr_Plane347,Calcaneofibular Ligament (Right),Ligament.002,32,yes
+Calcaneonavicular_ligamentl_Plane346,Calcaneonavicular Ligament (Left),Ligament.002,32,yes
+Calcaneonavicular_ligamentr_Plane346,Calcaneonavicular Ligament (Right),Ligament.002,32,yes
+Calcaneusl_Generated_Mesh_From_X3D910_1,Calcaneus (Left),Bone,1225,yes
+Calcaneusl_Generated_Mesh_From_X3D910_2,Calcaneus (Left),Cartilage,203,yes
+Calcaneusr_Generated_Mesh_From_X3D910_1,Calcaneus (Right),Bone,1225,yes
+Calcaneusr_Generated_Mesh_From_X3D910_2,Calcaneus (Right),Cartilage,203,yes
+Capitate_bonel_Generated_Mesh_From_X3D736_1,Capitate Bone (Left),Bone,231,yes
+Capitate_bonel_Generated_Mesh_From_X3D736_2,Capitate Bone (Left),Cartilage,241,yes
+Capitate_boner_Generated_Mesh_From_X3D736_1,Capitate Bone (Right),Bone,231,yes
+Capitate_boner_Generated_Mesh_From_X3D736_2,Capitate Bone (Right),Cartilage,241,yes
+Capitohamate_interosseus_ligamentl_Plane345,Capitohamate Interosseus Ligament (Left),Ligament.002,32,yes
+Capitohamate_interosseus_ligamentr_Plane345,Capitohamate Interosseus Ligament (Right),Ligament.002,32,yes
+Cervical_vertebra_Labels001_Cone011,Cervical Vertebra Labels,Bone,75,yes
+Cervical_vertebra_Labels_Cone046_1,Cervical Vertebra Labels,Bone,1674,yes
+Cervical_vertebra_Labels_Cone046_2,Cervical Vertebra Labels,Cartilage,266,yes
+Claviclel_Cone010_1,Clavicle (Left),Bone,1306,yes
+Claviclel_Cone010_2,Clavicle (Left),Cartilage,242,yes
+Clavicler_Cone010_1,Clavicle (Right),Bone,1306,yes
+Clavicler_Cone010_2,Clavicle (Right),Cartilage,242,yes
+Clavicular_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D997_1,Clavicular Head Of Pectoralis Major Muscle (Left),Muscles.001,1417,yes
+Clavicular_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D997_2,Clavicular Head Of Pectoralis Major Muscle (Left),Tendon.001,283,yes
+Clavicular_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D997_1,Clavicular Head Of Pectoralis Major Muscle (Right),Muscles.001,1417,yes
+Clavicular_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D997_2,Clavicular Head Of Pectoralis Major Muscle (Right),Tendon.001,283,yes
+Clavicular_part_of_deltoid_musclel_Generated_Mesh_From_X3D996_1,Clavicular Part Of Deltoid Muscle (Left),Muscles.001,5521,yes
+Clavicular_part_of_deltoid_musclel_Generated_Mesh_From_X3D996_2,Clavicular Part Of Deltoid Muscle (Left),Tendon.001,285,yes
+Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_1,Clavicular Part Of Deltoid Muscle (Right),Muscles.001,5521,yes
+Clavicular_part_of_deltoid_muscler_Generated_Mesh_From_X3D996_2,Clavicular Part Of Deltoid Muscle (Right),Tendon.001,285,yes
+Coccygeus_musclel_Generated_Mesh_From_X3D995,Coccygeus Muscle (Left),Muscles.001,2070,yes
+Coccygeus_muscler_Generated_Mesh_From_X3D995,Coccygeus Muscle (Right),Muscles.001,2070,yes
+Coccyx_Cone045,Coccyx,Bone,1166,yes
+Collateral_interphalangeal_ligaments_of_footl_Cube090,Collateral Interphalangeal Ligaments Of Foot (Left),Ligament.002,2696,yes
+Collateral_interphalangeal_ligaments_of_footr_Cube090,Collateral Interphalangeal Ligaments Of Foot (Right),Ligament.002,2696,yes
+Collateral_interphalangeal_ligaments_of_handl_Cube089,Collateral Interphalangeal Ligaments Of Hand (Left),Ligament.002,1968,yes
+Collateral_interphalangeal_ligaments_of_handr_Cube089,Collateral Interphalangeal Ligaments Of Hand (Right),Ligament.002,1968,yes
+Collateral_metacarpophalangeal_ligamentsl_Cube088,Collateral Metacarpophalangeal Ligaments (Left),Ligament.002,1040,yes
+Collateral_metacarpophalangeal_ligamentsr_Cube088,Collateral Metacarpophalangeal Ligaments (Right),Ligament.002,1040,yes
+Collateral_metatarsophalangeal_ligamentsl_Cube087,Collateral Metatarsophalangeal Ligaments (Left),Ligament.002,1616,yes
+Collateral_metatarsophalangeal_ligamentsr_Cube087,Collateral Metatarsophalangeal Ligaments (Right),Ligament.002,1616,yes
+Common_tendinous_ringl_grp1017,Common Tendinous Ringl Grp1,Tendon.001,726,yes
+Common_tendinous_ringr_grp1017,Common Tendinous Ringr Grp1,Tendon.001,726,yes
+Conoid_ligamentl_Plane344,Conoid Ligament (Left),Ligament.002,56,yes
+Conoid_ligamentr_Plane344,Conoid Ligament (Right),Ligament.002,56,yes
+Coraco_acromial_ligamentl_Plane343,Coraco Acromial Ligament (Left),Ligament.002,12,yes
+Coraco_acromial_ligamentr_Plane343,Coraco Acromial Ligament (Right),Ligament.002,12,yes
+Coracobrachialis_musclel_Generated_Mesh_From_X3D994_1,Coracobrachialis Muscle (Left),Muscles.001,1679,yes
+Coracobrachialis_musclel_Generated_Mesh_From_X3D994_2,Coracobrachialis Muscle (Left),Tendon.001,643,yes
+Coracobrachialis_muscler_Generated_Mesh_From_X3D994_1,Coracobrachialis Muscle (Right),Muscles.001,1679,yes
+Coracobrachialis_muscler_Generated_Mesh_From_X3D994_2,Coracobrachialis Muscle (Right),Tendon.001,643,yes
+Coracohumeral_ligamentl_Generated_Mesh_From_X3D993,Coracohumeral Ligament (Left),Ligament.002,656,yes
+Coracohumeral_ligamentr_Generated_Mesh_From_X3D993,Coracohumeral Ligament (Right),Ligament.002,656,yes
+Cornea_l_grp1019,Cornea L Grp1,Cornea.001,4606,yes
+Cornea_r_grp1019,Cornea R Grp1,Cornea.001,4606,yes
+Corrugator_superciliil_Generated_Mesh_From_X3D992,Corrugator Supercilii (Left),Muscles.001,556,yes
+Corrugator_superciliir_Generated_Mesh_From_X3D992,Corrugator Supercilii (Right),Muscles.001,556,yes
+Costal_cartilagesl_Generated_Mesh_From_X3D108,Costal Cartilages (Left),Cartilage,10158,yes
+Costal_cartilagesr_Generated_Mesh_From_X3D108,Costal Cartilages (Right),Cartilage,58128,yes
+Costoclavicular_ligamentl_Cube086,Costoclavicular Ligament (Left),Ligament.002,96,yes
+Costoclavicular_ligamentr_Cube086,Costoclavicular Ligament (Right),Ligament.002,96,yes
+Costotransverse_ligamentr_Plane342,Costotransverse Ligament (Right),Ligament.002,1144,yes
+Cuboid_bonel_Generated_Mesh_From_X3D894_1,Cuboid Bone (Left),Bone,786,yes
+Cuboid_bonel_Generated_Mesh_From_X3D894_2,Cuboid Bone (Left),Cartilage,188,yes
+Cuboid_boner_Generated_Mesh_From_X3D894_1,Cuboid Bone (Right),Bone,786,yes
+Cuboid_boner_Generated_Mesh_From_X3D894_2,Cuboid Bone (Right),Cartilage,188,yes
+Cuneocuboid_interosseus_ligamentl_Generated_Mesh_From_X3D991,Cuneocuboid Interosseus Ligament (Left),Ligament.002,80,yes
+Cuneocuboid_interosseus_ligamentr001_Generated_Mesh_From_X3D991,Cuneocuboid Interosseus Ligament (Right),Ligament.002,80,yes
+Cuneometatarsal_interosseus_ligamentsl_Plane341,Cuneometatarsal Interosseus Ligaments (Left),Ligament.002,96,yes
+Cuneometatarsal_interosseus_ligamentsr_Plane341,Cuneometatarsal Interosseus Ligaments (Right),Ligament.002,96,yes
+Deep_head_of_flexor_pollicis_brevisl_Generated_Mesh_From_X3D990_1,Deep Head Of Flexor Pollicis Brevis (Left),Muscles.001,1290,yes
+Deep_head_of_flexor_pollicis_brevisl_Generated_Mesh_From_X3D990_2,Deep Head Of Flexor Pollicis Brevis (Left),Tendon.001,202,yes
+Deep_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D990_1,Deep Head Of Flexor Pollicis Brevis (Right),Muscles.001,1290,yes
+Deep_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D990_2,Deep Head Of Flexor Pollicis Brevis (Right),Tendon.001,202,yes
+Deep_head_of_prontaor_teres_musclel_Generated_Mesh_From_X3D989_1,Deep Head Of Prontaor Teres Muscle (Left),Muscles.001,2011,yes
+Deep_head_of_prontaor_teres_musclel_Generated_Mesh_From_X3D989_2,Deep Head Of Prontaor Teres Muscle (Left),Tendon.001,219,yes
+Deep_head_of_prontaor_teres_muscler_Generated_Mesh_From_X3D989_1,Deep Head Of Prontaor Teres Muscle (Right),Muscles.001,2011,yes
+Deep_head_of_prontaor_teres_muscler_Generated_Mesh_From_X3D989_2,Deep Head Of Prontaor Teres Muscle (Right),Tendon.001,219,yes
+Deep_part_of_masseterl_Generated_Mesh_From_X3D988_1,Deep Part Of Masseter (Left),Muscles.001,1409,yes
+Deep_part_of_masseterl_Generated_Mesh_From_X3D988_2,Deep Part Of Masseter (Left),Tendon.001,579,yes
+Deep_part_of_masseterr_Generated_Mesh_From_X3D988_1,Deep Part Of Masseter (Right),Muscles.001,1409,yes
+Deep_part_of_masseterr_Generated_Mesh_From_X3D988_2,Deep Part Of Masseter (Right),Tendon.001,579,yes
+Deep_part_of_tibial_collateral_ligamentl_Plane340,Deep Part Of Tibial Collateral Ligament (Left),Ligament.002,256,yes
+Deep_part_of_tibial_collateral_ligamentr_Plane340,Deep Part Of Tibial Collateral Ligament (Right),Ligament.002,256,yes
+Deep_transverse_metacarpal_ligamentl_Cube085,Deep Transverse Metacarpal Ligament (Left),Ligament.002,168,yes
+Deep_transverse_metacarpal_ligamentr_Cube085,Deep Transverse Metacarpal Ligament (Right),Ligament.002,168,yes
+Deep_transverse_metatarsal_ligamentl_Cube084,Deep Transverse Metatarsal Ligament (Left),Ligament.002,152,yes
+Deep_transverse_metatarsal_ligamentr_Cube084,Deep Transverse Metatarsal Ligament (Right),Ligament.002,152,yes
+Depressor_anguli_orisl_Generated_Mesh_From_X3D987_1,Depressor Anguli Oris (Left),Muscles.001,210,yes
+Depressor_anguli_orisl_Generated_Mesh_From_X3D987_2,Depressor Anguli Oris (Left),Tendon.001,980,yes
+Depressor_anguli_orisr_Generated_Mesh_From_X3D987_1,Depressor Anguli Oris (Right),Muscles.001,210,yes
+Depressor_anguli_orisr_Generated_Mesh_From_X3D987_2,Depressor Anguli Oris (Right),Tendon.001,980,yes
+Depressor_labii_superiorisl_Generated_Mesh_From_X3D986_1,Depressor Labii Superioris (Left),Muscles.001,1237,yes
+Depressor_labii_superiorisl_Generated_Mesh_From_X3D986_2,Depressor Labii Superioris (Left),Tendon.001,427,yes
+Depressor_labii_superiorisr_Generated_Mesh_From_X3D986_1,Depressor Labii Superioris (Right),Muscles.001,1237,yes
+Depressor_labii_superiorisr_Generated_Mesh_From_X3D986_2,Depressor Labii Superioris (Right),Tendon.001,427,yes
+Depressor_septi_nasil_Generated_Mesh_From_X3D985,Depressor Septi Nasi (Left),Muscles.001,554,yes
+Depressor_septi_nasir_Generated_Mesh_From_X3D985,Depressor Septi Nasi (Right),Muscles.001,554,yes
+Descending_part_of_iliofemoral_ligamentl_Generated_Mesh_From_X3D984,Descending Part Of Iliofemoral Ligament (Left),Ligament.002,608,yes
+Descending_part_of_iliofemoral_ligamentr_Generated_Mesh_From_X3D984,Descending Part Of Iliofemoral Ligament (Right),Ligament.002,608,yes
+Descending_part_of_trapezius_musclel_Generated_Mesh_From_X3D982_1,Descending Part Of Trapezius Muscle (Left),Muscles.001,6714,yes
+Descending_part_of_trapezius_musclel_Generated_Mesh_From_X3D982_2,Descending Part Of Trapezius Muscle (Left),Tendon.001,6808,yes
+Descending_part_of_trapezius_muscler_Generated_Mesh_From_X3D982_1,Descending Part Of Trapezius Muscle (Right),Muscles.001,6714,yes
+Descending_part_of_trapezius_muscler_Generated_Mesh_From_X3D982_2,Descending Part Of Trapezius Muscle (Right),Tendon.001,6808,yes
+Diaphragm_Generated_Mesh_From_X3D981,Diaphragm,Muscles.001,42132,yes
+Distal_phalanx_of_1st_fingerl_Generated_Mesh_From_X3D735_1,Distal Phalanx Of 1st Finger (Left),Bone,200,yes
+Distal_phalanx_of_1st_fingerl_Generated_Mesh_From_X3D735_2,Distal Phalanx Of 1st Finger (Left),Cartilage,22,yes
+Distal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D735_1,Distal Phalanx Of 1st Finger (Right),Bone,200,yes
+Distal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D735_2,Distal Phalanx Of 1st Finger (Right),Cartilage,22,yes
+Distal_phalanx_of_1st_finger_of_footl_Generated_Mesh_From_X3D890_1,Distal Phalanx Of 1st Finger Of Foot (Left),Bone,391,yes
+Distal_phalanx_of_1st_finger_of_footl_Generated_Mesh_From_X3D890_2,Distal Phalanx Of 1st Finger Of Foot (Left),Cartilage,75,yes
+Distal_phalanx_of_1st_finger_of_footr_Generated_Mesh_From_X3D890_1,Distal Phalanx Of 1st Finger Of Foot (Right),Bone,391,yes
+Distal_phalanx_of_1st_finger_of_footr_Generated_Mesh_From_X3D890_2,Distal Phalanx Of 1st Finger Of Foot (Right),Cartilage,75,yes
+Distal_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D733_1,Distal Phalanx Of 2d Finger (Left),Bone,222,yes
+Distal_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D733_2,Distal Phalanx Of 2d Finger (Left),Cartilage,28,yes
+Distal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D733_1,Distal Phalanx Of 2d Finger (Right),Bone,222,yes
+Distal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D733_2,Distal Phalanx Of 2d Finger (Right),Cartilage,28,yes
+Distal_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D887_1,Distal Phalanx Of 2d Finger Of Foot (Left),Bone,199,yes
+Distal_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D887_2,Distal Phalanx Of 2d Finger Of Foot (Left),Cartilage,37,yes
+Distal_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D887_1,Distal Phalanx Of 2d Finger Of Foot (Right),Bone,199,yes
+Distal_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D887_2,Distal Phalanx Of 2d Finger Of Foot (Right),Cartilage,37,yes
+Distal_phalanx_of_3d_fingerl_Generated_Mesh_From_X3D732_1,Distal Phalanx Of 3d Finger (Left),Bone,167,yes
+Distal_phalanx_of_3d_fingerl_Generated_Mesh_From_X3D732_2,Distal Phalanx Of 3d Finger (Left),Cartilage,25,yes
+Distal_phalanx_of_3d_fingerr_Generated_Mesh_From_X3D732_1,Distal Phalanx Of 3d Finger (Right),Bone,167,yes
+Distal_phalanx_of_3d_fingerr_Generated_Mesh_From_X3D732_2,Distal Phalanx Of 3d Finger (Right),Cartilage,25,yes
+Distal_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D881_1,Distal Phalanx Of 3rd Finger Of Foot (Left),Bone,261,yes
+Distal_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D881_2,Distal Phalanx Of 3rd Finger Of Foot (Left),Cartilage,57,yes
+Distal_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D881_1,Distal Phalanx Of 3rd Finger Of Foot (Right),Bone,261,yes
+Distal_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D881_2,Distal Phalanx Of 3rd Finger Of Foot (Right),Cartilage,57,yes
+Distal_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D725_1,Distal Phalanx Of 4th Finger (Left),Bone,122,yes
+Distal_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D725_2,Distal Phalanx Of 4th Finger (Left),Cartilage,12,yes
+Distal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D725_1,Distal Phalanx Of 4th Finger (Right),Bone,122,yes
+Distal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D725_2,Distal Phalanx Of 4th Finger (Right),Cartilage,12,yes
+Distal_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D875_1,Distal Phalanx Of 4th Finger Of Foot (Left),Bone,236,yes
+Distal_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D875_2,Distal Phalanx Of 4th Finger Of Foot (Left),Cartilage,42,yes
+Distal_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D875_1,Distal Phalanx Of 4th Finger Of Foot (Right),Bone,236,yes
+Distal_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D875_2,Distal Phalanx Of 4th Finger Of Foot (Right),Cartilage,42,yes
+Distal_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D722_1,Distal Phalanx Of 5th Finger (Left),Bone,182,yes
+Distal_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D722_2,Distal Phalanx Of 5th Finger (Left),Cartilage,10,yes
+Distal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D722_1,Distal Phalanx Of 5th Finger (Right),Bone,182,yes
+Distal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D722_2,Distal Phalanx Of 5th Finger (Right),Cartilage,10,yes
+Distal_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D872_1,Distal Phalanx Of 5th Finger Of Foot (Left),Bone,221,yes
+Distal_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D872_2,Distal Phalanx Of 5th Finger Of Foot (Left),Cartilage,15,yes
+Distal_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D872_1,Distal Phalanx Of 5th Finger Of Foot (Right),Bone,221,yes
+Distal_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D872_2,Distal Phalanx Of 5th Finger Of Foot (Right),Cartilage,15,yes
+Dorsal_calcaneocuboid_ligamentl_Plane339,Dorsal Calcaneocuboid Ligament (Left),Ligament.002,32,yes
+Dorsal_calcaneocuboid_ligamentr_Plane339,Dorsal Calcaneocuboid Ligament (Right),Ligament.002,32,yes
+Dorsal_carpometacarpal_ligamentsl_Plane338,Dorsal Carpometacarpal Ligaments (Left),Ligament.002,400,yes
+Dorsal_carpometacarpal_ligamentsr_Plane338,Dorsal Carpometacarpal Ligaments (Right),Ligament.002,400,yes
+Dorsal_cuboidonavicular_ligamentl_Plane337,Dorsal Cuboidonavicular Ligament (Left),Ligament.002,32,yes
+Dorsal_cuboidonavicular_ligamentr_Plane337,Dorsal Cuboidonavicular Ligament (Right),Ligament.002,32,yes
+Dorsal_cuneocuboid_ligamentl_Plane336,Dorsal Cuneocuboid Ligament (Left),Ligament.002,32,yes
+Dorsal_cuneocuboid_ligamentr_Plane336,Dorsal Cuneocuboid Ligament (Right),Ligament.002,32,yes
+Dorsal_cuneonavicular_ligamentsl_Plane335,Dorsal Cuneonavicular Ligaments (Left),Ligament.002,168,yes
+Dorsal_cuneonavicular_ligamentsr_Plane335,Dorsal Cuneonavicular Ligaments (Right),Ligament.002,168,yes
+Dorsal_intercarpal_ligamentsl_Plane334,Dorsal Intercarpal Ligaments (Left),Ligament.002,440,yes
+Dorsal_intercarpal_ligamentsr_Plane334,Dorsal Intercarpal Ligaments (Right),Ligament.002,440,yes
+Dorsal_intercuneiform_ligamentsl_Plane333,Dorsal Intercuneiform Ligaments (Left),Ligament.002,64,yes
+Dorsal_intercuneiform_ligamentsr_Plane333,Dorsal Intercuneiform Ligaments (Right),Ligament.002,64,yes
+Dorsal_interossei_muscles_of_footl_Generated_Mesh_From_X3D980,Dorsal Interossei Muscles Of Foot (Left),Muscles.001,3894,yes
+Dorsal_interossei_muscles_of_footr_Generated_Mesh_From_X3D980,Dorsal Interossei Muscles Of Foot (Right),Muscles.001,3894,yes
+dorsal_interossei_muscles_of_handl_Generated_Mesh_From_X3D979_1,Dorsal Interossei Muscles Of Hand (Left),Muscles.001,2044,yes
+dorsal_interossei_muscles_of_handl_Generated_Mesh_From_X3D979_2,Dorsal Interossei Muscles Of Hand (Left),Tendon.001,686,yes
+dorsal_interossei_muscles_of_handr_Generated_Mesh_From_X3D979_1,Dorsal Interossei Muscles Of Hand (Right),Muscles.001,2044,yes
+dorsal_interossei_muscles_of_handr_Generated_Mesh_From_X3D979_2,Dorsal Interossei Muscles Of Hand (Right),Tendon.001,686,yes
+Dorsal_metacarpal_ligamentsl_Plane332,Dorsal Metacarpal Ligaments (Left),Ligament.002,128,yes
+Dorsal_metacarpal_ligamentsr_Plane332,Dorsal Metacarpal Ligaments (Right),Ligament.002,128,yes
+Dorsal_metatarsal_ligamentsl_Plane331,Dorsal Metatarsal Ligaments (Left),Ligament.002,152,yes
+Dorsal_metatarsal_ligamentsr_Plane331,Dorsal Metatarsal Ligaments (Right),Ligament.002,152,yes
+Dorsal_parts_of_lateral_intertransversarii_lumborum_musclesl_Generated_Mesh_From_X3D978,Dorsal Parts Of Lateral Intertransversarii Lumborum Muscles (Left),Muscles.001,1442,yes
+Dorsal_parts_of_lateral_intertransversarii_lumborum_musclesr_Generated_Mesh_From_X3D978,Dorsal Parts Of Lateral Intertransversarii Lumborum Muscles (Right),Muscles.001,1442,yes
+Dorsal_radio_ulnar_ligamentl_Plane330,Dorsal Radio Ulnar Ligament (Left),Ligament.002,32,yes
+Dorsal_radio_ulnar_ligamentr_Plane330,Dorsal Radio Ulnar Ligament (Right),Ligament.002,32,yes
+Dorsal_radiocarpal_ligamentl_Plane329,Dorsal Radiocarpal Ligament (Left),Ligament.002,248,yes
+Dorsal_radiocarpal_ligamentr_Plane329,Dorsal Radiocarpal Ligament (Right),Ligament.002,248,yes
+Dorsal_scaphotriquetral_ligamentl_Plane328,Dorsal Scaphotriquetral Ligament (Left),Ligament.002,104,yes
+Dorsal_scaphotriquetral_ligamentr_Plane328,Dorsal Scaphotriquetral Ligament (Right),Ligament.002,104,yes
+Dorsal_tarsometatarsal_ligamentsl_Plane327,Dorsal Tarsometatarsal Ligaments (Left),Ligament.002,392,yes
+Dorsal_tarsometatarsal_ligamentsr_Plane327,Dorsal Tarsometatarsal Ligaments (Right),Ligament.002,392,yes
+Dorsal_ulnocarpal_ligamentl_Plane326,Dorsal Ulnocarpal Ligament (Left),Ligament.002,120,yes
+Dorsal_ulnocarpal_ligamentr_Plane326,Dorsal Ulnocarpal Ligament (Right),Ligament.002,120,yes
+Epicranial_aponeurosis001_Generated_Mesh_From_X3D977,Epicranial Aponeurosis,Tendon.001,40238,yes
+Epicranial_aponeurosis_Generated_Mesh_From_X3D977,Epicranial Aponeurosis,Tendon.001,40238,yes
+Ethmoid_bone_Generated_Mesh_From_X3D638,Ethmoid Bone,Bone,4064,yes
+Extensor_carpi_radialis_brevisl_Generated_Mesh_From_X3D976_1,Extensor Carpi Radialis Brevis (Left),Muscles.001,3775,yes
+Extensor_carpi_radialis_brevisl_Generated_Mesh_From_X3D976_2,Extensor Carpi Radialis Brevis (Left),Tendon.001,2509,yes
+Extensor_carpi_radialis_brevisr_Generated_Mesh_From_X3D976_1,Extensor Carpi Radialis Brevis (Right),Muscles.001,3775,yes
+Extensor_carpi_radialis_brevisr_Generated_Mesh_From_X3D976_2,Extensor Carpi Radialis Brevis (Right),Tendon.001,2509,yes
+Extensor_carpi_radialis_longusl_Generated_Mesh_From_X3D975_1,Extensor Carpi Radialis Longus (Left),Muscles.001,4580,yes
+Extensor_carpi_radialis_longusl_Generated_Mesh_From_X3D975_2,Extensor Carpi Radialis Longus (Left),Tendon.001,2834,yes
+Extensor_carpi_radialis_longusr_Generated_Mesh_From_X3D975_1,Extensor Carpi Radialis Longus (Right),Muscles.001,4580,yes
+Extensor_carpi_radialis_longusr_Generated_Mesh_From_X3D975_2,Extensor Carpi Radialis Longus (Right),Tendon.001,2834,yes
+Extensor_digiti_minimil_Generated_Mesh_From_X3D974_1,Extensor Digiti Minimi (Left),Muscles.001,2791,yes
+Extensor_digiti_minimil_Generated_Mesh_From_X3D974_2,Extensor Digiti Minimi (Left),Tendon.001,1513,yes
+Extensor_digiti_minimir_Generated_Mesh_From_X3D974_1,Extensor Digiti Minimi (Right),Muscles.001,2791,yes
+Extensor_digiti_minimir_Generated_Mesh_From_X3D974_2,Extensor Digiti Minimi (Right),Tendon.001,1513,yes
+Extensor_digitoruml_Generated_Mesh_From_X3D971_1,Extensor Digitorum (Left),Muscles.001,4602,yes
+Extensor_digitoruml_Generated_Mesh_From_X3D971_2,Extensor Digitorum (Left),Tendon.001,8218,yes
+Extensor_digitorumr_Generated_Mesh_From_X3D971_1,Extensor Digitorum (Right),Muscles.001,4602,yes
+Extensor_digitorumr_Generated_Mesh_From_X3D971_2,Extensor Digitorum (Right),Tendon.001,8218,yes
+Extensor_digitorum_brevisl_Generated_Mesh_From_X3D973_1,Extensor Digitorum Brevis (Left),Muscles.001,5587,yes
+Extensor_digitorum_brevisl_Generated_Mesh_From_X3D973_2,Extensor Digitorum Brevis (Left),Tendon.001,783,yes
+Extensor_digitorum_brevisr_Generated_Mesh_From_X3D973_1,Extensor Digitorum Brevis (Right),Muscles.001,5587,yes
+Extensor_digitorum_brevisr_Generated_Mesh_From_X3D973_2,Extensor Digitorum Brevis (Right),Tendon.001,783,yes
+Extensor_digitorum_longusl_Generated_Mesh_From_X3D972_1,Extensor Digitorum Longus (Left),Muscles.001,5308,yes
+Extensor_digitorum_longusl_Generated_Mesh_From_X3D972_2,Extensor Digitorum Longus (Left),Tendon.001,6612,yes
+Extensor_digitorum_longusr_Generated_Mesh_From_X3D972_1,Extensor Digitorum Longus (Right),Muscles.001,5308,yes
+Extensor_digitorum_longusr_Generated_Mesh_From_X3D972_2,Extensor Digitorum Longus (Right),Tendon.001,6612,yes
+Extensor_hallucis_brevisl_Generated_Mesh_From_X3D970_1,Extensor Hallucis Brevis (Left),Muscles.001,1404,yes
+Extensor_hallucis_brevisl_Generated_Mesh_From_X3D970_2,Extensor Hallucis Brevis (Left),Tendon.001,834,yes
+Extensor_hallucis_brevisr_Generated_Mesh_From_X3D970_1,Extensor Hallucis Brevis (Right),Muscles.001,1404,yes
+Extensor_hallucis_brevisr_Generated_Mesh_From_X3D970_2,Extensor Hallucis Brevis (Right),Tendon.001,834,yes
+Extensor_hallucis_longusl_Generated_Mesh_From_X3D969_1,Extensor Hallucis Longus (Left),Muscles.001,2687,yes
+Extensor_hallucis_longusl_Generated_Mesh_From_X3D969_2,Extensor Hallucis Longus (Left),Tendon.001,2039,yes
+Extensor_hallucis_longusr_Generated_Mesh_From_X3D969_1,Extensor Hallucis Longus (Right),Muscles.001,2687,yes
+Extensor_hallucis_longusr_Generated_Mesh_From_X3D969_2,Extensor Hallucis Longus (Right),Tendon.001,2039,yes
+Extensor_indicisl_Generated_Mesh_From_X3D968_1,Extensor Indicis (Left),Muscles.001,1625,yes
+Extensor_indicisl_Generated_Mesh_From_X3D968_2,Extensor Indicis (Left),Tendon.001,659,yes
+Extensor_indicisr_Generated_Mesh_From_X3D968_1,Extensor Indicis (Right),Muscles.001,1625,yes
+Extensor_indicisr_Generated_Mesh_From_X3D968_2,Extensor Indicis (Right),Tendon.001,659,yes
+Extensor_pollicis_brevisl_Generated_Mesh_From_X3D964_1,Extensor Pollicis Brevis (Left),Muscles.001,1396,yes
+Extensor_pollicis_brevisl_Generated_Mesh_From_X3D964_2,Extensor Pollicis Brevis (Left),Tendon.001,950,yes
+Extensor_pollicis_brevisr_Generated_Mesh_From_X3D964_1,Extensor Pollicis Brevis (Right),Muscles.001,1396,yes
+Extensor_pollicis_brevisr_Generated_Mesh_From_X3D964_2,Extensor Pollicis Brevis (Right),Tendon.001,950,yes
+Extensor_pollicis_longusl_Generated_Mesh_From_X3D963_1,Extensor Pollicis Longus (Left),Muscles.001,1941,yes
+Extensor_pollicis_longusl_Generated_Mesh_From_X3D963_2,Extensor Pollicis Longus (Left),Tendon.001,1265,yes
+Extensor_pollicis_longusr_Generated_Mesh_From_X3D963_1,Extensor Pollicis Longus (Right),Muscles.001,1941,yes
+Extensor_pollicis_longusr_Generated_Mesh_From_X3D963_2,Extensor Pollicis Longus (Right),Tendon.001,1265,yes
+External_abdominal_obliquel_Generated_Mesh_From_X3D962,External Abdominal Oblique (Left),Muscles.001,118492,yes
+External_abdominal_obliquer_Generated_Mesh_From_X3D962,External Abdominal Oblique (Right),Muscles.001,118492,yes
+External_anal_sphincterl_Generated_Mesh_From_X3D883,External Anal Sphincter (Left),Muscles.001,404,yes
+External_anal_sphincterr_Generated_Mesh_From_X3D883,External Anal Sphincter (Right),Muscles.001,404,yes
+External_intercostal_membranel_Plane325,External Intercostal Membrane (Left),Ligament.002,25440,yes
+External_intercostal_membraner_Plane325,External Intercostal Membrane (Right),Ligament.002,25440,yes
+External_intercostal_musclesl_Generated_Mesh_From_X3D879,External Intercostal Muscles (Left),Muscles.001,87127,yes
+External_intercostal_musclesr_Generated_Mesh_From_X3D879,External Intercostal Muscles (Right),Muscles.001,87127,yes
+Fascia_latal_Generated_Mesh_From_X3D871,Fascia Lata (Left),Tendon.001,48612,yes
+Fascia_latar_Generated_Mesh_From_X3D871,Fascia Lata (Right),Tendon.001,48612,yes
+Femurl_Generated_Mesh_From_X3D867_1,Femur (Left),Bone,2963,yes
+Femurl_Generated_Mesh_From_X3D867_2,Femur (Left),Cartilage,821,yes
+Femurr_Cone043_1,Femur (Right),Bone,2963,yes
+Femurr_Cone043_2,Femur (Right),Cartilage,821,yes
+Fibrous_loop_for_intermediate_digastric_tendon_l_Generated_Mesh_From_X3D861,Fibrous Loop For Intermediate Digastric Tendon (Left),Ligament.002,456,yes
+Fibrous_loop_for_intermediate_digastric_tendon_r_Generated_Mesh_From_X3D861,Fibrous Loop For Intermediate Digastric Tendon (Right),Ligament.002,456,yes
+Fibulal_Generated_Mesh_From_X3D348_1,Fibula (Left),Bone,1213,yes
+Fibulal_Generated_Mesh_From_X3D348_2,Fibula (Left),Cartilage,33,yes
+Fibular_Cone029_1,Fibula (Right),Bone,1170,yes
+Fibular_Cone029_2,Fibula (Right),Cartilage,94,yes
+Fibular_collateral_ligamentl_Plane324,Fibular Collateral Ligament (Left),Ligament.002,80,yes
+Fibular_collateral_ligamentr_Plane324,Fibular Collateral Ligament (Right),Ligament.002,80,yes
+Fibularis_brevisl_Generated_Mesh_From_X3D859_1,Fibularis Brevis (Left),Muscles.001,4283,yes
+Fibularis_brevisl_Generated_Mesh_From_X3D859_2,Fibularis Brevis (Left),Tendon.001,2611,yes
+Fibularis_brevisr_Generated_Mesh_From_X3D859_1,Fibularis Brevis (Right),Muscles.001,4283,yes
+Fibularis_brevisr_Generated_Mesh_From_X3D859_2,Fibularis Brevis (Right),Tendon.001,2611,yes
+Fibularis_longusl_Generated_Mesh_From_X3D857_1,Fibularis Longus (Left),Muscles.001,6748,yes
+Fibularis_longusl_Generated_Mesh_From_X3D857_2,Fibularis Longus (Left),Tendon.001,4298,yes
+Fibularis_longusr_Generated_Mesh_From_X3D857_1,Fibularis Longus (Right),Muscles.001,6748,yes
+Fibularis_longusr_Generated_Mesh_From_X3D857_2,Fibularis Longus (Right),Tendon.001,4298,yes
+Fibularis_tertiusl_Generated_Mesh_From_X3D855_1,Fibularis Tertius (Left),Muscles.001,473,yes
+Fibularis_tertiusl_Generated_Mesh_From_X3D855_2,Fibularis Tertius (Left),Tendon.001,701,yes
+Fibularis_tertiusr_Generated_Mesh_From_X3D855_1,Fibularis Tertius (Right),Muscles.001,473,yes
+Fibularis_tertiusr_Generated_Mesh_From_X3D855_2,Fibularis Tertius (Right),Tendon.001,701,yes
+Flexor_carpi_radialisl_Generated_Mesh_From_X3D737_1,Flexor Carpi Radialis (Left),Muscles.001,2240,yes
+Flexor_carpi_radialisl_Generated_Mesh_From_X3D737_2,Flexor Carpi Radialis (Left),Tendon.001,1094,yes
+Flexor_carpi_radialisr_Generated_Mesh_From_X3D737_1,Flexor Carpi Radialis (Right),Muscles.001,2240,yes
+Flexor_carpi_radialisr_Generated_Mesh_From_X3D737_2,Flexor Carpi Radialis (Right),Tendon.001,1094,yes
+Flexor_digiti_minimi_of_footl_Generated_Mesh_From_X3D668,Flexor Digiti Minimi Of Foot (Left),Muscles.001,928,yes
+Flexor_digiti_minimi_of_footr_Generated_Mesh_From_X3D668,Flexor Digiti Minimi Of Foot (Right),Muscles.001,928,yes
+Flexor_digiti_minimi_of_handl_Generated_Mesh_From_X3D584_1,Flexor Digiti Minimi Of Hand (Left),Muscles.001,386,yes
+Flexor_digiti_minimi_of_handl_Generated_Mesh_From_X3D584_2,Flexor Digiti Minimi Of Hand (Left),Tendon.001,232,yes
+Flexor_digiti_minimi_of_handr_Generated_Mesh_From_X3D584_1,Flexor Digiti Minimi Of Hand (Right),Muscles.001,386,yes
+Flexor_digiti_minimi_of_handr_Generated_Mesh_From_X3D584_2,Flexor Digiti Minimi Of Hand (Right),Tendon.001,232,yes
+Flexor_digitorum_brevisl_Generated_Mesh_From_X3D504_1,Flexor Digitorum Brevis (Left),Muscles.001,2449,yes
+Flexor_digitorum_brevisl_Generated_Mesh_From_X3D504_2,Flexor Digitorum Brevis (Left),Tendon.001,3999,yes
+Flexor_digitorum_brevisr_Generated_Mesh_From_X3D504_1,Flexor Digitorum Brevis (Right),Muscles.001,2449,yes
+Flexor_digitorum_brevisr_Generated_Mesh_From_X3D504_2,Flexor Digitorum Brevis (Right),Tendon.001,3999,yes
+Flexor_digitorum_longusl_Generated_Mesh_From_X3D502_1,Flexor Digitorum Longus (Left),Muscles.001,5696,yes
+Flexor_digitorum_longusl_Generated_Mesh_From_X3D502_2,Flexor Digitorum Longus (Left),Tendon.001,7976,yes
+Flexor_digitorum_longusr_Generated_Mesh_From_X3D502_1,Flexor Digitorum Longus (Right),Muscles.001,5696,yes
+Flexor_digitorum_longusr_Generated_Mesh_From_X3D502_2,Flexor Digitorum Longus (Right),Tendon.001,7976,yes
+Flexor_digitorum_profundusl_Generated_Mesh_From_X3D500_1,Flexor Digitorum Profundus (Left),Muscles.001,6687,yes
+Flexor_digitorum_profundusl_Generated_Mesh_From_X3D500_2,Flexor Digitorum Profundus (Left),Tendon.001,7533,yes
+Flexor_digitorum_profundusr_Generated_Mesh_From_X3D500_1,Flexor Digitorum Profundus (Right),Muscles.001,6687,yes
+Flexor_digitorum_profundusr_Generated_Mesh_From_X3D500_2,Flexor Digitorum Profundus (Right),Tendon.001,7533,yes
+Flexor_digitorum_superficialisl_Generated_Mesh_From_X3D498_1,Flexor Digitorum Superficialis (Left),Muscles.001,9784,yes
+Flexor_digitorum_superficialisl_Generated_Mesh_From_X3D498_2,Flexor Digitorum Superficialis (Left),Tendon.001,15812,yes
+Flexor_digitorum_superficialisr_Generated_Mesh_From_X3D498_1,Flexor Digitorum Superficialis (Right),Muscles.001,9784,yes
+Flexor_digitorum_superficialisr_Generated_Mesh_From_X3D498_2,Flexor Digitorum Superficialis (Right),Tendon.001,15812,yes
+Flexor_hallucis_longusl_Generated_Mesh_From_X3D496_1,Flexor Hallucis Longus (Left),Muscles.001,7258,yes
+Flexor_hallucis_longusl_Generated_Mesh_From_X3D496_2,Flexor Hallucis Longus (Left),Tendon.001,4500,yes
+Flexor_hallucis_longusr_Generated_Mesh_From_X3D496_1,Flexor Hallucis Longus (Right),Muscles.001,7258,yes
+Flexor_hallucis_longusr_Generated_Mesh_From_X3D496_2,Flexor Hallucis Longus (Right),Tendon.001,4500,yes
+Flexor_pollicis_longusl_Generated_Mesh_From_X3D494_1,Flexor Pollicis Longus (Left),Muscles.001,2087,yes
+Flexor_pollicis_longusl_Generated_Mesh_From_X3D494_2,Flexor Pollicis Longus (Left),Tendon.001,1247,yes
+Flexor_pollicis_longusr_Generated_Mesh_From_X3D494_1,Flexor Pollicis Longus (Right),Muscles.001,2087,yes
+Flexor_pollicis_longusr_Generated_Mesh_From_X3D494_2,Flexor Pollicis Longus (Right),Tendon.001,1247,yes
+Frenula_capsulael_Generated_Mesh_From_X3D493,Frenula Capsulae (Left),Ligament.002,864,yes
+Frenula_capsulaer_Generated_Mesh_From_X3D493,Frenula Capsulae (Right),Ligament.002,864,yes
+Frontal_bone_Generated_Mesh_From_X3D633_1,Frontal Bone,Bone,5712,yes
+Frontal_bone_Generated_Mesh_From_X3D633_2,Frontal Bone,Suture,3482,yes
+Frontalisl_Generated_Mesh_From_X3D491_1,Frontalis (Left),Muscles.001,11561,yes
+Frontalisl_Generated_Mesh_From_X3D491_2,Frontalis (Left),Tendon.001,187,yes
+Frontalisr_Generated_Mesh_From_X3D491_1,Frontalis (Right),Muscles.001,11561,yes
+Frontalisr_Generated_Mesh_From_X3D491_2,Frontalis (Right),Tendon.001,187,yes
+Geniohyoid_musclel_Generated_Mesh_From_X3D490,Geniohyoid Muscle (Left),Muscles.001,1062,yes
+Geniohyoid_muscler_Generated_Mesh_From_X3D490,Geniohyoid Muscle (Right),Muscles.001,1062,yes
+Glenoid_labruml001_Generated_Mesh_From_X3D489,Glenoid Labrum (Left),Cartilage.002,3392,yes
+Glenoid_labruml_Generated_Mesh_From_X3D101,Glenoid Labrum (Left),Cartilage.001,3392,yes
+Glenoid_labrumr001_Generated_Mesh_From_X3D489,Glenoid Labrum (Right),Cartilage.002,3392,yes
+Glenoid_labrumr_Generated_Mesh_From_X3D101,Glenoid Labrum (Right),Cartilage.001,3392,yes
+Gluteus_maximus_musclel_Generated_Mesh_From_X3D488,Gluteus Maximus Muscle (Left),Muscles.001,6652,yes
+Gluteus_maximus_muscler_Generated_Mesh_From_X3D488,Gluteus Maximus Muscle (Right),Muscles.001,6652,yes
+Gluteus_medius_musclel_Generated_Mesh_From_X3D486_1,Gluteus Medius Muscle (Left),Muscles.001,8670,yes
+Gluteus_medius_musclel_Generated_Mesh_From_X3D486_2,Gluteus Medius Muscle (Left),Tendon.001,1684,yes
+Gluteus_medius_muscler_Generated_Mesh_From_X3D486_1,Gluteus Medius Muscle (Right),Muscles.001,8670,yes
+Gluteus_medius_muscler_Generated_Mesh_From_X3D486_2,Gluteus Medius Muscle (Right),Tendon.001,1684,yes
+Gluteus_minimus_musclel_Generated_Mesh_From_X3D484,Gluteus Minimus Muscle (Left),Muscles.001,12500,yes
+Gluteus_minimus_muscler_Generated_Mesh_From_X3D484,Gluteus Minimus Muscle (Right),Muscles.001,12500,yes
+Gracilis_musclel_Generated_Mesh_From_X3D482_1,Gracilis Muscle (Left),Muscles.001,5918,yes
+Gracilis_musclel_Generated_Mesh_From_X3D482_2,Gracilis Muscle (Left),Tendon.001,3706,yes
+Gracilis_muscler_Generated_Mesh_From_X3D482_1,Gracilis Muscle (Right),Muscles.001,5918,yes
+Gracilis_muscler_Generated_Mesh_From_X3D482_2,Gracilis Muscle (Right),Tendon.001,3706,yes
+Hamate_bonel_Generated_Mesh_From_X3D721_1,Hamate Bone (Left),Bone,277,yes
+Hamate_bonel_Generated_Mesh_From_X3D721_2,Hamate Bone (Left),Cartilage,259,yes
+Hamate_boner_Generated_Mesh_From_X3D721_1,Hamate Bone (Right),Bone,277,yes
+Hamate_boner_Generated_Mesh_From_X3D721_2,Hamate Bone (Right),Cartilage,259,yes
+Hip_bonel_Generated_Mesh_From_X3D823_1,Hip Bone (Left),Bone,20406,yes
+Hip_bonel_Generated_Mesh_From_X3D823_2,Hip Bone (Left),Cartilage,1094,yes
+Hip_boner_Cone023_1,Hip Bone (Right),Bone,3487,yes
+Hip_boner_Cone023_2,Hip Bone (Right),Cartilage,193,yes
+Humeral_head_of_extensor_carpi_ulnarisl_grp1016_1,Humeral Head Of Extensor Carpi Ulnarisl Grp1,Muscles.001,1058,yes
+Humeral_head_of_extensor_carpi_ulnarisl_grp1016_2,Humeral Head Of Extensor Carpi Ulnarisl Grp1,Tendon.001,602,yes
+Humeral_head_of_extensor_carpi_ulnarisr_grp1016_1,Humeral Head Of Extensor Carpi Ulnarisr Grp1,Muscles.001,1058,yes
+Humeral_head_of_extensor_carpi_ulnarisr_grp1016_2,Humeral Head Of Extensor Carpi Ulnarisr Grp1,Tendon.001,602,yes
+Humeral_head_of_flexor_carpi_ulnarisl_Generated_Mesh_From_X3D480_1,Humeral Head Of Flexor Carpi Ulnaris (Left),Muscles.001,4865,yes
+Humeral_head_of_flexor_carpi_ulnarisl_Generated_Mesh_From_X3D480_2,Humeral Head Of Flexor Carpi Ulnaris (Left),Tendon.001,2959,yes
+Humeral_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D480_1,Humeral Head Of Flexor Carpi Ulnaris (Right),Muscles.001,4865,yes
+Humeral_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D480_2,Humeral Head Of Flexor Carpi Ulnaris (Right),Tendon.001,2959,yes
+Humerusl001_Generated_Mesh_From_X3D720_1,Humerus (Left),Bone,3477,yes
+Humerusl001_Generated_Mesh_From_X3D720_2,Humerus (Left),Cartilage,803,yes
+Humerusr023_Cone017_1,Humerus (Right),Bone,3477,yes
+Humerusr023_Cone017_2,Humerus (Right),Cartilage,803,yes
+Hyoid_bone_Generated_Mesh_From_X3D640,Hyoid Bone,Bone,1324,yes
+Iliacus_musclel_Generated_Mesh_From_X3D478_1,Iliacus Muscle (Left),Muscles.001,7692,yes
+Iliacus_musclel_Generated_Mesh_From_X3D478_2,Iliacus Muscle (Left),Tendon.001,1016,yes
+Iliacus_muscler_Generated_Mesh_From_X3D478_1,Iliacus Muscle (Right),Muscles.001,7692,yes
+Iliacus_muscler_Generated_Mesh_From_X3D478_2,Iliacus Muscle (Right),Tendon.001,1016,yes
+Iliococcygeus_muscler001_Generated_Mesh_From_X3D476,Iliococcygeus Muscle (Right),Muscles.001,3924,yes
+Iliococcygeus_muscler_Generated_Mesh_From_X3D476,Iliococcygeus Muscle (Right),Muscles.001,3924,yes
+Iliocostalis_colli_musclel_Generated_Mesh_From_X3D474,Iliocostalis Colli Muscle (Left),Muscles.001,4100,yes
+Iliocostalis_colli_muscler_Generated_Mesh_From_X3D474,Iliocostalis Colli Muscle (Right),Muscles.001,4100,yes
+Iliocostalis_lumborum_musclel_Generated_Mesh_From_X3D472,Iliocostalis Lumborum Muscle (Left),Muscles.001,20076,yes
+Iliocostalis_lumborum_muscler_Generated_Mesh_From_X3D472,Iliocostalis Lumborum Muscle (Right),Muscles.001,20076,yes
+Iliocostalis_thoracis_musclel_Generated_Mesh_From_X3D470,Iliocostalis Thoracis Muscle (Left),Muscles.001,11546,yes
+Iliocostalis_thoracis_muscler_Generated_Mesh_From_X3D470,Iliocostalis Thoracis Muscle (Right),Muscles.001,11546,yes
+Iliolumbar_ligamentl_Plane323,Iliolumbar Ligament (Left),Ligament.002,112,yes
+Iliolumbar_ligamentr_Plane323,Iliolumbar Ligament (Right),Ligament.002,112,yes
+Incusl_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01002,Incusl Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,2492,yes
+Incusr_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01002,Incusr Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,2492,yes
+Inferior_gemellus_musclel_Generated_Mesh_From_X3D468_1,Inferior Gemellus Muscle (Left),Muscles.001,1013,yes
+Inferior_gemellus_musclel_Generated_Mesh_From_X3D468_2,Inferior Gemellus Muscle (Left),Tendon.001,941,yes
+Inferior_gemellus_muscler_Generated_Mesh_From_X3D468_1,Inferior Gemellus Muscle (Right),Muscles.001,1013,yes
+Inferior_gemellus_muscler_Generated_Mesh_From_X3D468_2,Inferior Gemellus Muscle (Right),Tendon.001,941,yes
+Inferior_glenohumeral_ligamentl_Generated_Mesh_From_X3D466,Inferior Glenohumeral Ligament (Left),Ligament.002,1128,yes
+Inferior_glenohumeral_ligamentr_Generated_Mesh_From_X3D466,Inferior Glenohumeral Ligament (Right),Ligament.002,1128,yes
+Inferior_head_of_lateral_pterygoid_musclel_Generated_Mesh_From_X3D464,Inferior Head Of Lateral Pterygoid Muscle (Left),Muscles.001,654,yes
+Inferior_head_of_lateral_pterygoid_muscler_Generated_Mesh_From_X3D464,Inferior Head Of Lateral Pterygoid Muscle (Right),Muscles.001,654,yes
+Inferior_nasal_concha_bonel_Generated_Mesh_From_X3D654,Inferior Nasal Concha Bone (Left),Bone,476,yes
+Inferior_nasal_concha_boner_Generated_Mesh_From_X3D654,Inferior Nasal Concha Bone (Right),Bone,476,yes
+Inferior_oblique_musclel_grp1015,Inferior Oblique Musclel Grp1,Muscles.001,2296,yes
+Inferior_oblique_muscler_grp1015,Inferior Oblique Muscler Grp1,Muscles.001,2296,yes
+Inferior_pubic_ligamentl_Cube083,Inferior Pubic Ligament (Left),Ligament.002,56,yes
+Inferior_pubic_ligamentr_Cube083,Inferior Pubic Ligament (Right),Ligament.002,56,yes
+Inferior_rectus_musclel_grp1014,Inferior Rectus Musclel Grp1,Muscles.001,3472,yes
+Inferior_rectus_muscler_grp1014,Inferior Rectus Muscler Grp1,Muscles.001,3472,yes
+Inferior_tarsusl_Paupi_re_remeshed003,Inferior Tarsusl Paupi Re Remeshed,Muscles.001,218,yes
+Inferior_tarsusr_Paupi_re_remeshed003,Inferior Tarsusr Paupi Re Remeshed,Muscles.001,218,yes
+Inferior_transverse_scapular_ligamentl_Plane322,Inferior Transverse Scapular Ligament (Left),Ligament.002,12,yes
+Inferior_transverse_scapular_ligamentr_Plane322,Inferior Transverse Scapular Ligament (Right),Ligament.002,12,yes
+Infrapatellar_fat_padl001_Plane321,Infrapatellar Fat Pad (Left),Fat.002,768,yes
+Infrapatellar_fat_padl_Plane202,Infrapatellar Fat Pad (Left),Fat.001,768,yes
+Infrapatellar_fat_padr001_Plane321,Infrapatellar Fat Pad (Right),Fat.002,768,yes
+Infrapatellar_fat_padr_Plane202,Infrapatellar Fat Pad (Right),Fat.001,768,yes
+Infraspinatus_musclel_Generated_Mesh_From_X3D462_1,Infraspinatus Muscle (Left),Muscles.001,5284,yes
+Infraspinatus_musclel_Generated_Mesh_From_X3D462_2,Infraspinatus Muscle (Left),Tendon.001,1050,yes
+Infraspinatus_muscler_Generated_Mesh_From_X3D462_1,Infraspinatus Muscle (Right),Muscles.001,5284,yes
+Infraspinatus_muscler_Generated_Mesh_From_X3D462_2,Infraspinatus Muscle (Right),Tendon.001,1050,yes
+Inguinal_ligamentl_Generated_Mesh_From_X3D460,Inguinal Ligament (Left),Ligament.002,2114,yes
+Inguinal_ligamentr_Generated_Mesh_From_X3D460,Inguinal Ligament (Right),Ligament.002,2114,yes
+Innermost_intercostal_musclesl_Generated_Mesh_From_X3D458,Innermost Intercostal Muscles (Left),Muscles.001,77541,yes
+Innermost_intercostal_musclesr_Generated_Mesh_From_X3D458,Innermost Intercostal Muscles (Right),Muscles.001,77541,yes
+Interclavicular_ligamentl_Cube082,Interclavicular Ligament (Left),Ligament.002,256,yes
+Interclavicular_ligamentr_Cube082,Interclavicular Ligament (Right),Ligament.002,256,yes
+Intercornual_ligamentl_Plane320,Intercornual Ligament (Left),Ligament.002,176,yes
+Intercornual_ligamentr_Plane320,Intercornual Ligament (Right),Ligament.002,176,yes
+Intercuneiform_interosseus_ligamentsl_Plane319,Intercuneiform Interosseus Ligaments (Left),Ligament.002,64,yes
+Intercuneiform_interosseus_ligamentsr_Plane319,Intercuneiform Interosseus Ligaments (Right),Ligament.002,64,yes
+Intermediate_cuneiform_bonel_Generated_Mesh_From_X3D798_1,Intermediate Cuneiform Bone (Left),Bone,279,yes
+Intermediate_cuneiform_bonel_Generated_Mesh_From_X3D798_2,Intermediate Cuneiform Bone (Left),Cartilage,165,yes
+Intermediate_cuneiform_boner_Generated_Mesh_From_X3D798_1,Intermediate Cuneiform Bone (Right),Bone,279,yes
+Intermediate_cuneiform_boner_Generated_Mesh_From_X3D798_2,Intermediate Cuneiform Bone (Right),Cartilage,165,yes
+Internal_abdominal_obliquel_Generated_Mesh_From_X3D456,Internal Abdominal Oblique (Left),Muscles.001,57739,yes
+Internal_abdominal_obliquer_Generated_Mesh_From_X3D456,Internal Abdominal Oblique (Right),Muscles.001,57739,yes
+Internal_intercosatlis_musclesl_Generated_Mesh_From_X3D454,Internal Intercosatlis Muscles (Left),Muscles.001,81276,yes
+Internal_intercosatlis_musclesr_Generated_Mesh_From_X3D454,Internal Intercosatlis Muscles (Right),Muscles.001,81276,yes
+Internal_intercostal_membranel_Plane318,Internal Intercostal Membrane (Left),Ligament.002,17688,yes
+Internal_intercostal_membraner_Plane318,Internal Intercostal Membrane (Right),Ligament.002,17688,yes
+Interosseus_membrane_of_forearml_Generated_Mesh_From_X3D452,Interosseus Membrane Of Forearm (Left),Ligament.002,84,yes
+Interosseus_membrane_of_forearmr_Generated_Mesh_From_X3D452,Interosseus Membrane Of Forearm (Right),Ligament.002,84,yes
+Interosseus_membrane_of_legl001_Generated_Mesh_From_X3D450,Interosseus Membrane Of Leg (Left),Ligament.002,12642,yes
+Interosseus_membrane_of_legl_Generated_Mesh_From_X3D450,Interosseus Membrane Of Leg (Left),Ligament.002,12642,yes
+Interosseus_membrane_of_legr_Generated_Mesh_From_X3D450,Interosseus Membrane Of Leg (Right),Ligament.002,12642,yes
+Interosseus_metacarpal_ligamentsl_Plane317,Interosseus Metacarpal Ligaments (Left),Ligament.002,128,yes
+Interosseus_metacarpal_ligamentsr_Plane317,Interosseus Metacarpal Ligaments (Right),Ligament.002,128,yes
+Interosseus_sacro_iliac_ligamentl_Plane316,Interosseus Sacro Iliac Ligament (Left),Ligament.002,656,yes
+Interosseus_sacro_iliac_ligamentr_Plane316,Interosseus Sacro Iliac Ligament (Right),Ligament.002,656,yes
+Interpubic_discl001_Cube081,Interpubic Disc (Left),Cartilage.002,208,yes
+Interpubic_discl_Cube047,Interpubic Disc (Left),Cartilage.001,208,yes
+Interpubic_discr001_Cube081,Interpubic Disc (Right),Cartilage.002,208,yes
+Interpubic_discr_Cube047,Interpubic Disc (Right),Cartilage.001,208,yes
+Intersesamoid_ligamentl_Plane315,Intersesamoid Ligament (Left),Ligament.002,176,yes
+Intersesamoid_ligamentr_Plane315,Intersesamoid Ligament (Right),Ligament.002,176,yes
+Interspinales_colli_musclesl_Generated_Mesh_From_X3D448,Interspinales Colli Muscles (Left),Muscles.001,890,yes
+Interspinales_colli_musclesr_Generated_Mesh_From_X3D448,Interspinales Colli Muscles (Right),Muscles.001,890,yes
+Interspinales_lumborum_musclesl_Generated_Mesh_From_X3D446,Interspinales Lumborum Muscles (Left),Muscles.001,1124,yes
+Interspinales_lumborum_musclesr_Generated_Mesh_From_X3D446,Interspinales Lumborum Muscles (Right),Muscles.001,1124,yes
+Interspinales_thoracis_musclel_Generated_Mesh_From_X3D444,Interspinales Thoracis Muscle (Left),Muscles.001,396,yes
+Interspinales_thoracis_muscler_Generated_Mesh_From_X3D444,Interspinales Thoracis Muscle (Right),Muscles.001,396,yes
+Interspinous_ligaments_Plane314,Interspinous Ligaments,Ligament.002,1936,yes
+Intertransverse_ligamentl_Plane313,Intertransverse Ligament (Left),Ligament.002,49472,yes
+Intertransverse_ligamentr_Plane313,Intertransverse Ligament (Right),Ligament.002,49472,yes
+Intervertebral_disc_C2_C3001_Generated_Mesh_From_X3D442,Intervertebral Disc C2 C3,Cartilage.002,848,yes
+Intervertebral_disc_C2_C3_Generated_Mesh_From_X3D097,Intervertebral Disc C2 C3,Cartilage.001,848,yes
+Intervertebral_disc_C3_C4001_Generated_Mesh_From_X3D440,Intervertebral Disc C3 C4,Cartilage.002,688,yes
+Intervertebral_disc_C3_C4_Generated_Mesh_From_X3D096,Intervertebral Disc C3 C4,Cartilage.001,688,yes
+Intervertebral_disc_C4_C5001_Generated_Mesh_From_X3D438,Intervertebral Disc C4 C5,Cartilage.002,856,yes
+Intervertebral_disc_C4_C5_Generated_Mesh_From_X3D095,Intervertebral Disc C4 C5,Cartilage.001,856,yes
+Intervertebral_disc_C5_C6001_Generated_Mesh_From_X3D437,Intervertebral Disc C5 C6,Cartilage.002,968,yes
+Intervertebral_disc_C5_C6_Generated_Mesh_From_X3D094,Intervertebral Disc C5 C6,Cartilage.001,968,yes
+Intervertebral_disc_C6_C7001_Generated_Mesh_From_X3D436,Intervertebral Disc C6 C7,Cartilage.002,834,yes
+Intervertebral_disc_C6_C7_Generated_Mesh_From_X3D093,Intervertebral Disc C6 C7,Cartilage.001,834,yes
+Intervertebral_disc_C7_T1001_Generated_Mesh_From_X3D435,Intervertebral Disc C7 T1,Cartilage.002,1168,yes
+Intervertebral_disc_C7_T1_Generated_Mesh_From_X3D092,Intervertebral Disc C7 T1,Cartilage.001,1168,yes
+Intervertebral_disc_L1_L2001_Generated_Mesh_From_X3D433,Intervertebral Disc L1 L2,Cartilage.002,3132,yes
+Intervertebral_disc_L1_L2_Generated_Mesh_From_X3D091,Intervertebral Disc L1 L2,Cartilage.001,3132,yes
+Intervertebral_disc_L2_L3001_Generated_Mesh_From_X3D432,Intervertebral Disc L2 L3,Cartilage.002,3388,yes
+Intervertebral_disc_L2_L3_Generated_Mesh_From_X3D090,Intervertebral Disc L2 L3,Cartilage.001,3388,yes
+Intervertebral_disc_L3_L4001_Generated_Mesh_From_X3D431,Intervertebral Disc L3 L4,Cartilage.002,3116,yes
+Intervertebral_disc_L3_L4_Generated_Mesh_From_X3D089,Intervertebral Disc L3 L4,Cartilage.001,3116,yes
+Intervertebral_disc_L4_L5001_Generated_Mesh_From_X3D430,Intervertebral Disc L4 L5,Cartilage.002,3286,yes
+Intervertebral_disc_L4_L5_Generated_Mesh_From_X3D088,Intervertebral Disc L4 L5,Cartilage.001,3286,yes
+Intervertebral_disc_L5_S1001_Generated_Mesh_From_X3D429,Intervertebral Disc L5 S1,Cartilage.002,3586,yes
+Intervertebral_disc_L5_S1_Generated_Mesh_From_X3D087,Intervertebral Disc L5 S1,Cartilage.001,3586,yes
+Intervertebral_disc_T1_T2001_Generated_Mesh_From_X3D428,Intervertebral Disc T1 T2,Cartilage.002,1252,yes
+Intervertebral_disc_T1_T2_Generated_Mesh_From_X3D086,Intervertebral Disc T1 T2,Cartilage.001,1252,yes
+Intervertebral_disc_T2_T3001_Generated_Mesh_From_X3D421,Intervertebral Disc T2 T3,Cartilage.002,1324,yes
+Intervertebral_disc_T2_T3_Generated_Mesh_From_X3D077,Intervertebral Disc T2 T3,Cartilage.001,1324,yes
+Intervertebral_disc_T3_T4001_Generated_Mesh_From_X3D419,Intervertebral Disc T3 T4,Cartilage.002,1360,yes
+Intervertebral_disc_T3_T4_Generated_Mesh_From_X3D075,Intervertebral Disc T3 T4,Cartilage.001,1360,yes
+Intervertebral_disc_T4_T5001_Generated_Mesh_From_X3D417,Intervertebral Disc T4 T5,Cartilage.002,1630,yes
+Intervertebral_disc_T4_T5_Generated_Mesh_From_X3D063,Intervertebral Disc T4 T5,Cartilage.001,1630,yes
+Intervertebral_disc_T5_T6001_Generated_Mesh_From_X3D415,Intervertebral Disc T5 T6,Cartilage.002,1738,yes
+Intervertebral_disc_T5_T6_Generated_Mesh_From_X3D060,Intervertebral Disc T5 T6,Cartilage.001,1738,yes
+Intervertebral_disc_T6_T7001_Generated_Mesh_From_X3D413,Intervertebral Disc T6 T7,Cartilage.002,2388,yes
+Intervertebral_disc_T6_T7_Generated_Mesh_From_X3D059,Intervertebral Disc T6 T7,Cartilage.001,2388,yes
+Intervertebral_disc_T7_T8001_Generated_Mesh_From_X3D412,Intervertebral Disc T7 T8,Cartilage.002,2658,yes
+Intervertebral_disc_T7_T8_Generated_Mesh_From_X3D057,Intervertebral Disc T7 T8,Cartilage.001,2658,yes
+Intervertebral_disc_T8_T9001_Generated_Mesh_From_X3D410,Intervertebral Disc T8 T9,Cartilage.002,2890,yes
+Intervertebral_disc_T8_T9_Generated_Mesh_From_X3D055,Intervertebral Disc T8 T9,Cartilage.001,2890,yes
+Intervertebral_disc_T9_T10001_Generated_Mesh_From_X3D408,Intervertebral Disc T9 T1,Cartilage.002,1248,yes
+Intervertebral_disc_T9_T10_Generated_Mesh_From_X3D053,Intervertebral Disc T9 T,Cartilage.001,1248,yes
+Intervertebral_disc_T10_T11001_Generated_Mesh_From_X3D427,Intervertebral Disc T10 T11,Cartilage.002,2870,yes
+Intervertebral_disc_T10_T11_Generated_Mesh_From_X3D085,Intervertebral Disc T10 T,Cartilage.001,2870,yes
+Intervertebral_disc_T11_T12001_Generated_Mesh_From_X3D425,Intervertebral Disc T11 T12,Cartilage.002,3392,yes
+Intervertebral_disc_T11_T12_Generated_Mesh_From_X3D084,Intervertebral Disc T11 T,Cartilage.001,3392,yes
+Intervertebral_disc_T12_L1001_Generated_Mesh_From_X3D423,Intervertebral Disc T12 L1,Cartilage.002,3328,yes
+Intervertebral_disc_T12_L1_Generated_Mesh_From_X3D083,Intervertebral Disc T12 L1,Cartilage.001,3328,yes
+Intervertebral_symphysis_Lumbar_vertebrae001_grp1013,Intervertebral Symphysis Lumbar Vertebrae001 Grp1,Cartilage.002,188,yes
+Intervertebral_symphysis_Lumbar_vertebrae002_grp1002,Intervertebral Symphysis Lumbar Vertebrae002 Grp1,Cartilage.001,188,yes
+Intra_articular_ligament_of_head_of_ribl_Plane312,Intra Articular Ligament Of Head Of Rib (Left),Ligament.002,288,yes
+Intra_articular_ligament_of_head_of_ribr_Plane312,Intra Articular Ligament Of Head Of Rib (Right),Ligament.002,288,yes
+Ischiofemoral_ligamentl_Generated_Mesh_From_X3D407,Ischiofemoral Ligament (Left),Ligament.002,672,yes
+Ischiofemoral_ligamentr_Generated_Mesh_From_X3D407,Ischiofemoral Ligament (Right),Ligament.002,672,yes
+L1_Generated_Mesh_From_X3D016_1,L1,Bone,2918,yes
+L1_Generated_Mesh_From_X3D016_2,L1,Cartilage,244,yes
+L2_Generated_Mesh_From_X3D017_1,L2,Bone,2450,yes
+L2_Generated_Mesh_From_X3D017_2,L2,Cartilage,238,yes
+L4_Generated_Mesh_From_X3D019_1,L4,Bone,3468,yes
+L4_Generated_Mesh_From_X3D019_2,L4,Cartilage,336,yes
+L5_Generated_Mesh_From_X3D020_1,L5,Bone,3620,yes
+L5_Generated_Mesh_From_X3D020_2,L5,Cartilage,412,yes
+LAcrimal_bonel_Generated_Mesh_From_X3D646_1,Lacrimal Bone (Left),Bone,342,yes
+LAcrimal_bonel_Generated_Mesh_From_X3D646_2,Lacrimal Bone (Left),Suture,246,yes
+LAcrimal_boner_Generated_Mesh_From_X3D646_1,Lacrimal Bone (Right),Bone,342,yes
+LAcrimal_boner_Generated_Mesh_From_X3D646_2,Lacrimal Bone (Right),Suture,246,yes
+Lateral_cuneiform_bonel_Generated_Mesh_From_X3D795_1,Lateral Cuneiform Bone (Left),Bone,371,yes
+Lateral_cuneiform_bonel_Generated_Mesh_From_X3D795_2,Lateral Cuneiform Bone (Left),Cartilage,267,yes
+Lateral_cuneiform_boner_Generated_Mesh_From_X3D795_1,Lateral Cuneiform Bone (Right),Bone,371,yes
+Lateral_cuneiform_boner_Generated_Mesh_From_X3D795_2,Lateral Cuneiform Bone (Right),Cartilage,267,yes
+Lateral_head_of_flexor_hallucis_brevisl_Generated_Mesh_From_X3D406,Lateral Head Of Flexor Hallucis Brevis (Left),Muscles.001,1932,yes
+Lateral_head_of_flexor_hallucis_brevisr_Generated_Mesh_From_X3D406,Lateral Head Of Flexor Hallucis Brevis (Right),Muscles.001,1932,yes
+Lateral_head_of_gastrocnemiusl_Generated_Mesh_From_X3D405_1,Lateral Head Of Gastrocnemius (Left),Muscles.001,7597,yes
+Lateral_head_of_gastrocnemiusl_Generated_Mesh_From_X3D405_2,Lateral Head Of Gastrocnemius (Left),Tendon.001,2219,yes
+Lateral_head_of_gastrocnemiusr_Generated_Mesh_From_X3D405_1,Lateral Head Of Gastrocnemius (Right),Muscles.001,7597,yes
+Lateral_head_of_gastrocnemiusr_Generated_Mesh_From_X3D405_2,Lateral Head Of Gastrocnemius (Right),Tendon.001,2219,yes
+Lateral_head_of_triceps_brachii_musclel_Generated_Mesh_From_X3D404_1,Lateral Head Of Triceps Brachii Muscle (Left),Muscles.001,5746,yes
+Lateral_head_of_triceps_brachii_musclel_Generated_Mesh_From_X3D404_2,Lateral Head Of Triceps Brachii Muscle (Left),Tendon.001,1512,yes
+Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_1,Lateral Head Of Triceps Brachii Muscle (Right),Muscles.001,5746,yes
+Lateral_head_of_triceps_brachii_muscler_Generated_Mesh_From_X3D404_2,Lateral Head Of Triceps Brachii Muscle (Right),Tendon.001,1512,yes
+Lateral_meniscusl001_Generated_Mesh_From_X3D402,Lateral Meniscus (Left),Cartilage.002,468,yes
+Lateral_meniscusl_Generated_Mesh_From_X3D049,Lateral Meniscus (Left),Cartilage.001,468,yes
+Lateral_meniscusr001_Generated_Mesh_From_X3D402,Lateral Meniscus (Right),Cartilage.002,468,yes
+Lateral_meniscusr_Generated_Mesh_From_X3D049,Lateral Meniscus (Right),Cartilage.001,468,yes
+Lateral_patellar_retinaculuml_Plane311,Lateral Patellar Retinaculum (Left),Ligament.002,176,yes
+Lateral_patellar_retinaculumr_Plane311,Lateral Patellar Retinaculum (Right),Ligament.002,176,yes
+Lateral_rectus_musclel_grp1012,Lateral Rectus Musclel Grp1,Muscles.001,3202,yes
+Lateral_rectus_muscler_grp1012,Lateral Rectus Muscler Grp1,Muscles.001,3202,yes
+Lateral_talocalcaneal_ligamentl_Plane310,Lateral Talocalcaneal Ligament (Left),Ligament.002,56,yes
+Lateral_talocalcaneal_ligamentr_Plane310,Lateral Talocalcaneal Ligament (Right),Ligament.002,56,yes
+Latissimus_dorsi_musclel001_Generated_Mesh_From_X3D398_1,Latissimus Dorsi Muscle (Left),Muscles.001,12451,yes
+Latissimus_dorsi_musclel001_Generated_Mesh_From_X3D398_2,Latissimus Dorsi Muscle (Left),Tendon.001,7697,yes
+Latissimus_dorsi_musclel_Generated_Mesh_From_X3D398_1,Latissimus Dorsi Muscle (Left),Muscles.001,12451,yes
+Latissimus_dorsi_musclel_Generated_Mesh_From_X3D398_2,Latissimus Dorsi Muscle (Left),Tendon.001,7697,yes
+Latissimus_dorsi_muscler004_Generated_Mesh_From_X3D396_1,Latissimus Dorsi Muscle (Right),Muscles.001,6926,yes
+Latissimus_dorsi_muscler004_Generated_Mesh_From_X3D396_2,Latissimus Dorsi Muscle (Right),Tendon.001,774,yes
+Latissimus_dorsi_muscler_Generated_Mesh_From_X3D396_1,Latissimus Dorsi Muscle (Right),Muscles.001,6926,yes
+Latissimus_dorsi_muscler_Generated_Mesh_From_X3D396_2,Latissimus Dorsi Muscle (Right),Tendon.001,774,yes
+Latissimus_dorsi_muscle_l_Generated_Mesh_From_X3D400_1,Latissimus Dorsi Muscle (Left),Muscles.001,11019,yes
+Latissimus_dorsi_muscle_l_Generated_Mesh_From_X3D400_2,Latissimus Dorsi Muscle (Left),Tendon.001,4295,yes
+Latissimus_dorsi_muscle_r_Generated_Mesh_From_X3D400_1,Latissimus Dorsi Muscle (Right),Muscles.001,11019,yes
+Latissimus_dorsi_muscle_r_Generated_Mesh_From_X3D400_2,Latissimus Dorsi Muscle (Right),Tendon.001,4295,yes
+Left_parietal_bone_Generated_Mesh_From_X3D643,Left Parietal Bone,Bone,6714,yes
+Levator_anguli_orisl_Generated_Mesh_From_X3D394,Levator Anguli Oris (Left),Muscles.001,662,yes
+Levator_anguli_orisr_Generated_Mesh_From_X3D394,Levator Anguli Oris (Right),Muscles.001,662,yes
+Levator_labii_superiorisl_Generated_Mesh_From_X3D392,Levator Labii Superioris (Left),Muscles.001,1080,yes
+Levator_labii_superiorisr_Generated_Mesh_From_X3D392,Levator Labii Superioris (Right),Muscles.001,1080,yes
+Levator_nasolabialisl_Generated_Mesh_From_X3D390_1,Levator Nasolabialis (Left),Muscles.001,159,yes
+Levator_nasolabialisl_Generated_Mesh_From_X3D390_2,Levator Nasolabialis (Left),Tendon.001,185,yes
+Levator_nasolabialisr_Generated_Mesh_From_X3D390_1,Levator Nasolabialis (Right),Muscles.001,159,yes
+Levator_nasolabialisr_Generated_Mesh_From_X3D390_2,Levator Nasolabialis (Right),Tendon.001,185,yes
+Levator_palpebrae_superiorisl_grp1011,Levator Palpebrae Superiorisl Grp1,Muscles.001,4306,yes
+Levator_palpebrae_superiorisr_grp1011,Levator Palpebrae Superiorisr Grp1,Muscles.001,4306,yes
+Levator_scapulael_Generated_Mesh_From_X3D388_1,Levator Scapulae (Left),Muscles.001,3235,yes
+Levator_scapulael_Generated_Mesh_From_X3D388_2,Levator Scapulae (Left),Tendon.001,2929,yes
+Levator_scapulaer_Generated_Mesh_From_X3D388_1,Levator Scapulae (Right),Muscles.001,3235,yes
+Levator_scapulaer_Generated_Mesh_From_X3D388_2,Levator Scapulae (Right),Tendon.001,2929,yes
+Levatores_breves_costaruml_Generated_Mesh_From_X3D386,Levatores Breves Costarum (Left),Muscles.001,5382,yes
+Levatores_breves_costarumr_Generated_Mesh_From_X3D386,Levatores Breves Costarum (Right),Muscles.001,5382,yes
+Levatores_longi_costaruml_Generated_Mesh_From_X3D384,Levatores Longi Costarum (Left),Muscles.001,11860,yes
+Levatores_longi_costarumr_Generated_Mesh_From_X3D384,Levatores Longi Costarum (Right),Muscles.001,11860,yes
+Ligament_of_head_of_femurl_BezierCurve002,Ligament Of Head Of Femur (Left),Ligament.002,3120,yes
+Ligament_of_head_of_femurr_BezierCurve002,Ligament Of Head Of Femur (Right),Ligament.002,3120,yes
+Ligamenta_flava_Plane309,Ligamenta Flava,Ligament.002,528,yes
+Linea_alba_Generated_Mesh_From_X3D383,Linea Alba,Ligament.002,1352,yes
+Long_head_of_biceps_brachiil_Generated_Mesh_From_X3D381_1,Long Head Of Biceps Brachii (Left),Muscles.001,4075,yes
+Long_head_of_biceps_brachiil_Generated_Mesh_From_X3D381_2,Long Head Of Biceps Brachii (Left),Tendon.001,2361,yes
+Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_1,Long Head Of Biceps Brachii (Right),Muscles.001,4075,yes
+Long_head_of_biceps_brachiir_Generated_Mesh_From_X3D381_2,Long Head Of Biceps Brachii (Right),Tendon.001,2361,yes
+Long_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D382_1,Long Head Of Biceps Brachii Muscle (Left),Muscles.001,4905,yes
+Long_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D382_2,Long Head Of Biceps Brachii Muscle (Left),Tendon.001,2997,yes
+Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_1,Long Head Of Biceps Brachii Muscle (Right),Muscles.001,4905,yes
+Long_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D382_2,Long Head Of Biceps Brachii Muscle (Right),Tendon.001,2997,yes
+Long_head_of_biceps_femoris_musclel_Generated_Mesh_From_X3D379_1,Long Head Of Biceps Femoris Muscle (Left),Muscles.001,10914,yes
+Long_head_of_biceps_femoris_musclel_Generated_Mesh_From_X3D379_2,Long Head Of Biceps Femoris Muscle (Left),Tendon.001,3602,yes
+Long_head_of_biceps_femoris_muscler_Generated_Mesh_From_X3D379_1,Long Head Of Biceps Femoris Muscle (Right),Muscles.001,10914,yes
+Long_head_of_biceps_femoris_muscler_Generated_Mesh_From_X3D379_2,Long Head Of Biceps Femoris Muscle (Right),Tendon.001,3602,yes
+Long_plantar_ligamentl001_Generated_Mesh_From_X3D377,Long Plantar Ligament (Left),Ligament.002,6972,yes
+Long_plantar_ligamentl_Plane308,Long Plantar Ligament (Left),Ligament.002,304,yes
+Long_plantar_ligamentr001_Plane308,Long Plantar Ligament (Right),Ligament.002,304,yes
+Long_plantar_ligamentr_Generated_Mesh_From_X3D377,Long Plantar Ligament (Right),Ligament.002,6972,yes
+Longissimus_capitisl_Generated_Mesh_From_X3D375,Longissimus Capitis (Left),Muscles.001,3148,yes
+Longissimus_capitisr_Generated_Mesh_From_X3D375,Longissimus Capitis (Right),Muscles.001,3148,yes
+Longissimus_colli_musclel_Generated_Mesh_From_X3D373,Longissimus Colli Muscle (Left),Muscles.001,3652,yes
+Longissimus_colli_muscler_Generated_Mesh_From_X3D373,Longissimus Colli Muscle (Right),Muscles.001,3652,yes
+Longissimus_thoracisr002_Generated_Mesh_From_X3D369,Longissimus Thoracis (Right),Muscles.001,19306,yes
+Longissimus_thoracisr_Generated_Mesh_From_X3D369,Longissimus Thoracis (Right),Muscles.001,19306,yes
+Longissimus_thoracis_musclel_Generated_Mesh_From_X3D371,Longissimus Thoracis Muscle (Left),Muscles.001,13038,yes
+Longissimus_thoracis_muscler_Generated_Mesh_From_X3D371,Longissimus Thoracis Muscle (Right),Muscles.001,13038,yes
+Longus_capitis_musclel_Generated_Mesh_From_X3D367,Longus Capitis Muscle (Left),Muscles.001,3960,yes
+Longus_capitis_muscler_Generated_Mesh_From_X3D367,Longus Capitis Muscle (Right),Muscles.001,3960,yes
+Longus_colli_musclel_Generated_Mesh_From_X3D365,Longus Colli Muscle (Left),Muscles.001,12590,yes
+Longus_colli_muscler_Generated_Mesh_From_X3D365,Longus Colli Muscle (Right),Muscles.001,12590,yes
+Lumbrical_muscles_of_footl_Generated_Mesh_From_X3D363,Lumbrical Muscles Of Foot (Left),Muscles.001,836,yes
+Lumbrical_muscles_of_footr_Generated_Mesh_From_X3D363,Lumbrical Muscles Of Foot (Right),Muscles.001,836,yes
+Lumbricals_muscles_of_handl_Generated_Mesh_From_X3D361_1,Lumbricals Muscles Of Hand (Left),Muscles.001,1631,yes
+Lumbricals_muscles_of_handl_Generated_Mesh_From_X3D361_2,Lumbricals Muscles Of Hand (Left),Tendon.001,1105,yes
+Lumbricals_muscles_of_handr_Generated_Mesh_From_X3D361_1,Lumbricals Muscles Of Hand (Right),Muscles.001,1631,yes
+Lumbricals_muscles_of_handr_Generated_Mesh_From_X3D361_2,Lumbricals Muscles Of Hand (Right),Tendon.001,1105,yes
+Lunate_bonel_Generated_Mesh_From_X3D719_1,Lunate Bone (Left),Bone,558,yes
+Lunate_bonel_Generated_Mesh_From_X3D719_2,Lunate Bone (Left),Cartilage,1530,yes
+Lunate_boner_Generated_Mesh_From_X3D719_1,Lunate Bone (Right),Bone,558,yes
+Lunate_boner_Generated_Mesh_From_X3D719_2,Lunate Bone (Right),Cartilage,1530,yes
+Lunotriquetral_interosseus_ligamentl_Plane307,Lunotriquetral Interosseus Ligament (Left),Ligament.002,32,yes
+Lunotriquetral_interosseus_ligamentr_Plane307,Lunotriquetral Interosseus Ligament (Right),Ligament.002,32,yes
+Major_alar_cartilagel_Generated_Mesh_From_X3D031,Major Alar Cartilage (Left),Cartilage,344,yes
+Major_alar_cartilager_Generated_Mesh_From_X3D031,Major Alar Cartilage (Right),Cartilage,344,yes
+Malleusl_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01001,Malleusl Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,3968,yes
+Malleusr_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01001,Malleusr Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,3968,yes
+Mandible_Generated_Mesh_From_X3D639_1,Mandible,Bone,2066,yes
+Mandible_Generated_Mesh_From_X3D639_2,Mandible,Cartilage,128,yes
+Manubrium_of_sternumr_Cone020_1,Manubrium Of Sternum (Right),Bone,2263,yes
+Manubrium_of_sternumr_Cone020_2,Manubrium Of Sternum (Right),Cartilage,399,yes
+Maxillal_Generated_Mesh_From_X3D650_1,Maxilla (Left),Bone,2606,yes
+Maxillal_Generated_Mesh_From_X3D650_2,Maxilla (Left),Suture,2190,yes
+Maxillar_Generated_Mesh_From_X3D650_1,Maxilla (Right),Bone,2606,yes
+Maxillar_Generated_Mesh_From_X3D650_2,Maxilla (Right),Suture,2190,yes
+Medial_cuneiform_bonel_Generated_Mesh_From_X3D784_1,Medial Cuneiform Bone (Left),Bone,832,yes
+Medial_cuneiform_bonel_Generated_Mesh_From_X3D784_2,Medial Cuneiform Bone (Left),Cartilage,160,yes
+Medial_cuneiform_boner_Generated_Mesh_From_X3D784_1,Medial Cuneiform Bone (Right),Bone,832,yes
+Medial_cuneiform_boner_Generated_Mesh_From_X3D784_2,Medial Cuneiform Bone (Right),Cartilage,160,yes
+Medial_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D359_1,Medial Head Of Biceps Brachii Muscle (Left),Muscles.001,3879,yes
+Medial_head_of_biceps_brachii_musclel_Generated_Mesh_From_X3D359_2,Medial Head Of Biceps Brachii Muscle (Left),Tendon.001,1493,yes
+Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_1,Medial Head Of Biceps Brachii Muscle (Right),Muscles.001,3879,yes
+Medial_head_of_biceps_brachii_muscler_Generated_Mesh_From_X3D359_2,Medial Head Of Biceps Brachii Muscle (Right),Tendon.001,1493,yes
+Medial_head_of_flexor_hallucis_brevisl_Generated_Mesh_From_X3D357,Medial Head Of Flexor Hallucis Brevis (Left),Muscles.001,1028,yes
+Medial_head_of_flexor_hallucis_brevisr_Generated_Mesh_From_X3D357,Medial Head Of Flexor Hallucis Brevis (Right),Muscles.001,1028,yes
+Medial_head_of_gastrocnemiusl_Generated_Mesh_From_X3D355_1,Medial Head Of Gastrocnemius (Left),Muscles.001,8363,yes
+Medial_head_of_gastrocnemiusl_Generated_Mesh_From_X3D355_2,Medial Head Of Gastrocnemius (Left),Tendon.001,4563,yes
+Medial_head_of_gastrocnemiusr_Generated_Mesh_From_X3D355_1,Medial Head Of Gastrocnemius (Right),Muscles.001,8363,yes
+Medial_head_of_gastrocnemiusr_Generated_Mesh_From_X3D355_2,Medial Head Of Gastrocnemius (Right),Tendon.001,4563,yes
+Medial_meniscusl001_Generated_Mesh_From_X3D353,Medial Meniscus (Left),Cartilage.002,284,yes
+Medial_meniscusl_Generated_Mesh_From_X3D047,Medial Meniscus (Left),Cartilage.001,284,yes
+Medial_meniscusr001_Generated_Mesh_From_X3D353,Medial Meniscus (Right),Cartilage.002,284,yes
+Medial_meniscusr_Generated_Mesh_From_X3D047,Medial Meniscus (Right),Cartilage.001,284,yes
+Medial_patellar_retinaculuml_Plane306,Medial Patellar Retinaculum (Left),Ligament.002,216,yes
+Medial_patellar_retinaculumr_Plane306,Medial Patellar Retinaculum (Right),Ligament.002,216,yes
+Medial_pterygoid_musclel_Generated_Mesh_From_X3D351,Medial Pterygoid Muscle (Left),Muscles.001,992,yes
+Medial_pterygoid_muscler_Generated_Mesh_From_X3D351,Medial Pterygoid Muscle (Right),Muscles.001,992,yes
+Medial_rectus_musclel_grp1007,Medial Rectus Musclel Grp1,Muscles.001,2506,yes
+Medial_rectus_muscler_grp1007,Medial Rectus Muscler Grp1,Muscles.001,2506,yes
+Medial_talocalcaneal_ligamentl_Plane305,Medial Talocalcaneal Ligament (Left),Ligament.002,136,yes
+Medial_talocalcaneal_ligamentr_Plane305,Medial Talocalcaneal Ligament (Right),Ligament.002,136,yes
+Meniscopatellar_ligamentl_Plane304,Meniscopatellar Ligament (Left),Ligament.002,152,yes
+Meniscopatellar_ligamentr_Plane304,Meniscopatellar Ligament (Right),Ligament.002,152,yes
+Mentalis_musclel_Generated_Mesh_From_X3D349_1,Mentalis Muscle (Left),Muscles.001,174,yes
+Mentalis_musclel_Generated_Mesh_From_X3D349_2,Mentalis Muscle (Left),Tendon.001,158,yes
+Mentalis_muscler_Generated_Mesh_From_X3D349_1,Mentalis Muscle (Right),Muscles.001,174,yes
+Mentalis_muscler_Generated_Mesh_From_X3D349_2,Mentalis Muscle (Right),Tendon.001,158,yes
+Metatarsal_interosseus_ligamentsl_Plane303,Metatarsal Interosseus Ligaments (Left),Ligament.002,128,yes
+Metatarsal_interosseus_ligamentsr_Plane303,Metatarsal Interosseus Ligaments (Right),Ligament.002,128,yes
+Middle_glenohumeral_ligamentl_Generated_Mesh_From_X3D347,Middle Glenohumeral Ligament (Left),Ligament.002,968,yes
+Middle_glenohumeral_ligamentr_Generated_Mesh_From_X3D347,Middle Glenohumeral Ligament (Right),Ligament.002,968,yes
+Middle_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D718_1,Middle Phalanx Of 2d Finger (Left),Bone,229,yes
+Middle_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D718_2,Middle Phalanx Of 2d Finger (Left),Cartilage,85,yes
+Middle_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D718_1,Middle Phalanx Of 2d Finger (Right),Bone,229,yes
+Middle_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D718_2,Middle Phalanx Of 2d Finger (Right),Cartilage,85,yes
+Middle_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D753_1,Middle Phalanx Of 2d Finger Of Foot (Left),Bone,266,yes
+Middle_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D753_2,Middle Phalanx Of 2d Finger Of Foot (Left),Cartilage,116,yes
+Middle_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D753_1,Middle Phalanx Of 2d Finger Of Foot (Right),Bone,266,yes
+Middle_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D753_2,Middle Phalanx Of 2d Finger Of Foot (Right),Cartilage,116,yes
+Middle_phalanx_of_3rd_fingerl_Generated_Mesh_From_X3D717_1,Middle Phalanx Of 3rd Finger (Left),Bone,273,yes
+Middle_phalanx_of_3rd_fingerl_Generated_Mesh_From_X3D717_2,Middle Phalanx Of 3rd Finger (Left),Cartilage,87,yes
+Middle_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D717_1,Middle Phalanx Of 3rd Finger (Right),Bone,273,yes
+Middle_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D717_2,Middle Phalanx Of 3rd Finger (Right),Cartilage,87,yes
+Middle_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D645_1,Middle Phalanx Of 3rd Finger Of Foot (Left),Bone,327,yes
+Middle_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D645_2,Middle Phalanx Of 3rd Finger Of Foot (Left),Cartilage,73,yes
+Middle_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D645_1,Middle Phalanx Of 3rd Finger Of Foot (Right),Bone,327,yes
+Middle_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D645_2,Middle Phalanx Of 3rd Finger Of Foot (Right),Cartilage,73,yes
+Middle_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D716_1,Middle Phalanx Of 4th Finger (Left),Bone,284,yes
+Middle_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D716_2,Middle Phalanx Of 4th Finger (Left),Cartilage,162,yes
+Middle_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D716_1,Middle Phalanx Of 4th Finger (Right),Bone,284,yes
+Middle_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D716_2,Middle Phalanx Of 4th Finger (Right),Cartilage,162,yes
+Middle_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D588_1,Middle Phalanx Of 4th Finger Of Foot (Left),Bone,315,yes
+Middle_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D588_2,Middle Phalanx Of 4th Finger Of Foot (Left),Cartilage,133,yes
+Middle_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D588_1,Middle Phalanx Of 4th Finger Of Foot (Right),Bone,315,yes
+Middle_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D588_2,Middle Phalanx Of 4th Finger Of Foot (Right),Cartilage,133,yes
+Middle_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D715_1,Middle Phalanx Of 5th Finger (Left),Bone,219,yes
+Middle_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D715_2,Middle Phalanx Of 5th Finger (Left),Cartilage,73,yes
+Middle_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D715_1,Middle Phalanx Of 5th Finger (Right),Bone,219,yes
+Middle_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D715_2,Middle Phalanx Of 5th Finger (Right),Cartilage,73,yes
+Middle_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D283_1,Middle Phalanx Of 5th Finger Of Foot (Left),Bone,177,yes
+Middle_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D283_2,Middle Phalanx Of 5th Finger Of Foot (Left),Cartilage,39,yes
+Middle_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D283_1,Middle Phalanx Of 5th Finger Of Foot (Right),Bone,177,yes
+Middle_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D283_2,Middle Phalanx Of 5th Finger Of Foot (Right),Cartilage,39,yes
+Minor_alar_cartilager_Generated_Mesh_From_X3D029,Minor Alar Cartilage (Right),Cartilage,347,yes
+Minor_alar_cartilagesl_Generated_Mesh_From_X3D029,Minor Alar Cartilages (Left),Cartilage,347,yes
+Multifidus_colli_musclel_Generated_Mesh_From_X3D345,Multifidus Colli Muscle (Left),Muscles.001,2782,yes
+Multifidus_colli_muscler_Generated_Mesh_From_X3D345,Multifidus Colli Muscle (Right),Muscles.001,2782,yes
+Multifidus_lumboruml_Generated_Mesh_From_X3D343,Multifidus Lumborum (Left),Muscles.001,5642,yes
+Multifidus_lumborumr_Generated_Mesh_From_X3D343,Multifidus Lumborum (Right),Muscles.001,5642,yes
+Multifidus_thoracisl_Generated_Mesh_From_X3D341,Multifidus Thoracis (Left),Muscles.001,7806,yes
+Multifidus_thoracisr_Generated_Mesh_From_X3D341,Multifidus Thoracis (Right),Muscles.001,7806,yes
+Mylohyoid_musclel_Generated_Mesh_From_X3D339,Mylohyoid Muscle (Left),Muscles.001,2244,yes
+Mylohyoid_muscler_Generated_Mesh_From_X3D339,Mylohyoid Muscle (Right),Muscles.001,2244,yes
+Nasal_bonel_Generated_Mesh_From_X3D648_1,Nasal Bone (Left),Bone,181,yes
+Nasal_bonel_Generated_Mesh_From_X3D648_2,Nasal Bone (Left),Suture,111,yes
+Nasal_boner_Generated_Mesh_From_X3D648_1,Nasal Bone (Right),Bone,181,yes
+Nasal_boner_Generated_Mesh_From_X3D648_2,Nasal Bone (Right),Suture,111,yes
+Nasal_septal_cartilage_Generated_Mesh_From_X3D027,Nasal Septal Cartilage,Cartilage,360,yes
+Nasalis_musclel_Generated_Mesh_From_X3D337_1,Nasalis Muscle (Left),Muscles.001,914,yes
+Nasalis_musclel_Generated_Mesh_From_X3D337_2,Nasalis Muscle (Left),Tendon.001,494,yes
+Nasalis_muscler_Generated_Mesh_From_X3D337_1,Nasalis Muscle (Right),Muscles.001,914,yes
+Nasalis_muscler_Generated_Mesh_From_X3D337_2,Nasalis Muscle (Right),Tendon.001,494,yes
+Navicular_bonel_Generated_Mesh_From_X3D279_1,Navicular Bone (Left),Bone,464,yes
+Navicular_bonel_Generated_Mesh_From_X3D279_2,Navicular Bone (Left),Cartilage,254,yes
+Navicular_boner_Generated_Mesh_From_X3D279_1,Navicular Bone (Right),Bone,464,yes
+Navicular_boner_Generated_Mesh_From_X3D279_2,Navicular Bone (Right),Cartilage,254,yes
+Nuchal_ligament_Plane302,Nuchal Ligament,Ligament.002,2328,yes
+Nucleus_pulposus001_Sphere053,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus002_Sphere052,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus003_Sphere051,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus004_Sphere050,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus005_Sphere049,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus006_Sphere048,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus007_Sphere047,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus008_Sphere046,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus009_Sphere045,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus010_Sphere044,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus011_Sphere043,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus012_Sphere042,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus013_Sphere041,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus014_Sphere040,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus015_Sphere039,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus016_Sphere038,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus017_Sphere037,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus018_Sphere036,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus019_Sphere035,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus020_Sphere034,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus021_Sphere033,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus022_Sphere032,Nucleus Pulposus,Cartilage.001,960,yes
+Nucleus_pulposus023_Sphere056,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus024_Sphere057,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus025_Sphere058,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus026_Sphere059,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus027_Sphere060,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus028_Sphere061,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus029_Sphere062,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus030_Sphere063,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus031_Sphere064,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus032_Sphere065,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus033_Sphere066,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus034_Sphere067,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus035_Sphere068,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus036_Sphere069,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus037_Sphere070,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus038_Sphere071,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus039_Sphere072,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus040_Sphere073,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus041_Sphere074,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus042_Sphere075,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus043_Sphere076,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus044_Sphere077,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus045_Sphere078,Nucleus Pulposus,Cartilage.002,960,yes
+Nucleus_pulposus_Sphere054,Nucleus Pulposus,Cartilage.001,960,yes
+Oblique_cordl_Generated_Mesh_From_X3D335,Oblique Cord (Left),Ligament.002,12,yes
+Oblique_cordr_Generated_Mesh_From_X3D335,Oblique Cord (Right),Ligament.002,12,yes
+Oblique_head_of_adductor_hallucisl_Generated_Mesh_From_X3D333,Oblique Head Of Adductor Hallucis (Left),Muscles.001,1810,yes
+Oblique_head_of_adductor_hallucisr_Generated_Mesh_From_X3D333,Oblique Head Of Adductor Hallucis (Right),Muscles.001,1810,yes
+Oblique_head_of_adductor_policis_brevisl_Generated_Mesh_From_X3D331_1,Oblique Head Of Adductor Policis Brevis (Left),Muscles.001,776,yes
+Oblique_head_of_adductor_policis_brevisl_Generated_Mesh_From_X3D331_2,Oblique Head Of Adductor Policis Brevis (Left),Tendon.001,126,yes
+Oblique_head_of_adductor_policis_brevisr_Generated_Mesh_From_X3D331_1,Oblique Head Of Adductor Policis Brevis (Right),Muscles.001,776,yes
+Oblique_head_of_adductor_policis_brevisr_Generated_Mesh_From_X3D331_2,Oblique Head Of Adductor Policis Brevis (Right),Tendon.001,126,yes
+Oblique_popliteal_ligamentl_Plane301,Oblique Popliteal Ligament (Left),Ligament.002,368,yes
+Oblique_popliteal_ligamentr_Plane301,Oblique Popliteal Ligament (Right),Ligament.002,368,yes
+Obliquus_inferior_capitis_musclel_Generated_Mesh_From_X3D327,Obliquus Inferior Capitis Muscle (Left),Muscles.001,1082,yes
+Obliquus_inferior_capitis_muscler_Generated_Mesh_From_X3D327,Obliquus Inferior Capitis Muscle (Right),Muscles.001,1082,yes
+Obliquus_superior_capitis_musclel_Generated_Mesh_From_X3D325,Obliquus Superior Capitis Muscle (Left),Muscles.001,1310,yes
+Obliquus_superior_capitis_muscler_Generated_Mesh_From_X3D325,Obliquus Superior Capitis Muscle (Right),Muscles.001,1310,yes
+Obturator_externusl_Generated_Mesh_From_X3D324,Obturator Externus (Left),Muscles.001,2312,yes
+Obturator_externusr_Generated_Mesh_From_X3D324,Obturator Externus (Right),Muscles.001,2312,yes
+Obturator_internusl_Generated_Mesh_From_X3D323_1,Obturator Internus (Left),Muscles.001,5422,yes
+Obturator_internusl_Generated_Mesh_From_X3D323_2,Obturator Internus (Left),Tendon.001,2100,yes
+Obturator_internusr_Generated_Mesh_From_X3D323_1,Obturator Internus (Right),Muscles.001,5422,yes
+Obturator_internusr_Generated_Mesh_From_X3D323_2,Obturator Internus (Right),Tendon.001,2100,yes
+Obturator_membranel_Plane300,Obturator Membrane (Left),Ligament.002,1072,yes
+Obturator_membraner_Plane300,Obturator Membrane (Right),Ligament.002,1072,yes
+Occipital_bone_Generated_Mesh_From_X3D634_1,Occipital Bone,Bone,4352,yes
+Occipital_bone_Generated_Mesh_From_X3D634_2,Occipital Bone,Suture,2296,yes
+Occipital_bone_Generated_Mesh_From_X3D634_3,Occipital Bone 3,Cartilage,132,yes
+Occipitalisl_Generated_Mesh_From_X3D322,Occipitalis (Left),Muscles.001,5204,yes
+Occipitalisr_Generated_Mesh_From_X3D322,Occipitalis (Right),Muscles.001,5204,yes
+Omohyoid_musclel_Generated_Mesh_From_X3D319,Omohyoid Muscle (Left),Muscles.001,5414,yes
+Omohyoid_muscler_Generated_Mesh_From_X3D319,Omohyoid Muscle (Right),Muscles.001,5414,yes
+Opponens_digiti_minimi_of_footl_Generated_Mesh_From_X3D318,Opponens Digiti Minimi Of Foot (Left),Muscles.001,472,yes
+Opponens_digiti_minimi_of_footr_Generated_Mesh_From_X3D318,Opponens Digiti Minimi Of Foot (Right),Muscles.001,472,yes
+Opponens_digiti_minimi_of_handl_Generated_Mesh_From_X3D316_1,Opponens Digiti Minimi Of Hand (Left),Muscles.001,531,yes
+Opponens_digiti_minimi_of_handl_Generated_Mesh_From_X3D316_2,Opponens Digiti Minimi Of Hand (Left),Tendon.001,311,yes
+Opponens_digiti_minimi_of_handr_Generated_Mesh_From_X3D316_1,Opponens Digiti Minimi Of Hand (Right),Muscles.001,531,yes
+Opponens_digiti_minimi_of_handr_Generated_Mesh_From_X3D316_2,Opponens Digiti Minimi Of Hand (Right),Tendon.001,311,yes
+Opponens_pollicis_musclel_Generated_Mesh_From_X3D314_1,Opponens Pollicis Muscle (Left),Muscles.001,681,yes
+Opponens_pollicis_musclel_Generated_Mesh_From_X3D314_2,Opponens Pollicis Muscle (Left),Tendon.001,87,yes
+Opponens_pollicis_muscler_Generated_Mesh_From_X3D314_1,Opponens Pollicis Muscle (Right),Muscles.001,681,yes
+Opponens_pollicis_muscler_Generated_Mesh_From_X3D314_2,Opponens Pollicis Muscle (Right),Tendon.001,87,yes
+Orbicularis_orisl_Generated_Mesh_From_X3D312,Orbicularis Oris (Left),Muscles.001,3760,yes
+Orbicularis_orisr_Generated_Mesh_From_X3D312,Orbicularis Oris (Right),Muscles.001,3760,yes
+Orbital_part_of_orbicularis_oculil_Generated_Mesh_From_X3D310,Orbital Part Of Orbicularis Oculi (Left),Muscles.001,4780,yes
+Orbital_part_of_orbicularis_oculir_Generated_Mesh_From_X3D310,Orbital Part Of Orbicularis Oculi (Right),Muscles.001,4780,yes
+Palatine_bonel_Generated_Mesh_From_X3D652,Palatine Bone (Left),Bone,1460,yes
+Palatine_boner_Generated_Mesh_From_X3D652,Palatine Bone (Right),Bone,1460,yes
+Palmar_capitohamate_ligamentl_Plane299,Palmar Capitohamate Ligament (Left),Ligament.002,96,yes
+Palmar_capitohamate_ligamentr_Plane299,Palmar Capitohamate Ligament (Right),Ligament.002,96,yes
+Palmar_carpometacarpal_ligamentsl_Plane298,Palmar Carpometacarpal Ligaments (Left),Ligament.002,416,yes
+Palmar_carpometacarpal_ligamentsr_Plane298,Palmar Carpometacarpal Ligaments (Right),Ligament.002,416,yes
+Palmar_interossei_muscles_of_handl_Generated_Mesh_From_X3D308,Palmar Interossei Muscles Of Hand (Left),Muscles.001,348,yes
+Palmar_interossei_muscles_of_handr_Generated_Mesh_From_X3D308,Palmar Interossei Muscles Of Hand (Right),Muscles.001,348,yes
+Palmar_interphalangeal_ligamentsl_Cube080,Palmar Interphalangeal Ligaments (Left),Ligament.002,864,yes
+Palmar_interphalangeal_ligamentsr_Cube080,Palmar Interphalangeal Ligaments (Right),Ligament.002,864,yes
+Palmar_lunotriquetral_ligamentl_Plane297,Palmar Lunotriquetral Ligament (Left),Ligament.002,96,yes
+Palmar_lunotriquetral_ligamentr_Plane297,Palmar Lunotriquetral Ligament (Right),Ligament.002,96,yes
+Palmar_metacarpal_ligamentsl_Plane296,Palmar Metacarpal Ligaments (Left),Ligament.002,128,yes
+Palmar_metacarpal_ligamentsr_Plane296,Palmar Metacarpal Ligaments (Right),Ligament.002,128,yes
+Palmar_radio_ulnar_ligamentl_Plane295,Palmar Radio Ulnar Ligament (Left),Ligament.002,80,yes
+Palmar_radio_ulnar_ligamentr_Plane295,Palmar Radio Ulnar Ligament (Right),Ligament.002,80,yes
+Palmar_scaphotriquetral_ligamentl_Plane294,Palmar Scaphotriquetral Ligament (Left),Ligament.002,256,yes
+Palmar_scaphotriquetral_ligamentr_Plane294,Palmar Scaphotriquetral Ligament (Right),Ligament.002,256,yes
+Palmar_trapezoideocapitate_ligamentl_Plane293,Palmar Trapezoideocapitate Ligament (Left),Ligament.002,96,yes
+Palmar_trapezoideocapitate_ligamentr_Plane293,Palmar Trapezoideocapitate Ligament (Right),Ligament.002,96,yes
+Palmaris_longus_musclel_Generated_Mesh_From_X3D306_1,Palmaris Longus Muscle (Left),Muscles.001,2403,yes
+Palmaris_longus_musclel_Generated_Mesh_From_X3D306_2,Palmaris Longus Muscle (Left),Tendon.001,6345,yes
+Palmaris_longus_muscler_Generated_Mesh_From_X3D306_1,Palmaris Longus Muscle (Right),Muscles.001,2403,yes
+Palmaris_longus_muscler_Generated_Mesh_From_X3D306_2,Palmaris Longus Muscle (Right),Tendon.001,6345,yes
+Palpebral_part_of_orbicularis_oculil_Generated_Mesh_From_X3D304,Palpebral Part Of Orbicularis Oculi (Left),Muscles.001,1662,yes
+Palpebral_part_of_orbicularis_oculir_Generated_Mesh_From_X3D304,Palpebral Part Of Orbicularis Oculi (Right),Muscles.001,1662,yes
+Parietal_boner_Generated_Mesh_From_X3D642,Parietal Bone (Right),Bone,6628,yes
+Patellal_Generated_Mesh_From_X3D277_1,Patella (Left),Bone,171,yes
+Patellal_Generated_Mesh_From_X3D277_2,Patella (Left),Cartilage,105,yes
+Patellar_Generated_Mesh_From_X3D277_1,Patella (Right),Bone,171,yes
+Patellar_Generated_Mesh_From_X3D277_2,Patella (Right),Cartilage,105,yes
+Pectineus_musclel_Generated_Mesh_From_X3D302_1,Pectineus Muscle (Left),Muscles.001,2016,yes
+Pectineus_musclel_Generated_Mesh_From_X3D302_2,Pectineus Muscle (Left),Tendon.001,1888,yes
+Pectineus_muscler_Generated_Mesh_From_X3D302_1,Pectineus Muscle (Right),Muscles.001,2016,yes
+Pectineus_muscler_Generated_Mesh_From_X3D302_2,Pectineus Muscle (Right),Tendon.001,1888,yes
+Pectoralis_minor_musclel_Generated_Mesh_From_X3D300,Pectoralis Minor Muscle (Left),Muscles.001,8284,yes
+Pectoralis_minor_muscler_Generated_Mesh_From_X3D300,Pectoralis Minor Muscle (Right),Muscles.001,8284,yes
+Piriformis_musclel_Generated_Mesh_From_X3D298,Piriformis Muscle (Left),Muscles.001,3000,yes
+Piriformis_muscler_Generated_Mesh_From_X3D298,Piriformis Muscle (Right),Muscles.001,3000,yes
+Pisiform_bonel_Generated_Mesh_From_X3D713_1,Pisiform Bone (Left),Bone,266,yes
+Pisiform_bonel_Generated_Mesh_From_X3D713_2,Pisiform Bone (Left),Cartilage,12,yes
+Pisiform_boner_Generated_Mesh_From_X3D713_1,Pisiform Bone (Right),Bone,1596,yes
+Pisiform_boner_Generated_Mesh_From_X3D713_2,Pisiform Bone (Right),Cartilage,72,yes
+Pisohamate_ligamentl_Plane292,Pisohamate Ligament (Left),Ligament.002,32,yes
+Pisohamate_ligamentr_Plane292,Pisohamate Ligament (Right),Ligament.002,32,yes
+Pisometacarpal_ligamentl_Plane291,Pisometacarpal Ligament (Left),Ligament.002,32,yes
+Pisometacarpal_ligamentr_Plane291,Pisometacarpal Ligament (Right),Ligament.002,32,yes
+Pisotriquetral_ligamentl_Plane290,Pisotriquetral Ligament (Left),Ligament.002,264,yes
+Pisotriquetral_ligamentr_Plane290,Pisotriquetral Ligament (Right),Ligament.002,264,yes
+Plantar_calcaneocuboid_ligamentl_Plane289,Plantar Calcaneocuboid Ligament (Left),Ligament.002,136,yes
+Plantar_calcaneocuboid_ligamentr_Plane289,Plantar Calcaneocuboid Ligament (Right),Ligament.002,136,yes
+Plantar_calcaneonavivular_ligamentl_Plane288,Plantar Calcaneonavivular Ligament (Left),Ligament.002,56,yes
+Plantar_calcaneonavivular_ligamentr_Plane288,Plantar Calcaneonavivular Ligament (Right),Ligament.002,56,yes
+Plantar_cuboidonavicular_ligamentl_Plane287,Plantar Cuboidonavicular Ligament (Left),Ligament.002,32,yes
+Plantar_cuboidonavicular_ligamentr_Plane287,Plantar Cuboidonavicular Ligament (Right),Ligament.002,32,yes
+Plantar_cuneocuboid_ligamentl_Plane286,Plantar Cuneocuboid Ligament (Left),Ligament.002,96,yes
+Plantar_cuneocuboid_ligamentr_Plane286,Plantar Cuneocuboid Ligament (Right),Ligament.002,96,yes
+Plantar_cuneonavicular_ligamentsl_Plane285,Plantar Cuneonavicular Ligaments (Left),Ligament.002,144,yes
+Plantar_cuneonavicular_ligamentsr_Plane285,Plantar Cuneonavicular Ligaments (Right),Ligament.002,144,yes
+Plantar_intercuneiform_ligamentsl_Plane284,Plantar Intercuneiform Ligaments (Left),Ligament.002,64,yes
+Plantar_intercuneiform_ligamentsr_Plane284,Plantar Intercuneiform Ligaments (Right),Ligament.002,64,yes
+Plantar_interossei_musclesl_Generated_Mesh_From_X3D296,Plantar Interossei Muscles (Left),Muscles.001,2484,yes
+Plantar_interossei_musclesr_Generated_Mesh_From_X3D296,Plantar Interossei Muscles (Right),Muscles.001,2484,yes
+Plantar_interphalangeal_ligamentsl_Cube079,Plantar Interphalangeal Ligaments (Left),Ligament.002,1616,yes
+Plantar_interphalangeal_ligamentsr_Cube079,Plantar Interphalangeal Ligaments (Right),Ligament.002,1616,yes
+Plantar_metatarsal_ligamentsl_Plane283,Plantar Metatarsal Ligaments (Left),Ligament.002,128,yes
+Plantar_metatarsal_ligamentsr_Plane283,Plantar Metatarsal Ligaments (Right),Ligament.002,128,yes
+Plantar_metatarsophalangeal_ligamentsl_Cube078,Plantar Metatarsophalangeal Ligaments (Left),Ligament.002,880,yes
+Plantar_metatarsophalangeal_ligamentsr_Cube078,Plantar Metatarsophalangeal Ligaments (Right),Ligament.002,880,yes
+Plantar_tarsometatarsal_ligamentsl_Plane282,Plantar Tarsometatarsal Ligaments (Left),Ligament.002,280,yes
+Plantar_tarsometatarsal_ligamentsr_Plane282,Plantar Tarsometatarsal Ligaments (Right),Ligament.002,280,yes
+Plantaris_musclel_Generated_Mesh_From_X3D294_1,Plantaris Muscle (Left),Muscles.001,4142,yes
+Plantaris_musclel_Generated_Mesh_From_X3D294_2,Plantaris Muscle (Left),Tendon.001,5256,yes
+Plantaris_muscler_Generated_Mesh_From_X3D294_1,Plantaris Muscle (Right),Muscles.001,4142,yes
+Plantaris_muscler_Generated_Mesh_From_X3D294_2,Plantaris Muscle (Right),Tendon.001,5256,yes
+Platysmal_Generated_Mesh_From_X3D292_1,Platysma (Left),Muscles.001,11915,yes
+Platysmal_Generated_Mesh_From_X3D292_2,Platysma (Left),Tendon.001,1181,yes
+Platysmar_Generated_Mesh_From_X3D292_1,Platysma (Right),Muscles.001,11915,yes
+Platysmar_Generated_Mesh_From_X3D292_2,Platysma (Right),Tendon.001,1181,yes
+Popliteofibular_ligamentl_Plane281,Popliteofibular Ligament (Left),Ligament.002,896,yes
+Popliteofibular_ligamentr_Plane281,Popliteofibular Ligament (Right),Ligament.002,896,yes
+Popliteus_musclel_Generated_Mesh_From_X3D290_1,Popliteus Muscle (Left),Muscles.001,1594,yes
+Popliteus_musclel_Generated_Mesh_From_X3D290_2,Popliteus Muscle (Left),Tendon.001,672,yes
+Popliteus_muscler_Generated_Mesh_From_X3D290_1,Popliteus Muscle (Right),Muscles.001,1594,yes
+Popliteus_muscler_Generated_Mesh_From_X3D290_2,Popliteus Muscle (Right),Tendon.001,672,yes
+Posterior_belly_of_digastric_musclel_Generated_Mesh_From_X3D288,Posterior Belly Of Digastric Muscle (Left),Muscles.001,2554,yes
+Posterior_belly_of_digastric_muscler_Generated_Mesh_From_X3D288,Posterior Belly Of Digastric Muscle (Right),Muscles.001,2554,yes
+Posterior_cruciate_ligamentl001_BezierCurve099,Posterior Cruciate Ligament (Left),None,1172,yes
+Posterior_cruciate_ligamentl_BezierCurve088,Posterior Cruciate Ligament (Left),None,1172,yes
+Posterior_cruciate_ligamentr001_BezierCurve099,Posterior Cruciate Ligament (Right),None,1172,yes
+Posterior_cruciate_ligamentr_BezierCurve088,Posterior Cruciate Ligament (Right),None,1172,yes
+Posterior_ligament_of_fibular_headl_Plane280,Posterior Ligament Of Fibular Head (Left),Ligament.002,176,yes
+Posterior_ligament_of_fibular_headr_Plane280,Posterior Ligament Of Fibular Head (Right),Ligament.002,176,yes
+Posterior_longitudinal_ligament_Plane279,Posterior Longitudinal Ligament,Ligament.002,28896,yes
+Posterior_meniscotibial_ligament__Lateral_meniscus_l_Plane278,Posterior Meniscotibial Ligament Lateral Meniscus (Left),Ligament.002,192,yes
+Posterior_meniscotibial_ligament__Lateral_meniscus_r_Plane278,Posterior Meniscotibial Ligament Lateral Meniscus (Right),Ligament.002,192,yes
+Posterior_meniscotibial_ligament__Medial_meniscus_l_Plane277,Posterior Meniscotibial Ligament Medial Meniscus (Left),Ligament.002,304,yes
+Posterior_meniscotibial_ligament__Medial_meniscus_r_Plane277,Posterior Meniscotibial Ligament Medial Meniscus (Right),Ligament.002,304,yes
+Posterior_sacro_iliac_ligamentl_Plane276,Posterior Sacro Iliac Ligament (Left),Ligament.002,5536,yes
+Posterior_sacro_iliac_ligamentr_Plane276,Posterior Sacro Iliac Ligament (Right),Ligament.002,5536,yes
+Posterior_sternoclavicular_ligamentl_Cube077,Posterior Sternoclavicular Ligament (Left),Ligament.002,464,yes
+Posterior_sternoclavicular_ligamentr_Cube077,Posterior Sternoclavicular Ligament (Right),Ligament.002,464,yes
+Posterior_talocalcaneal_ligamentl_Plane275,Posterior Talocalcaneal Ligament (Left),Ligament.002,80,yes
+Posterior_talocalcaneal_ligamentr_Plane275,Posterior Talocalcaneal Ligament (Right),Ligament.002,80,yes
+Posterior_talofibular_ligamentf001_Plane274,Posterior Talofibular Ligamentf,Ligament.002,32,yes
+Posterior_talofibular_ligamentf_Plane274,Posterior Talofibular Ligamentf,Ligament.002,32,yes
+Posterior_tibitalar_ligamentl_Plane273,Posterior Tibitalar Ligament (Left),Ligament.002,56,yes
+Posterior_tibitalar_ligamentr_Plane273,Posterior Tibitalar Ligament (Right),Ligament.002,56,yes
+Procerusl_Generated_Mesh_From_X3D286_1,Procerus (Left),Muscles.001,482,yes
+Procerusl_Generated_Mesh_From_X3D286_2,Procerus (Left),Tendon.001,610,yes
+Procerusr_Generated_Mesh_From_X3D286_1,Procerus (Right),Muscles.001,482,yes
+Procerusr_Generated_Mesh_From_X3D286_2,Procerus (Right),Tendon.001,610,yes
+Pronator_quadratusl_Generated_Mesh_From_X3D284_1,Pronator Quadratus (Left),Muscles.001,1679,yes
+Pronator_quadratusl_Generated_Mesh_From_X3D284_2,Pronator Quadratus (Left),Tendon.001,363,yes
+Pronator_quadratusr_Generated_Mesh_From_X3D284_1,Pronator Quadratus (Right),Muscles.001,1679,yes
+Pronator_quadratusr_Generated_Mesh_From_X3D284_2,Pronator Quadratus (Right),Tendon.001,363,yes
+Proximal_phalanx_of_1st_fingerl_Generated_Mesh_From_X3D711_1,Proximal Phalanx Of 1st Finger (Left),Bone,221,yes
+Proximal_phalanx_of_1st_fingerl_Generated_Mesh_From_X3D711_2,Proximal Phalanx Of 1st Finger (Left),Cartilage,107,yes
+Proximal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D711_1,Proximal Phalanx Of 1st Finger (Right),Bone,221,yes
+Proximal_phalanx_of_1st_fingerr_Generated_Mesh_From_X3D711_2,Proximal Phalanx Of 1st Finger (Right),Cartilage,107,yes
+Proximal_phalanx_of_1st_finger_of_footl_Generated_Mesh_From_X3D273_1,Proximal Phalanx Of 1st Finger Of Foot (Left),Bone,413,yes
+Proximal_phalanx_of_1st_finger_of_footl_Generated_Mesh_From_X3D273_2,Proximal Phalanx Of 1st Finger Of Foot (Left),Cartilage,119,yes
+Proximal_phalanx_of_1st_finger_of_footr_Generated_Mesh_From_X3D273_1,Proximal Phalanx Of 1st Finger Of Foot (Right),Bone,413,yes
+Proximal_phalanx_of_1st_finger_of_footr_Generated_Mesh_From_X3D273_2,Proximal Phalanx Of 1st Finger Of Foot (Right),Cartilage,119,yes
+Proximal_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D709_1,Proximal Phalanx Of 2d Finger (Left),Bone,294,yes
+Proximal_phalanx_of_2d_fingerl_Generated_Mesh_From_X3D709_2,Proximal Phalanx Of 2d Finger (Left),Cartilage,120,yes
+Proximal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D709_1,Proximal Phalanx Of 2d Finger (Right),Bone,294,yes
+Proximal_phalanx_of_2d_fingerr_Generated_Mesh_From_X3D709_2,Proximal Phalanx Of 2d Finger (Right),Cartilage,120,yes
+Proximal_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D268_1,Proximal Phalanx Of 2d Finger Of Foot (Left),Bone,290,yes
+Proximal_phalanx_of_2d_finger_of_footl_Generated_Mesh_From_X3D268_2,Proximal Phalanx Of 2d Finger Of Foot (Left),Cartilage,136,yes
+Proximal_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D268_1,Proximal Phalanx Of 2d Finger Of Foot (Right),Bone,290,yes
+Proximal_phalanx_of_2d_finger_of_footr_Generated_Mesh_From_X3D268_2,Proximal Phalanx Of 2d Finger Of Foot (Right),Cartilage,136,yes
+Proximal_phalanx_of_3rd_fingerl_Generated_Mesh_From_X3D707_1,Proximal Phalanx Of 3rd Finger (Left),Bone,306,yes
+Proximal_phalanx_of_3rd_fingerl_Generated_Mesh_From_X3D707_2,Proximal Phalanx Of 3rd Finger (Left),Cartilage,130,yes
+Proximal_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D707_1,Proximal Phalanx Of 3rd Finger (Right),Bone,306,yes
+Proximal_phalanx_of_3rd_fingerr_Generated_Mesh_From_X3D707_2,Proximal Phalanx Of 3rd Finger (Right),Cartilage,130,yes
+Proximal_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D267_1,Proximal Phalanx Of 3rd Finger Of Foot (Left),Bone,336,yes
+Proximal_phalanx_of_3rd_finger_of_footl_Generated_Mesh_From_X3D267_2,Proximal Phalanx Of 3rd Finger Of Foot (Left),Cartilage,118,yes
+Proximal_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D267_1,Proximal Phalanx Of 3rd Finger Of Foot (Right),Bone,336,yes
+Proximal_phalanx_of_3rd_finger_of_footr_Generated_Mesh_From_X3D267_2,Proximal Phalanx Of 3rd Finger Of Foot (Right),Cartilage,118,yes
+Proximal_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D706_1,Proximal Phalanx Of 4th Finger (Left),Bone,246,yes
+Proximal_phalanx_of_4th_fingerl_Generated_Mesh_From_X3D706_2,Proximal Phalanx Of 4th Finger (Left),Cartilage,122,yes
+Proximal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D706_1,Proximal Phalanx Of 4th Finger (Right),Bone,246,yes
+Proximal_phalanx_of_4th_fingerr_Generated_Mesh_From_X3D706_2,Proximal Phalanx Of 4th Finger (Right),Cartilage,122,yes
+Proximal_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D265_1,Proximal Phalanx Of 4th Finger Of Foot (Left),Bone,332,yes
+Proximal_phalanx_of_4th_finger_of_footl_Generated_Mesh_From_X3D265_2,Proximal Phalanx Of 4th Finger Of Foot (Left),Cartilage,128,yes
+Proximal_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D265_1,Proximal Phalanx Of 4th Finger Of Foot (Right),Bone,332,yes
+Proximal_phalanx_of_4th_finger_of_footr_Generated_Mesh_From_X3D265_2,Proximal Phalanx Of 4th Finger Of Foot (Right),Cartilage,128,yes
+Proximal_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D705_1,Proximal Phalanx Of 5th Finger (Left),Bone,439,yes
+Proximal_phalanx_of_5th_fingerl_Generated_Mesh_From_X3D705_2,Proximal Phalanx Of 5th Finger (Left),Cartilage,121,yes
+Proximal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D705_1,Proximal Phalanx Of 5th Finger (Right),Bone,439,yes
+Proximal_phalanx_of_5th_fingerr_Generated_Mesh_From_X3D705_2,Proximal Phalanx Of 5th Finger (Right),Cartilage,121,yes
+Proximal_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D263_1,Proximal Phalanx Of 5th Finger Of Foot (Left),Bone,432,yes
+Proximal_phalanx_of_5th_finger_of_footl_Generated_Mesh_From_X3D263_2,Proximal Phalanx Of 5th Finger Of Foot (Left),Cartilage,84,yes
+Proximal_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D263_1,Proximal Phalanx Of 5th Finger Of Foot (Right),Bone,432,yes
+Proximal_phalanx_of_5th_finger_of_footr_Generated_Mesh_From_X3D263_2,Proximal Phalanx Of 5th Finger Of Foot (Right),Cartilage,84,yes
+Psoas_musclel_Generated_Mesh_From_X3D282_1,Psoas Muscle (Left),Muscles.001,9123,yes
+Psoas_musclel_Generated_Mesh_From_X3D282_2,Psoas Muscle (Left),Tendon.001,1825,yes
+Psoas_muscler_Generated_Mesh_From_X3D282_1,Psoas Muscle (Right),Muscles.001,9123,yes
+Psoas_muscler_Generated_Mesh_From_X3D282_2,Psoas Muscle (Right),Tendon.001,1825,yes
+Pubic_symphysisl001_Cube076,Pubic Symphysis (Left),Cartilage.002,208,yes
+Pubic_symphysisl_Cube039,Pubic Symphysis (Left),Cartilage.001,208,yes
+Pubic_symphysisr001_Cube076,Pubic Symphysis (Right),Cartilage.002,208,yes
+Pubic_symphysisr_Cube039,Pubic Symphysis (Right),Cartilage.001,208,yes
+Pubococcygeus_musclel_Generated_Mesh_From_X3D280,Pubococcygeus Muscle (Left),Muscles.001,5024,yes
+Pubococcygeus_muscler_Generated_Mesh_From_X3D280,Pubococcygeus Muscle (Right),Muscles.001,5024,yes
+Pubofemoral_ligamentl_Generated_Mesh_From_X3D278,Pubofemoral Ligament (Left),Ligament.002,392,yes
+Pubofemoral_ligamentr_Generated_Mesh_From_X3D278,Pubofemoral Ligament (Right),Ligament.002,392,yes
+Puborectalis_musclel_Generated_Mesh_From_X3D276,Puborectalis Muscle (Left),Muscles.001,2880,yes
+Puborectalis_muscler_Generated_Mesh_From_X3D276,Puborectalis Muscle (Right),Muscles.001,2880,yes
+Pyramidalis_musclel_Generated_Mesh_From_X3D260,Pyramidalis Muscle (Left),Muscles.001,2226,yes
+Pyramidalis_muscler_Generated_Mesh_From_X3D260,Pyramidalis Muscle (Right),Muscles.001,2226,yes
+Quadrate_ligamentl_Cylinder005,Quadrate Ligament (Left),Ligament.002,32,yes
+Quadrate_ligamentr_Cylinder005,Quadrate Ligament (Right),Ligament.002,32,yes
+Quadratus_femoris_musclel_Generated_Mesh_From_X3D256,Quadratus Femoris Muscle (Left),Muscles.001,3294,yes
+Quadratus_femoris_muscler_Generated_Mesh_From_X3D256,Quadratus Femoris Muscle (Right),Muscles.001,3294,yes
+Quadratus_lumborum_musclel_Generated_Mesh_From_X3D255,Quadratus Lumborum Muscle (Left),Muscles.001,5666,yes
+Quadratus_lumborum_muscler_Generated_Mesh_From_X3D255,Quadratus Lumborum Muscle (Right),Muscles.001,5666,yes
+Quadratus_plantae_musclel_Generated_Mesh_From_X3D253,Quadratus Plantae Muscle (Left),Muscles.001,2354,yes
+Quadratus_plantae_muscler_Generated_Mesh_From_X3D253,Quadratus Plantae Muscle (Right),Muscles.001,2354,yes
+Radial_collateral_ligamentl_Cube075,Radial Collateral Ligament (Left),Ligament.002,320,yes
+Radial_collateral_ligamentr_Cube075,Radial Collateral Ligament (Right),Ligament.002,320,yes
+Radial_collateral_ligament_of_wrist_jointl_Plane272,Radial Collateral Ligament Of Wrist Joint (Left),Ligament.002,144,yes
+Radial_collateral_ligament_of_wrist_jointr_Plane272,Radial Collateral Ligament Of Wrist Joint (Right),Ligament.002,144,yes
+Radial_head_of_flexor_digitorum_superficialisl_Generated_Mesh_From_X3D251_1,Radial Head Of Flexor Digitorum Superficialis (Left),Muscles.001,1825,yes
+Radial_head_of_flexor_digitorum_superficialisl_Generated_Mesh_From_X3D251_2,Radial Head Of Flexor Digitorum Superficialis (Left),Tendon.001,727,yes
+Radial_head_of_flexor_digitorum_superficialisr_Generated_Mesh_From_X3D251_1,Radial Head Of Flexor Digitorum Superficialis (Right),Muscles.001,1825,yes
+Radial_head_of_flexor_digitorum_superficialisr_Generated_Mesh_From_X3D251_2,Radial Head Of Flexor Digitorum Superficialis (Right),Tendon.001,727,yes
+Radiate_carpal_ligamentl_Plane271,Radiate Carpal Ligament (Left),Ligament.002,408,yes
+Radiate_carpal_ligamentr_Plane271,Radiate Carpal Ligament (Right),Ligament.002,408,yes
+Radiate_ligament_of_head_of_ribl_Plane270,Radiate Ligament Of Head Of Rib (Left),Ligament.002,3456,yes
+Radiate_ligament_of_head_of_ribr_Plane270,Radiate Ligament Of Head Of Rib (Right),Ligament.002,3456,yes
+Radiocapitate_ligamentl_Plane269,Radiocapitate Ligament (Left),Ligament.002,32,yes
+Radiocapitate_ligamentr_Plane269,Radiocapitate Ligament (Right),Ligament.002,32,yes
+Radioscaphocapitate_ligamentl_Plane268,Radioscaphocapitate Ligament (Left),Ligament.002,56,yes
+Radioscaphocapitate_ligamentr_Plane268,Radioscaphocapitate Ligament (Right),Ligament.002,56,yes
+Radiusl_Generated_Mesh_From_X3D744_1,Radius (Left),Bone,2830,yes
+Radiusl_Generated_Mesh_From_X3D744_2,Radius (Left),Cartilage,1614,yes
+Radiusr_Cone014_1,Radius (Right),Bone,511,yes
+Radiusr_Cone014_2,Radius (Right),Cartilage,273,yes
+Rectus_abdominis_musclel_Generated_Mesh_From_X3D249_1,Rectus Abdominis Muscle (Left),Muscles.001,27521,yes
+Rectus_abdominis_musclel_Generated_Mesh_From_X3D249_2,Rectus Abdominis Muscle (Left),Tendon.001,13689,yes
+Rectus_abdominis_muscler_Generated_Mesh_From_X3D249_1,Rectus Abdominis Muscle (Right),Muscles.001,27521,yes
+Rectus_abdominis_muscler_Generated_Mesh_From_X3D249_2,Rectus Abdominis Muscle (Right),Tendon.001,13689,yes
+Rectus_anterior_capitis_musclel_Generated_Mesh_From_X3D247,Rectus Anterior Capitis Muscle (Left),Muscles.001,794,yes
+Rectus_anterior_capitis_muscler_Generated_Mesh_From_X3D247,Rectus Anterior Capitis Muscle (Right),Muscles.001,794,yes
+Rectus_femoris_musclel_Generated_Mesh_From_X3D245_1,Rectus Femoris Muscle (Left),Muscles.001,9494,yes
+Rectus_femoris_musclel_Generated_Mesh_From_X3D245_2,Rectus Femoris Muscle (Left),Tendon.001,7058,yes
+Rectus_femoris_muscler_Generated_Mesh_From_X3D245_1,Rectus Femoris Muscle (Right),Muscles.001,9494,yes
+Rectus_femoris_muscler_Generated_Mesh_From_X3D245_2,Rectus Femoris Muscle (Right),Tendon.001,7058,yes
+Rectus_lateralis_capitis_musclel_Generated_Mesh_From_X3D244,Rectus Lateralis Capitis Muscle (Left),Muscles.001,722,yes
+Rectus_lateralis_capitis_muscler_Generated_Mesh_From_X3D244,Rectus Lateralis Capitis Muscle (Right),Muscles.001,722,yes
+Rectus_posterior_major_capitis_musclel_Generated_Mesh_From_X3D243,Rectus Posterior Major Capitis Muscle (Left),Muscles.001,1578,yes
+Rectus_posterior_major_capitis_muscler_Generated_Mesh_From_X3D243,Rectus Posterior Major Capitis Muscle (Right),Muscles.001,1578,yes
+Rectus_posterior_minor_capitis_musclel_Generated_Mesh_From_X3D242,Rectus Posterior Minor Capitis Muscle (Left),Muscles.001,866,yes
+Rectus_posterior_minor_capitis_muscler_Generated_Mesh_From_X3D242,Rectus Posterior Minor Capitis Muscle (Right),Muscles.001,866,yes
+Rhomboid_major_musclel_Generated_Mesh_From_X3D241_1,Rhomboid Major Muscle (Left),Muscles.001,6078,yes
+Rhomboid_major_musclel_Generated_Mesh_From_X3D241_2,Rhomboid Major Muscle (Left),Tendon.001,3522,yes
+Rhomboid_major_muscler_Generated_Mesh_From_X3D241_1,Rhomboid Major Muscle (Right),Muscles.001,6078,yes
+Rhomboid_major_muscler_Generated_Mesh_From_X3D241_2,Rhomboid Major Muscle (Right),Tendon.001,3522,yes
+Rhomboid_minor_musclel_Generated_Mesh_From_X3D240_1,Rhomboid Minor Muscle (Left),Muscles.001,2083,yes
+Rhomboid_minor_musclel_Generated_Mesh_From_X3D240_2,Rhomboid Minor Muscle (Left),Tendon.001,905,yes
+Rhomboid_minor_muscler_Generated_Mesh_From_X3D240_1,Rhomboid Minor Muscle (Right),Muscles.001,2083,yes
+Rhomboid_minor_muscler_Generated_Mesh_From_X3D240_2,Rhomboid Minor Muscle (Right),Tendon.001,905,yes
+Risoriusl_Generated_Mesh_From_X3D239_1,Risorius (Left),Muscles.001,314,yes
+Risoriusl_Generated_Mesh_From_X3D239_2,Risorius (Left),Tendon.001,872,yes
+Risoriusr_Generated_Mesh_From_X3D239_1,Risorius (Right),Muscles.001,314,yes
+Risoriusr_Generated_Mesh_From_X3D239_2,Risorius (Right),Tendon.001,872,yes
+Sacrospinous_ligamentl_Plane267,Sacrospinous Ligament (Left),Ligament.002,280,yes
+Sacrospinous_ligamentr_Plane267,Sacrospinous Ligament (Right),Ligament.002,280,yes
+Sacrotuberous_ligamentl_Plane266,Sacrotuberous Ligament (Left),Ligament.002,282,yes
+Sacrotuberous_ligamentr_Plane266,Sacrotuberous Ligament (Right),Ligament.002,656,yes
+Sacrum_Cone016_1,Sacrum,Bone,10840,yes
+Sacrum_Cone016_2,Sacrum,Cartilage,836,yes
+Sartorius_musclel_Generated_Mesh_From_X3D238_1,Sartorius Muscle (Left),Muscles.001,6176,yes
+Sartorius_musclel_Generated_Mesh_From_X3D238_2,Sartorius Muscle (Left),Tendon.001,3756,yes
+Sartorius_muscler_Generated_Mesh_From_X3D238_1,Sartorius Muscle (Right),Muscles.001,6176,yes
+Sartorius_muscler_Generated_Mesh_From_X3D238_2,Sartorius Muscle (Right),Tendon.001,3756,yes
+Scalene_anterior_musclel_Generated_Mesh_From_X3D237,Scalene Anterior Muscle (Left),Muscles.001,2775,yes
+Scalene_anterior_muscler_Generated_Mesh_From_X3D237,Scalene Anterior Muscle (Right),Muscles.001,2775,yes
+Scalenus_medius_and_posteriorl_Generated_Mesh_From_X3D235,Scalenus Medius And Posterior (Left),Muscles.001,4156,yes
+Scalenus_medius_and_posteriorr_Generated_Mesh_From_X3D235,Scalenus Medius And Posterior (Right),Muscles.001,4156,yes
+Scalenus_posteriorl_Generated_Mesh_From_X3D233,Scalenus Posterior (Left),Muscles.001,2654,yes
+Scalenus_posteriorr_Generated_Mesh_From_X3D233,Scalenus Posterior (Right),Muscles.001,2654,yes
+Scaphocapitate_ligamentl_Plane265,Scaphocapitate Ligament (Left),Ligament.002,32,yes
+Scaphocapitate_ligamentr_Plane265,Scaphocapitate Ligament (Right),Ligament.002,32,yes
+Scaphoid_bonel_Generated_Mesh_From_X3D704_1,Scaphoid Bone (Left),Bone,91,yes
+Scaphoid_bonel_Generated_Mesh_From_X3D704_2,Scaphoid Bone (Left),Cartilage,297,yes
+Scaphoid_boner_Generated_Mesh_From_X3D704_1,Scaphoid Bone (Right),Bone,91,yes
+Scaphoid_boner_Generated_Mesh_From_X3D704_2,Scaphoid Bone (Right),Cartilage,297,yes
+Scapholunate_interosseus_ligamentl_Plane264,Scapholunate Interosseus Ligament (Left),Ligament.002,12,yes
+Scapholunate_interosseus_ligamentr_Plane264,Scapholunate Interosseus Ligament (Right),Ligament.002,12,yes
+Scaphotrapeziotrapezoidal_ligamentl_Plane263,Scaphotrapeziotrapezoidal Ligament (Left),Ligament.002,144,yes
+Scaphotrapeziotrapezoidal_ligamentr_Plane263,Scaphotrapeziotrapezoidal Ligament (Right),Ligament.002,144,yes
+Scapulal_Generated_Mesh_From_X3D703_1,Scapula (Left),Bone,589144,yes
+Scapulal_Generated_Mesh_From_X3D703_2,Scapula (Left),Cartilage,17544,yes
+Scapular_Cone013_1,Scapula (Right),Bone,24595,yes
+Scapular_Cone013_2,Scapula (Right),Cartilage,731,yes
+Scapular_part_of_deltoid_usclel_Generated_Mesh_From_X3D231_1,Scapular Part Of Deltoid Uscle (Left),Muscles.001,6516,yes
+Scapular_part_of_deltoid_usclel_Generated_Mesh_From_X3D231_2,Scapular Part Of Deltoid Uscle (Left),Tendon.001,2240,yes
+Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_1,Scapular Part Of Deltoid Uscle (Right),Muscles.001,6516,yes
+Scapular_part_of_deltoid_uscler_Generated_Mesh_From_X3D231_2,Scapular Part Of Deltoid Uscle (Right),Tendon.001,2240,yes
+Sclera_l_grp1018,Sclera L Grp1,Eye.001,39524,yes
+Sclera_r_grp1018,Sclera R Grp1,Eye.001,39524,yes
+Semimembranosus_musclel_Generated_Mesh_From_X3D229_1,Semimembranosus Muscle (Left),Muscles.001,10565,yes
+Semimembranosus_musclel_Generated_Mesh_From_X3D229_2,Semimembranosus Muscle (Left),Tendon.001,4321,yes
+Semimembranosus_muscler_Generated_Mesh_From_X3D229_1,Semimembranosus Muscle (Right),Muscles.001,10565,yes
+Semimembranosus_muscler_Generated_Mesh_From_X3D229_2,Semimembranosus Muscle (Right),Tendon.001,4321,yes
+Semispinalis_colli_musclel_Generated_Mesh_From_X3D227,Semispinalis Colli Muscle (Left),Muscles.001,5170,yes
+Semispinalis_colli_muscler_Generated_Mesh_From_X3D227,Semispinalis Colli Muscle (Right),Muscles.001,5170,yes
+Semispinalis_thoracisl_Generated_Mesh_From_X3D225,Semispinalis Thoracis (Left),Muscles.001,9946,yes
+Semispinalis_thoracisr_Generated_Mesh_From_X3D225,Semispinalis Thoracis (Right),Muscles.001,9946,yes
+Semitendinosus_musclel_Generated_Mesh_From_X3D223_1,Semitendinosus Muscle (Left),Muscles.001,4181,yes
+Semitendinosus_musclel_Generated_Mesh_From_X3D223_2,Semitendinosus Muscle (Left),Tendon.001,4453,yes
+Semitendinosus_muscler_Generated_Mesh_From_X3D223_1,Semitendinosus Muscle (Right),Muscles.001,4181,yes
+Semitendinosus_muscler_Generated_Mesh_From_X3D223_2,Semitendinosus Muscle (Right),Tendon.001,4453,yes
+Serratus_anterior_musclel_Generated_Mesh_From_X3D222,Serratus Anterior Muscle (Left),Muscles.001,50482,yes
+Serratus_anterior_muscler_Generated_Mesh_From_X3D222,Serratus Anterior Muscle (Right),Muscles.001,50482,yes
+Serratus_posterior_inferior_musclel_Generated_Mesh_From_X3D220_1,Serratus Posterior Inferior Muscle (Left),Muscles.001,9102,yes
+Serratus_posterior_inferior_musclel_Generated_Mesh_From_X3D220_2,Serratus Posterior Inferior Muscle (Left),Tendon.001,8814,yes
+Serratus_posterior_inferior_muscler_Generated_Mesh_From_X3D220_1,Serratus Posterior Inferior Muscle (Right),Muscles.001,9102,yes
+Serratus_posterior_inferior_muscler_Generated_Mesh_From_X3D220_2,Serratus Posterior Inferior Muscle (Right),Tendon.001,8814,yes
+Serratus_posterior_superior_musclel_Generated_Mesh_From_X3D218_1,Serratus Posterior Superior Muscle (Left),Muscles.001,8184,yes
+Serratus_posterior_superior_musclel_Generated_Mesh_From_X3D218_2,Serratus Posterior Superior Muscle (Left),Tendon.001,2854,yes
+Serratus_posterior_superior_muscler_Generated_Mesh_From_X3D218_1,Serratus Posterior Superior Muscle (Right),Muscles.001,8184,yes
+Serratus_posterior_superior_muscler_Generated_Mesh_From_X3D218_2,Serratus Posterior Superior Muscle (Right),Tendon.001,2854,yes
+Sesamoid_bones_of_footr003_Generated_Mesh_From_X3D257_1,Sesamoid Bones Of Foot (Right),Bone,231,yes
+Sesamoid_bones_of_footr003_Generated_Mesh_From_X3D257_2,Sesamoid Bones Of Foot (Right),Cartilage,59,yes
+Sesamoid_bones_of_footr_Generated_Mesh_From_X3D257_1,Sesamoid Bones Of Foot (Right),Bone,231,yes
+Sesamoid_bones_of_footr_Generated_Mesh_From_X3D257_2,Sesamoid Bones Of Foot (Right),Cartilage,59,yes
+Short_head_of_biceps_brachiil_Generated_Mesh_From_X3D216_1,Short Head Of Biceps Brachii (Left),Muscles.001,3515,yes
+Short_head_of_biceps_brachiil_Generated_Mesh_From_X3D216_2,Short Head Of Biceps Brachii (Left),Tendon.001,1879,yes
+Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_1,Short Head Of Biceps Brachii (Right),Muscles.001,3515,yes
+Short_head_of_biceps_brachiir_Generated_Mesh_From_X3D216_2,Short Head Of Biceps Brachii (Right),Tendon.001,1879,yes
+Short_head_of_biceps_femoris_musclel_Generated_Mesh_From_X3D214_1,Short Head Of Biceps Femoris Muscle (Left),Muscles.001,4126,yes
+Short_head_of_biceps_femoris_musclel_Generated_Mesh_From_X3D214_2,Short Head Of Biceps Femoris Muscle (Left),Tendon.001,826,yes
+Short_head_of_biceps_femoris_muscler_Generated_Mesh_From_X3D214_1,Short Head Of Biceps Femoris Muscle (Right),Muscles.001,4126,yes
+Short_head_of_biceps_femoris_muscler_Generated_Mesh_From_X3D214_2,Short Head Of Biceps Femoris Muscle (Right),Tendon.001,826,yes
+Soleus_musclel_Generated_Mesh_From_X3D212_1,Soleus Muscle (Left),Muscles.001,12660,yes
+Soleus_musclel_Generated_Mesh_From_X3D212_2,Soleus Muscle (Left),Tendon.001,888,yes
+Soleus_muscler_Generated_Mesh_From_X3D212_1,Soleus Muscle (Right),Muscles.001,12660,yes
+Soleus_muscler_Generated_Mesh_From_X3D212_2,Soleus Muscle (Right),Tendon.001,888,yes
+Sphenoid_bonel_Generated_Mesh_From_X3D635_1,Sphenoid Bone (Left),Bone,6476,yes
+Sphenoid_bonel_Generated_Mesh_From_X3D635_2,Sphenoid Bone (Left),Suture,192,yes
+Spinalis_capitis_musclel_Generated_Mesh_From_X3D210_1,Spinalis Capitis Muscle (Left),Muscles.001,3684,yes
+Spinalis_capitis_musclel_Generated_Mesh_From_X3D210_2,Spinalis Capitis Muscle (Left),Tendon.001,1438,yes
+Spinalis_capitis_muscler_Generated_Mesh_From_X3D210_1,Spinalis Capitis Muscle (Right),Muscles.001,3684,yes
+Spinalis_capitis_muscler_Generated_Mesh_From_X3D210_2,Spinalis Capitis Muscle (Right),Tendon.001,1438,yes
+Spinalis_colli_musclel_Generated_Mesh_From_X3D208,Spinalis Colli Muscle (Left),Muscles.001,1192,yes
+Spinalis_colli_muscler_Generated_Mesh_From_X3D208,Spinalis Colli Muscle (Right),Muscles.001,1192,yes
+Spinalis_thoracis_musclel_Generated_Mesh_From_X3D206,Spinalis Thoracis Muscle (Left),Muscles.001,11064,yes
+Spinalis_thoracis_muscler_Generated_Mesh_From_X3D206,Spinalis Thoracis Muscle (Right),Muscles.001,11064,yes
+Splenius_capitis_musclel_Generated_Mesh_From_X3D204_1,Splenius Capitis Muscle (Left),Muscles.001,6432,yes
+Splenius_capitis_musclel_Generated_Mesh_From_X3D204_2,Splenius Capitis Muscle (Left),Tendon.001,4092,yes
+Splenius_capitis_muscler_Generated_Mesh_From_X3D204_1,Splenius Capitis Muscle (Right),Muscles.001,6432,yes
+Splenius_capitis_muscler_Generated_Mesh_From_X3D204_2,Splenius Capitis Muscle (Right),Tendon.001,4092,yes
+Splenius_colli_musclel_Generated_Mesh_From_X3D202,Splenius Colli Muscle (Left),Muscles.001,8628,yes
+Splenius_colli_muscler_Generated_Mesh_From_X3D202,Splenius Colli Muscle (Right),Muscles.001,8628,yes
+Stapesl_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01003,Stapesl Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,4336,yes
+Stapesr_Anatomy_of_the_Inner_Ear_Sketchfab_upload_01003,Stapesr Anatomy Of The Inner Ear Sketchfab Upload 01,Bone,4336,yes
+Sternocleidomastoid_musclel_Generated_Mesh_From_X3D198_1,Sternocleidomastoid Muscle (Left),Muscles.001,6478,yes
+Sternocleidomastoid_musclel_Generated_Mesh_From_X3D198_2,Sternocleidomastoid Muscle (Left),Tendon.001,3428,yes
+Sternocleidomastoid_muscler_Generated_Mesh_From_X3D198_1,Sternocleidomastoid Muscle (Right),Muscles.001,6478,yes
+Sternocleidomastoid_muscler_Generated_Mesh_From_X3D198_2,Sternocleidomastoid Muscle (Right),Tendon.001,3428,yes
+Sternocostal_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D196_1,Sternocostal Head Of Pectoralis Major Muscle (Left),Muscles.001,5659,yes
+Sternocostal_head_of_pectoralis_major_musclel_Generated_Mesh_From_X3D196_2,Sternocostal Head Of Pectoralis Major Muscle (Left),Tendon.001,785,yes
+Sternocostal_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D196_1,Sternocostal Head Of Pectoralis Major Muscle (Right),Muscles.001,5659,yes
+Sternocostal_head_of_pectoralis_major_muscler_Generated_Mesh_From_X3D196_2,Sternocostal Head Of Pectoralis Major Muscle (Right),Tendon.001,785,yes
+Sternohyoid_musclel_Generated_Mesh_From_X3D194,Sternohyoid Muscle (Left),Muscles.001,2788,yes
+Sternohyoid_muscler_Generated_Mesh_From_X3D194,Sternohyoid Muscle (Right),Muscles.001,2788,yes
+Sternothyroid_musclel_Generated_Mesh_From_X3D192,Sternothyroid Muscle (Left),Muscles.001,2176,yes
+Sternothyroid_muscler_Generated_Mesh_From_X3D192,Sternothyroid Muscle (Right),Muscles.001,2176,yes
+Sternumr_Cone021_1,Sternum (Right),Bone,2560,yes
+Sternumr_Cone021_2,Sternum (Right),Cartilage,1906,yes
+Stylohyoid_musclel_Generated_Mesh_From_X3D190,Stylohyoid Muscle (Left),Muscles.001,1388,yes
+Stylohyoid_muscler_Generated_Mesh_From_X3D190,Stylohyoid Muscle (Right),Muscles.001,1388,yes
+Subclavius_musclel_Generated_Mesh_From_X3D188,Subclavius Muscle (Left),Muscles.001,1618,yes
+Subclavius_muscler_Generated_Mesh_From_X3D188,Subclavius Muscle (Right),Muscles.001,1618,yes
+Subscapular_musclel_Generated_Mesh_From_X3D186,Subscapular Muscle (Left),Muscles.001,5910,yes
+Subscapular_muscler_Generated_Mesh_From_X3D186,Subscapular Muscle (Right),Muscles.001,5910,yes
+Superficial_head_of_flexor_pollicis_brevisl_Generated_Mesh_From_X3D184_1,Superficial Head Of Flexor Pollicis Brevis (Left),Muscles.001,415,yes
+Superficial_head_of_flexor_pollicis_brevisl_Generated_Mesh_From_X3D184_2,Superficial Head Of Flexor Pollicis Brevis (Left),Tendon.001,139,yes
+Superficial_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D184_1,Superficial Head Of Flexor Pollicis Brevis (Right),Muscles.001,415,yes
+Superficial_head_of_flexor_pollicis_brevisr_Generated_Mesh_From_X3D184_2,Superficial Head Of Flexor Pollicis Brevis (Right),Tendon.001,139,yes
+Superficial_head_of_pronator_teres_musclel_Generated_Mesh_From_X3D182_1,Superficial Head Of Pronator Teres Muscle (Left),Muscles.001,3778,yes
+Superficial_head_of_pronator_teres_musclel_Generated_Mesh_From_X3D182_2,Superficial Head Of Pronator Teres Muscle (Left),Tendon.001,1314,yes
+Superficial_head_of_pronator_teres_muscler_Generated_Mesh_From_X3D182_1,Superficial Head Of Pronator Teres Muscle (Right),Muscles.001,3778,yes
+Superficial_head_of_pronator_teres_muscler_Generated_Mesh_From_X3D182_2,Superficial Head Of Pronator Teres Muscle (Right),Tendon.001,1314,yes
+Superficial_part_of_masseterl_Generated_Mesh_From_X3D180_1,Superficial Part Of Masseter (Left),Muscles.001,1840,yes
+Superficial_part_of_masseterl_Generated_Mesh_From_X3D180_2,Superficial Part Of Masseter (Left),Tendon.001,968,yes
+Superficial_part_of_masseterr_Generated_Mesh_From_X3D180_1,Superficial Part Of Masseter (Right),Muscles.001,1840,yes
+Superficial_part_of_masseterr_Generated_Mesh_From_X3D180_2,Superficial Part Of Masseter (Right),Tendon.001,968,yes
+Superficial_part_of_tibial_collateral_ligamentl_Plane262,Superficial Part Of Tibial Collateral Ligament (Left),Ligament.002,152,yes
+Superficial_part_of_tibial_collateral_ligamentr_Plane262,Superficial Part Of Tibial Collateral Ligament (Right),Ligament.002,152,yes
+Superior_gemellus_musclel_Generated_Mesh_From_X3D178_1,Superior Gemellus Muscle (Left),Muscles.001,490,yes
+Superior_gemellus_musclel_Generated_Mesh_From_X3D178_2,Superior Gemellus Muscle (Left),Tendon.001,320,yes
+Superior_gemellus_muscler_Generated_Mesh_From_X3D178_1,Superior Gemellus Muscle (Right),Muscles.001,490,yes
+Superior_gemellus_muscler_Generated_Mesh_From_X3D178_2,Superior Gemellus Muscle (Right),Tendon.001,320,yes
+Superior_glenohumeral_ligamentl_Generated_Mesh_From_X3D176,Superior Glenohumeral Ligament (Left),Ligament.002,664,yes
+Superior_glenohumeral_ligamentr_Generated_Mesh_From_X3D176,Superior Glenohumeral Ligament (Right),Ligament.002,664,yes
+Superior_head_of_lateral_pterygoid_musclel_Generated_Mesh_From_X3D174,Superior Head Of Lateral Pterygoid Muscle (Left),Muscles.001,452,yes
+Superior_head_of_lateral_pterygoid_muscler_Generated_Mesh_From_X3D174,Superior Head Of Lateral Pterygoid Muscle (Right),Muscles.001,452,yes
+Superior_oblique_musclel_grp1006,Superior Oblique Musclel Grp1,Muscles.001,3500,yes
+Superior_oblique_muscler_grp1006,Superior Oblique Muscler Grp1,Muscles.001,3500,yes
+Superior_pubic_ligamentl_Cube074,Superior Pubic Ligament (Left),Ligament.002,56,yes
+Superior_pubic_ligamentr_Cube074,Superior Pubic Ligament (Right),Ligament.002,56,yes
+Superior_rectus_musclel_grp1005,Superior Rectus Musclel Grp1,Muscles.001,2568,yes
+Superior_rectus_muscler_grp1005,Superior Rectus Muscler Grp1,Muscles.001,2568,yes
+Superior_tarsusl_Paupi_re_remeshed002,Superior Tarsusl Paupi Re Remeshed,Muscles.001,356,yes
+Superior_tarsusr_Paupi_re_remeshed002,Superior Tarsusr Paupi Re Remeshed,Muscles.001,356,yes
+Superior_transverse_scapular_ligamentl_Plane261,Superior Transverse Scapular Ligament (Left),Ligament.002,12,yes
+Superior_transverse_scapular_ligamentr_Plane261,Superior Transverse Scapular Ligament (Right),Ligament.002,12,yes
+Supinatorl_Generated_Mesh_From_X3D172,Supinator (Left),Muscles.001,5508,yes
+Supinatorr_Generated_Mesh_From_X3D172,Supinator (Right),Muscles.001,5508,yes
+Supraspinatus_musclel_Generated_Mesh_From_X3D170,Supraspinatus Muscle (Left),Muscles.001,2860,yes
+Supraspinatus_muscler_Generated_Mesh_From_X3D170,Supraspinatus Muscle (Right),Muscles.001,2860,yes
+Supraspinous_ligamentr_Plane260,Supraspinous Ligament (Right),Ligament.002,1696,yes
+T1_Generated_Mesh_From_X3D900_1,T1,Bone,1654,yes
+T1_Generated_Mesh_From_X3D900_2,T1,Cartilage,292,yes
+T2_Generated_Mesh_From_X3D901_1,T2,Bone,1788,yes
+T2_Generated_Mesh_From_X3D901_2,T2,Cartilage,354,yes
+T3_Generated_Mesh_From_X3D902_1,T3,Bone,2132,yes
+T3_Generated_Mesh_From_X3D902_2,T3,Cartilage,212,yes
+T4_Generated_Mesh_From_X3D903_1,T4,Bone,1952,yes
+T4_Generated_Mesh_From_X3D903_2,T4,Cartilage,264,yes
+T5_Generated_Mesh_From_X3D911_1,T5,Bone,1871,yes
+T5_Generated_Mesh_From_X3D911_2,T5,Cartilage,281,yes
+T6_Generated_Mesh_From_X3D912_1,T6,Bone,1592,yes
+T6_Generated_Mesh_From_X3D912_2,T6,Cartilage,180,yes
+T7_Generated_Mesh_From_X3D913_1,T7,Bone,2442,yes
+T7_Generated_Mesh_From_X3D913_2,T7,Cartilage,344,yes
+T8_Cone015_1,T8,Bone,1502,yes
+T8_Cone015_2,T8,Cartilage,198,yes
+T9_Generated_Mesh_From_X3D_1,T9 Generated Mesh From X3d,Bone,2610,yes
+T9_Generated_Mesh_From_X3D_2,T9 Generated Mesh From X3d,Cartilage,370,yes
+T10_Generated_Mesh_From_X3D001_1,T,Bone,2772,yes
+T10_Generated_Mesh_From_X3D001_2,T,Cartilage,286,yes
+T11_Generated_Mesh_From_X3D002_1,T,Bone,1548,yes
+T11_Generated_Mesh_From_X3D002_2,T,Cartilage,250,yes
+T12_Generated_Mesh_From_X3D003_1,T,Bone,2218,yes
+T12_Generated_Mesh_From_X3D003_2,T,Cartilage,368,yes
+Talocalcaneal_interosseus_ligamentl_Plane259,Talocalcaneal Interosseus Ligament (Left),Ligament.002,424,yes
+Talocalcaneal_interosseus_ligamentr_Plane259,Talocalcaneal Interosseus Ligament (Right),Ligament.002,424,yes
+Talonavicular_ligamentl_Plane258,Talonavicular Ligament (Left),Ligament.002,136,yes
+Talonavicular_ligamentr_Plane258,Talonavicular Ligament (Right),Ligament.002,136,yes
+Talusl_Generated_Mesh_From_X3D250_1,Talus (Left),Bone,894,yes
+Talusl_Generated_Mesh_From_X3D250_2,Talus (Left),Cartilage,394,yes
+Talusr_Generated_Mesh_From_X3D250_1,Talus (Right),Bone,894,yes
+Talusr_Generated_Mesh_From_X3D250_2,Talus (Right),Cartilage,394,yes
+Temporal_bonel_Generated_Mesh_From_X3D636_1,Temporal Bone (Left),Bone,4107,yes
+Temporal_bonel_Generated_Mesh_From_X3D636_2,Temporal Bone (Left),Suture,46,yes
+Temporal_bonel_Generated_Mesh_From_X3D636_3,Temporal Bonel 3,Cartilage,89,yes
+Temporal_boner_Generated_Mesh_From_X3D636_1,Temporal Bone (Right),Bone,4107,yes
+Temporal_boner_Generated_Mesh_From_X3D636_2,Temporal Bone (Right),Suture,46,yes
+Temporal_boner_Generated_Mesh_From_X3D636_3,Temporal Boner 3,Cartilage,89,yes
+Temporalis_musclel_Generated_Mesh_From_X3D168_1,Temporalis Muscle (Left),Muscles.001,12374,yes
+Temporalis_musclel_Generated_Mesh_From_X3D168_2,Temporalis Muscle (Left),Tendon.001,8148,yes
+Temporalis_muscler_Generated_Mesh_From_X3D168_1,Temporalis Muscle (Right),Muscles.001,12374,yes
+Temporalis_muscler_Generated_Mesh_From_X3D168_2,Temporalis Muscle (Right),Tendon.001,8148,yes
+Temporoparietalis_musclel_Generated_Mesh_From_X3D164_1,Temporoparietalis Muscle (Left),Muscles.001,14575,yes
+Temporoparietalis_musclel_Generated_Mesh_From_X3D164_2,Temporoparietalis Muscle (Left),Tendon.001,9371,yes
+Temporoparietalis_muscler_Generated_Mesh_From_X3D164_1,Temporoparietalis Muscle (Right),Muscles.001,14575,yes
+Temporoparietalis_muscler_Generated_Mesh_From_X3D164_2,Temporoparietalis Muscle (Right),Tendon.001,9371,yes
+Tensor_fasciae_latael_Generated_Mesh_From_X3D162_1,Tensor Fasciae Latae (Left),Muscles.001,3102,yes
+Tensor_fasciae_latael_Generated_Mesh_From_X3D162_2,Tensor Fasciae Latae (Left),Tendon.001,622,yes
+Tensor_fasciae_lataer_Generated_Mesh_From_X3D162_1,Tensor Fasciae Latae (Right),Muscles.001,3102,yes
+Tensor_fasciae_lataer_Generated_Mesh_From_X3D162_2,Tensor Fasciae Latae (Right),Tendon.001,622,yes
+Teres_major_musclel_Generated_Mesh_From_X3D160,Teres Major Muscle (Left),Muscles.001,2308,yes
+Teres_major_muscler_Generated_Mesh_From_X3D160,Teres Major Muscle (Right),Muscles.001,2308,yes
+Teres_minor_musclel_Generated_Mesh_From_X3D158,Teres Minor Muscle (Left),Muscles.001,3044,yes
+Teres_minor_muscler_Generated_Mesh_From_X3D158,Teres Minor Muscle (Right),Muscles.001,3044,yes
+1st_metacarpal_bonel_Generated_Mesh_From_X3D742,1st Metacarpal Bone (Left),Bone,342,yes
+1st_metacarpal_bonel_Generated_Mesh_From_X3D742_1,1st Metacarpal Bone (Left),Cartilage,340,yes
+Thyrohyoid_musclel_Generated_Mesh_From_X3D156,Thyrohyoid Muscle (Left),Muscles.001,1402,yes
+Thyrohyoid_muscler_Generated_Mesh_From_X3D156,Thyrohyoid Muscle (Right),Muscles.001,1402,yes
+Thyroid_cartilage_Generated_Mesh_From_X3D656,Thyroid Cartilage,Cartilage,4605,yes
+Tibial_Generated_Mesh_From_X3D248_1,Tibia (Left),Bone,1385,yes
+Tibial_Generated_Mesh_From_X3D248_2,Tibia (Left),Cartilage,281,yes
+Tibiar_Cone012_1,Tibia (Right),Bone,1385,yes
+Tibiar_Cone012_2,Tibia (Right),Cartilage,281,yes
+Tibialis_anterior_musclel_Generated_Mesh_From_X3D154_1,Tibialis Anterior Muscle (Left),Muscles.001,5128,yes
+Tibialis_anterior_musclel_Generated_Mesh_From_X3D154_2,Tibialis Anterior Muscle (Left),Tendon.001,1926,yes
+Tibialis_anterior_muscler_Generated_Mesh_From_X3D154_1,Tibialis Anterior Muscle (Right),Muscles.001,5128,yes
+Tibialis_anterior_muscler_Generated_Mesh_From_X3D154_2,Tibialis Anterior Muscle (Right),Tendon.001,1926,yes
+Tibialis_posterior_musclel_Generated_Mesh_From_X3D152_1,Tibialis Posterior Muscle (Left),Muscles.001,5057,yes
+Tibialis_posterior_musclel_Generated_Mesh_From_X3D152_2,Tibialis Posterior Muscle (Left),Tendon.001,5995,yes
+Tibialis_posterior_muscler_Generated_Mesh_From_X3D152_1,Tibialis Posterior Muscle (Right),Muscles.001,5057,yes
+Tibialis_posterior_muscler_Generated_Mesh_From_X3D152_2,Tibialis Posterior Muscle (Right),Tendon.001,5995,yes
+Tibiocalcaneal_ligamentl_Plane257,Tibiocalcaneal Ligament (Left),Ligament.002,56,yes
+Tibiocalcaneal_ligamentr_Plane257,Tibiocalcaneal Ligament (Right),Ligament.002,56,yes
+Tibionavicular_ligamentl001_Plane255,Tibionavicular Ligament (Left),Ligament.002,176,yes
+Tibionavicular_ligamentl_Plane256,Tibionavicular Ligament (Left),Ligament.002,56,yes
+Tibionavicular_ligamentr001_Plane256,Tibionavicular Ligament (Right),Ligament.002,56,yes
+Tibionavicular_ligamentr_Plane255,Tibionavicular Ligament (Right),Ligament.002,176,yes
+Transverse_acetabular_ligamentl_Generated_Mesh_From_X3D150,Transverse Acetabular Ligament (Left),Ligament.002,164,yes
+Transverse_acetabular_ligamentr_Generated_Mesh_From_X3D150,Transverse Acetabular Ligament (Right),Ligament.002,164,yes
+Transverse_head_of_adductor_hallucisl_Generated_Mesh_From_X3D148,Transverse Head Of Adductor Hallucis (Left),Muscles.001,734,yes
+Transverse_head_of_adductor_hallucisr_Generated_Mesh_From_X3D148,Transverse Head Of Adductor Hallucis (Right),Muscles.001,734,yes
+Transverse_head_of_adductor_pollicis_brevisl_Generated_Mesh_From_X3D146_1,Transverse Head Of Adductor Pollicis Brevis (Left),Muscles.001,1865,yes
+Transverse_head_of_adductor_pollicis_brevisl_Generated_Mesh_From_X3D146_2,Transverse Head Of Adductor Pollicis Brevis (Left),Tendon.001,163,yes
+Transverse_head_of_adductor_pollicis_brevisr_Generated_Mesh_From_X3D146_1,Transverse Head Of Adductor Pollicis Brevis (Right),Muscles.001,1865,yes
+Transverse_head_of_adductor_pollicis_brevisr_Generated_Mesh_From_X3D146_2,Transverse Head Of Adductor Pollicis Brevis (Right),Tendon.001,163,yes
+Transverse_humeral_ligamentl_Plane254,Transverse Humeral Ligament (Left),Ligament.002,136,yes
+Transverse_humeral_ligamentr_Plane254,Transverse Humeral Ligament (Right),Ligament.002,136,yes
+Transverse_ligament_of_kneel_Plane253,Transverse Ligament Of Knee (Left),Ligament.002,432,yes
+Transverse_ligament_of_kneer_Plane253,Transverse Ligament Of Knee (Right),Ligament.002,432,yes
+Transverse_part_of_iliofemoral_ligamentl_Generated_Mesh_From_X3D144,Transverse Part Of Iliofemoral Ligament (Left),Ligament.002,464,yes
+Transverse_part_of_iliofemoral_ligamentr_Generated_Mesh_From_X3D144,Transverse Part Of Iliofemoral Ligament (Right),Ligament.002,464,yes
+Transverse_part_of_trapezius_musclel_Generated_Mesh_From_X3D142_1,Transverse Part Of Trapezius Muscle (Left),Muscles.001,1713,yes
+Transverse_part_of_trapezius_musclel_Generated_Mesh_From_X3D142_2,Transverse Part Of Trapezius Muscle (Left),Tendon.001,4271,yes
+Transverse_part_of_trapezius_muscler_Generated_Mesh_From_X3D142_1,Transverse Part Of Trapezius Muscle (Right),Muscles.001,1713,yes
+Transverse_part_of_trapezius_muscler_Generated_Mesh_From_X3D142_2,Transverse Part Of Trapezius Muscle (Right),Tendon.001,4271,yes
+Transverse_tibiofibular_ligamentl_Plane252,Transverse Tibiofibular Ligament (Left),Ligament.002,104,yes
+Transverse_tibiofibular_ligamentr_Plane252,Transverse Tibiofibular Ligament (Right),Ligament.002,104,yes
+Transversus_abdominis_musclel_Generated_Mesh_From_X3D140,Transversus Abdominis Muscle (Left),Muscles.001,68656,yes
+Transversus_abdominis_muscler_Generated_Mesh_From_X3D140,Transversus Abdominis Muscle (Right),Muscles.001,68656,yes
+Transversus_thoracis_musclel_Generated_Mesh_From_X3D138,Transversus Thoracis Muscle (Left),Muscles.001,3342,yes
+Transversus_thoracis_muscler_Generated_Mesh_From_X3D138,Transversus Thoracis Muscle (Right),Muscles.001,3342,yes
+Trapeziotrapezoidal_interosseus_ligamentl_Plane251,Trapeziotrapezoidal Interosseus Ligament (Left),Ligament.002,32,yes
+Trapeziotrapezoidal_interosseus_ligamentr_Plane251,Trapeziotrapezoidal Interosseus Ligament (Right),Ligament.002,32,yes
+Trapezium_bonel_Generated_Mesh_From_X3D702_1,Trapezium Bone (Left),Bone,431,yes
+Trapezium_bonel_Generated_Mesh_From_X3D702_2,Trapezium Bone (Left),Cartilage,69,yes
+Trapezium_boner_Generated_Mesh_From_X3D702_1,Trapezium Bone (Right),Bone,431,yes
+Trapezium_boner_Generated_Mesh_From_X3D702_2,Trapezium Bone (Right),Cartilage,69,yes
+Trapezoid_bonel_Generated_Mesh_From_X3D701_1,Trapezoid Bone (Left),Bone,79,yes
+Trapezoid_bonel_Generated_Mesh_From_X3D701_2,Trapezoid Bone (Left),Cartilage,285,yes
+Trapezoid_boner_Generated_Mesh_From_X3D701_1,Trapezoid Bone (Right),Bone,79,yes
+Trapezoid_boner_Generated_Mesh_From_X3D701_2,Trapezoid Bone (Right),Cartilage,285,yes
+Trapezoid_ligamentl_Plane250,Trapezoid Ligament (Left),Ligament.002,56,yes
+Trapezoid_ligamentr_Plane250,Trapezoid Ligament (Right),Ligament.002,56,yes
+Trapezoideocapitate_interosseus_ligamentl_Plane249,Trapezoideocapitate Interosseus Ligament (Left),Ligament.002,32,yes
+Trapezoideocapitate_interosseus_ligamentr_Plane249,Trapezoideocapitate Interosseus Ligament (Right),Ligament.002,32,yes
+Triquetrocapitate_ligamentl_Plane248,Triquetrocapitate Ligament (Left),Ligament.002,176,yes
+Triquetrocapitate_ligamentr_Plane248,Triquetrocapitate Ligament (Right),Ligament.002,176,yes
+Triquetrohamate_ligamentl_Plane247,Triquetrohamate Ligament (Left),Ligament.002,32,yes
+Triquetrohamate_ligamentr_Plane247,Triquetrohamate Ligament (Right),Ligament.002,32,yes
+Triquetrum_bonel_Generated_Mesh_From_X3D700_1,Triquetrum Bone (Left),Bone,100,yes
+Triquetrum_bonel_Generated_Mesh_From_X3D700_2,Triquetrum Bone (Left),Cartilage,76,yes
+Triquetrum_boner_Generated_Mesh_From_X3D700_1,Triquetrum Bone (Right),Bone,100,yes
+Triquetrum_boner_Generated_Mesh_From_X3D700_2,Triquetrum Bone (Right),Cartilage,76,yes
+Triradiate_cartilagel001_Generated_Mesh_From_X3D134,Triradiate Cartilage (Left),Cartilage.002,1604,yes
+Triradiate_cartilagel_Generated_Mesh_From_X3D024,Triradiate Cartilage (Left),Cartilage.001,1604,yes
+Triradiate_cartilager001_Generated_Mesh_From_X3D134,Triradiate Cartilage (Right),Cartilage.002,1604,yes
+Triradiate_cartilager_Generated_Mesh_From_X3D024,Triradiate Cartilage (Right),Cartilage.001,1604,yes
+Trochlea_of_superior_oblique_musclel_grp1004,Trochlea Of Superior Oblique Musclel Grp1,Tendon.001,386,yes
+Trochlea_of_superior_oblique_muscler_grp1004,Trochlea Of Superior Oblique Muscler Grp1,Tendon.001,386,yes
+Ulnal_Generated_Mesh_From_X3D743_1,Ulna (Left),Bone,3718,yes
+Ulnal_Generated_Mesh_From_X3D743_2,Ulna (Left),Cartilage,1590,yes
+Ulnar_Cone007_1,Ulna (Right),Bone,639,yes
+Ulnar_Cone007_2,Ulna (Right),Cartilage,265,yes
+Ulnar_collateral_ligamentl_Cube073,Ulnar Collateral Ligament (Left),Ligament.002,496,yes
+Ulnar_collateral_ligamentr_Cube073,Ulnar Collateral Ligament (Right),Ligament.002,496,yes
+Ulnar_collateral_ligament_of_wrist_jointl_Plane246,Ulnar Collateral Ligament Of Wrist Joint (Left),Ligament.002,128,yes
+Ulnar_collateral_ligament_of_wrist_jointr_Plane246,Ulnar Collateral Ligament Of Wrist Joint (Right),Ligament.002,128,yes
+Ulnar_head_of_extensor_carpi_ulnarisl_grp1003_1,Ulnar Head Of Extensor Carpi Ulnarisl Grp1,Muscles.001,705,yes
+Ulnar_head_of_extensor_carpi_ulnarisl_grp1003_2,Ulnar Head Of Extensor Carpi Ulnarisl Grp1,Tendon.001,459,yes
+Ulnar_head_of_extensor_carpi_ulnarisr_grp1003_1,Ulnar Head Of Extensor Carpi Ulnarisr Grp1,Muscles.001,705,yes
+Ulnar_head_of_extensor_carpi_ulnarisr_grp1003_2,Ulnar Head Of Extensor Carpi Ulnarisr Grp1,Tendon.001,459,yes
+Ulnar_head_of_flexor_carpi_ulnarisl_Generated_Mesh_From_X3D132_1,Ulnar Head Of Flexor Carpi Ulnaris (Left),Muscles.001,2467,yes
+Ulnar_head_of_flexor_carpi_ulnarisl_Generated_Mesh_From_X3D132_2,Ulnar Head Of Flexor Carpi Ulnaris (Left),Tendon.001,465,yes
+Ulnar_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D132_1,Ulnar Head Of Flexor Carpi Ulnaris (Right),Muscles.001,2467,yes
+Ulnar_head_of_flexor_carpi_ulnarisr_Generated_Mesh_From_X3D132_2,Ulnar Head Of Flexor Carpi Ulnaris (Right),Tendon.001,465,yes
+Ulnocapitate_ligamentl_Plane245,Ulnocapitate Ligament (Left),Ligament.002,128,yes
+Ulnocapitate_ligamentr_Plane245,Ulnocapitate Ligament (Right),Ligament.002,128,yes
+Ulnolunate_ligamentl_Plane244,Ulnolunate Ligament (Left),Ligament.002,104,yes
+Ulnolunate_ligamentr_Plane244,Ulnolunate Ligament (Right),Ligament.002,104,yes
+Ulnopisiform_ligamentl_Plane243,Ulnopisiform Ligament (Left),Ligament.002,32,yes
+Ulnopisiform_ligamentr_Plane243,Ulnopisiform Ligament (Right),Ligament.002,32,yes
+Ulnotriquetral_ligamentl_Plane242,Ulnotriquetral Ligament (Left),Ligament.002,56,yes
+Ulnotriquetral_ligamentr_Plane242,Ulnotriquetral Ligament (Right),Ligament.002,56,yes
+Vastus_intermedius_musclel_Generated_Mesh_From_X3D129_1,Vastus Intermedius Muscle (Left),Muscles.001,8503,yes
+Vastus_intermedius_musclel_Generated_Mesh_From_X3D129_2,Vastus Intermedius Muscle (Left),Tendon.001,3827,yes
+Vastus_intermedius_muscler_Generated_Mesh_From_X3D129_1,Vastus Intermedius Muscle (Right),Muscles.001,8503,yes
+Vastus_intermedius_muscler_Generated_Mesh_From_X3D129_2,Vastus Intermedius Muscle (Right),Tendon.001,3827,yes
+Vastus_lateralis_musclel_Generated_Mesh_From_X3D128_1,Vastus Lateralis Muscle (Left),Muscles.001,16410,yes
+Vastus_lateralis_musclel_Generated_Mesh_From_X3D128_2,Vastus Lateralis Muscle (Left),Tendon.001,2302,yes
+Vastus_lateralis_muscler_Generated_Mesh_From_X3D128_1,Vastus Lateralis Muscle (Right),Muscles.001,16410,yes
+Vastus_lateralis_muscler_Generated_Mesh_From_X3D128_2,Vastus Lateralis Muscle (Right),Tendon.001,2302,yes
+Vastus_medialis_musclel_Generated_Mesh_From_X3D127_1,Vastus Medialis Muscle (Left),Muscles.001,11506,yes
+Vastus_medialis_musclel_Generated_Mesh_From_X3D127_2,Vastus Medialis Muscle (Left),Tendon.001,1416,yes
+Vastus_medialis_muscler_Generated_Mesh_From_X3D127_1,Vastus Medialis Muscle (Right),Muscles.001,11506,yes
+Vastus_medialis_muscler_Generated_Mesh_From_X3D127_2,Vastus Medialis Muscle (Right),Tendon.001,1416,yes
+Ventral_parts_of_lateral_intertransversarii_lumborum_musclesl_Generated_Mesh_From_X3D125,Ventral Parts Of Lateral Intertransversarii Lumborum Muscles (Left),Muscles.001,1994,yes
+Ventral_parts_of_lateral_intertransversarii_lumborum_musclesr_Generated_Mesh_From_X3D125,Ventral Parts Of Lateral Intertransversarii Lumborum Muscles (Right),Muscles.001,1994,yes
+Vertebra_Cone004_1,Vertebra,Bone,2830,yes
+Vertebra_Cone004_2,Vertebra,Cartilage,328,yes
+Vomer_Generated_Mesh_From_X3D905,Vome (Right),Bone,800,yes
+Xiphoid_process_Generated_Mesh_From_X3D840_1,Xiphoid Process,Bone,760,yes
+Xiphoid_process_Generated_Mesh_From_X3D840_2,Xiphoid Process,Cartilage,153,yes
+Zona_orbicularisl_Generated_Mesh_From_X3D123,Zona Orbicularis (Left),Ligament.002,18944,yes
+Zona_orbicularisr_Generated_Mesh_From_X3D123,Zona Orbicularis (Right),Ligament.002,18944,yes
+Zygomatic_bonel_Generated_Mesh_From_X3D644_1,Zygomatic Bone (Left),Bone,817,yes
+Zygomatic_bonel_Generated_Mesh_From_X3D644_2,Zygomatic Bone (Left),Suture,511,yes
+Zygomatic_boner_Generated_Mesh_From_X3D644_1,Zygomatic Bone (Right),Bone,817,yes
+Zygomatic_boner_Generated_Mesh_From_X3D644_2,Zygomatic Bone (Right),Suture,511,yes
+Zygomaticus_major_musclel_Generated_Mesh_From_X3D122_1,Zygomaticus Major Muscle (Left),Muscles.001,887,yes
+Zygomaticus_major_musclel_Generated_Mesh_From_X3D122_2,Zygomaticus Major Muscle (Left),Tendon.001,709,yes
+Zygomaticus_major_muscler_Generated_Mesh_From_X3D122_1,Zygomaticus Major Muscle (Right),Muscles.001,887,yes
+Zygomaticus_major_muscler_Generated_Mesh_From_X3D122_2,Zygomaticus Major Muscle (Right),Tendon.001,709,yes
+Zygomaticus_minor_musclel_Generated_Mesh_From_X3D121_1,Zygomaticus Minor Muscle (Left),Muscles.001,536,yes
+Zygomaticus_minor_musclel_Generated_Mesh_From_X3D121_2,Zygomaticus Minor Muscle (Left),Tendon.001,330,yes
+Zygomaticus_minor_muscler_Generated_Mesh_From_X3D121_1,Zygomaticus Minor Muscle (Right),Muscles.001,536,yes
+Zygomaticus_minor_muscler_Generated_Mesh_From_X3D121_2,Zygomaticus Minor Muscle (Right),Tendon.001,330,yes

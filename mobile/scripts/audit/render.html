@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>model audit render</title>
+<style>html,body{margin:0;background:#101418}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/examples/jsm/loaders/GLTFLoader.js":"/three/examples/jsm/loaders/GLTFLoader.js","three/addons/":"/three/examples/jsm/","three/src/":"/three/src/"}}</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+const log = (m) => fetch('/log', { method: 'POST', body: String(m) });
+const W = 900, H = 900, K = 1 / 32767;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H, false);
+renderer.setPixelRatio(1);
+renderer.setClearColor(0x101418, 1);
+document.body.appendChild(renderer.domElement);
+
+try {
+  const shots = await (await fetch('/shots.json')).json();
+
+  // ---- original ----
+  const glbBuf = await (await fetch('/orig.glb')).arrayBuffer();
+  const gltf = await new GLTFLoader().parseAsync(glbBuf, '');
+  const origGroup = gltf.scene;
+  origGroup.updateMatrixWorld(true);
+  const origMeshes = new Map();
+  origGroup.traverse((o) => {
+    if (!o.isMesh) return;
+    // same material as the app's lite pack: standard, vertex colours replaced by the material colour
+    o.material = new THREE.MeshStandardMaterial({ color: o.material.color.clone(), roughness: 0.55, metalness: 0.05 });
+    origMeshes.set(o.name, o);
+  });
+
+  // ---- lite, built like loadPack.ts ----
+  const meta = await (await fetch('/lite.json')).json();
+  const bin = await (await fetch('/lite.bin')).arrayBuffer();
+  const liteGroup = new THREE.Group();
+  const liteMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.05 });
+  const liteParts = [];
+  for (const m of meta.parts) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Int16Array(bin, m.pos, m.vCount * 3), 3, true));
+    g.setAttribute('normal', new THREE.BufferAttribute(new Int8Array(bin, m.nrm, m.vCount * 3), 3, true));
+    g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(bin, m.col, m.vCount * 3), 3, true));
+    g.setIndex(new THREE.BufferAttribute(new Uint32Array(bin, m.idx, m.iCount), 1));
+    g.boundingBox = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
+    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(3));
+    const mesh = new THREE.Mesh(g, liteMat);
+    mesh.scale.set(m.half[0], m.half[1], m.half[2]);
+    mesh.position.set(m.center[0], m.center[1], m.center[2]);
+    liteGroup.add(mesh);
+    liteParts.push({ meta: m, mesh, g, vis: null });
+  }
+
+  const scene = new THREE.Scene();
+  scene.add(origGroup, liteGroup);
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 50);
+  scene.add(camera);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  const dl = new THREE.DirectionalLight(0xffffff, 2);
+  dl.position.set(3, 5, 4);
+  camera.add(dl); // light follows the camera, like the app's fixed light with a turning model
+
+  // Per-mesh visibility for lite: hide all triangles except a set of named meshes by rebuilding an index buffer.
+  const liteFull = liteParts.map((p) => p.g.index);
+  function liteShow(names, layer) {
+    const set = names ? new Set(names) : null;
+    liteParts.forEach((p, i) => {
+      const fullIdx = liteFull[i];
+      if (layer) { p.mesh.visible = p.meta.layer === layer; p.g.setIndex(fullIdx); return; }
+      const picks = [];
+      for (const e of p.meta.meshes) if (set.has(e[0])) picks.push(e);
+      if (!picks.length) { p.mesh.visible = false; return; }
+      p.mesh.visible = true;
+      let n = 0; for (const e of picks) n += e[4] * 3;
+      const arr = new Uint32Array(n); let o = 0;
+      for (const e of picks) { arr.set(fullIdx.array.subarray(e[3] * 3, (e[3] + e[4]) * 3), o); o += e[4] * 3; }
+      p.g.setIndex(new THREE.BufferAttribute(arr, 1));
+    });
+  }
+  function origShow(names) {
+    const set = new Set(names);
+    for (const [n, m] of origMeshes) m.visible = set.has(n);
+  }
+
+  // Region box used for layer shots: show only geometry near the right shoulder (a box around the target).
+  for (const s of shots) {
+    if (s.model === 'orig') { liteGroup.visible = false; origGroup.visible = true; origShow(s.show); }
+    else {
+      origGroup.visible = false; liteGroup.visible = true;
+      if (s.layer) liteShow(null, s.layer); else liteShow(s.show, null);
+    }
+    const d = new THREE.Vector3(...s.dir).normalize();
+    const dist = (s.size / 2) / Math.tan(THREE.MathUtils.degToRad(s.fov / 2)) * 1.15;
+    const t = new THREE.Vector3(...s.target);
+    camera.fov = s.fov; camera.aspect = 1; camera.near = Math.max(0.01, dist - 0.5); camera.far = dist + 1.5; camera.updateProjectionMatrix();
+    camera.position.copy(t).addScaledVector(d, dist);
+    camera.lookAt(t);
+    camera.updateMatrixWorld(true);
+    renderer.render(scene, camera);
+    const url = renderer.domElement.toDataURL('image/png');
+    await fetch('/save?name=' + encodeURIComponent(s.file), { method: 'POST', body: url });
+  }
+  await fetch('/done', { method: 'POST' });
+} catch (e) {
+  await log('ERROR ' + (e && e.stack || e));
+}
+</script>
+</body>
+</html>

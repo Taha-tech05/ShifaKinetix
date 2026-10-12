@@ -1,0 +1,271 @@
+{
+  "label": "placeholder - draft from published sources, awaiting clinician review",
+  "note": "PLACEHOLDER, Person C replaces. Fixed questions for the structure-type step, one idea each, one structured answer each {questionId, type, value, state}. 'yes' and 'no' give each category a signed weight (the expected-response table); 'Not sure' and 'Skip' are state unknown, add nothing and never lower a category. Urdu and Roman Urdu are machine-written and need a native speaker's review. 'muscles' lists the muscles (right-side ids; the left side uses the matching left ones) that a 'yes' supports and a 'no' goes against, so the muscle candidates move with these answers too (placeholder).",
+  "categories": {
+    "MUSCLE_TENDON": {
+      "en": "Muscle or tendon",
+      "ur": "پٹھا یا ٹینڈن",
+      "roman": "Patthah ya tendon"
+    },
+    "JOINT_CAPSULE": {
+      "en": "Joint or capsule",
+      "ur": "جوڑ یا کیپسول",
+      "roman": "Jod ya capsule"
+    },
+    "BONE": {
+      "en": "Bone",
+      "ur": "ہڈی",
+      "roman": "Haddi"
+    },
+    "NERVE_NECK": {
+      "en": "Nerve or neck",
+      "ur": "عصب یا گردن",
+      "roman": "Asab ya gardan"
+    },
+    "UNCLEAR": {
+      "en": "Unclear",
+      "ur": "غیر واضح",
+      "roman": "Ghair wazeh"
+    }
+  },
+  "questions": [
+    {
+      "questionId": "Q_ST_BONE_POINT",
+      "order": 1,
+      "type": "yesno",
+      "text": {
+        "en": "Is there one small spot on a bone that is very sore when you press it?",
+        "ur": "کیا ہڈی پر کوئی ایک چھوٹی جگہ ہے جو دبانے پر بہت دکھتی ہے؟",
+        "roman": "Kya haddi par koi aik chhoti jagah hai jo dabane par bohat dukhti hai?"
+      },
+      "yes": {
+        "BONE": 1.5,
+        "MUSCLE_TENDON": -0.25
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.5,
+        "JOINT_CAPSULE": 0.25,
+        "BONE": -0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_ST_PASSIVE_BETTER",
+      "order": 2,
+      "type": "yesno",
+      "text": {
+        "en": "When your other hand helps lift your sore arm, does it go higher than on its own?",
+        "ur": "جب آپ کا دوسرا ہاتھ دکھتے بازو کو اٹھانے میں مدد کرے تو کیا وہ اپنے آپ سے زیادہ اوپر جاتا ہے؟",
+        "roman": "Jab aap ka doosra haath dukhte bazu ko uthane mein madad kare to kya woh apne aap se ziyada upar jata hai?"
+      },
+      "yes": {
+        "MUSCLE_TENDON": 1.0
+      },
+      "no": {
+        "JOINT_CAPSULE": 0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right",
+        "acromial_part_of_deltoid_muscle_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_TINGLE",
+      "order": 3,
+      "type": "yesno",
+      "text": {
+        "en": "Do you feel tingling in your arm?",
+        "ur": "کیا آپ کو بازو میں جھنجھناہٹ محسوس ہوتی ہے؟",
+        "roman": "Kya aap ko bazu mein jhunjhunahat mehsoos hoti hai?"
+      },
+      "yes": {
+        "NERVE_NECK": 1.0
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.25,
+        "NERVE_NECK": -0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_NUMB",
+      "order": 4,
+      "type": "yesno",
+      "text": {
+        "en": "Does any part of your arm feel numb?",
+        "ur": "کیا آپ کے بازو کا کوئی حصہ سن محسوس ہوتا ہے؟",
+        "roman": "Kya aap ke bazu ka koi hissa sunn mehsoos hota hai?"
+      },
+      "yes": {
+        "NERVE_NECK": 1.0
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.25,
+        "NERVE_NECK": -0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_NECK",
+      "order": 5,
+      "type": "yesno",
+      "text": {
+        "en": "Does moving your neck bring on your shoulder pain?",
+        "ur": "کیا گردن ہلانے سے کندھے کا درد شروع ہوتا ہے؟",
+        "roman": "Kya gardan hilane se kandhe ka dard shuru hota hai?"
+      },
+      "yes": {
+        "NERVE_NECK": 1.0,
+        "MUSCLE_TENDON": -0.25
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.25,
+        "NERVE_NECK": -0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "descending_part_of_trapezius_muscle_right",
+        "levator_scapulae_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_STUCK_ASSISTED",
+      "order": 6,
+      "type": "yesno",
+      "text": {
+        "en": "Is your arm stuck even when your other hand helps it?",
+        "ur": "کیا آپ کا بازو دوسرے ہاتھ کی مدد سے بھی پھنسا رہتا ہے؟",
+        "roman": "Kya aap ka bazu doosre haath ki madad se bhi phansa rehta hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 1.0,
+        "MUSCLE_TENDON": -0.5
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.5
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    },
+    {
+      "questionId": "Q_ST_NIGHT",
+      "order": 7,
+      "type": "yesno",
+      "text": {
+        "en": "Does the pain wake you at night?",
+        "ur": "کیا درد آپ کو رات کو جگا دیتا ہے؟",
+        "roman": "Kya dard aap ko raat ko jaga deta hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 0.5,
+        "MUSCLE_TENDON": 0.5,
+        "BONE": 0.25
+      },
+      "no": {},
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "supraspinatus_muscle_right",
+        "infraspinatus_muscle_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_CROSS_BODY",
+      "order": 8,
+      "type": "yesno",
+      "text": {
+        "en": "Does pulling your arm across your chest hurt the very top of the shoulder?",
+        "ur": "کیا بازو کو سینے کے آر پار کھینچنے سے کندھے کے بالکل اوپر درد ہوتا ہے؟",
+        "roman": "Kya bazu ko seene ke aar paar khenchne se kandhe ke bilkul upar dard hota hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 1.0,
+        "BONE": 0.25
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.25
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "acromial_part_of_deltoid_muscle_right",
+        "descending_part_of_trapezius_muscle_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_CATCH",
+      "order": 9,
+      "type": "yesno",
+      "text": {
+        "en": "Does your shoulder catch when you move it?",
+        "ur": "کیا کندھا ہلانے پر اٹکتا ہے؟",
+        "roman": "Kya kandha hilane par atakta hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 1.0
+      },
+      "no": {
+        "MUSCLE_TENDON": 0.25
+      },
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "subscapular_muscle_right",
+        "long_head_of_biceps_brachii_muscle_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_GIVEWAY",
+      "order": 10,
+      "type": "yesno",
+      "text": {
+        "en": "Does your shoulder feel like it gives way?",
+        "ur": "کیا ایسا لگتا ہے کہ آپ کا کندھا جواب دے جاتا ہے؟",
+        "roman": "Kya aisa lagta hai ke aap ka kandha jawab de jata hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 0.75,
+        "MUSCLE_TENDON": 0.25
+      },
+      "no": {},
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review",
+      "muscles": [
+        "subscapular_muscle_right",
+        "infraspinatus_muscle_right",
+        "teres_minor_muscle_right"
+      ]
+    },
+    {
+      "questionId": "Q_ST_CLICK",
+      "order": 11,
+      "type": "yesno",
+      "text": {
+        "en": "Does your shoulder click when you move it?",
+        "ur": "کیا کندھا ہلانے پر کلک کی آواز آتی ہے؟",
+        "roman": "Kya kandha hilane par click ki awaaz aati hai?"
+      },
+      "yes": {
+        "JOINT_CAPSULE": 0.5
+      },
+      "no": {},
+      "source": "PLACEHOLDER, Person C replaces",
+      "label": "placeholder - draft from published sources, awaiting clinician review"
+    }
+  ]
+}

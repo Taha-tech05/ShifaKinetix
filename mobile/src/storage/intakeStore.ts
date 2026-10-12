@@ -1,6 +1,6 @@
 import bank from '../../../shared/questions_shoulder.json';
 import rules from '../../../shared/gate_rules.json';
-import { Answer, CONTENT_VERSION, evaluate, isValidAnswer, Question } from '../gate/evaluate';
+import { SafetyAnswer as Answer, CONTENT_VERSION, evaluate, isValidAnswer, Question } from '../gate/evaluate';
 
 type Bind = string | number | null;
 export interface SqlConnection {
@@ -38,7 +38,9 @@ export class IntakeStore {
         id INTEGER PRIMARY KEY AUTOINCREMENT, intake_id TEXT NOT NULL,
         payload TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0);
       CREATE TABLE IF NOT EXISTS intake_content (
-        version TEXT PRIMARY KEY, questions_json TEXT NOT NULL, rules_json TEXT NOT NULL);`);
+        version TEXT PRIMARY KEY, questions_json TEXT NOT NULL, rules_json TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS intake_context (
+        intake_id TEXT PRIMARY KEY, payload TEXT NOT NULL);`);
     // Bundle is the only trusted content source until signed remote updates exist.
     await this.db.runAsync('INSERT OR REPLACE INTO intake_content VALUES (?, ?, ?)',
       CONTENT_VERSION, JSON.stringify(bank), JSON.stringify(rules));
@@ -63,6 +65,18 @@ export class IntakeStore {
     const row = await this.db.getFirstAsync<{ id: string }>(
       'SELECT id FROM intake_sessions WHERE content_version = ? ORDER BY rowid DESC LIMIT 1', CONTENT_VERSION);
     return row?.id ?? null;
+  }
+
+  async saveContext(intakeId: string, context: unknown) {
+    await this.checkIntake(this.db, intakeId);
+    await this.db.runAsync('INSERT OR REPLACE INTO intake_context VALUES (?, ?)', intakeId, JSON.stringify(context));
+  }
+
+  async context(intakeId: string): Promise<unknown> {
+    await this.checkIntake(this.db, intakeId);
+    const row = await this.db.getFirstAsync<{ payload: string }>('SELECT payload FROM intake_context WHERE intake_id = ?', intakeId);
+    if (!row) throw new Error('No resumable app context for this intake.');
+    return JSON.parse(row.payload);
   }
 
   private async checkIntake(db: SqlConnection, id: string) {

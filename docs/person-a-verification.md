@@ -2,6 +2,27 @@
 
 Draft, awaiting clinician review. Demo only, not for real patients.
 
+## Current integration verification, 2026-10-12
+
+Integrated PR #7 head 52a5486, including PR #6 lint fixes, preserving Taha's commits.
+A's follow-up fixes SafeGuard redirecting during an awaited live save. Added four
+real-screen/guard tests for delayed negative input, uncertainty, failure and reset.
+Native persistence is mocked in React tests; the separate SQLite suite uses real DBs.
+
+- Full mobile suite: 403 tests in 24 suites pass.
+- Actual SQLite suite: 11 tests pass.
+- TypeScript: passes.
+- Full lint: passes, 0 errors and 25 warnings; lint remains enabled.
+- Android Metro export: passes; not an APK or installed-device test.
+- Python parity: fails all 40 cases with KeyError: when in C's placeholder.
+
+Server gate/app-signal parity, sync/authenticated doctor APIs, full live audit,
+phone/airplane-mode acceptance, clinician review and administrator verification
+of branch protection remain pending. No clinical approval is implied by tests.
+See person-a-handoff.md and person-c-integration-request.md.
+
+## Original standalone implementation (2026-10-10)
+
 | Check | Observed local result |
 |---|---|
 | TypeScript `npm test -- --runInBand` | 67 passed: 40 shared gate cases, 23 integrity/provenance checks, 4 report-access checks |

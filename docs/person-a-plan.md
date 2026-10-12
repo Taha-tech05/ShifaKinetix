@@ -7,6 +7,19 @@ Start point: PR #1 merged into develop at 27455cb. Work lives on
 feature/A-gate; never push directly to develop or main. Preserve small commits
 with a normal merge, without Co-authored-by trailers.
 
+## Integration update (2026-10-12)
+
+PRs #3?#5 are merged. A has merged develop into feature/A-gate and replaced the
+runtime gate stub in the team app. See person-a-handoff.md for current results
+and safety-integration.md for the adapter, SQLite and remaining B/C work.
+The original standalone-demo delivery below records the first implementation;
+it is no longer the current app entry flow.
+
+PR #7 and its PR #6 lint fixes are now integrated, with a delayed-save guard fix.
+Current validation: 403 mobile tests, 11 SQLite tests, typecheck, full lint
+(0 errors, 25 warnings), and Android export pass. Python parity remains blocked
+by C's placeholder. See person-c-integration-request.md for backend dependencies.
+
 ## Delivery sequence
 
 1. Document scope, sources, and shared gate contract.
