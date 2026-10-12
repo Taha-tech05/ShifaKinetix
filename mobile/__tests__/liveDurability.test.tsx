@@ -11,6 +11,7 @@ import { narrow } from '../src/dev/narrowingStub';
 import { useSession } from '../src/store/session';
 import LiveScreen from '../src/app/report/movement';
 import Result from '../src/app/report/result';
+import { router } from 'expo-router';
 
 jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: jest.fn() }));
 jest.mock('../src/components/movement/MovementStage', () => ({ MovementStage: () => null }));
@@ -182,5 +183,66 @@ describe('no narrowing before the guard has confirmed the saved SAFE verdict', (
     expect(JSON.stringify(tree.toJSON())).toContain('/report/danger');
     expect(narrowSpy).not.toHaveBeenCalled();
     act(() => tree.unmount());
+  });
+});
+
+describe('real screen and guard during a delayed live save', () => {
+  async function mountedScreen() {
+    seed();
+    let delay: Promise<void> = Promise.resolve();
+    let finish!: () => void;
+    let fail!: (e: Error) => void;
+    open.mockResolvedValue({ checkpoint: async () => {
+      await delay;
+      useSession.getState().runGate();
+      return useSession.getState().gateOutput!;
+    } } as never);
+    let tree!: ReturnType<typeof create>;
+    await act(async () => { tree = create(<LiveScreen />); });
+    narrowSpy.mockClear();
+    return { tree, hold: () => { delay = new Promise<void>((resolve, reject) => { finish = resolve; fail = reject; }); },
+      finish: () => finish(), fail: () => fail(new Error('disk full')) };
+  }
+  async function press(tree: ReturnType<typeof create>, label: string) {
+    const button = tree.root.findAll((n) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label)[0];
+    expect(button).toBeDefined();
+    await act(async () => { button.props.onPress(); });
+  }
+  it('waits without redirecting, then advances after a saved negative movement', async () => {
+    const cp = await mountedScreen();
+    await press(cp.tree, 'I tried it'); cp.hold();
+    await press(cp.tree, 'No pain');
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('Saving and verifying');
+    expect(JSON.stringify(cp.tree.toJSON())).not.toContain('/report/danger');
+    expect(JSON.stringify(cp.tree.toJSON())).not.toContain('Raise your arm forward');
+    expect(narrowSpy).not.toHaveBeenCalled();
+    await act(async () => { cp.finish(); });
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('Raise your arm forward');
+    expect(useSession.getState().narrowingTrail).toHaveLength(1);
+    act(() => cp.tree.unmount());
+  });
+  it('a delayed uncertain movement still routes to clarification, never the next movement', async () => {
+    const cp = await mountedScreen(); const replace = jest.spyOn(router, 'replace'); cp.hold();
+    await press(cp.tree, 'Skip');
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('Saving and verifying');
+    await act(async () => { cp.finish(); });
+    expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+    expect(replace).toHaveBeenCalledWith('/report/reask');
+    expect(narrowSpy).not.toHaveBeenCalled();
+    act(() => cp.tree.unmount()); replace.mockRestore();
+  });
+  it('a failed live save redirects without narrowing', async () => {
+    const cp = await mountedScreen(); cp.hold();
+    await press(cp.tree, 'I tried it'); await press(cp.tree, 'No pain');
+    await act(async () => { cp.fail(); });
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('/report/danger');
+    expect(narrowSpy).not.toHaveBeenCalled();
+    act(() => cp.tree.unmount());
+  });
+  it('resetting the session cannot reuse the previous waiting-state clearance', async () => {
+    const cp = await mountedScreen();
+    act(() => useSession.getState().reset());
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('/report/danger');
+    act(() => cp.tree.unmount());
   });
 });
