@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "shoulder-conditions-1",
+  "label": "draft, awaiting clinician review",
+  "note": "Demo only, not for real patients. Doctor-only content: this file stays on the server and is never bundled into the phone app. Features and weights are engineering choices for a draft differential, not clinical measurements.",
+  "featureKinds": {
+    "q": "A question id from shared/questions_shoulder.json; expect is the answer value.",
+    "movement": "A movement id from shared/narrowing_shoulder.json; expect true means the movement was positive.",
+    "region": "The tapped region: front, back or top; expect true means that region was tapped."
+  },
+  "conditions": [
+    {
+      "id": "cardiac_referral",
+      "name": "Possible referred pain from the heart",
+      "danger": true,
+      "features": [
+        { "q": "chest", "expect": true, "w": 3, "defining": true },
+        { "q": "breathing", "expect": true, "w": 2, "defining": true },
+        { "movement": "painful_arc", "expect": false, "w": 1 },
+        { "movement": "empty_can", "expect": false, "w": 1 }
+      ],
+      "source": "https://www.nhs.uk/conditions/heart-attack/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "septic_arthritis",
+      "name": "Possible joint infection",
+      "danger": true,
+      "features": [
+        { "q": "fever", "expect": true, "w": 3, "defining": true },
+        { "q": "redness", "expect": true, "w": 2, "defining": true },
+        { "q": "temperature", "expect": "hot", "w": 2 },
+        { "q": "swelling", "expect": true, "w": 1 },
+        { "q": "infection_risk", "expect": true, "w": 1 },
+        { "q": "injury", "expect": false, "w": 1 }
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "fracture_or_dislocation",
+      "name": "Possible fracture or dislocation",
+      "danger": true,
+      "features": [
+        { "q": "injury", "expect": true, "w": 3, "defining": true },
+        { "q": "shape", "expect": true, "w": 2, "defining": true },
+        { "q": "unable", "expect": true, "w": 2 },
+        { "q": "swelling", "expect": true, "w": 2 },
+        { "q": "sudden", "expect": true, "w": 1 }
+      ],
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "rotator_cuff_related_pain",
+      "name": "Rotator cuff related shoulder pain",
+      "danger": false,
+      "features": [
+        { "movement": "painful_arc", "expect": true, "w": 2 },
+        { "movement": "empty_can", "expect": true, "w": 2 },
+        { "movement": "external_rotation", "expect": true, "w": 1 },
+        { "q": "fever", "expect": false, "w": 1 },
+        { "q": "shape", "expect": false, "w": 1 }
+      ],
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "subacromial_impingement",
+      "name": "Subacromial impingement",
+      "danger": false,
+      "features": [
+        { "movement": "painful_arc", "expect": true, "w": 3 },
+        { "movement": "empty_can", "expect": true, "w": 1 },
+        { "movement": "lift_off", "expect": false, "w": 1 },
+        { "q": "sudden", "expect": false, "w": 1 },
+        { "q": "injury", "expect": false, "w": 1 }
+      ],
+      "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "frozen_shoulder",
+      "name": "Frozen shoulder (adhesive capsulitis)",
+      "danger": false,
+      "features": [
+        { "movement": "external_rotation", "expect": true, "w": 2 },
+        { "movement": "lift_off", "expect": true, "w": 2 },
+        { "movement": "painful_arc", "expect": true, "w": 1 },
+        { "movement": "empty_can", "expect": true, "w": 1 },
+        { "q": "sudden", "expect": false, "w": 2 },
+        { "q": "injury", "expect": false, "w": 1 }
+      ],
+      "source": "TO VERIFY (StatPearls 'Adhesive Capsulitis' is the intended source; exact page not confirmed)",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "ac_joint",
+      "name": "Acromioclavicular (AC) joint problem",
+      "danger": false,
+      "features": [
+        { "region": "top", "expect": true, "w": 3 },
+        { "movement": "painful_arc", "expect": true, "w": 1 },
+        { "movement": "external_rotation", "expect": false, "w": 1 },
+        { "movement": "lift_off", "expect": false, "w": 1 }
+      ],
+      "source": "TO VERIFY (StatPearls 'Acromioclavicular Joint Injury' is the intended source; exact page not confirmed)",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "id": "neck_nerve_referral",
+      "name": "Possible referred pain from a neck nerve",
+      "danger": false,
+      "features": [
+        { "q": "tingling", "expect": true, "w": 3 },
+        { "q": "numb", "expect": true, "w": 2 },
+        { "movement": "painful_arc", "expect": false, "w": 1 },
+        { "movement": "empty_can", "expect": false, "w": 1 }
+      ],
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/ (pins and needles and loss of feeling as warning symptoms); neck-nerve link TO VERIFY (StatPearls 'Cervical Radiculopathy' is the intended source)",
+      "label": "draft, awaiting clinician review"
+    }
+  ]
+}
