@@ -76,7 +76,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const [timedOut, setTimedOut] = useState(false);
   const [crashed, setCrashed] = useState(false);
   const [firstFrame, setFirstFrame] = useState(false);
-  const [layer, setLayer] = useState<BodyLayer>('muscle');
+  const [layer, setLayer] = useState<BodyLayer>(() => (highlightIds && highlightIds.length > 0 ? layerFor(highlightIds) : 'muscle'));
   const [boxWidth, setBoxWidth] = useState(0);
   const [boxHeight, setBoxHeight] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
