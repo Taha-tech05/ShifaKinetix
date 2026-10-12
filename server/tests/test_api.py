@@ -1,11 +1,12 @@
 """API tests: sync, idempotency, access control, server-side safety, audit. Synthetic cases only."""
 
 import json
+import os
 import uuid
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import DBAPIError
 
 from app.api import create_app
@@ -17,11 +18,25 @@ REQUIRED = [q for q in QUESTIONS if q["required"]]
 LABEL = "draft, awaiting clinician review"
 
 
+def fresh_database(tmp_path, name="test"):
+    """An empty database for one test: a SQLite file, or a new PostgreSQL schema when TEST_DATABASE_URL is set."""
+    server = os.environ.get("TEST_DATABASE_URL")
+    if not server:
+        return f"sqlite:///{tmp_path / f'{name}.db'}"
+    schema = f"t_{uuid.uuid4().hex}"
+    admin = create_engine(server)
+    with admin.begin() as c:
+        c.execute(text(f"CREATE SCHEMA {schema}"))
+    admin.dispose()
+    return f"{server}?options=-csearch_path%3D{schema}"
+
+
 @pytest.fixture
 def api(tmp_path):
-    app = create_app(f"sqlite:///{tmp_path / 'test.db'}", dev_login=True)
+    app = create_app(fresh_database(tmp_path), dev_login=True)
     with TestClient(app) as client:
         yield client
+    app.state.engine.dispose()
 
 
 def login(api, user_id, role):
@@ -209,7 +224,7 @@ def test_doctor_cannot_write_patient_answers(api, patient, doctor):
 
 
 def test_dev_login_is_off_unless_enabled(tmp_path):
-    with TestClient(create_app(f"sqlite:///{tmp_path / 'off.db'}", dev_login=False)) as client:
+    with TestClient(create_app(fresh_database(tmp_path, "off"), dev_login=False)) as client:
         assert client.post("/auth/dev-login", json={"userId": "x", "role": "doctor"}).status_code == 404
 
 
