@@ -1,9 +1,9 @@
-# Person A handoff after PRs #4 and #5
+# Person A handoff after integrating PR #7
 
 Draft, awaiting clinician review. Demo only, not for real patients.
 
-A's feature/A-gate now contains Taha's merged app plus the real shoulder safety
-integration. See [safety-integration.md](safety-integration.md) for the exact
+A's feature/A-gate now includes PR #7 at 52a5486 and its PR #6 lint fixes,
+plus A's real shoulder safety integration and delayed-save guard fix. See [safety-integration.md](safety-integration.md) for the exact
 contracts, adapter policy, persistence boundaries and B-owned follow-up work.
 PR #2 remains draft and must not merge while required checks fail.
 
@@ -22,48 +22,36 @@ PR #2 remains draft and must not merge while required checks fail.
 
 The old top-level /questions and /result demo routes are not the team app's entry
 flow. B's report/result.tsx, report/movement.tsx, flow/live.ts, components and theme
-have not been edited by A during integration. Do not integrate the old standalone
+come from Taha's commits; A's follow-up changes the shared safety guard and tests. Do not integrate the old standalone
 result over B's narrowing result.
 
 ## Current verification
 
 - TypeScript: passes.
-- Mobile tests: 388 passing, including real-gate integration tests.
+- Mobile tests: 403 passing, including real-gate integration tests.
 - Actual SQLite tests: 11 passing, including restart and persistent clarification.
-- Lint on A's changed safety implementation: passes.
+- Full lint: passes with 0 errors and 25 warnings.
 - Combined Android Metro export: passes (not an APK/device test).
-- Full lint: blocked by 75 errors in nine B-owned files, unchanged from develop.
 - Python/TypeScript parity: 40/40 cases fail in C's placeholder Python gate with
   KeyError: when. Do not weaken the fixtures to accept the placeholder.
 
 ## Taha: required follow-up
 
-1. Move pre-guard narrowing in flow/live.ts seedLiveState and the report/result
-   fallback behind verified clearance. Await the safety checkpoint for live
-   submit/back before advancing, so a new event cannot be lost on restart.
-   Exact details and the exported API are in safety-integration.md.
-2. Fix the inherited full-lint errors. File counts from the integration run:
+PR #7 now guards initial/fallback narrowing and awaits live submit/back checkpoints.
+PR #6 fixes the blocking lint errors. A fixed the guard interaction that previously
+redirected a verified intake to danger while its new answer was still saving.
+Protected content waits, then the real gate decides whether to continue or stop.
+Tests cover delayed normal/unknown saves, failure and reset with the actual screen.
 
-| File (under mobile/src/) | Errors |
-| --- | ---: |
-| app/dev/anim.tsx | 2 |
-| app/report/movement.tsx | 7 |
-| app/report/result.tsx | 47 |
-| components/body3d/Body3D.tsx | 6 |
-| components/body3d/SegmentedBody.tsx | 5 |
-| components/body3d/usePack.ts | 1 |
-| components/body3d/useViewerGestures.ts | 2 |
-| components/movement/MovementPlayer.tsx | 3 |
-| components/movement/MovementStage.tsx | 2 |
+Remaining:
 
-These failures became visible when A's lint CI was combined with B's app; they
-are not claims that B's previous CI included lint. Keep the check enabled.
-
-3. Verify protected branches require independent review and mobile, server,
+1. Verify protected branches require independent review and mobile, server,
    gate-parity, offline-storage checks. Zaid does not have repository admin access.
-4. Build the APK and coordinate the real-device acceptance below.
+2. Build the APK and coordinate the real-device acceptance below.
 
 ## Saud: required follow-up
+
+Full request and API contracts: [person-c-integration-request.md](person-c-integration-request.md).
 
 Implement docs/gate-contract.md in server/app/gate.py and run:
 
@@ -89,7 +77,7 @@ remain queued. No successful upload or authentication is simulated.
   failed SQLite write. No movements should open without confirmed SAFE.
 - In airplane mode: force-close/relaunch and explicitly resume the same assessment.
   Verify values, clarification attempts and outbox events survive. A new intake
-  must never inherit old clearance. Test live-event persistence after B's async fix.
+  must never inherit old clearance. Test the integrated live save/back/review flow on the device.
 - After C connects transport: test acknowledgment/retry and patient rejection
   from doctor-only endpoints. Record device, build/commit and results.
 

@@ -4,7 +4,8 @@ Status: draft, awaiting clinician review. Demo only, not for real patients.
 
 PRs #3, #4 and #5 are merged into develop. A merged develop at e4866e1 into
 feature/A-gate, preserving B's shell, model assets, theme and components.
-B's report/result.tsx, report/movement.tsx and flow/live.ts are unchanged.
+PR #7 (52a5486), including PR #6 lint fixes, is now integrated into A's branch.
+B's guarded screens and durable live driver are preserved from those commits.
 The session store has only the agreed evaluator-import substitution.
 
 ## Interfaces and clinical boundary
@@ -59,6 +60,9 @@ for equivalent app signals on the server; canonical parity alone does not test t
 - SafeGuard: withholds protected children until current SQLite answers agree
   with session answers and the real evaluator confirms SAFE. Changed answer,
   movement or selection references invalidate that confirmation immediately.
+  After a verified intake is edited, a null verdict for the same selection waits
+  for a checkpoint with protected children hidden. Direct links, reset or changed
+  selection cannot reuse that waiting state. Save failures return to danger.
 
 gate/safetySession.ts coordinates the existing IntakeStore and session store.
 intake_context adds a JSON snapshot for mode, selection, raw app answers,

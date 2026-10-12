@@ -15,6 +15,11 @@ and safety-integration.md for the adapter, SQLite and remaining B/C work.
 The original standalone-demo delivery below records the first implementation;
 it is no longer the current app entry flow.
 
+PR #7 and its PR #6 lint fixes are now integrated, with a delayed-save guard fix.
+Current validation: 403 mobile tests, 11 SQLite tests, typecheck, full lint
+(0 errors, 25 warnings), and Android export pass. Python parity remains blocked
+by C's placeholder. See person-c-integration-request.md for backend dependencies.
+
 ## Delivery sequence
 
 1. Document scope, sources, and shared gate contract.
