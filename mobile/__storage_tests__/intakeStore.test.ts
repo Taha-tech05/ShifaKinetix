@@ -51,7 +51,7 @@ test('integrated intake resumes from SQLite after restart and retains repeated u
   await session.save({ ...no, state: 'unknown', value: null, clarificationAttempted: true });
   useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
-  expect((await resumed.resumeLatest()).verdict).toBe('RED_FLAG');
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
   expect(useSession.getState().selection?.regionId).toBe('shoulder_right');
   expect(useSession.getState().answers[0].clarificationAttempted).toBe(true);
 });
@@ -69,6 +69,39 @@ test('integrated SAFE requires saved answers and reset cannot reuse the prior in
   await expect(session.checkpoint()).rejects.toThrow('Start or explicitly resume');
 });
 
+test('focused follow-ups survive SQLite restart but changed evidence invalidates them', async () => {
+  const session = selectedSession();
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  await session.start('followup');
+  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('SAFE');
+  expect(useSession.getState().answers.some((a) => a.questionId === 'Q_SAFETY_REVIEW_injury')).toBe(true);
+  // Changing away and back must not revive the earlier confirmation.
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'slowly', state: 'answered' });
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  expect((await resumed.checkpoint()).verdict).toBe('CLARIFY');
+  resumed.dispose();
+});
+
+test('failed context write cannot persist a follow-up clearance on restart', async () => {
+  const session = selectedSession();
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  await session.start('failed-followup');
+  for (const q of questions.filter((q) => q.required && q.questionId !== 'injury')) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  jest.spyOn(store, 'saveContext').mockRejectedValueOnce(new Error('disk full'));
+  await expect(session.save(no)).rejects.toThrow('disk full');
+  expect(useSession.getState().gateVerdict).toBeNull();
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
+  resumed.dispose();
+});
+
 test('context write failure cannot grant clearance', async () => {
   const session = selectedSession(); await session.start('integrated');
   db.exec("CREATE TRIGGER fail_context BEFORE INSERT ON intake_context BEGIN SELECT RAISE(ABORT, 'disk full'); END;");
@@ -83,7 +116,7 @@ test('typed unknowns and pending uploads survive a database close and reopen', a
   db.close(); open(); await store.initialize();
   expect(await store.latestIntake()).toBe('test-intake');
   expect((await store.answers('test-intake'))[0]).toMatchObject({ value: null, state: 'unknown', clarificationAttempted: true });
-  expect((await store.savedGate('test-intake')).verdict).toBe('RED_FLAG');
+  expect((await store.savedGate('test-intake')).verdict).toBe('CLARIFY');
   expect(await store.pending()).toHaveLength(1);
 });
 

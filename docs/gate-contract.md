@@ -1,4 +1,4 @@
-# Shoulder gate contract v1
+# Shoulder gate contract v1.1
 
 Status: draft, awaiting clinician review. Demo only, not for real patients.
 
@@ -27,8 +27,9 @@ latest answer. Never mix intakes or accept an LLM-generated answer as consent.
    A clause matches only a valid `answered` record. Preserve JSON rule order.
 3. For each required safety question, in question order: missing becomes
    `CLARIFY` (`M_<id>`); unknown becomes `CLARIFY` (`U_<id>`); unknown after a
-   clarification becomes `RED_FLAG` (`U_<id>`). These are conservative routing
-   policies, not evidence that a disease is present.
+   clarification remains `CLARIFY` (`U_<id>`). The questionnaire routes persistent
+   uncertainty to the unclear screen and withholds movements; uncertainty alone
+   is not a positive clinical red flag. Users may explicitly review an answer.
 4. Priority is `RED_FLAG`, then `CLARIFY`, then `SAFE`. Only a complete, valid
    safety screen without a match can be SAFE. Optional context unknowns do not
    create clearance or imply negative clinical answers.
@@ -58,3 +59,15 @@ Each question and rule has a direct source URL and draft label. Validation
 bounds for user-interface numbers are input constraints, not medical cutoffs.
 Finucane is background for cautious assessment only. No LLM or invented
 dataset is used to generate runtime safety questions.
+
+## v1.1 integration change (2026-10-13)
+
+Only the persistent_unknown canonical fixture changes verdict, from RED_FLAG to
+CLARIFY. Rule matching and the 19 clinical rules are unchanged. A confirmed danger
+still outranks uncertainty. C must match the updated complete outputs.
+
+Broad app signals now request focused canonical follow-ups instead of forcing an
+APP_REVIEW_* RED_FLAG. Explicitly saved follow-ups can resolve those signals;
+old negatives cannot clear new evidence. See safety-integration.md for the local
+acknowledgment contract. Raw context and review metadata require a separate server
+transport contract; never trust a client acknowledgment as authorization.

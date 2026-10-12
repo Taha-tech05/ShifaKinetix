@@ -92,8 +92,8 @@ describe('answers are saved before the gate and the narrowing run', () => {
     expect(narrowSpy).not.toHaveBeenCalled();
     cp.finish();
     const out = await promise;
-    expect(out.verdict).toBe('RED_FLAG');
-    expect(out.route).toBe('/report/urgent');
+    expect(out.verdict).toBe('CLARIFY');
+    expect(out.route).toBe('/report/reask');
     expect(out.state).toBeNull();
     expect(useSession.getState().narrowingTrail).toEqual([]);
   });

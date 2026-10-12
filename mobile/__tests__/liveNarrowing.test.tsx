@@ -370,9 +370,9 @@ describe('structured gate inputs', () => {
     expect(structuredGateInputs([], [skipped('sideways_raise'), buildMovementResult('forward_raise', { kind: 'unsure' })])).toEqual([{ questionId: Q_UNABLE_TO_MOVE_ARM, type: 'yesno', value: null, state: 'unknown' }]);
   });
 
-  it('the real adapter stops on structured safety signals', () => {
+  it('the real adapter requests focused clarification for broad safety signals', () => {
     const inputs = structuredGateInputs([how('after_injury')], [buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: true })]);
-    expect(evaluate(inputs).verdict).toBe('RED_FLAG');
+    expect(evaluate(inputs).verdict).toBe('CLARIFY');
   });
 });
 

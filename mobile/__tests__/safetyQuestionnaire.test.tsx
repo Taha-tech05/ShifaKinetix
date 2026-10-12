@@ -1,11 +1,14 @@
 import { act, create } from 'react-test-renderer';
 import { router } from 'expo-router';
+import * as Router from 'expo-router';
 import { SafetyQuestionnaire } from '../src/gate/SafetyQuestionnaire';
 import Safe from '../src/app/report/safe';
 import { openSafetySession, SafetySession } from '../src/gate/safetySession';
 import { questions, SafetyAnswer } from '../src/gate/evaluate';
 import type { IntakeStore } from '../src/storage/intakeStore';
 import { useSession } from '../src/store/session';
+import { submitQuestionDurable } from '../src/flow/live';
+import { SafetyStopNotice } from '../src/gate/SafetyStopNotice';
 
 jest.mock('expo-crypto', () => ({ randomUUID: () => 'fictional-intake' }));
 jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: jest.fn() }));
@@ -42,16 +45,16 @@ async function press(label: string) {
   expect(button.props.disabled).toBe(false);
   await act(async () => { button.props.onPress(); });
 }
-async function complete(uncertain = false) {
+async function complete(uncertain = false, optionalUnknown = false) {
   await act(async () => { tree = create(<SafetyQuestionnaire />); });
   await press('Start new safety check');
   for (const q of questions) {
     expect(JSON.stringify(tree.toJSON())).toContain(q.wording);
-    if (uncertain) await press('Not sure');
-    else if (q.type === 'yesno') await press('No');
+    if (uncertain || (optionalUnknown && !q.required)) await press('Not sure');
+    else if (q.type === 'yesno') await press(q.questionId === 'infection_risk' ? 'Yes' : 'No');
     else if (q.type === 'choice') await press(q.options!.find((o) => o.value === 'normal' || o.value === 'right')?.label ?? q.options![0].label);
     else {
-      await act(async () => { tree.root.findByType('TextInput' as never).props.onChangeText(String(q.min ?? 0)); });
+      await act(async () => { tree.root.findByType('TextInput' as never).props.onChangeText(q.questionId === 'pain_score' ? '3' : String(q.min ?? 0)); });
       await press('Save answer');
     }
   }
@@ -70,6 +73,55 @@ test('uncertain answers request clarification, and repeated uncertainty stops', 
   await act(async () => { tree.update(<SafetyQuestionnaire clarify />); });
   await press('Not sure');
   expect(replace).toHaveBeenLastCalledWith('/report/unclear');
+  expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+});
+
+test.each(['after_injury', 'suddenly', null])('broad onset %s can be explicitly clarified/corrected and reach movements', async (value) => {
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value,
+    state: value === null ? 'unknown' : 'answered' });
+  await complete();
+  expect(replace).not.toHaveBeenCalledWith('/report/urgent');
+  expect(useSession.getState().answers.find((a) => a.questionId === 'Q_BASICS_HOW')?.value).toBe(value);
+  expect(useSession.getState().gateVerdict).toBe('SAFE');
+  await act(async () => { tree.update(<Safe />); });
+  await press('Continue');
+  expect(replace).toHaveBeenLastCalledWith('/report/movement?i=0');
+});
+
+test('confirmed accident/injury is still a stop, even with a low basics pain score', async () => {
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_PAIN_NOW', type: 'scale0to10', value: 1, state: 'answered' });
+  await act(async () => { tree = create(<SafetyQuestionnaire />); });
+  await press('Start new safety check');
+  expect(replace).not.toHaveBeenCalled();
+  await press('No'); await press('No'); // chest and breathing
+  expect(JSON.stringify(tree.toJSON())).toContain('An earlier answer needs a more specific safety check');
+  await press('Yes'); // confirms injury
+  expect(replace).toHaveBeenLastCalledWith('/report/urgent');
+  expect(useSession.getState().gateOutput?.firedRules.some((r) => r.ruleId === 'R_injury')).toBe(true);
+});
+
+test('optional uncertainty does not prevent narrowing clearance', async () => {
+  await complete(false, true);
+  expect(useSession.getState().gateVerdict).toBe('SAFE');
+});
+
+test('movement weakness requests precise follow-ups, then resolved answers reopen narrowing', async () => {
+  await complete();
+  act(() => {
+    useSession.getState().recordMovement({ movementId: 'sideways_raise', painful: true, weak: true,
+      unableToDo: false, measuredAngle: null, state: 'done' });
+    useSession.getState().runGate();
+  });
+  expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+  await act(async () => { tree.update(<SafetyQuestionnaire clarify />); });
+  for (const id of ['unable', 'tingling', 'numb']) {
+    expect(JSON.stringify(tree.toJSON())).toContain(questions.find((q) => q.questionId === id)!.wording);
+    await press('No');
+  }
+  expect(useSession.getState().gateVerdict).toBe('SAFE');
+  const out = await submitQuestionDurable({ questionId: 'Q_ST_BONE_POINT', type: 'yesno', state: 'answered', value: false });
+  expect(out.verdict).toBe('SAFE'); expect(out.state).not.toBeNull();
 });
 test('a positive danger answer stops instead of opening movements', async () => {
   await act(async () => { tree = create(<SafetyQuestionnaire />); });
@@ -77,4 +129,20 @@ test('a positive danger answer stops instead of opening movements', async () => 
   await press('Yes');
   expect(replace).toHaveBeenLastCalledWith('/report/urgent');
   expect(useSession.getState().gateVerdict).toBe('RED_FLAG');
+});
+
+test('an accidentally entered danger answer can be reviewed without bypassing the remaining questions', async () => {
+  await act(async () => { tree = create(<SafetyQuestionnaire />); });
+  await press('Start new safety check'); await press('Yes');
+  await act(async () => { tree.update(<SafetyStopNotice />); });
+  const push = jest.spyOn(router, 'push');
+  await press(`Review: ${questions[0].wording}`);
+  expect(push).toHaveBeenCalledWith('/report/danger?review=chest');
+  const params = jest.spyOn(Router, 'useLocalSearchParams').mockReturnValue({ review: 'chest' });
+  await act(async () => { tree.update(<SafetyQuestionnaire />); });
+  await press('No');
+  expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+  expect(JSON.stringify(tree.toJSON())).toContain(questions[1].wording);
+  expect(replace).not.toHaveBeenCalledWith('/report/safe');
+  params.mockRestore(); push.mockRestore();
 });

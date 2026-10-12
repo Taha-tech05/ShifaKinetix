@@ -2426,7 +2426,7 @@
     },
     {
       "caseId": "persistent_unknown",
-      "description": "Second Not sure routes to clinical review",
+      "description": "Persistent uncertainty remains CLARIFY; movement clearance withheld",
       "answers": [
         {
           "questionId": "chest",
@@ -2526,9 +2526,9 @@
           "state": "answered"
         }
       ],
-      "expectedVerdict": "RED_FLAG",
+      "expectedVerdict": "CLARIFY",
       "expectedOutput": {
-        "verdict": "RED_FLAG",
+        "verdict": "CLARIFY",
         "firedRules": [
           {
             "ruleId": "U_injury",

@@ -2,12 +2,18 @@ import { isValidAnswer, questions, SafetyAnswer } from './evaluate';
 import { useSession } from '../store/session';
 import type { SessionState } from '../store/session';
 import type { IntakeStore } from '../storage/intakeStore';
+import { structuredGateInputs } from '../flow/gateInputs';
+import { withMovementUncertainty } from './sessionEvaluator';
+import { REVIEW_PREFIX, safetyReviewToken } from './sessionAdapter';
 
 const ids = new Set(questions.map((q) => q.questionId));
 type Context = Pick<SessionState, 'mode' | 'selection' | 'answers' | 'movementResults' | 'reaskDone'>;
 export const safetySnapshot = (s: Context): Context => ({ mode: s.mode, selection: s.selection,
   answers: s.answers, movementResults: s.movementResults, reaskDone: s.reaskDone });
 export const safetyFingerprint = (s: Context) => JSON.stringify(safetySnapshot(s));
+const reviewInput = (s: Context) => withMovementUncertainty([
+  ...s.answers, ...structuredGateInputs(s.answers, s.movementResults),
+], s.movementResults);
 
 function readContext(value: unknown): Context {
   if (!value || typeof value !== 'object') throw new Error('Invalid saved intake.');
@@ -39,6 +45,13 @@ export class SafetySession {
   constructor(private readonly store: IntakeStore) {
     this.unsubscribe = useSession.subscribe((next, previous) => {
       if (next.selection !== previous.selection || next.selection === null) this.active = null;
+      // Once evidence changes, discard its old acknowledgment; toggling back to
+      // the previous value must not resurrect clearance from an earlier review.
+      const answers = next.answers.filter((a) => !a.questionId.startsWith(REVIEW_PREFIX)
+        || !previous.answers.some((p) => p.questionId === a.questionId && p.value === a.value)
+        || safetyReviewToken(reviewInput(next), a.questionId.slice(REVIEW_PREFIX.length))
+          === safetyReviewToken(reviewInput(previous), a.questionId.slice(REVIEW_PREFIX.length)));
+      if (answers.length !== next.answers.length) useSession.setState({ answers });
     });
   }
   dispose() { this.unsubscribe(); this.active = null; }
@@ -50,7 +63,7 @@ export class SafetySession {
     readContext(safetySnapshot(s));
     await this.store.createIntake(id);
     // New intake explicitly discards prior clinical clearance.
-    useSession.setState({ answers: s.answers.filter((a) => !ids.has(a.questionId)),
+    useSession.setState({ answers: s.answers.filter((a) => !ids.has(a.questionId) && !a.questionId.startsWith(REVIEW_PREFIX)),
       movementResults: [], reaskDone: false, gateOutput: null, gateVerdict: null });
     this.active = { id, selection: s.selection };
     await this.checkpoint();
@@ -81,6 +94,10 @@ export class SafetySession {
     await this.store.saveAnswer(id, next);
     if (this.activeId !== id) throw new Error('The intake changed while saving.');
     useSession.getState().recordAnswer(next);
+    const state = useSession.getState();
+    const token = safetyReviewToken(reviewInput(state), answer.questionId);
+    if (token !== null) state.recordAnswer({ questionId: REVIEW_PREFIX + answer.questionId,
+      type: 'safety-review', state: 'answered', value: token });
     return this.checkpoint();
   }
   checkpoint() {
@@ -105,6 +122,9 @@ export class SafetySession {
       await this.store.saveContext(id, safetySnapshot(s));
       if (this.activeId !== id || safetyFingerprint(useSession.getState()) !== fingerprint) throw new Error('Answers changed. Please retry.');
       useSession.getState().runGate();
+      if (useSession.getState().gateVerdict === 'SAFE' && useSession.getState().escalation?.verdict === 'CLARIFY') {
+        useSession.setState({ escalation: null });
+      }
       return useSession.getState().gateOutput!;
     } catch (error) {
       useSession.setState({ gateOutput: null, gateVerdict: null });

@@ -87,7 +87,6 @@ export function evaluate(input: unknown): GateOutput {
       firedRules.push({ ruleId: `M_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
         reason: 'Required safety answer is missing.' });
     } else if (a.state === 'unknown') {
-      danger ||= a.clarificationAttempted === true;
       firedRules.push({ ruleId: `U_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
         reason: a.clarificationAttempted ? 'Uncertainty persists after clarification; clinical review required.'
           : 'Safety answer is uncertain; ask the fixed clarification.' });
