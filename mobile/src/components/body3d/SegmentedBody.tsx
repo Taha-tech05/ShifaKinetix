@@ -80,6 +80,7 @@ function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRe
   const { camera } = useThree();
   const tmp = useMemo(() => new THREE.Vector3(), []);
   const last = useRef({ at: 0, key: '' });
+  // eslint-disable-next-line react-hooks/immutability -- the frame loop writes the camera and light imperatively
   useFrame((state, dt) => {
     const r = rig.current;
     stepFocus(r, dt);
@@ -90,6 +91,7 @@ function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRe
     camera.lookAt(v.target[0], v.target[1], v.target[2]);
     const cam = camera as THREE.PerspectiveCamera;
     if (cam.fov !== v.fov || cam.zoom !== v.zoom) {
+      // eslint-disable-next-line react-hooks/immutability -- the frame loop writes the camera and light imperatively
       cam.fov = v.fov;
       cam.zoom = v.zoom;
       cam.updateProjectionMatrix();
@@ -166,7 +168,9 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
 
   // current and target emphasis per tracked structure (a ref: it changes every frame while fading)
   const target = useRef<Emphasis>(emphasis);
-  target.current = emphasis;
+  useEffect(() => {
+    target.current = emphasis;
+  }, [emphasis]);
   const current = useRef(new Map<string, { tint: number; ghost: number }>());
 
   // resist arrow
@@ -186,6 +190,7 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
     };
   }, [built, movement]);
 
+  // eslint-disable-next-line react-hooks/immutability -- the frame loop writes three.js objects imperatively
   useFrame((state, dt) => {
     // ---- animation: time -> pose -> segment matrices. Nothing here reads or writes the camera. ----
     const c = control.current;
@@ -195,6 +200,7 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
     setMatrix(built.groups.girdle, tr.girdle);
     setMatrix(built.groups.upper, tr.upper);
     setMatrix(built.groups.forearm, tr.forearm);
+    // eslint-disable-next-line react-hooks/immutability -- the frame loop writes three.js objects imperatively
     if (endGhost) built.ghostMaterial.opacity = ghostOpacityFor(Math.abs(pose.elevation - end.elevation) + Math.abs(pose.rotation - end.rotation) + Math.abs(pose.elbow - end.elbow));
 
     const ra = movement.resistArrow;

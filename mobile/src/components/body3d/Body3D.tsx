@@ -65,6 +65,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
   }, [pack]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability -- the camera control is a mutable ref shared with the gesture handler and the frame loop
     control.current.baseDistance = fitted.distance;
     control.current.distance = fitted.distance;
   }, [fitted, control]);
@@ -103,6 +104,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
   }, [pack, layer, key, meshIndex]);
   useEffect(() => clearHighlight, []);
 
+  // eslint-disable-next-line react-hooks/immutability -- imperative three.js highlight bookkeeping kept in a ref
   useFrame(({ camera, size }) => {
     const c = control.current;
     if (pivot.current) {
@@ -117,6 +119,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
 
     if (c.tap) {
       const { x, y } = c.tap;
+      // eslint-disable-next-line react-hooks/immutability -- imperative three.js highlight bookkeeping kept in a ref
       c.tap = null;
       if (!onPick) return;
       pivot.current?.updateMatrixWorld(true);
@@ -150,12 +153,14 @@ export function Body3D(props: Body3DProps) {
 
   const responder = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs -- the gesture handler reads the refs on touch events, not during render
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: (e: GestureResponderEvent) => {
           const n = e.nativeEvent;
+          // eslint-disable-next-line react-hooks/purity -- Date.now() is read inside a touch event, not during render
           touch.current = { x0: n.locationX, y0: n.locationY, t0: Date.now(), moved: 0, lastX: n.pageX, lastY: n.pageY, pinch: 0, multi: false };
         },
         onPanResponderMove: (e: GestureResponderEvent) => {
@@ -184,6 +189,7 @@ export function Body3D(props: Body3DProps) {
         },
         onPanResponderRelease: () => {
           const t = touch.current;
+          // eslint-disable-next-line react-hooks/purity -- Date.now() is read inside a touch event, not during render
           if (!t.multi && t.moved < 12 && Date.now() - t.t0 < 500) control.current.tap = { x: t.x0, y: t.y0 };
         },
       }),
