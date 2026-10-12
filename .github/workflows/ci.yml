@@ -85,3 +85,6 @@ jobs:
       - name: Compare complete Python and TypeScript gate outputs
         if: success() || failure()
         run: python scripts/check_gate_parity.py
+      - name: Compare Python and TypeScript handling of live app signals
+        if: success() || failure()
+        run: python scripts/check_app_signal_parity.py
