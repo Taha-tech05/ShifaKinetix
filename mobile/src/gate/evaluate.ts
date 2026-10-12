@@ -24,6 +24,7 @@ export interface Question {
   type: string;
   wording: string;
   required: boolean;
+  requiredWhen?: { questionId: string; equals: boolean | string | number }[];
   source: string;
   label: string;
   clarification: string;
@@ -44,6 +45,12 @@ export const CONTENT_VERSION = questionBank.contentVersion;
 const POLICY = 'docs/gate-contract.md';
 const record = (x: unknown): x is Record<string, unknown> =>
   typeof x === 'object' && x !== null && !Array.isArray(x);
+
+/** Conditional completeness is shared data, separate from positive clinical rules. */
+export function isRequiredQuestion(q: Question, answers: readonly Answer[]): boolean {
+  return q.required || (!!q.requiredWhen?.length && q.requiredWhen.every((clause) =>
+    answers.some((a) => a.questionId === clause.questionId && a.state === 'answered' && a.value === clause.equals)));
+}
 
 export function isValidAnswer(input: unknown): input is SafetyAnswer {
   if (!record(input)) return false;
@@ -81,13 +88,12 @@ export function evaluate(input: unknown): GateOutput {
         source: rule.source, reason: rule.description });
     }
   }
-  for (const q of questions.filter((item) => item.required)) {
+  for (const q of questions.filter((item) => isRequiredQuestion(item, input))) {
     const a = answers.get(q.questionId);
     if (!a) {
       firedRules.push({ ruleId: `M_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
         reason: 'Required safety answer is missing.' });
     } else if (a.state === 'unknown') {
-      danger ||= a.clarificationAttempted === true;
       firedRules.push({ ruleId: `U_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
         reason: a.clarificationAttempted ? 'Uncertainty persists after clarification; clinical review required.'
           : 'Safety answer is uncertain; ask the fixed clarification.' });

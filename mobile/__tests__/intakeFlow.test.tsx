@@ -148,7 +148,7 @@ describe('sourced red-flag questions and the real gate', () => {
     for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:null,state:'unknown'});
     expect(s.runGate()).toBe('CLARIFY');
     for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:null,state:'unknown',clarificationAttempted:true});
-    expect(s.runGate()).toBe('RED_FLAG');
+    expect(s.runGate()).toBe('CLARIFY');
     for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:q.type==='choice'?'normal':false,state:'answered',clarificationAttempted:true});
     expect(s.runGate()).toBe('SAFE');
   });

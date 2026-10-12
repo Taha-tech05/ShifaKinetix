@@ -316,9 +316,9 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
     expect(find(structuredGateInputs([], []), Q_NUMB_OR_WEAK)).toBeUndefined();
   });
 
-  it('the real adapter stops on structured safety signals', () => {
+  it('the real adapter requests focused clarification for broad safety signals', () => {
     const g = structuredGateInputs([how('after_injury'), yes('Q_ST_BONE_POINT'), yes('Q_ST_TINGLE')], [move({ couldNot: true })]);
-    expect(evaluate(g).verdict).toBe('RED_FLAG');
+    expect(evaluate(g).verdict).toBe('CLARIFY');
   });
 });
 

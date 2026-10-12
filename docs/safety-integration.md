@@ -1,5 +1,26 @@
 # Safety integration into the team app
 
+## Conditional infection-risk update (contract v1.2)
+
+Current shared content is `shoulder-2`, with 47 full-output fixtures. Redness=true
+makes infection_risk conditionally required through shared `requiredWhen` data.
+Missing/unknown risk gives CLARIFY; repeated unknown stays CLARIFY and routes to
+unclear. Explicit risk=false may clear if all other checks pass; risk=true with
+redness uses the existing RED_FLAG rule. This supersedes earlier counts/version
+references below; v1.1 focused-follow-up behavior remains in force.
+
+Saud: continue updating the SAME PR #8; merge the latest feature/A-gate after this
+change is pushed, implement conditional completeness in Python, and run all 47
+full-output fixtures plus app/movement parity. The fever_red_joint fixture also
+now includes M_infection_risk. Do not revert the focused-follow-up work.
+PR #8 and PR #2 remain on merge hold pending parity, checks and independent review.
+The shared rules contentVersion changed, so A/C review is required before merge.
+
+Start a new intake for shoulder-2. Old assessments/outbox records are retained;
+old-version sync currently stops and requires explicit version handling with C.
+Clinical content remains draft, awaiting clinician review.
+
+
 Status: draft, awaiting clinician review. Demo only, not for real patients.
 
 PRs #3, #4 and #5 are merged into develop. A merged develop at e4866e1 into
@@ -12,7 +33,8 @@ The session store has only the agreed evaluator-import substitution.
 
 The UI's Answer accepts its existing template types and values. SafetyAnswer is
 the strict yesno/choice/number/duration subset accepted by evaluate() and SQLite.
-The canonical evaluator and its 40 complete-output fixtures retain their contract.
+The canonical evaluator follows gate-contract.md v1.1. Of 40 fixtures, only
+persistent_unknown changes verdict: CLARIFY instead of RED_FLAG; clearance remains blocked.
 Unknown IDs, incorrect types, duplicate clinical answers and malformed values
 still fail closed at that boundary. Ordinary UI questions are filtered by the
 session adapter, never sent blindly to the canonical evaluator.
@@ -21,37 +43,60 @@ runGate() still returns a verdict and updates gateOutput and gateVerdict togethe
 Its import now resolves to gate/sessionEvaluator.ts. No runtime call uses the
 old flagged-answer stub. The stub remains only for isolated narrowing/UI tests.
 
-The adapter preserves positive onset, movement-inability, bone-after-trauma,
-sensory and weakness signals as separate APP_REVIEW_* reasons. It does NOT
-invent an answer such as “numb = true” from a weak movement. These are conservative
-draft stop policies, not diagnostic equivalences or validated clinical rules.
-Reference: https://www.nhs.uk/symptoms/shoulder-pain/ (urgent-advice section).
-The broader movement/weakness policy is an engineering precaution requiring
-clinician review; the NHS page does not validate B's derived-question definitions.
+## Focused follow-ups (2026-10-13; supersedes APP_REVIEW overrides)
 
-Unknown app safety signals request the relevant canonical clarification:
+Broad positive or unknown app signals request a precise canonical question instead
+of an automatic RED_FLAG. Until explicitly answered for the current evidence,
+the adapter presents that canonical input as unknown, yielding CLARIFY. Existing
+confirmed clinical positives remain positive and stop immediately.
 
-| App signal | Canonical clarification |
+| App signal | Canonical follow-up |
 | --- | --- |
-| Q_ONSET_SUDDEN_TRAUMA | injury, sudden |
+| Q_BASICS_HOW after_injury / suddenly | injury / sudden respectively |
+| Q_BASICS_HOW unknown | injury, sudden |
+| Q_ONSET_SUDDEN_TRAUMA without its basics answer | injury, sudden |
 | Q_UNABLE_TO_MOVE_ARM | unable |
 | Q_BONE_TENDER_AFTER_TRAUMA | injury |
-| Q_NUMB_OR_WEAK / Q_ST_NUMB | numb |
-| Q_ST_TINGLE | tingling |
-| Unknown movement | unable, numb |
+| Q_NUMB_OR_WEAK | unable, numb, tingling |
+| Q_ST_NUMB / Q_ST_TINGLE | numb / tingling respectively |
+| Unknown movement | unable, numb, tingling |
 
-Derived negatives never grant clearance. An unresolved original app signal is
-not erased by a different negative answer: after clarification it still requires
-clinical review. Ordinary canonical uncertainty can resolve with a valid answer;
-repeated uncertainty becomes RED_FLAG. The questionnaire presents an uncertainty-only
-stop at /report/unclear. Positive signals take priority over incomplete answers.
-This mapping and APP_REVIEW_* policy need A/C and clinician review. C must account
-for equivalent app signals on the server; canonical parity alone does not test them.
+The combined onset alias is redundant when its specific basics answer is present.
+A failed single movement is not automatically inability to move the arm; movement
+weakness is not automatically sensory loss. Help text distinguishes the existing
+questions and explicitly explains correcting an earlier selection. Confirmed
+injury/sudden onset still stops under the unchanged sourced rules. A low pain
+score never cancels another positive warning sign. Optional context uncertainty
+still does not block clearance.
+
+Sources checked 2026-10-13: NHS shoulder-pain urgent advice and Leicestershire
+Partnership NHS shoulder information (URLs in shared/clinical_sources.json).
+The latter distinguishes common weakness/difficulty with movement from urgent
+loss of movement. Neither source validates the software decision algorithm.
+All follow-up choices, mappings and help text are draft, awaiting clinician review.
+
+On saving a focused answer, SafetySession adds Q_SAFETY_REVIEW_<canonicalId> to
+local context, type safety-review, value a serialized policy-2 evidence/answer
+fingerprint. The original broad answer is retained. Fingerprints cover relevant
+raw/derived signals and, for movement/sensory checks, movement context. An old
+negative alone is insufficient. Changed evidence invalidates the acknowledgment;
+toggling back cannot revive it. Starting a new intake removes review records.
+SQLite resume restores the context but recomputes clearance. Failed context saves
+cannot establish clearance. These metadata are not canonical answers or outbox
+events; C needs equivalent server-owned evidence/clarification handling and a
+context transport contract, not blind acceptance of client fingerprints.
+
+Persistent canonical uncertainty stays CLARIFY, with its reason retained. The UI
+routes it to /report/unclear. Resolving a CLARIFY escalation clears that escalation
+only after the saved gate becomes SAFE. Confirmed danger stays RED_FLAG. Stop
+screens offer explicit review/correction of matched questions; no review link
+bypasses gate evaluation or permits movements on incomplete answers.
 
 ## Routes and persistence
 
 - /report/danger: the 20 canonical questions, including choice and numeric inputs.
-  Each answer is saved with its outbox event before progressing; positives stop immediately.
+  Each answer is saved with its outbox event before progressing; matching clinical rules stop immediately.
+  ?review=<questionId> explicitly reviews an answer, then reevaluates the complete intake.
 - /report/reask: required uncertain questions, with persisted clarificationAttempted.
 - /report/safe: verifies current saved answers again, then onSafe() hands off to
   routeAfterSafe(mode). Region/subregion and mode come from B's session store.
@@ -103,7 +148,8 @@ SafeGuard and live submit functions; only native persistence is mocked for React
 guard tests. The Node SQLite suite runs actual persistence and SafetySession.
 The four narrowing/UI suites inject a gate outcome to test B's presentation and
 ranking behaviour independently; their injected SAFE is not evidence of clinical
-clearance. No shared gate fixture is skipped or weakened.
+clearance. No clinical-positive fixture is skipped or weakened; persistent_unknown changes
+classification as documented in v1.1 and still cannot grant SAFE.
 
 Native phone/airplane-mode acceptance, clinician approval, server sync and server
 signal parity remain pending. An Android Metro export is not an APK or device test.

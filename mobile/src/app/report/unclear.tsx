@@ -13,7 +13,7 @@ export default function Unclear() {
   const t = useT();
   return (
     <Screen
-      scroll={false}
+      scroll={true}
       footer={
         <>
           <Button label={t('unclear.doctor')} onPress={() => router.push('/report/doctor')} />

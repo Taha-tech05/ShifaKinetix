@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
@@ -9,12 +9,16 @@ import { StepProgress } from '../components/StepProgress';
 import { colors } from '../theme';
 import { useSession } from '../store/session';
 import { structuredGateInputs } from '../flow/gateInputs';
-import { isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
-import { safetyAnswersFrom } from './sessionAdapter';
+import { isRequiredQuestion, isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
+import { pendingSafetyFollowups, safetyAnswersFrom } from './sessionAdapter';
+import { questionHelp } from './questionHelp';
 import { openSafetySession } from './safetySession';
 import { withMovementUncertainty } from './sessionEvaluator';
 
 export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) {
+  const { review } = useLocalSearchParams<{ review?: string }>();
+  const reviewed = useRef<string | undefined>(undefined);
+  const [followingUp, setFollowingUp] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
   const [entry, setEntry] = useState(false);
   const [busy, setBusy] = useState(true);
@@ -26,21 +30,32 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     if (!session.activeId) { setEntry(true); setQuestion(null); return; }
     setEntry(false);
     const output = await session.checkpoint();
+    const requested = questions.find((q) => q.questionId === review);
+    if (requested && reviewed.current !== review) {
+      setQuestion(requested); setFollowingUp(true); setInput(''); return;
+    }
     if (output.verdict === 'RED_FLAG') {
       setQuestion(null);
       const uncertaintyOnly = output.firedRules.every((r) => /^[MU]_/.test(r.ruleId));
       router.replace(uncertaintyOnly ? '/report/unclear' : '/report/urgent'); return;
     }
     const state = useSession.getState();
-    const adapted = safetyAnswersFrom(withMovementUncertainty(
-      [...state.answers, ...structuredGateInputs(state.answers, state.movementResults)], state.movementResults)) ?? [];
-    const uncertain = questions.find((q) => q.required && adapted.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
+    const input = withMovementUncertainty(
+      [...state.answers, ...structuredGateInputs(state.answers, state.movementResults)], state.movementResults);
+    const adapted = safetyAnswersFrom(input) ?? [];
+    if (output.verdict === 'CLARIFY' && adapted.some((a) => a.state === 'unknown'
+      && a.clarificationAttempted && questions.some((q) => q.questionId === a.questionId && isRequiredQuestion(q, adapted)))) {
+      setQuestion(null); router.replace('/report/unclear'); return;
+    }
+    const uncertain = questions.find((q) => isRequiredQuestion(q, adapted) && adapted.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
     const missing = questions.find((q) => !state.answers.some((a) => a.questionId === q.questionId));
     if (clarify && !uncertain) { router.replace(missing ? '/report/danger'
       : output.verdict === 'CLARIFY' ? '/report/unclear' : '/report/safe'); return; }
     if (!clarify && !missing) { router.replace(output.verdict === 'CLARIFY' ? '/report/reask' : '/report/safe'); return; }
-    setQuestion(clarify ? uncertain! : missing!); setInput('');
-  }, [clarify]);
+    const next = clarify ? uncertain! : missing!;
+    setFollowingUp(pendingSafetyFollowups(input).includes(next.questionId));
+    setQuestion(next); setInput('');
+  }, [clarify, review]);
   async function perform(work: () => Promise<unknown>) {
     if (locked.current) return;
     locked.current = true; setBusy(true); setError('');
@@ -62,6 +77,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       const session = await openSafetySession();
       await session.save({ questionId: question.questionId, type: question.type as SafetyAnswer['type'],
         value, state: value === null ? 'unknown' : 'answered', clarificationAttempted: clarify });
+      reviewed.current = review;
       await load();
     });
   }
@@ -74,6 +90,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     {entry && <>
       <AppText variant="h1">Shoulder safety check</AppText>
       <AppText>Start a new assessment for new symptoms. Resume only to continue the same saved assessment.</AppText>
+      <AppText>We will clarify your earlier symptom answers. Confirmed warning symptoms pause movement checks; other answers can continue to the assessment.</AppText>
       <Button label="Start new safety check" disabled={busy || !useSession.getState().selection}
         onPress={() => { void perform(async () => { await (await openSafetySession()).start(randomUUID()); await load(); }); }} />
       <Button label="Resume saved assessment" variant="outline" disabled={busy}
@@ -83,6 +100,9 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     {question && !entry && <>
       <StepProgress step={questions.indexOf(question) + 1} total={questions.length} label={clarify ? 'Please clarify once' : 'Safety questions'} />
       <AppText variant="h1">{question.wording}</AppText>
+      {followingUp && <AppText>An earlier answer needs a more specific safety check. Your answer here will clarify or correct it; the earlier response stays in this assessment.</AppText>}
+      {questionHelp[question.questionId] && <AppText>{questionHelp[question.questionId]}</AppText>}
+      <AppText>Yes means this symptom applies. No means it does not. Not sure lets us clarify; there is no preferred answer.</AppText>
       {clarify && <AppText>{question.clarification}</AppText>}
       {question.type === 'yesno' && <>
         <Button label="Yes" disabled={busy || !!error} onPress={() => { void save(true); }} />

@@ -1,11 +1,57 @@
 # Person A handoff after integrating PR #7
 
+## Conditional infection-risk update (contract v1.2)
+
+Current shared content is `shoulder-2`, with 47 full-output fixtures. Redness=true
+makes infection_risk conditionally required through shared `requiredWhen` data.
+Missing/unknown risk gives CLARIFY; repeated unknown stays CLARIFY and routes to
+unclear. Explicit risk=false may clear if all other checks pass; risk=true with
+redness uses the existing RED_FLAG rule. This supersedes earlier counts/version
+references below; v1.1 focused-follow-up behavior remains in force.
+
+Saud: continue updating the SAME PR #8; merge the latest feature/A-gate after this
+change is pushed, implement conditional completeness in Python, and run all 47
+full-output fixtures plus app/movement parity. The fever_red_joint fixture also
+now includes M_infection_risk. Do not revert the focused-follow-up work.
+PR #8 and PR #2 remain on merge hold pending parity, checks and independent review.
+The shared rules contentVersion changed, so A/C review is required before merge.
+
+Start a new intake for shoulder-2. Old assessments/outbox records are retained;
+old-version sync currently stops and requires explicit version handling with C.
+Clinical content remains draft, awaiting clinician review.
+
+
 Draft, awaiting clinician review. Demo only, not for real patients.
 
 A's feature/A-gate now includes PR #7 at 52a5486 and its PR #6 lint fixes,
 plus A's real shoulder safety integration and delayed-save guard fix. See [safety-integration.md](safety-integration.md) for the exact
 contracts, adapter policy, persistence boundaries and B-owned follow-up work.
 PR #2 remains draft and must not merge while required checks fail.
+
+## Current follow-up flow (2026-10-13)
+
+Supersedes the earlier immediate APP_REVIEW_* stop policy. Broad onset, sensory
+and movement signals now request precise follow-ups. The original answer stays
+in context; an explicitly saved clarification can correct it. Changed evidence
+invalidates an older clarification. Confirmed canonical danger signs still stop;
+clinical rule data was not relaxed and a low pain score does not override danger.
+
+Persistent uncertainty is CLARIFY rather than RED_FLAG, still without movement
+clearance. Stop screens explain the distinction and offer explicit answer review.
+Users can resolve uncertainty or correct a mistaken answer and proceed only after
+the complete saved gate returns SAFE. The 40 shared fixtures change only the
+persistent_unknown verdict; see gate-contract.md v1.1 and safety-integration.md.
+
+Tested paths include broad onset corrected to gradual/no injury; unknown onset
+resolved; movement weakness clarified without inability/loss of feeling/persistent
+tingling then narrowing resumes; optional uncertainty; confirmed injury with low
+pain still stops; mistaken danger answer reviewed without skipping missing items;
+SQLite restart and changed evidence; failed context save cannot establish clearance.
+
+Saud must implement v1.1 and the app-signal follow-up policy. Review acknowledgments
+are currently local context metadata, not synced canonical answer events. No
+server authorization or clinician approval is implied. Taha should test the latest
+feature/A-gate branch on device, including both continued and stopped flows.
 
 ## Implemented by Zaid
 
@@ -28,8 +74,8 @@ result over B's narrowing result.
 ## Current verification
 
 - TypeScript: passes.
-- Mobile tests: 403 passing, including real-gate integration tests.
-- Actual SQLite tests: 11 passing, including restart and persistent clarification.
+- Mobile tests: 416 passing, including real-gate integration tests.
+- Actual SQLite tests: 13 passing, including restart and persistent clarification.
 - Full lint: passes with 0 errors and 25 warnings.
 - Combined Android Metro export: passes (not an APK/device test).
 - Python/TypeScript parity: 40/40 cases fail in C's placeholder Python gate with

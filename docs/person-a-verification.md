@@ -1,6 +1,41 @@
 # Person A verification — 2026-10-10
 
+## Conditional completeness verification, 2026-10-13
+
+Contract v1.2; shared content shoulder-2. All 426 mobile tests in 25 suites pass,
+including 47 shared full-output fixtures and three real questionnaire paths for
+conditional infection-risk clarification (No, Yes, Not sure). All 15 real SQLite
+tests pass, including conditional uncertainty across restart and retention of
+old-version queued answers without silent sync. TypeScript and lint pass (zero
+errors, 25 existing warnings).
+
+No new native API was introduced and Android export was not repeated for this
+change. The earlier export below remains the previous artifact; no phone testing
+or server parity is implied. Saud is updating PR #8 independently. Clinical
+content remains draft, awaiting clinician review.
+
+
 Draft, awaiting clinician review. Demo only, not for real patients.
+
+## Focused-follow-up verification, 2026-10-13
+
+- Full mobile suite: 416 tests in 25 suites pass.
+- Real SQLite suite: 13 tests pass, including follow-up restart, stale evidence
+  invalidation and failure to persist context.
+- TypeScript passes. Full lint passes; the newly introduced BOM warning was fixed
+  and that file re-linted, leaving the 25 existing warnings.
+- Android Metro export passes (.expo/followup-export); no actual phone run.
+- Python parity still fails all 40 cases with KeyError: when in C's placeholder.
+
+The v1.1 change is deliberate: persistent_unknown is CLARIFY, not RED_FLAG, but
+cannot grant movement clearance. All clinical-positive fixtures retain their
+expected outcomes. App follow-ups have real-questionnaire tests for corrected
+onset, resolved onset uncertainty, movement weakness clarified before narrowing,
+optional unknowns, confirmed injury despite low pain, and explicit correction of
+an accidental danger answer without bypassing remaining safety questions.
+
+These are engineering tests, not clinician approval or complete mobile/server
+parity. The older verification entries below are historical baselines.
 
 ## Current integration verification, 2026-10-12
 

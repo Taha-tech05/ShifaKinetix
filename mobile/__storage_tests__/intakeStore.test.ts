@@ -51,9 +51,26 @@ test('integrated intake resumes from SQLite after restart and retains repeated u
   await session.save({ ...no, state: 'unknown', value: null, clarificationAttempted: true });
   useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
-  expect((await resumed.resumeLatest()).verdict).toBe('RED_FLAG');
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
   expect(useSession.getState().selection?.regionId).toBe('shoulder_right');
   expect(useSession.getState().answers[0].clarificationAttempted).toBe(true);
+});
+
+test('conditional infection uncertainty survives restart and requires an explicit resolution', async () => {
+  const session = selectedSession(); await session.start('conditional');
+  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  await session.save({ questionId: 'redness', type: 'yesno', state: 'answered', value: true });
+  expect((await session.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['M_infection_risk']);
+  await session.save({ questionId: 'infection_risk', type: 'yesno', state: 'unknown', value: null, clarificationAttempted: true });
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
+  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['U_infection_risk']);
+  await resumed.save({ questionId: 'infection_risk', type: 'yesno', state: 'answered', value: false, clarificationAttempted: true });
+  expect((await resumed.checkpoint()).verdict).toBe('SAFE');
+  resumed.dispose();
 });
 
 test('integrated SAFE requires saved answers and reset cannot reuse the prior intake', async () => {
@@ -67,6 +84,39 @@ test('integrated SAFE requires saved answers and reset cannot reuse the prior in
   useSession.getState().reset();
   expect(session.activeId).toBeNull();
   await expect(session.checkpoint()).rejects.toThrow('Start or explicitly resume');
+});
+
+test('focused follow-ups survive SQLite restart but changed evidence invalidates them', async () => {
+  const session = selectedSession();
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  await session.start('followup');
+  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('SAFE');
+  expect(useSession.getState().answers.some((a) => a.questionId === 'Q_SAFETY_REVIEW_injury')).toBe(true);
+  // Changing away and back must not revive the earlier confirmation.
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'slowly', state: 'answered' });
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  expect((await resumed.checkpoint()).verdict).toBe('CLARIFY');
+  resumed.dispose();
+});
+
+test('failed context write cannot persist a follow-up clearance on restart', async () => {
+  const session = selectedSession();
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
+  await session.start('failed-followup');
+  for (const q of questions.filter((q) => q.required && q.questionId !== 'injury')) await session.save({ questionId: q.questionId,
+    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  jest.spyOn(store, 'saveContext').mockRejectedValueOnce(new Error('disk full'));
+  await expect(session.save(no)).rejects.toThrow('disk full');
+  expect(useSession.getState().gateVerdict).toBeNull();
+  session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
+  const resumed = new SafetySession(store);
+  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
+  resumed.dispose();
 });
 
 test('context write failure cannot grant clearance', async () => {
@@ -83,7 +133,7 @@ test('typed unknowns and pending uploads survive a database close and reopen', a
   db.close(); open(); await store.initialize();
   expect(await store.latestIntake()).toBe('test-intake');
   expect((await store.answers('test-intake'))[0]).toMatchObject({ value: null, state: 'unknown', clarificationAttempted: true });
-  expect((await store.savedGate('test-intake')).verdict).toBe('RED_FLAG');
+  expect((await store.savedGate('test-intake')).verdict).toBe('CLARIFY');
   expect(await store.pending()).toHaveLength(1);
 });
 
@@ -130,6 +180,21 @@ test('tampered cache blocks evaluation and bundled content restores it on restar
   await expect(store.savedGate('test-intake')).rejects.toThrow('Safety content');
   await store.initialize();
   expect(await store.cachedQuestions()).toHaveLength(20);
+});
+
+test('older content cannot resume or sync silently and its queued answers are preserved', async () => {
+  await store.saveAnswer('test-intake', no);
+  const pending = await store.pending();
+  const payload = JSON.parse(pending[0].payload);
+  payload.contentVersion = 'shoulder-1';
+  db.prepare('UPDATE intake_outbox SET payload = ?').run(JSON.stringify(payload));
+  db.exec("UPDATE intake_sessions SET content_version = 'shoulder-1'");
+  db.close(); open(); await store.initialize();
+  await expect(store.savedGate('test-intake')).rejects.toThrow('new intake');
+  const send = jest.fn();
+  await expect(store.sync(send)).rejects.toThrow('Sync stopped');
+  expect(send).not.toHaveBeenCalled();
+  expect(await store.pending()).toHaveLength(1);
 });
 
 test('corrupt saved values cannot silently become SAFE', async () => {

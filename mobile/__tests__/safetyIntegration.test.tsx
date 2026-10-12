@@ -5,6 +5,7 @@ import { useSession } from '../src/store/session';
 import { submitMovement, submitQuestion } from '../src/flow/live';
 import { SafeGuard } from '../src/flow/SafeGuard';
 import { openSafetySession } from '../src/gate/safetySession';
+import { SafetyStopNotice } from '../src/gate/SafetyStopNotice';
 
 // Only native persistence is replaced here; gate, session, guard and live driver are real.
 jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: jest.fn() }));
@@ -21,16 +22,40 @@ function seed() {
 }
 beforeEach(() => { useSession.getState().reset(); jest.clearAllMocks(); });
 
+test.each(['after_injury', 'suddenly'])('%s asks a focused follow-up before narrowing', async (value) => {
+  seed();
+  const result = submitQuestion({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value, state: 'answered' });
+  expect(result.verdict).toBe('CLARIFY');
+  expect(result.state).toBeNull();
+  expect(useSession.getState().narrowingTrail).toEqual([]);
+  jest.mocked(openSafetySession).mockResolvedValue({ checkpoint: async () => useSession.getState().gateOutput! } as unknown as Awaited<ReturnType<typeof openSafetySession>>);
+  let tree!: ReturnType<typeof create>;
+  await act(async () => { tree = create(<SafetyStopNotice />); });
+  const text = JSON.stringify(tree.toJSON());
+  expect(text).toContain('uncertainty, not a diagnosis');
+  act(() => tree.unmount());
+});
+
+test('gradual onset still requires safety answers, and permits narrowing once they are negative', () => {
+  useSession.getState().setMode('region'); useSession.getState().setSelection(selection);
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'slowly', state: 'answered' });
+  expect(useSession.getState().runGate()).toBe('CLARIFY');
+  for (const a of negatives()) useSession.getState().recordAnswer(a);
+  const result = submitQuestion({ questionId: 'Q_ST_NUMB', type: 'yesno', value: false, state: 'answered' });
+  expect(result.verdict).toBe('SAFE');
+  expect(result.state).not.toBeNull();
+});
+
 test('an empty intake or ordinary app answers cannot grant SAFE', () => {
   expect(useSession.getState().runGate()).toBe('CLARIFY');
   useSession.getState().recordAnswer({ questionId: 'Q_FORK_POINT', type: 'chooseone', value: 'exact', state: 'answered' });
   expect(useSession.getState().runGate()).toBe('CLARIFY');
   expect(evaluate(negatives()).verdict).toBe('SAFE');
 });
-test.each(['Q_ONSET_SUDDEN_TRAUMA', 'Q_UNABLE_TO_MOVE_ARM', 'Q_BONE_TENDER_AFTER_TRAUMA', 'Q_NUMB_OR_WEAK'])('%s positive never disappears', (questionId) => {
+test.each(['Q_ONSET_SUDDEN_TRAUMA', 'Q_UNABLE_TO_MOVE_ARM', 'Q_BONE_TENDER_AFTER_TRAUMA', 'Q_NUMB_OR_WEAK'])('%s positive requests clarification rather than disappearing', (questionId) => {
   const out = evaluateSessionGate([...negatives(), { questionId, type: 'yesno', value: true, state: 'answered' }]);
-  expect(out.verdict).toBe('RED_FLAG');
-  expect(out.firedRules.some((r) => r.matchedAnswers.includes(questionId))).toBe(true);
+  expect(out.verdict).toBe('CLARIFY');
+  expect(out.firedRules.length).toBeGreaterThan(0);
 });
 test('malformed canonical values and unfamiliar danger IDs fail closed', () => {
   expect(evaluateSessionGate([...negatives().filter((a) => a.questionId !== 'temperature'),
@@ -45,12 +70,12 @@ test('unknown sensory evidence cannot be erased by a previous negative safety an
 });
 test('an unresolved app signal still stops after clarification instead of silently clearing', () => {
   const answers = negatives().map((a) => a.questionId === 'numb' ? { ...a, clarificationAttempted: true } : a);
-  expect(evaluateSessionGate([...answers, { questionId: 'Q_ST_NUMB', type: 'yesno', value: null, state: 'unknown' }]).verdict).toBe('RED_FLAG');
+  expect(evaluateSessionGate([...answers, { questionId: 'Q_ST_NUMB', type: 'yesno', value: null, state: 'unknown' }]).verdict).toBe('CLARIFY');
 });
 test('real live driver stops before narrowing for new movement inability', () => {
   seed();
   const result = submitMovement({ movementId: 'sideways_raise', painful: false, weak: false, unableToDo: true, measuredAngle: null, state: 'done' }, 'unable');
-  expect(result.verdict).toBe('RED_FLAG'); expect(result.route).toBe('/report/urgent');
+  expect(result.verdict).toBe('CLARIFY'); expect(result.route).toBe('/report/reask');
   expect(result.state).toBeNull(); expect(useSession.getState().narrowingTrail).toEqual([]);
   expect(useSession.getState().gateOutput?.firedRules.length).toBeGreaterThan(0);
 });

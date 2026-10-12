@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "shoulder-1",
+  "contentVersion": "shoulder-2",
   "label": "draft, awaiting clinician review",
   "policySource": "docs/gate-contract.md",
   "defaultVerdict": "SAFE",

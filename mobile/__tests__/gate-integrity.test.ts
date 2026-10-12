@@ -26,7 +26,7 @@ test.each(questions.filter((q) => q.required))('missing or unresolved $questionI
   answers.push({ questionId: q.questionId, type: q.type as Answer['type'], value: null, state: 'unknown' });
   expect(evaluate(answers).verdict).toBe('CLARIFY');
   answers[answers.length - 1].clarificationAttempted = true;
-  expect(evaluate(answers).verdict).toBe('RED_FLAG');
+  expect(evaluate(answers).verdict).toBe('CLARIFY');
 });
 
 test('changing answer order never changes a result', () => {
