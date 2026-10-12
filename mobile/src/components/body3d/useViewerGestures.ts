@@ -1,6 +1,6 @@
 // One finger orbits, two fingers pinch and pan. The handler takes the touch for itself and refuses to give it back, so a
 // parent ScrollView cannot steal it; the parent is also told (onInteract) so it can switch its scrolling off meanwhile.
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder } from 'react-native';
 import type { GestureResponderEvent, LayoutChangeEvent } from 'react-native';
 import { orbit, pan, pinch } from './cameraRig';
@@ -10,10 +10,13 @@ export function useViewerGestures(rig: React.MutableRefObject<CameraRig>, onInte
   const height = useRef(300);
   const last = useRef({ x: 0, y: 0, pinch: 0, mx: 0, my: 0, fingers: 0 });
   const interact = useRef(onInteract);
-  interact.current = onInteract;
+  useEffect(() => {
+    interact.current = onInteract;
+  }, [onInteract]);
 
   const responder = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs -- the handlers read the refs on touch events, not during render
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,

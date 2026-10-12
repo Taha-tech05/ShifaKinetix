@@ -96,7 +96,7 @@ function Mannequin({ movement, value }: { movement: Movement; value: Animated.Va
 /** Loops the movement slowly. With reduced motion switched on it shows the peak pose and does not move. */
 export function MovementPlayer({ movement }: { movement: Movement }) {
   const t = useT();
-  const value = useRef(new Animated.Value(0)).current;
+  const [value] = useState(() => new Animated.Value(0));
   const [reduce, setReduce] = useState(false);
 
   useEffect(() => {

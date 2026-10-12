@@ -123,12 +123,12 @@ export default function Result() {
   const sel = useSession((s) => s.selection);
   const [touching, setTouching] = useState(false);
   // Only if the screen is opened without a live run (a direct link): evaluate once, from the stored answers.
-  const fallback = useRef<LiveState | null>(null);
-  if (!saved && fallback.current === null) {
+  const fallback = useMemo<LiveState | null>(() => {
+    if (saved) return null;
     const input = narrowingInputFrom(useSession.getState());
-    fallback.current = input ? evaluateLive(input) : null;
-  }
-  const state = saved ?? fallback.current;
+    return input ? evaluateLive(input) : null;
+  }, [saved]);
+  const state = saved ?? fallback;
   const candidates = state?.candidates ?? [];
   const categoryResult = state?.outcome === 'category' ? state.categoryResult : null;
   const approxCategory = categoryResult && categoryResult !== 'UNCLEAR' ? (categoryResult as Category) : null;

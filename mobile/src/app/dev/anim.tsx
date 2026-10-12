@@ -37,6 +37,7 @@ function Scrubber({ value, onScrub }: { value: number; onScrub: (t: number) => v
   const width = useRef(1);
   const responder = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs -- the pan handler reads the measured width when a touch happens, never during render
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
@@ -79,6 +80,7 @@ export default function DevAnim() {
 
   // The router can fill the link parameters in after the first render, so apply them whenever they change.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- router params can arrive after the first render, so the screen state follows them
     if (params.m && MOVEMENTS.some((x) => x.id === params.m)) setId(params.m);
     if (params.layer === 'bone' || params.layer === 'muscle') setLayer(params.layer);
     if (params.view === 'front' || params.view === 'side') setView(params.view);
