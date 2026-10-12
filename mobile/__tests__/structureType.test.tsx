@@ -3,6 +3,7 @@ jest.mock('../src/gate/sessionEvaluator', () => ({
   evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
 }));
 jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
+jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), ...jest.requireActual('./support/safetyCheckpoint').savedSafetySession() }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -82,10 +83,10 @@ const render = (el: React.ReactElement) => {
   });
   return tree;
 };
-const press = (tree: ReturnType<typeof create>, label: string) => {
+const press = async (tree: ReturnType<typeof create>, label: string) => {
   const el = tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label)[0];
   if (!el) throw new Error(`no button "${label}" in: ${textOf(tree.root)}`);
-  act(() => el.props.onPress());
+  await act(async () => el.props.onPress());
 };
 
 // answers under which each type leads (placeholder table in shared/structure_type_bank_shoulder.json)
@@ -322,18 +323,18 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
 });
 
 describe('screens', () => {
-  it('the live screen never shows the non-muscle card while asking; it offers the result only after every question', () => {
+  it('the live screen never shows the non-muscle card while asking; it offers the result only after every question', async () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
-    press(tree, 'Yes'); // bone point
-    press(tree, 'No'); // passive better: bone now leads, silently
+    await press(tree, 'Yes'); // bone point
+    await press(tree, 'No'); // passive better: bone now leads, silently
     let all = textOf(tree.root);
     expect(useSession.getState().liveState?.structure.leader).toBe('BONE');
     expect(all).not.toContain('may not be a muscle problem');
     expect(all).not.toContain('Talk to a doctor or physio');
     expect(all).not.toContain('See result');
     expect(all).toContain('Possible so far');
-    for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) press(tree, 'Not sure');
+    for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) await press(tree, 'Not sure');
     all = textOf(tree.root);
     expect(useSession.getState().liveState?.categoryResult).toBe('BONE');
     expect(all).toContain('See result');

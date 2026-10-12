@@ -7,6 +7,12 @@
 //      code routes (urgent, re-ask, unclear). No gate rule is added or changed here,
 //   3. only on SAFE: the narrowing interface is called (narrow() through narrowing/live.ts), the live state is stored and
 //      a snapshot of it is appended to the trail for the doctor view.
+//
+// The screens use the durable variants (submitMovementDurable, submitQuestionDurable, goBackDurable): they store the answer,
+// then AWAIT the safety checkpoint (the answer and the movement are written to the saved intake and the gate is confirmed
+// against what was saved), and only then run steps 2 and 3. If the write fails the flow stops at the safety check and no
+// narrowing is computed, so an answer that is not saved can never lead to a result. The plain synchronous functions are kept
+// for tests and the dev seeder, which have no saved intake.
 import type { Answer, Verdict } from '../gate/evaluate';
 import { discriminatorIds } from '../narrowing/bank';
 import { NARROWING, STRUCTURE } from '../narrowing/config';
@@ -17,7 +23,11 @@ import { MOVEMENTS } from '../movement/movements';
 import type { HistoryEntry, MovementResult } from '../store/session';
 import { narrowingInputFrom, useSession } from '../store/session';
 import type { IntakeMode } from '../regions/regionMap';
+import { openSafetySession } from '../gate/safetySession';
 import { isSafe, RESULT_ROUTE, routeAfterGate } from './intake';
+
+/** Where the flow goes when the answer could not be saved: the safety check, which confirms the saved answers again. */
+export const PERSIST_FAILED_ROUTE = '/report/danger';
 
 export type LiveStep = { kind: 'structure'; id: string } | { kind: 'movement'; id: string } | { kind: 'question'; id: string };
 
@@ -56,6 +66,19 @@ export interface LiveOutcome {
   /** Where to go instead of continuing (the gate stopped the flow), or null. */
   route: string | null;
   state: LiveState | null;
+  /** True when the answer could not be saved (durable variants only): nothing was narrowed and the flow stops. */
+  persistFailed?: boolean;
+}
+
+/** Waits until the newest answer and movement are saved. Resolves to a stop outcome when they could not be saved, else null. */
+async function checkpointOrStop(): Promise<LiveOutcome | null> {
+  try {
+    await (await openSafetySession()).checkpoint();
+    return null;
+  } catch {
+    const verdict = useSession.getState().gateVerdict ?? 'CLARIFY';
+    return { verdict, route: PERSIST_FAILED_ROUTE, state: null, persistFailed: true };
+  }
 }
 
 function afterAnswer(afterId: string, answerLabel: string, seq?: number): LiveOutcome {
@@ -75,20 +98,42 @@ function afterAnswer(afterId: string, answerLabel: string, seq?: number): LiveOu
 
 /** A movement result: "Skip" and "Not sure" arrive here with state "unknown". */
 export function submitMovement(result: MovementResult, label: string): LiveOutcome {
+  const { text, seq } = storeMovement(result, label);
+  return afterAnswer(result.movementId, text, seq);
+}
+
+function storeMovement(result: MovementResult, label: string) {
   const text = result.state === 'unknown' ? 'unknown' : label;
   const store = useSession.getState();
   const entry = store.logAnswer({ kind: 'movement', id: result.movementId, answer: null, movement: result, label: text });
   store.recordMovement(result);
-  return afterAnswer(result.movementId, text, entry.seq);
+  return { text, seq: entry.seq };
+}
+
+/** Like submitMovement, but the result is saved (awaited) before the gate and the narrowing run. */
+export async function submitMovementDurable(result: MovementResult, label: string): Promise<LiveOutcome> {
+  const { text, seq } = storeMovement(result, label);
+  return (await checkpointOrStop()) ?? afterAnswer(result.movementId, text, seq);
 }
 
 /** A discriminator or structure-type answer: "Not sure" and "Skip" arrive here with state "unknown" and value null. */
 export function submitQuestion(answer: Answer): LiveOutcome {
+  const { text, seq } = storeQuestion(answer);
+  return afterAnswer(answer.questionId, text, seq);
+}
+
+function storeQuestion(answer: Answer) {
   const text = answer.state === 'unknown' ? 'unknown' : answer.value === true ? 'yes' : 'no';
   const store = useSession.getState();
   const entry = store.logAnswer({ kind: 'question', id: answer.questionId, answer, movement: null, label: text });
   store.recordAnswer(answer);
-  return afterAnswer(answer.questionId, text, entry.seq);
+  return { text, seq: entry.seq };
+}
+
+/** Like submitQuestion, but the answer is saved (awaited) before the gate and the narrowing run. */
+export async function submitQuestionDurable(answer: Answer): Promise<LiveOutcome> {
+  const { text, seq } = storeQuestion(answer);
+  return (await checkpointOrStop()) ?? afterAnswer(answer.questionId, text, seq);
 }
 
 export interface BackResult {
@@ -108,11 +153,30 @@ export interface BackResult {
  * again on the full structured state. After an escalation back does nothing: the escalation stays.
  */
 export function goBack(): BackResult {
+  const rewound = rewind();
+  return 'ok' in rewound ? rewound : finishBack(rewound.undone);
+}
+
+/** Like goBack, but the rewound answers are saved (awaited) before the gate and the narrowing run again. */
+export async function goBackDurable(): Promise<BackResult> {
+  const rewound = rewind();
+  if ('ok' in rewound) return rewound;
+  const stop = await checkpointOrStop();
+  if (stop) return { ok: true, undone: rewound.undone, route: stop.route, state: null };
+  return finishBack(rewound.undone);
+}
+
+/** Supersedes the last answer and rebuilds the session from the rest, or says why that is not allowed. */
+function rewind(): BackResult | { undone: HistoryEntry } {
   const store = useSession.getState();
   if (store.escalation) return { ok: false, reason: 'escalated', route: null, state: null };
   const undone = store.supersedeLast();
   if (!undone) return { ok: false, reason: 'empty', route: null, state: null };
   useSession.getState().rebuildFromHistory();
+  return { undone };
+}
+
+function finishBack(undone: HistoryEntry): BackResult {
   const after = useSession.getState();
   const verdict = after.runGate();
   if (!isSafe(verdict)) {

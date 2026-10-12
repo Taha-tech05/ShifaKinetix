@@ -117,6 +117,15 @@ export function suggestDoctorLive(s: LiveState | null): boolean {
  * Reachable only after the verdict SAFE.
  */
 export default function Result() {
+  // The body, and its fallback narrowing from the stored answers, only exist once the guard has confirmed the saved SAFE verdict.
+  return (
+    <SafeGuard>
+      <ResultBody />
+    </SafeGuard>
+  );
+}
+
+function ResultBody() {
   const t = useT();
   const saved = useSession((s) => s.liveState);
   const history = useSession((s) => s.history);
@@ -145,7 +154,7 @@ export default function Result() {
   const doctor = suggestDoctorLive(state);
 
   return (
-    <SafeGuard>
+    <>
       <Screen
         scrollEnabled={!touching}
         onBack={() => router.back()}
@@ -247,7 +256,7 @@ export default function Result() {
       */}
       {ASSISTANT_ENABLED ? null : null}
       </Screen>
-    </SafeGuard>
+    </>
   );
 }
 
