@@ -43,7 +43,8 @@ def test_all_clear_baseline_is_safe():
 @pytest.mark.parametrize("question", REQUIRED, ids=[q["questionId"] for q in REQUIRED])
 def test_not_sure_is_never_safe(question):
     qid = question["questionId"]
-    for clarified, expected in ((False, "CLARIFY"), (True, "RED_FLAG")):
+    # Contract v1.1: uncertainty that persists after the clarification stays CLARIFY. It is never SAFE.
+    for clarified, expected in ((False, "CLARIFY"), (True, "CLARIFY")):
         answers = [a for a in _all_clear() if a["questionId"] != qid]
         unknown = {"questionId": qid, "type": question["type"], "value": None, "state": "unknown"}
         if clarified:
@@ -51,6 +52,7 @@ def test_not_sure_is_never_safe(question):
         result = evaluate(answers + [unknown])
         assert result["verdict"] == expected
         assert result["firedRules"][-1]["ruleId"] == f"U_{qid}"
+        assert result["firedRules"][-1]["reason"].startswith("Uncertainty persists" if clarified else "Safety answer is uncertain")
 
 
 @pytest.mark.parametrize("question", REQUIRED, ids=[q["questionId"] for q in REQUIRED])
@@ -70,6 +72,38 @@ def test_malformed_input_is_red_flag_not_a_crash(bad_input):
     result = evaluate(bad_input)
     assert result["verdict"] == "RED_FLAG"
     assert [r["ruleId"] for r in result["firedRules"]] == ["INPUT_INVALID"]
+
+
+def test_conditional_question_is_required_only_when_its_trigger_is_answered_yes():
+    """Contract v1.2: redness = yes makes infection_risk required."""
+
+    def with_redness(value, *extra):
+        answers = [a for a in _all_clear() if a["questionId"] != "redness"]
+        if value is None:
+            answers.append({"questionId": "redness", "type": "yesno", "value": None, "state": "unknown"})
+        else:
+            answers.append({"questionId": "redness", "type": "yesno", "value": value, "state": "answered"})
+        return answers + list(extra)
+
+    def risk(value, **more):
+        state = "unknown" if value is None else "answered"
+        return {"questionId": "infection_risk", "type": "yesno", "value": value, "state": state, **more}
+
+    def ids(result):
+        return [rule["ruleId"] for rule in result["firedRules"]]
+
+    assert evaluate(with_redness(False)) == {"verdict": "SAFE", "firedRules": []}
+    assert evaluate(with_redness(False, risk(None))) == {"verdict": "SAFE", "firedRules": []}
+    assert ids(evaluate(with_redness(None))) == ["U_redness"], "an unknown trigger does not add the requirement"
+    for answers, verdict, expected in (
+        (with_redness(True), "CLARIFY", ["M_infection_risk"]),
+        (with_redness(True, risk(None)), "CLARIFY", ["U_infection_risk"]),
+        (with_redness(True, risk(None, clarificationAttempted=True)), "CLARIFY", ["U_infection_risk"]),
+        (with_redness(True, risk(False)), "SAFE", []),
+        (with_redness(True, risk(True)), "RED_FLAG", ["R_local_infection_risk"]),
+    ):
+        result = evaluate(answers)
+        assert (result["verdict"], ids(result)) == (verdict, expected)
 
 
 def test_one_is_not_true():

@@ -41,6 +41,20 @@ def _same(a: Any, b: Any) -> bool:
     return type(a) is type(b) and a == b
 
 
+def is_required_question(q: dict[str, Any], answers: list[dict[str, Any]]) -> bool:
+    """Always-required questions, plus those whose requiredWhen clauses all match an answered record (contract v1.2)."""
+    if q["required"]:
+        return True
+    clauses = q.get("requiredWhen") or []
+    return bool(clauses) and all(
+        any(
+            a["questionId"] == clause["questionId"] and a["state"] == "answered" and _same(a["value"], clause["equals"])
+            for a in answers
+        )
+        for clause in clauses
+    )
+
+
 def is_valid_answer(a: Any) -> bool:
     if not isinstance(a, dict):
         return False
@@ -73,7 +87,8 @@ def evaluate(answers: Any) -> dict[str, Any]:
     """Run the gate on the complete saved answers of one intake.
 
     Priority is RED_FLAG, then CLARIFY, then SAFE. "Not sure" on a required
-    safety question is never SAFE.
+    safety question is never SAFE; if it persists after the clarification it
+    stays CLARIFY (contract v1.1): uncertainty alone is not a clinical red flag.
     """
     if (
         not isinstance(answers, list)
@@ -109,7 +124,7 @@ def evaluate(answers: Any) -> dict[str, Any]:
             )
 
     for q in QUESTIONS:
-        if not q["required"]:
+        if not is_required_question(q, answers):
             continue
         qid = q["questionId"]
         a = by_id.get(qid)
@@ -124,7 +139,6 @@ def evaluate(answers: Any) -> dict[str, Any]:
             )
         elif a["state"] == "unknown":
             clarified = a.get("clarificationAttempted") is True
-            danger = danger or clarified
             fired.append(
                 {
                     "ruleId": f"U_{qid}",
