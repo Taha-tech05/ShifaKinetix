@@ -7,6 +7,30 @@ plus A's real shoulder safety integration and delayed-save guard fix. See [safet
 contracts, adapter policy, persistence boundaries and B-owned follow-up work.
 PR #2 remains draft and must not merge while required checks fail.
 
+## Injury-onset report from Taha
+
+Rechecked NHS shoulder-pain urgent advice on 2026-10-12:
+https://www.nhs.uk/symptoms/shoulder-pain/ explicitly includes pain starting after
+an injury/accident and sudden shoulder pain. The earlier conversational suggestion
+that injury alone should not stop this prototype was incorrect. Shared clinical
+rules and adapter verdicts are retained. Any proposed triage refinement needs
+source justification, A/C review and clinician review; do not clear injury cases
+just to demonstrate narrowing.
+
+The safety entry now explains that earlier answers are checked first. The urgent
+screen explains an onset-triggered stop, names the source, distinguishes referral
+from diagnosis, and explains why questions/movements/narrowing are paused. It is
+scrollable so the explanation remains accessible on small screens. The demo's
+gradual-onset/all-negative path still permits narrowing. Phone verification and
+clinical approval remain pending.
+
+Follow-up verification (2026-10-13): all three real-questionnaire tests pass:
+20 non-danger answers -> SAFE -> Continue -> movement route; uncertain answers
+-> clarification -> repeated uncertainty stop; positive danger answer -> urgent.
+These use the real gate/store/SafetySession, with native IO/navigation replaced.
+The 15 gate/stop-notice integration tests also pass. Typecheck and full lint pass
+(25 existing warnings). This does not replace reproducing Taha's exact phone inputs.
+
 ## Implemented by Zaid
 
 - 20 sourced shoulder questions, 19 canonical rules and 40 shared parity fixtures.

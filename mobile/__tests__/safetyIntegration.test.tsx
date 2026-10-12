@@ -5,6 +5,7 @@ import { useSession } from '../src/store/session';
 import { submitMovement, submitQuestion } from '../src/flow/live';
 import { SafeGuard } from '../src/flow/SafeGuard';
 import { openSafetySession } from '../src/gate/safetySession';
+import { SafetyStopNotice } from '../src/gate/SafetyStopNotice';
 
 // Only native persistence is replaced here; gate, session, guard and live driver are real.
 jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: jest.fn() }));
@@ -20,6 +21,32 @@ function seed() {
   useSession.getState().runGate();
 }
 beforeEach(() => { useSession.getState().reset(); jest.clearAllMocks(); });
+
+test.each(['after_injury', 'suddenly'])('%s stops before narrowing and explains the earlier onset answer', async (value) => {
+  seed();
+  const result = submitQuestion({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value, state: 'answered' });
+  expect(result.verdict).toBe('RED_FLAG');
+  expect(result.state).toBeNull();
+  expect(useSession.getState().narrowingTrail).toEqual([]);
+  jest.mocked(openSafetySession).mockResolvedValue({ checkpoint: async () => useSession.getState().gateOutput! } as unknown as Awaited<ReturnType<typeof openSafetySession>>);
+  let tree!: ReturnType<typeof create>;
+  await act(async () => { tree = create(<SafetyStopNotice />); });
+  const text = JSON.stringify(tree.toJSON());
+  expect(text).toContain('Why this assessment stopped');
+  expect(text).toContain(value === 'after_injury' ? 'after an injury or accident' : 'sudden or injury-related');
+  expect(text).toContain('does not diagnose');
+  act(() => tree.unmount());
+});
+
+test('gradual onset still requires safety answers, and permits narrowing once they are negative', () => {
+  useSession.getState().setMode('region'); useSession.getState().setSelection(selection);
+  useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'slowly', state: 'answered' });
+  expect(useSession.getState().runGate()).toBe('CLARIFY');
+  for (const a of negatives()) useSession.getState().recordAnswer(a);
+  const result = submitQuestion({ questionId: 'Q_ST_NUMB', type: 'yesno', value: false, state: 'answered' });
+  expect(result.verdict).toBe('SAFE');
+  expect(result.state).not.toBeNull();
+});
 
 test('an empty intake or ordinary app answers cannot grant SAFE', () => {
   expect(useSession.getState().runGate()).toBe('CLARIFY');
