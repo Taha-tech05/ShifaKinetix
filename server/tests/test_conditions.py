@@ -84,7 +84,7 @@ def test_never_claims_validation():
         lambda c: c[0]["features"][0].update(q="sh_q99"),
         lambda c: c[0]["features"][0].update(expect="yes"),
         lambda c: c[0]["features"][0].update(w=0),
-        lambda c: c[0]["features"][0].update(movement="painful_arc"),
+        lambda c: c[0]["features"][0].update(movement="sideways_raise"),
         lambda c: c[0]["features"].append(dict(c[0]["features"][0])),
         lambda c: c[0]["features"].append({"movement": "handstand", "expect": True, "w": 1}),
         lambda c: c[0]["features"].append({"region": "elbow", "expect": True, "w": 1}),

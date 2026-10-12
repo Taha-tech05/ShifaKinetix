@@ -16,8 +16,8 @@
       "features": [
         { "q": "chest", "expect": true, "w": 3, "defining": true },
         { "q": "breathing", "expect": true, "w": 2, "defining": true },
-        { "movement": "painful_arc", "expect": false, "w": 1 },
-        { "movement": "empty_can", "expect": false, "w": 1 }
+        { "movement": "sideways_raise", "expect": false, "w": 1 },
+        { "movement": "can_position_hold", "expect": false, "w": 1 }
       ],
       "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review"
@@ -56,9 +56,9 @@
       "name": "Rotator cuff related shoulder pain",
       "danger": false,
       "features": [
-        { "movement": "painful_arc", "expect": true, "w": 2 },
-        { "movement": "empty_can", "expect": true, "w": 2 },
-        { "movement": "external_rotation", "expect": true, "w": 1 },
+        { "movement": "sideways_raise", "expect": true, "w": 2 },
+        { "movement": "can_position_hold", "expect": true, "w": 2 },
+        { "movement": "outward_push_elbow_at_side", "expect": true, "w": 1 },
         { "q": "fever", "expect": false, "w": 1 },
         { "q": "shape", "expect": false, "w": 1 }
       ],
@@ -70,9 +70,9 @@
       "name": "Subacromial impingement",
       "danger": false,
       "features": [
-        { "movement": "painful_arc", "expect": true, "w": 3 },
-        { "movement": "empty_can", "expect": true, "w": 1 },
-        { "movement": "lift_off", "expect": false, "w": 1 },
+        { "movement": "sideways_raise", "expect": true, "w": 3 },
+        { "movement": "can_position_hold", "expect": true, "w": 1 },
+        { "movement": "hand_behind_back", "expect": false, "w": 1 },
         { "q": "sudden", "expect": false, "w": 1 },
         { "q": "injury", "expect": false, "w": 1 }
       ],
@@ -84,10 +84,10 @@
       "name": "Frozen shoulder (adhesive capsulitis)",
       "danger": false,
       "features": [
-        { "movement": "external_rotation", "expect": true, "w": 2 },
-        { "movement": "lift_off", "expect": true, "w": 2 },
-        { "movement": "painful_arc", "expect": true, "w": 1 },
-        { "movement": "empty_can", "expect": true, "w": 1 },
+        { "movement": "outward_push_elbow_at_side", "expect": true, "w": 2 },
+        { "movement": "hand_behind_back", "expect": true, "w": 2 },
+        { "movement": "sideways_raise", "expect": true, "w": 1 },
+        { "movement": "can_position_hold", "expect": true, "w": 1 },
         { "q": "sudden", "expect": false, "w": 2 },
         { "q": "injury", "expect": false, "w": 1 }
       ],
@@ -100,9 +100,9 @@
       "danger": false,
       "features": [
         { "region": "top", "expect": true, "w": 3 },
-        { "movement": "painful_arc", "expect": true, "w": 1 },
-        { "movement": "external_rotation", "expect": false, "w": 1 },
-        { "movement": "lift_off", "expect": false, "w": 1 }
+        { "movement": "sideways_raise", "expect": true, "w": 1 },
+        { "movement": "outward_push_elbow_at_side", "expect": false, "w": 1 },
+        { "movement": "hand_behind_back", "expect": false, "w": 1 }
       ],
       "source": "TO VERIFY (StatPearls 'Acromioclavicular Joint Injury' is the intended source; exact page not confirmed)",
       "label": "draft, awaiting clinician review"
@@ -114,8 +114,8 @@
       "features": [
         { "q": "tingling", "expect": true, "w": 3 },
         { "q": "numb", "expect": true, "w": 2 },
-        { "movement": "painful_arc", "expect": false, "w": 1 },
-        { "movement": "empty_can", "expect": false, "w": 1 }
+        { "movement": "sideways_raise", "expect": false, "w": 1 },
+        { "movement": "can_position_hold", "expect": false, "w": 1 }
       ],
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/ (pins and needles and loss of feeling as warning symptoms); neck-nerve link TO VERIFY (StatPearls 'Cervical Radiculopathy' is the intended source)",
       "label": "draft, awaiting clinician review"

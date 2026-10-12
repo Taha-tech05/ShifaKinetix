@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "shoulder-narrowing-1",
+  "contentVersion": "shoulder-narrowing-2",
   "label": "draft, awaiting clinician review",
-  "note": "Demo only, not for real patients. Weights and thresholds are engineering choices, not clinical measurements. Output is 'muscles that may be involved', never a diagnosis.",
+  "note": "Demo only, not for real patients. Weights and thresholds are engineering choices, not clinical measurements. Output is 'muscles that may be involved', never a diagnosis. Movement ids are the app's ids from mobile/src/data/movements_shoulder.json.",
   "scoring": {
     "minConfidence": 0.4,
     "clusterMargin": 0.1,
@@ -10,31 +10,70 @@
   },
   "movements": [
     {
-      "id": "painful_arc",
+      "id": "sideways_raise",
       "description": "Raise the arm out to the side and overhead.",
-      "positiveWhen": ["painful"],
+      "positiveWhen": [
+        "painful"
+      ],
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
-      "label": "draft, awaiting clinician review"
+      "label": "draft, awaiting clinician review",
+      "clinicalTest": "painful arc"
     },
     {
-      "id": "empty_can",
+      "id": "can_position_hold",
       "description": "Arm raised forward and out, thumb down, hold against gentle downward pressure.",
-      "positiveWhen": ["painful", "weak"],
+      "positiveWhen": [
+        "painful",
+        "weak"
+      ],
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Empty Can Test' page (TO VERIFY exact page)",
-      "label": "draft, awaiting clinician review"
+      "label": "draft, awaiting clinician review",
+      "clinicalTest": "empty can"
     },
     {
-      "id": "external_rotation",
+      "id": "outward_push_elbow_at_side",
       "description": "Elbow at the side bent to 90 degrees, turn the forearm outward against gentle resistance.",
-      "positiveWhen": ["painful", "weak"],
+      "positiveWhen": [
+        "painful",
+        "weak"
+      ],
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903 (external rotation resistance test); Hegedus 2012, Br J Sports Med 46(14):964-978",
+      "label": "draft, awaiting clinician review",
+      "clinicalTest": "resisted external rotation"
+    },
+    {
+      "id": "hand_behind_back",
+      "description": "Reach the hand behind the lower back and lift it away from the back.",
+      "positiveWhen": [
+        "painful",
+        "weak",
+        "unableToDo"
+      ],
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page)",
+      "label": "draft, awaiting clinician review",
+      "clinicalTest": "lift-off (self-administered adaptation)"
+    },
+    {
+      "id": "belly_press",
+      "clinicalTest": "belly press",
+      "description": "Press the hand into the belly while keeping the elbow forward.",
+      "positiveWhen": [
+        "painful",
+        "weak",
+        "unableToDo"
+      ],
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; original test description TO VERIFY",
       "label": "draft, awaiting clinician review"
     },
     {
-      "id": "lift_off",
-      "description": "Hand behind the lower back, lift the hand away from the back.",
-      "positiveWhen": ["painful", "weak", "unableToDo"],
-      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page)",
+      "id": "forward_raise",
+      "clinicalTest": "none (range of movement only)",
+      "description": "Raise the arm forward and overhead.",
+      "positiveWhen": [
+        "painful"
+      ],
+      "note": "Recorded and shown to the doctor. No muscle profile uses it yet.",
+      "source": "TO VERIFY (app movement with no cuff-specific test behind it)",
       "label": "draft, awaiting clinician review"
     }
   ],
@@ -42,55 +81,122 @@
     {
       "id": "supraspinatus",
       "profile": {
-        "painful_arc": { "expect": true, "w": 2 },
-        "empty_can": { "expect": true, "w": 2 },
-        "external_rotation": { "expect": false, "w": 1 },
-        "lift_off": { "expect": false, "w": 1 }
+        "sideways_raise": {
+          "expect": true,
+          "w": 2
+        },
+        "can_position_hold": {
+          "expect": true,
+          "w": 2
+        },
+        "outward_push_elbow_at_side": {
+          "expect": false,
+          "w": 1
+        },
+        "hand_behind_back": {
+          "expect": false,
+          "w": 1
+        }
       },
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
-      "label": "draft, awaiting clinician review"
+      "label": "draft, awaiting clinician review",
+      "structureIds": {
+        "right": "supraspinatus_muscle_right",
+        "left": "supraspinatus_muscle_left"
+      }
     },
     {
       "id": "infraspinatus",
       "profile": {
-        "external_rotation": { "expect": true, "w": 2 },
-        "empty_can": { "expect": false, "w": 1 },
-        "lift_off": { "expect": false, "w": 1 }
+        "outward_push_elbow_at_side": {
+          "expect": true,
+          "w": 2
+        },
+        "can_position_hold": {
+          "expect": false,
+          "w": 1
+        },
+        "hand_behind_back": {
+          "expect": false,
+          "w": 1
+        }
       },
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903; Hegedus 2012, Br J Sports Med 46(14):964-978",
-      "label": "draft, awaiting clinician review"
+      "label": "draft, awaiting clinician review",
+      "structureIds": {
+        "right": "infraspinatus_muscle_right",
+        "left": "infraspinatus_muscle_left"
+      }
     },
     {
       "id": "teres_minor",
       "profile": {
-        "external_rotation": { "expect": true, "w": 2 },
-        "empty_can": { "expect": false, "w": 1 },
-        "lift_off": { "expect": false, "w": 1 }
+        "outward_push_elbow_at_side": {
+          "expect": true,
+          "w": 2
+        },
+        "can_position_hold": {
+          "expect": false,
+          "w": 1
+        },
+        "hand_behind_back": {
+          "expect": false,
+          "w": 1
+        }
       },
       "source": "TO VERIFY (resisted external rotation loads infraspinatus and teres minor together; needs a citable page)",
-      "label": "draft, awaiting clinician review"
+      "label": "draft, awaiting clinician review",
+      "structureIds": {
+        "right": "teres_minor_muscle_right",
+        "left": "teres_minor_muscle_left"
+      }
     },
     {
       "id": "subscapularis",
       "profile": {
-        "lift_off": { "expect": true, "w": 2 },
-        "empty_can": { "expect": false, "w": 1 },
-        "external_rotation": { "expect": false, "w": 1 }
+        "hand_behind_back": {
+          "expect": true,
+          "w": 2
+        },
+        "belly_press": {
+          "expect": true,
+          "w": 2
+        },
+        "can_position_hold": {
+          "expect": false,
+          "w": 1
+        },
+        "outward_push_elbow_at_side": {
+          "expect": false,
+          "w": 1
+        }
       },
-      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page)",
-      "label": "draft, awaiting clinician review"
+      "source": "Hegedus 2012, Br J Sports Med 46(14):964-978; Physiopedia 'Lift-Off Test' page (TO VERIFY exact page); belly press TO VERIFY",
+      "label": "draft, awaiting clinician review",
+      "structureIds": {
+        "right": "subscapular_muscle_right",
+        "left": "subscapular_muscle_left"
+      }
     }
   ],
   "clusters": [
     {
       "id": "posterior_cuff_group",
-      "members": ["infraspinatus", "teres_minor"],
+      "members": [
+        "infraspinatus",
+        "teres_minor"
+      ],
       "source": "TO VERIFY (same as teres_minor)",
       "label": "draft, awaiting clinician review"
     },
     {
       "id": "rotator_cuff_group",
-      "members": ["supraspinatus", "infraspinatus", "teres_minor", "subscapularis"],
+      "members": [
+        "supraspinatus",
+        "infraspinatus",
+        "teres_minor",
+        "subscapularis"
+      ],
       "source": "Hegedus 2012, Br J Sports Med 46(14):964-978",
       "label": "draft, awaiting clinician review"
     }

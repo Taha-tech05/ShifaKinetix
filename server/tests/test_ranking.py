@@ -67,8 +67,8 @@ def test_chest_symptoms_flag_heart_referral():
     assert ranking[0]["flagged"] is True
 
 
-def test_classic_painful_arc_pattern_ranks_cuff_or_impingement_first():
-    ranking = rank(answers(), movements("painful_arc", "empty_can"), "shoulder_right_front")
+def test_classic_sideways_raise_pattern_ranks_cuff_or_impingement_first():
+    ranking = rank(answers(), movements("sideways_raise", "can_position_hold"), "shoulder_right_front")
     assert ids(ranking)[0] in CUFF_OR_IMPINGEMENT
     assert set(ids(ranking)[:2]) == CUFF_OR_IMPINGEMENT
     assert not any(i["flagged"] for i in ranking)
@@ -85,7 +85,7 @@ def test_tingling_and_numbness_bring_up_neck_nerve_referral():
 
 
 def test_pain_on_top_of_the_shoulder_brings_up_ac_joint():
-    ranking = rank(answers(), movements("painful_arc"), "shoulder_right_top")
+    ranking = rank(answers(), movements("sideways_raise"), "shoulder_right_top")
     assert "ac_joint" in ids(ranking)[:2]
 
 
@@ -115,7 +115,7 @@ def test_not_sure_never_counts_as_no():
 
 
 def test_one_defining_danger_sign_is_placed_first_despite_a_low_score():
-    ranking = rank(answers(injury=True), movements("painful_arc", "empty_can"), "shoulder_right_top")
+    ranking = rank(answers(injury=True), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
     fracture = item(ranking, "fracture_or_dislocation")
     assert fracture["baseScore"] < 0
     assert fracture["pinned"] is True
@@ -124,7 +124,7 @@ def test_one_defining_danger_sign_is_placed_first_despite_a_low_score():
 
 
 def test_pinned_conditions_come_first_then_everything_is_in_score_order():
-    ranking = rank(answers(injury=True, fever=True), movements("painful_arc", "empty_can"))
+    ranking = rank(answers(injury=True, fever=True), movements("sideways_raise", "can_position_hold"))
     pinned = [i for i in ranking if i["pinned"]]
     assert {i["conditionId"] for i in pinned} == {"fracture_or_dislocation", "septic_arthritis"}
     assert ranking[: len(pinned)] == pinned
@@ -142,14 +142,14 @@ def test_danger_sign_outranks_a_benign_condition_that_has_almost_no_evidence():
 
 def test_flagged_but_not_pinned_is_ordered_by_score():
     """Not sure is boosted and flagged, but only a present danger sign is placed first."""
-    ranking = rank(answers(unknown=["chest"]), movements("painful_arc", "empty_can"))
+    ranking = rank(answers(unknown=["chest"]), movements("sideways_raise", "can_position_hold"))
     cardiac = item(ranking, "cardiac_referral")
     assert cardiac["flagged"] and not cardiac["pinned"]
     assert [i["score"] for i in ranking] == sorted((i["score"] for i in ranking), reverse=True)
 
 
 def test_every_condition_is_returned_once_with_full_provenance():
-    ranking = rank(answers(), movements("painful_arc"))
+    ranking = rank(answers(), movements("sideways_raise"))
     assert sorted(ids(ranking)) == sorted(c["id"] for c in CONDITIONS)
     for entry in ranking:
         assert entry["source"].strip()
@@ -168,7 +168,7 @@ def test_ties_are_alphabetical_so_results_are_reproducible():
 
 
 def test_same_input_gives_same_output_and_input_is_untouched():
-    given_answers, given_movements = answers(fever=True), movements("lift_off")
+    given_answers, given_movements = answers(fever=True), movements("hand_behind_back")
     before = json.dumps([given_answers, given_movements])
     assert rank(given_answers, given_movements) == rank(given_answers, given_movements)
     assert json.dumps([given_answers, given_movements]) == before

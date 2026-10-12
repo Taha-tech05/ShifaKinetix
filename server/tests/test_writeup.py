@@ -26,10 +26,10 @@ def movements(*positive):
              "measuredAngle": None, "state": "answered"} for m in MOVEMENTS]
 
 
-RANKING = rank(answers(injury=True), movements("painful_arc", "empty_can"), "shoulder_right_top")
+RANKING = rank(answers(injury=True), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
 ORDER = [item["conditionId"] for item in RANKING]
-NARROWING = narrow(movements("painful_arc", "empty_can"))
-CLUSTER = narrow(movements("external_rotation"))
+NARROWING = narrow(movements("sideways_raise", "can_position_hold"))
+CLUSTER = narrow(movements("outward_push_elbow_at_side"))
 
 
 def model(explanations, muscle_note="Movement testing points to one muscle."):
