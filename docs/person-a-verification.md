@@ -1,5 +1,18 @@
 # Person A verification — 2026-10-10
 
+## Independent PR8 review, 2026-10-13
+
+Reviewed f6c5601 in an isolated checkout. Both parity scripts pass (47 canonical,
+51 app-signal outputs). Unmodified server suite: 2463 passed, 8 failed due to
+A's fixture metadata/order. After only that fixture correction: all 2471 pass.
+Ruff passes. Four new boundary regressions fail; see pr8-review.md. This is not
+an approval to merge. PostgreSQL and device/API testing remain unverified.
+
+A's focused gate/integrity run: 71 tests pass. TypeScript and lint pass (25
+existing warnings). No app runtime behavior changed in this review; earlier
+full mobile/SQLite/export results below remain their own historical runs.
+
+
 ## Conditional completeness verification, 2026-10-13
 
 Contract v1.2; shared content shoulder-2. All 426 mobile tests in 25 suites pass,

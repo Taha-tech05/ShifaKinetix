@@ -10,9 +10,10 @@ Safety answers and retry events persist transactionally. Explicit resume restore
 
 Validation: 426 mobile tests and 15 real SQLite tests pass, along with TypeScript and lint (0 errors, 25 existing warnings). The earlier Android export passed; it was not repeated for this conditional-completeness change. Details are recorded in docs/person-a-verification.md. Follow-up tests exercise the real questionnaire, coordinator, gate and live driver; native IO/navigation are replaced in React tests. Separate real SQLite tests cover restart and save failures. Android export is not a device test.
 
-**Draft - do not merge while required checks fail:**
-- C's implementation is being updated in PR #8 and has not been integrated here. Verify all 47 fixtures and independently review the shared content/version change.
-- C must adopt v1.2 and the focused-follow-up adapter policy beyond the 47 canonical cases. Local review metadata needs a context transport contract; the server must not trust client acknowledgments as authorization.
-- Authenticated sync/doctor APIs, full live audit, device acceptance and clinician review remain pending; see docs/person-c-integration-request.md.
+**Draft - do not merge yet:**
+- PR8 f6c5601 passes both parity suites (47 canonical, 51 app-signal cases). A's fixture metadata/order corrections remove the eight known test failures; all 2471 existing server tests pass in the isolated combined checkout.
+- Four new API/migration regressions expose three additional issues in C's PR: invalid safety IDs disappear, incomplete movement flags can grant SAFE, and legacy migration can revive an old negative. See docs/pr8-review.md and scripts/review_pr8_boundaries.py. C has not been merged here.
+- CI now runs on stacked PRs into feature/A-gate and checks those boundary regressions when the server API exists. No tests were weakened.
+- Ordered context/answer sync, authenticated phone transport, final narrowing mapping, doctor-report integration, full audit, device acceptance and clinician review remain pending. See docs/person-a-handoff.md.
 
-See docs/person-a-handoff.md and docs/safety-integration.md. Preserve commits with a normal merge after required independent reviews and green checks.
+This review also passed 71 targeted mobile tests, TypeScript and lint. Preserve commits with normal merges after independent reviews and green checks.
