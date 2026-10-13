@@ -166,6 +166,19 @@ def test_invalid_answer_is_stored_and_fails_closed_until_corrected(api, patient)
     assert send(api, patient, "intake-1", answer("chest"))["gate"]["verdict"] == "SAFE"
 
 
+def test_unknown_canonical_event_cannot_disappear_into_app_context(api, patient, doctor):
+    complete_screen(api, patient, "intake-1")
+    reply = send(api, patient, "intake-1", {
+        "questionId": "typo_chest", "type": "yesno", "value": True, "state": "answered",
+    })
+    assert reply["answerValid"] is False
+    assert rule_ids(reply["gate"]) == ["INPUT_INVALID"]
+    assert api.get("/intakes/intake-1/gate", headers=patient).json()["verdict"] == "RED_FLAG"
+    report = api.get("/intakes/intake-1/report", headers=patient).json()
+    assert report["status"] == "REFER" and "musclesThatMayBeInvolved" not in report
+    assert api.get("/intakes/intake-1/doctor-report", headers=doctor).json()["differential"] == []
+
+
 def test_not_sure_then_clarification_stays_unclear_and_blocked(api, patient, doctor):
     """Contract v1.1: persistent uncertainty is CLARIFY, never SAFE and not a red flag by itself."""
     complete_screen(api, patient, "intake-1")
@@ -422,6 +435,26 @@ def test_canonical_answers_copied_into_the_context_are_not_counted_twice(api, pa
 def test_malformed_context_fails_closed(api, patient, context):
     complete_screen(api, patient, "intake-1")
     assert send_context(api, patient, "intake-1", **context)["gate"]["verdict"] != "SAFE"
+
+
+@pytest.mark.parametrize("movements", [
+    None,
+    [{"movementId": "sideways_raise", "state": "done"}],
+    [{**movement("sideways_raise"), "weak": None}],
+    [{**movement("sideways_raise"), "unableToDo": None}],
+    [{**movement("sideways_raise"), "weak": 0}],
+    [{**movement("sideways_raise"), "unableToDo": "false"}],
+    [{**movement("sideways_raise"), "movementId": ""}],
+    [{**movement("sideways_raise"), "measuredAngle": True}],
+])
+def test_invalid_movement_fields_block_reports_until_corrected(api, patient, doctor, movements):
+    complete_screen(api, patient, "intake-1")
+    reply = send_context(api, patient, "intake-1", movements=movements)
+    assert rule_ids(reply["gate"]) == ["INPUT_INVALID"]
+    assert api.get("/intakes/intake-1/gate", headers=patient).json()["verdict"] == "RED_FLAG"
+    assert api.get("/intakes/intake-1/report", headers=patient).json()["status"] == "REFER"
+    assert api.get("/intakes/intake-1/doctor-report", headers=doctor).json()["differential"] == []
+    assert send_context(api, patient, "intake-1", movements=[movement("sideways_raise")])["gate"]["verdict"] == "SAFE"
 
 
 def test_context_sync_is_idempotent_and_the_latest_snapshot_wins(api, patient, doctor):

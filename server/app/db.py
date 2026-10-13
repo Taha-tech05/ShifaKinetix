@@ -25,6 +25,7 @@ from sqlalchemy import (
     create_engine,
     func,
     inspect,
+    select,
     text,
 )
 
@@ -144,9 +145,14 @@ def make_engine(url: str | None = None) -> Engine:
     engine = create_engine(url, **options)
     metadata.create_all(engine)
     with engine.begin() as connection:
-        # Databases created before answer_seq_before existed get the column added; existing rows keep 0.
+        # Historical receive order is unknown. Require an answer newer than
+        # every pre-migration answer, rather than reviving an old negative.
+        # A constant ALTER default preserves append-only rows without UPDATE.
         if "answer_seq_before" not in {c["name"] for c in inspect(connection).get_columns("context_events")}:
-            connection.execute(text("ALTER TABLE context_events ADD COLUMN answer_seq_before INTEGER NOT NULL DEFAULT 0"))
+            watermark = int(connection.execute(select(func.coalesce(func.max(answer_events.c.seq), 0))).scalar_one())
+            connection.execute(text(
+                f"ALTER TABLE context_events ADD COLUMN answer_seq_before INTEGER NOT NULL DEFAULT {watermark}"
+            ))
         for statement in _append_only_sql(engine.dialect.name):
             connection.execute(text(statement))
     return engine

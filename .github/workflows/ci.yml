@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, feature/A-gate, feature/C-server]
   push:
     branches: [develop]
 
@@ -55,6 +55,9 @@ jobs:
       - run: pip install -r requirements.txt
       - run: ruff check .
       - run: pytest -q
+      - name: Verify reviewed API safety boundaries
+        if: hashFiles('server/app/api.py') != ''
+        run: python -m pytest -q ../scripts/review_pr8_boundaries.py
 
   # Runs the API tests against real PostgreSQL, including the append-only triggers.
   server-postgres:
