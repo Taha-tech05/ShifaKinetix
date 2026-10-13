@@ -3,3 +3,7 @@ uvicorn
 pytest
 ruff
 httpx
+langgraph
+groq
+sqlalchemy
+psycopg[binary]

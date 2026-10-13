@@ -81,5 +81,14 @@ def test_legacy_migration_cannot_promote_an_old_answer_to_a_followup(assessment)
     try:
         output = client.get('/intakes/review-intake/gate', headers=headers).json()
         assert output['verdict'] == 'CLARIFY', output
+        # An explicit answer after the migration may resolve the follow-up;
+        # the conservative watermark must not permanently lock the assessment.
+        reply = post('answers', {'questionId': 'unable', 'type': 'yesno', 'state': 'answered', 'value': False})
+        assert reply.json()['gate']['verdict'] == 'SAFE'
+        reopened = db.make_engine(url)
+        try:
+            assert client.get('/intakes/review-intake/gate', headers=headers).json()['verdict'] == 'SAFE'
+        finally:
+            reopened.dispose()
     finally:
         migrated.dispose()

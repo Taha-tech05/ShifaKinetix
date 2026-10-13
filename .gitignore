@@ -55,3 +55,9 @@ mobile/assets/models/pack/*
 !mobile/assets/models/pack/body-lite.bin
 !mobile/assets/models/pack/body-lite.json
 mobile/_web_reference/
+
+# Local development database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
