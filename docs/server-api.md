@@ -135,6 +135,11 @@ Two policies worth agreeing explicitly:
   The gate then fails closed with `INPUT_INVALID` (RED_FLAG) until a valid
   answer to that question arrives.
 
+  The stored canonical collection is validated before app-context filtering, so
+  an unknown safety ID cannot silently disappear. A wrong value for a known ID
+  can be corrected by a new valid event. An unknown ID has no valid answer under
+  this content version; start a fresh assessment rather than deleting its history.
+
 ## Movement and context sync (implemented on the server; proposed to A and B)
 
 The phone currently keeps raw app answers and movement results as a local
@@ -175,6 +180,11 @@ How the server uses it:
 - Canonical question ids inside `appAnswers` are ignored. Safety answers come
   only from `/sync/answers`.
 - A malformed snapshot is stored and makes the gate fail closed.
+  Movement IDs must be nonempty strings; painful, weak and unableToDo must be
+  actual booleans. A supplied angle must be null or a finite number, never a
+  boolean. A null movements collection is invalid; an absent collection means
+  no movements. Unfinished movement states retain the existing clarification
+  behavior. A later valid snapshot can correct malformed context.
 - `shared/app_signal_test_cases.json` (51 raw cases, danger first) is checked
   in both languages by `scripts/check_app_signal_parity.py`, which runs the
   real `gateInputs.ts`, `sessionEvaluator.ts` and `sessionAdapter.ts`.
@@ -211,11 +221,26 @@ from the order in which it received things:
 that contains the new evidence before the answer event that reviews it. If the
 answer arrives first, the server cannot tell it was given for that evidence and
 stays at CLARIFY until the question is answered again. That fails closed, but
-it would show the patient a different verdict from the phone. Simplest client
-rule: flush the context snapshot, then the answer outbox.
+it would show the patient a different verdict from the phone. Replay the original context/answer order; see the offline-replay restriction
+below before implementing the client transport.
 
 Not covered: two requests for the same intake arriving at the same instant can
 be ordered either way. The demo has one phone per intake.
+
+**Offline replay:** do not send the latest snapshot ahead of an older answer
+backlog. That can make historical negatives look like fresh follow-ups. The
+client must preserve original context/answer event order, or a separate checked
+context-revision protocol must be agreed. This ordered transport is not yet
+implemented on the phone; the shortcut above applies only when there are no
+older queued answers ahead of that evidence.
+
+**Legacy database upgrade:** when answer_seq_before does not exist, migration
+uses the highest pre-migration answer sequence as the baseline for legacy
+snapshots. Historical order is unknown, so an old negative cannot count as a
+review; a new answer is required. No existing event row is updated or deleted.
+Repeated startup retains the baseline and later explicit reviews. This protects
+the original legacy schema upgrade; it does not reconstruct chronology in a
+database already migrated with the previous zero-default implementation.
 
 ### Movement ids (reconciled with the app)
 
