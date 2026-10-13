@@ -1,6 +1,17 @@
 import { Answer, evaluate, questions } from '../src/gate/evaluate';
 import rules from '../../shared/gate_rules.json';
 import sources from '../../shared/clinical_sources.json';
+import fixtures from '../../shared/gate_test_cases.json';
+
+test('every shared fixture has provenance and a draft label, with danger cases first', () => {
+  let passedDangerCases = false;
+  for (const item of fixtures.cases) {
+    expect(item.source.trim()).not.toBe('');
+    expect(item.label).toBe('draft, awaiting clinician review');
+    if (item.expectedVerdict !== 'RED_FLAG') passedDangerCases = true;
+    else expect(passedDangerCases).toBe(false);
+  }
+});
 
 const baseline = (): Answer[] => questions.filter((q) => q.required).map((q) => ({
   questionId: q.questionId, type: q.type as Answer['type'],

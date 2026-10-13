@@ -1,5 +1,20 @@
 # Saud: requirements for Person A integration
 
+## Latest review action ? PR8 f6c5601
+
+The current review is [pr8-review.md](pr8-review.md); it supersedes the older
+placeholder/failed-parity status below. Both parity suites pass. A fixed the
+fixture source/label and ordering issues; all 2471 existing server tests then
+pass. Four new boundary tests fail on three issues. Merge the latest A branch,
+fix those in the same PR8, and run `python -m pytest -q
+scripts/review_pr8_boundaries.py` from the root along with both parity scripts,
+full server tests and CI. CI now supports the stacked base feature/A-gate.
+
+Do not use 'latest context first, then old answers' for offline replay: preserve
+original event order or bind reviews to a checked context revision. This remains
+joint A/C integration work, not completed transport. Keep PR8/PR2 on merge hold.
+
+
 ## Conditional infection-risk update (contract v1.2)
 
 Current shared content is `shoulder-2`, with 47 full-output fixtures. Redness=true

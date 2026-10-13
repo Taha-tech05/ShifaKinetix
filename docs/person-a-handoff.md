@@ -1,145 +1,97 @@
-# Person A handoff after integrating PR #7
-
-## Conditional infection-risk update (contract v1.2)
-
-Current shared content is `shoulder-2`, with 47 full-output fixtures. Redness=true
-makes infection_risk conditionally required through shared `requiredWhen` data.
-Missing/unknown risk gives CLARIFY; repeated unknown stays CLARIFY and routes to
-unclear. Explicit risk=false may clear if all other checks pass; risk=true with
-redness uses the existing RED_FLAG rule. This supersedes earlier counts/version
-references below; v1.1 focused-follow-up behavior remains in force.
-
-Saud: continue updating the SAME PR #8; merge the latest feature/A-gate after this
-change is pushed, implement conditional completeness in Python, and run all 47
-full-output fixtures plus app/movement parity. The fever_red_joint fixture also
-now includes M_infection_risk. Do not revert the focused-follow-up work.
-PR #8 and PR #2 remain on merge hold pending parity, checks and independent review.
-The shared rules contentVersion changed, so A/C review is required before merge.
-
-Start a new intake for shoulder-2. Old assessments/outbox records are retained;
-old-version sync currently stops and requires explicit version handling with C.
-Clinical content remains draft, awaiting clinician review.
-
+# Person A handoff ? 2026-10-13
 
 Draft, awaiting clinician review. Demo only, not for real patients.
 
-A's feature/A-gate now includes PR #7 at 52a5486 and its PR #6 lint fixes,
-plus A's real shoulder safety integration and delayed-save guard fix. See [safety-integration.md](safety-integration.md) for the exact
-contracts, adapter policy, persistence boundaries and B-owned follow-up work.
-PR #2 remains draft and must not merge while required checks fail.
+## Current PR decision
 
-## Current follow-up flow (2026-10-13)
+PR2 stays draft. PR8 at f6c5601 is reviewed but must not merge yet. PR7 remains
+merged at 52a5486; no newer PR7 revision was found. Full evidence and runnable
+regressions: [pr8-review.md](pr8-review.md).
 
-Supersedes the earlier immediate APP_REVIEW_* stop policy. Broad onset, sensory
-and movement signals now request precise follow-ups. The original answer stays
-in context; an explicitly saved clarification can correct it. Changed evidence
-invalidates an older clarification. Confirmed canonical danger signs still stop;
-clinical rule data was not relaxed and a low pain score does not override danger.
+Saud now implements v1.2 / shoulder-2: independently verified 47 canonical and
+51 app-signal outputs match. His raw-movement derivation and six movement IDs
+are updated. His written independent engineering review of shared rules exists
+in PR8; clinician review is still pending.
 
-Persistent uncertainty is CLARIFY rather than RED_FLAG, still without movement
-clearance. Stop screens explain the distinction and offer explicit answer review.
-Users can resolve uncertainty or correct a mistaken answer and proceed only after
-the complete saved gate returns SAFE. The 40 shared fixtures change only the
-persistent_unknown verdict; see gate-contract.md v1.1 and safety-integration.md.
+A corrected missing source/labels on seven fixtures and restored danger-first
+ordering without changing any inputs or expected gate outputs. With that patch,
+all 2471 existing server tests pass. However, four added API/migration tests
+expose three additional problems: invalid safety IDs disappear, incomplete
+movement flags can grant SAFE, and legacy migration can revive an old negative
+answer. Saud must resolve these in the same PR8. No server code was changed or
+merged into A during this review.
 
-Tested paths include broad onset corrected to gradual/no injury; unknown onset
-resolved; movement weakness clarified without inability/loss of feeling/persistent
-tingling then narrowing resumes; optional uncertainty; confirmed injury with low
-pain still stops; mistaken danger answer reviewed without skipping missing items;
-SQLite restart and changed evidence; failed context save cannot establish clearance.
-
-Saud must implement v1.1 and the app-signal follow-up policy. Review acknowledgments
-are currently local context metadata, not synced canonical answer events. No
-server authorization or clinician approval is implied. Taha should test the latest
-feature/A-gate branch on device, including both continued and stopped flows.
+CI now includes PRs targeting feature/A-gate, and the server job checks the new
+boundary regressions once the API exists. Saud must merge the latest A branch
+so PR8 receives the fixture fixes, tests and CI change. Keep independent review
+and normal merge commits; do not push directly to develop/main.
 
 ## Implemented by Zaid
 
-- 20 sourced shoulder questions, 19 canonical rules and 40 shared parity fixtures.
-- Strict TypeScript evaluator and an adapter for B's broader answer templates.
-- Full gateOutput in B's store through the agreed one-import replacement.
-- Existing danger/reask/safe routes now use real questions, saved typed answers,
-  one-time clarification and guarded handoff into B's exact/region flow.
-- SQLite safety answers, trusted question/rule cache and transactional retry outbox.
-- Explicit start/resume, shoulder context restoration and fresh gate evaluation.
-- Protected screens wait for saved clearance; changed inputs invalidate it.
-- Doctor-report presentation component, review summary, review log and panel register.
-- Integration, evaluator and actual SQLite tests; CI retains parity and lint checks.
+- 20 sourced shoulder questions, 19 clinical rules, 47 full-output fixtures.
+- Strict TypeScript evaluator and focused follow-ups for broad app signals.
+- Conditional infection-risk completeness through shared requiredWhen data.
+- Integrated danger/reask/safe/urgent/unclear screens and full gateOutput.
+- SQLite answers and transactional retry outbox; explicit start/resume with
+  context restoration and fresh gate evaluation.
+- Saved-clearance guard: no narrowing while writes are pending or failed.
+- Explicit correction with reevaluation; changed evidence invalidates review.
+- Doctor-report presentation component, clinician summary, review log, panel
+  register, source provenance and engineering verification records.
 
-The old top-level /questions and /result demo routes are not the team app's entry
-flow. B's report/result.tsx, report/movement.tsx, flow/live.ts, components and theme
-come from Taha's commits; A's follow-up changes the shared safety guard and tests. Do not integrate the old standalone
-result over B's narrowing result.
+Taha's live submit/back checkpoint wiring and protected movement/result bodies
+are already included through PR7. His report/result, report/movement, flow/live,
+components and theme remain B-owned. Old standalone /questions and /result are
+not the team app's main flow.
 
-## Current verification
+## Current safety behavior
 
-- TypeScript: passes.
-- Mobile tests: 416 passing, including real-gate integration tests.
-- Actual SQLite tests: 13 passing, including restart and persistent clarification.
-- Full lint: passes with 0 errors and 25 warnings.
-- Combined Android Metro export: passes (not an APK/device test).
-- Python/TypeScript parity: 40/40 cases fail in C's placeholder Python gate with
-  KeyError: when. Do not weaken the fixtures to accept the placeholder.
+Broad onset, sensory and movement signals request precise follow-ups; they do
+not themselves force APP_REVIEW_* stops. Canonical confirmed danger still stops.
+An old negative cannot clear new evidence. Repeated unknown remains CLARIFY,
+routes to unclear/doctor advice and blocks movements. SAFE is only permission
+to continue under the draft gate; it is not a diagnosis or clinical validation.
 
-## Taha: required follow-up
+Redness=true makes infection_risk required: missing/unknown requests clarification;
+repeated unknown remains blocked. An explicit negative may clear if everything
+else clears; positive risk plus redness uses the existing clinical rule.
+Shared content is shoulder-2. Old assessments need a fresh intake; their outbox
+records remain preserved but cannot yet sync across content versions.
 
-PR #7 now guards initial/fallback narrowing and awaits live submit/back checkpoints.
-PR #6 fixes the blocking lint errors. A fixed the guard interaction that previously
-redirected a verified intake to danger while its new answer was still saving.
-Protected content waits, then the real gate decides whether to continue or stop.
-Tests cover delayed normal/unknown saves, failure and reset with the actual screen.
+## Verification and limits
 
-Remaining:
+- Last full mobile run: 426 tests; last real SQLite run: 15 tests, all passing.
+- This review: 71 targeted mobile gate/integrity tests pass, including the new
+  fixture provenance/order regression. TypeScript and full lint pass (25 existing
+  warnings, no errors).
+- Isolated PR8 with corrected fixtures: 2471 existing server tests pass; Ruff
+  passes; 47 canonical and 51 app-signal full-output parity cases pass.
+- Four additional boundary regressions FAIL and are explicit merge blockers.
+- Android export previously passed; not repeated for this data/test/CI change.
+- Local Python 3.12 / Node 22.16. CI uses Python 3.11 / Node 20, and Node 22 for
+  SQLite. PostgreSQL and installed-phone behavior remain unverified.
 
-1. Verify protected branches require independent review and mobile, server,
-   gate-parity, offline-storage checks. Zaid does not have repository admin access.
-2. Build the APK and coordinate the real-device acceptance below.
+## Remaining work by owner
 
-## Saud: required follow-up
+1. Saud: fix the three reproduced PR8 issues, merge A's latest corrections,
+   rerun existing and review tests, and obtain CI results including PostgreSQL.
+2. A + Saud: implement durable ordered context/answer sync and authenticated
+   transport. Do not upload the latest snapshot before an old answer backlog:
+   server receive order could mistake old negatives for fresh follow-ups.
+   Agree version-aware handling of shoulder-1 events without silently deleting
+   them. The current local snapshot is not a complete event history.
+3. Taha + Saud: agree one narrowing bank/output and map results to the app's
+   side-specific structures. Matching movement IDs alone does not finish this.
+4. A + team: connect the authorized doctor-report response, finish required
+   audit/history transport, and test retry, lost acknowledgement, ownership and
+   patient denial from doctor-only data using the real API.
+5. Taha + A: build/test on Android. Cover SAFE, danger, repeated unknown,
+   conditional infection risk, new movement signals, failed saves, force-close
+   and airplane-mode resume. Record commit, device, build and results.
+6. Supervisor/doctor: review the shoulder summary and questions/rules; keep all
+   clinical labels draft until that review actually happens. Names are omitted.
+7. Repository administrator: confirm required independent reviews and CI checks
+   on protected branches. Zaid has no repository admin access.
 
-Full request and API contracts: [person-c-integration-request.md](person-c-integration-request.md).
-
-Implement docs/gate-contract.md in server/app/gate.py and run:
-
-```powershell
-python scripts/check_gate_parity.py
-```
-
-Review A's rules independently and review the app-signal adapter policy. Server
-handling must preserve these signals too; the 40 canonical fixtures do not by
-themselves prove full app-input parity. C also owns authenticated doctor-only
-responses, the independent server gate, ranking and the append-only audit log.
-
-Connect IntakeStore.sync(send) with an authenticated transport. Resolve send only
-after durable acknowledgment and deduplicate idempotencyKey. Failed requests
-remain queued. No successful upload or authentication is simulated.
-
-## Human checks and unfinished acceptance
-
-- Faculty supervisor and doctor review of clinician-shoulder-summary.md is pending;
-  reviewers are available, but availability is not approval. Names are omitted.
-- On an actual Android phone: complete a fictional all-negative intake, test
-  immediate danger, Not sure twice, a new positive/unknown live signal, and a
-  failed SQLite write. No movements should open without confirmed SAFE.
-- In airplane mode: force-close/relaunch and explicitly resume the same assessment.
-  Verify values, clarification attempts and outbox events survive. A new intake
-  must never inherit old clearance. Test the integrated live save/back/review flow on the device.
-- After C connects transport: test acknowledgment/retry and patient rejection
-  from doctor-only endpoints. Record device, build/commit and results.
-
-## Run locally
-
-```powershell
-cd mobile
-npm ci
-npm run typecheck
-npm run lint
-npm test -- --runInBand
-npm run test:storage
-npm start
-```
-
-App/ordinary CI use Node 20; real SQLite tests use Node 22.13+. Local verification
-used Node 22.16/Python 3.12, while server CI uses Python 3.11. Native SQLite is the
-target; web SQLite is not configured. Dependency installation reported 56 audit
-findings (15 moderate, 41 high); no forced dependency upgrade was performed.
+The long final project report has not been started; source records, revision IDs,
+verification history and this review are retained for it.
