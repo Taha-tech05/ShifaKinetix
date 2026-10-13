@@ -1,8 +1,7 @@
-from fastapi import FastAPI
+"""Server entry point: uvicorn app.main:app"""
 
-app = FastAPI(title="ShifaKinetix server", description="Demo only, not for real patients.")
+from app.api import create_app
+from app.config import load_env
 
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+load_env()
+app = create_app()

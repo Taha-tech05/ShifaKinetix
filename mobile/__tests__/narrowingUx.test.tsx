@@ -1,3 +1,9 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
+jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), ...jest.requireActual('./support/safetyCheckpoint').savedSafetySession() }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -51,15 +57,18 @@ const textOf = (root: ReactTestInstance): string => {
   return out.join(' | ');
 };
 const buttons = (tree: ReturnType<typeof create>, label: string) => tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label);
-const press = (tree: ReturnType<typeof create>, label: string) => {
+const press = async (tree: ReturnType<typeof create>, label: string) => {
   const el = buttons(tree, label)[0];
   if (!el) throw new Error(`no button "${label}" in: ${textOf(tree.root)}`);
-  act(() => el.props.onPress());
+  await act(async () => el.props.onPress());
 };
+const rendered: ReturnType<typeof create>[] = [];
+afterEach(() => act(() => { for(const tree of rendered.splice(0)) tree.unmount(); }));
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(el);
+    rendered.push(tree);
   });
   return tree;
 };
@@ -111,14 +120,14 @@ describe('fix 1: candidates are highlighted from the first screen and follow eve
     expect(state().stop).toBe(false);
   });
 
-  it('the screen shows them from the first render, names without bands first, then with bands', () => {
+  it('the screen shows them from the first render, names without bands first, then with bands', async () => {
     const tree = render(createElement(LiveScreen));
     let all = textOf(tree.root);
     expect(all).toContain('Still narrowing - keep going');
     expect(all).toContain('Possible so far');
     expect(all).not.toMatch(/Low|Moderate|Higher/);
-    press(tree, 'Yes');
-    press(tree, 'No');
+    await press(tree, 'Yes');
+    await press(tree, 'No');
     all = textOf(tree.root);
     expect(all).toContain('Possible so far');
     expect(all).toMatch(/Low|Moderate|Higher/);
@@ -128,14 +137,14 @@ describe('fix 1: candidates are highlighted from the first screen and follow eve
 });
 
 describe('fix 2: the non-muscle conclusion only at the end', () => {
-  it('the live screen never shows the card, a category or the physio action while asking, for every question of the set', () => {
+  it('the live screen never shows the card, a category or the physio action while asking, for every question of the set', async () => {
     const tree = render(createElement(LiveScreen));
     for (let i = 0; i < STRUCTURE.maxQuestions; i++) {
       const all = textOf(tree.root);
       expect(all).not.toContain('may not be a muscle problem');
       expect(all).not.toContain('Talk to a doctor or physio');
       expect(all).not.toMatch(/Nerve or neck|Joint or capsule|Muscle or tendon|Types so far/);
-      press(tree, i % 2 === 0 ? 'Yes' : 'No');
+      await press(tree, i % 2 === 0 ? 'Yes' : 'No');
     }
     const end = textOf(tree.root);
     expect(state().outcome).toBe('category');
@@ -352,22 +361,22 @@ describe('fix 5: back, history and recompute', () => {
     expect(useSession.getState().movementResults).toHaveLength(0);
   });
 
-  it('on the screen: Back undoes the last answer and shows that question again with the old answer selected', () => {
+  it('on the screen: Back undoes the last answer and shows that question again with the old answer selected', async () => {
     const tree = render(createElement(LiveScreen));
-    press(tree, 'Yes'); // bone point
+    await press(tree, 'Yes'); // bone point
     expect(textOf(tree.root)).toContain('When your other hand helps lift your sore arm');
-    press(tree, 'Back');
+    await press(tree, 'Back');
     expect(textOf(tree.root)).toContain('Is there one small spot on a bone');
     expect(buttons(tree, 'Yes')[0].props.accessibilityState.selected).toBe(true);
     expect(useSession.getState().answers.find((a) => a.questionId === 'Q_ST_BONE_POINT')).toBeUndefined();
     expect(activeHistory()).toHaveLength(0);
   });
 
-  it('on the first question Back asks before leaving the flow', () => {
+  it('on the first question Back asks before leaving the flow', async () => {
     const alert = jest.spyOn(RN.Alert, 'alert');
     const back = jest.spyOn(router.router, 'back');
     const tree = render(createElement(LiveScreen));
-    press(tree, 'Back');
+    await press(tree, 'Back');
     expect(alert).toHaveBeenCalledTimes(1);
     expect(back).not.toHaveBeenCalled();
     const buttonsGiven = alert.mock.calls[0][2] as { text: string; onPress?: () => void }[];
@@ -382,10 +391,10 @@ describe('fix 5: back, history and recompute', () => {
     const src2 = src('app/report/movement.tsx');
     expect(src2).toContain("BackHandler.addEventListener('hardwareBackPress'");
     expect(src2).toContain('previous();');
-    expect(src2).toContain('onBack={previous}'); // the header arrow too
+    expect(src2).toContain('onBack={() => void previous()}'); // the header arrow too
   });
 
-  it('the result has "Review answers": every current answer with a Change button that reopens it; a change recomputes', () => {
+  it('the result has "Review answers": every current answer with a Change button that reopens it; a change recomputes', async () => {
     submitQuestion(yes('Q_ST_TINGLE') as never);
     submitQuestion(unsure('Q_ST_NECK') as never);
     const push = jest.spyOn(router.router, 'push');
@@ -394,7 +403,7 @@ describe('fix 5: back, history and recompute', () => {
     expect(all).toContain('Review answers');
     expect(all).toContain('Do you feel tingling in your arm?');
     expect(all).toContain('Not sure'); // the skipped one shows as unknown
-    press(tree, 'Change: Do you feel tingling in your arm?');
+    await press(tree, 'Change: Do you feel tingling in your arm?');
     expect(push).toHaveBeenCalledWith('/report/movement?review=Q_ST_TINGLE');
     push.mockRestore();
     const nerve = () => categoryScores(useSession.getState().answers).find((c) => c.category === 'NERVE_NECK')!.strength;

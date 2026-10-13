@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import { AppText } from '../../components/AppText';
@@ -11,7 +11,7 @@ import { CandidateStrip } from '../../components/narrowing/CandidateStrip';
 import { ProgressBar } from '../../components/ProgressBar';
 import { Screen } from '../../components/Screen';
 import type { TKey } from '../../i18n';
-import { activeHistory, firstOpenStep, goBack, seedLiveState, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, stepIndexOf, submitMovement, submitQuestion, totalSteps } from '../../flow/live';
+import { activeHistory, firstOpenStep, goBackDurable, seedLiveState, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, stepIndexOf, submitMovementDurable, submitQuestionDurable, totalSteps } from '../../flow/live';
 import type { LiveOutcome } from '../../flow/live';
 import { namesFor, textMaxFor, VIEWER_MIN } from '../../flow/liveLayout';
 import { SafeGuard } from '../../flow/SafeGuard';
@@ -72,6 +72,15 @@ function pickedFrom(entry: HistoryEntry | null): Set<Key> {
  * "Not sure" and "Skip" are stored as state "unknown", never as "no". Only after the verdict SAFE.
  */
 export default function LiveScreen() {
+  // The body (and its seed of the possible muscles) is only created once the guard has confirmed the saved SAFE verdict.
+  return (
+    <SafeGuard>
+      <LiveScreenBody />
+    </SafeGuard>
+  );
+}
+
+function LiveScreenBody() {
   const t = useT();
   const params = useLocalSearchParams<{ review?: string }>();
   const mode = useSession((s) => s.mode);
@@ -99,6 +108,8 @@ export default function LiveScreen() {
   const [cameraNote, setCameraNote] = useState(false);
   const [height, setHeight] = useState(0);
   const [lastMovement, setLastMovement] = useState(MOVEMENTS[0]);
+  // true while an answer is being saved: further taps are ignored so one answer is never saved twice
+  const saving = useRef(false);
 
   // the question screen draws one strip with both the demo and the caution message instead of two banners
   useEffect(() => {
@@ -163,8 +174,12 @@ export default function LiveScreen() {
   const confirmLeave = () => Alert.alert(t('live.leaveTitle'), t('live.leaveBody'), [{ text: t('live.stay') }, { text: t('live.leave'), onPress: leave }]);
 
   /** Back: the previous question again, with everything recomputed from the answers that remain. */
-  const previous = useCallback(() => {
-    const r = goBack();
+  const previous = useCallback(async () => {
+    if (saving.current) return;
+    saving.current = true;
+    const r = await goBackDurable().finally(() => {
+      saving.current = false;
+    });
     if (!r.ok) {
       if (r.reason === 'empty') confirmLeave(); // on the first question: confirm before leaving the flow
       return; // after an escalation back does nothing
@@ -184,28 +199,38 @@ export default function LiveScreen() {
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-        previous();
+        void previous();
         return true;
       });
       return () => sub.remove();
     }, [previous]),
   );
 
-  const answerMovement = (feel: Feel, label: string) => handle(submitMovement(buildMovementResult(current.id, feel), label));
-  const skipMovement = () => answerMovement({ kind: 'skip' }, 'skip');
+  /** Saves the answer first (the result of `submit` is only used once the checkpoint has finished), then moves on. */
+  const save = async (submit: () => Promise<LiveOutcome>) => {
+    if (saving.current) return;
+    saving.current = true;
+    try {
+      handle(await submit());
+    } finally {
+      saving.current = false;
+    }
+  };
+  const answerMovement = (feel: Feel, label: string) => save(() => submitMovementDurable(buildMovementResult(current.id, feel), label));
+  const skipMovement = () => void answerMovement({ kind: 'skip' }, 'skip');
   const toggle = (k: Key) => {
-    if (k === 'unsure') return answerMovement({ kind: 'unsure' }, 'unsure');
-    if (k === 'noPain') return answerMovement({ kind: 'felt', pain: false, weak: false, couldNot: false }, 'noPain');
+    if (k === 'unsure') return void answerMovement({ kind: 'unsure' }, 'unsure');
+    if (k === 'noPain') return void answerMovement({ kind: 'felt', pain: false, weak: false, couldNot: false }, 'noPain');
     const next = new Set(picked);
     next.delete('noPain');
     if (next.has(k)) next.delete(k);
     else next.add(k);
     setPicked(next);
   };
-  const submitPicked = () => answerMovement({ kind: 'felt', pain: picked.has('pain'), weak: picked.has('weak'), couldNot: picked.has('couldNot') }, [...picked].join('+'));
+  const submitPicked = () => void answerMovement({ kind: 'felt', pain: picked.has('pain'), weak: picked.has('weak'), couldNot: picked.has('couldNot') }, [...picked].join('+'));
   const answerQuestion = (kind: 'yes' | 'no' | 'unsure') => {
     if (!question) return;
-    handle(submitQuestion(kind === 'yes' ? answered(question, true) : kind === 'no' ? answered(question, false) : unknown(question)));
+    void save(() => submitQuestionDurable(kind === 'yes' ? answered(question, true) : kind === 'no' ? answered(question, false) : unknown(question)));
   };
   const selected = (kind: 'yes' | 'no' | 'unsure') => {
     const a = prefill?.answer;
@@ -219,8 +244,8 @@ export default function LiveScreen() {
   const textMax = textMaxFor(height);
 
   return (
-    <SafeGuard>
-      <Screen scroll={false} compact onBack={previous} banner={<DemoCautionStrip />}>
+    <>
+      <Screen scroll={false} compact onBack={() => void previous()} banner={<DemoCautionStrip />}>
         <View style={styles.fill} onLayout={(e: LayoutChangeEvent) => setHeight(e.nativeEvent.layout.height)}>
           <MovementStage
             movement={current}
@@ -309,7 +334,7 @@ export default function LiveScreen() {
           </View>
         </View>
       </Screen>
-    </SafeGuard>
+    </>
   );
 }
 

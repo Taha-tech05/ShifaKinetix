@@ -1,3 +1,9 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
+jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), ...jest.requireActual('./support/safetyCheckpoint').savedSafetySession() }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -51,17 +57,17 @@ const button = (tree: ReturnType<typeof create>, label: string) =>
   tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label)[0];
 const yes = (id: string) => ({ questionId: id, type: 'yesno', value: true, state: 'answered' as const });
 const no = (id: string) => ({ questionId: id, type: 'yesno', value: false, state: 'answered' as const });
-const press = (tree: ReturnType<typeof create>, label: string) => {
+const press = async (tree: ReturnType<typeof create>, label: string) => {
   const el = button(tree, label);
   if (!el) throw new Error(`no button "${label}" in: ${textOf(tree.root)}`);
-  act(() => {
+  await act(async () => {
     el.props.onPress();
   });
 };
 /** The structure-type questions come first. These two answers make muscle or tendon lead, so the movements (or muscle questions) follow. */
-const passStructure = (tree: ReturnType<typeof create>) => {
-  press(tree, 'No'); // a sore spot on a bone?
-  press(tree, 'Yes'); // does it go higher with the other hand's help?
+const passStructure = async (tree: ReturnType<typeof create>) => {
+  await press(tree, 'No'); // a sore spot on a bone?
+  await press(tree, 'Yes'); // does it go higher with the other hand's help?
   narrowSpy.mockClear(); // two answers are enough for muscle or tendon to lead by the margin
 };
 /** Region mode asks the movements first. To test the muscle steps, make muscle or tendon lead before the screen opens. */
@@ -69,10 +75,13 @@ const seedMuscleLeads = () => {
   for (const id of ['Q_ST_BONE_POINT', 'Q_ST_TINGLE', 'Q_ST_NECK', 'Q_ST_NUMB']) submitQuestion(no(id)); // muscle or tendon leads, no muscle is favoured
   narrowSpy.mockClear();
 };
+const rendered: ReturnType<typeof create>[] = [];
+afterEach(() => act(() => { for(const tree of rendered.splice(0)) tree.unmount(); }));
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(el);
+    rendered.push(tree);
   });
   return tree;
 };
@@ -99,12 +108,12 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(all).not.toContain('Is there one small spot on a bone');
   });
 
-  it('all six movements come first; then the structure-type questions; muscle questions only if muscle or tendon leads', () => {
+  it('all six movements come first; then the structure-type questions; muscle questions only if muscle or tendon leads', async () => {
     const tree = render(createElement(LiveScreen));
-    for (let i = 0; i < 6; i++) press(tree, 'Skip'); // six movements, skipped
+    for (let i = 0; i < 6; i++) await press(tree, 'Skip'); // six movements, skipped
     expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
-    press(tree, 'No');
-    press(tree, 'Yes');
+    await press(tree, 'No');
+    await press(tree, 'Yes');
     expect(useSession.getState().liveState?.muscleAllowed).toBe(true);
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
   });
@@ -121,12 +130,12 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(tree).toBeDefined();
   });
 
-  it('"I tried it", then a chip: the answer is stored, the gate and narrowing run, and the next movement shows', () => {
+  it('"I tried it", then a chip: the answer is stored, the gate and narrowing run, and the next movement shows', async () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    press(tree, 'I tried it');
+    await press(tree, 'I tried it');
     expect(textOf(tree.root)).toContain('What did you feel?');
-    press(tree, 'No pain');
+    await press(tree, 'No pain');
     const s = useSession.getState();
     expect(s.movementResults).toEqual([expect.objectContaining({ movementId: 'sideways_raise', state: 'answered', painful: false })]);
     expect(s.narrowingTrail).toHaveLength(5); // 4 structure answers (seeded) + 1 movement
@@ -134,12 +143,12 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(textOf(tree.root)).toContain('Raise your arm forward');
   });
 
-  it('"Not sure" and "Skip" are stored as unknown, never as "no pain", and also run the narrowing', () => {
+  it('"Not sure" and "Skip" are stored as unknown, never as "no pain", and also run the narrowing', async () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    press(tree, 'I tried it');
-    press(tree, 'Not sure');
-    press(tree, 'Skip'); // second movement, skipped without trying
+    await press(tree, 'I tried it');
+    await press(tree, 'Not sure');
+    await press(tree, 'Skip'); // second movement, skipped without trying
     const r = useSession.getState().movementResults;
     expect(r.map((x) => [x.movementId, x.state])).toEqual([
       ['sideways_raise', 'unknown'],
@@ -150,30 +159,30 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(useSession.getState().narrowingTrail.slice(4).map((x) => x.answer)).toEqual(['unknown', 'unknown']);
   });
 
-  it('pain, weak and could-not-do-it can be combined and are sent with "Next"', () => {
+  it('pain, weak and could-not-do-it can be combined and are sent with "Next"', async () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    press(tree, 'I tried it');
-    press(tree, 'Pain');
-    press(tree, 'Weak');
-    press(tree, 'Next');
+    await press(tree, 'I tried it');
+    await press(tree, 'Pain');
+    await press(tree, 'Weak');
+    await press(tree, 'Next');
     expect(useSession.getState().movementResults[0]).toMatchObject({ painful: true, weak: true, unableToDo: false, state: 'answered' });
   });
 
-  it('stops early with "Thanks, that\'s enough to go on" and offers the result', () => {
+  it('stops early with "Thanks, that\'s enough to go on" and offers the result', async () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    const move = (chips: string[]) => {
-      press(tree, 'I tried it');
-      chips.forEach((c) => press(tree, c));
-      if (chips.length && chips[0] !== 'No pain' && chips[0] !== 'Not sure') press(tree, 'Next');
+    const move = async (chips: string[]) => {
+      await press(tree, 'I tried it');
+      for (const c of chips) await press(tree, c);
+      if (chips.length && chips[0] !== 'No pain' && chips[0] !== 'Not sure') await press(tree, 'Next');
     };
-    move(['Pain']); // sideways raise: deltoid and supraspinatus
+    await move(['Pain']); // sideways raise: deltoid and supraspinatus
     expect(useSession.getState().liveState?.provisional).toBe(true);
     expect(useSession.getState().liveState?.candidates.length).toBeGreaterThan(0); // highlighted after the first movement, not at the end
     expect(textOf(tree.root)).toContain('Possible so far');
-    press(tree, 'Skip'); // forward raise skipped
-    move(['Pain']); // can position: supraspinatus
+    await press(tree, 'Skip'); // forward raise skipped
+    await move(['Pain']); // can position: supraspinatus
     const state = useSession.getState().liveState!;
     expect(state.status).toBe('enough');
     expect(textOf(tree.root)).toContain("Thanks, that's enough to go on");
@@ -182,25 +191,25 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(button(tree, 'I tried it')).toBeUndefined();
   });
 
-  it('the stage is paused (hand at rest) on question steps and tints the current candidates', () => {
+  it('the stage is paused (hand at rest) on question steps and tints the current candidates', async () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
     const last = () => mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { paused: boolean; highlightIds: string[] };
     expect(last().paused).toBe(true);
     expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
-    passStructure(tree);
+    await passStructure(tree);
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
-    press(tree, 'Yes');
-    press(tree, 'Yes'); // Q_DQ_ROTATE_OUT
+    await press(tree, 'Yes');
+    await press(tree, 'Yes'); // Q_DQ_ROTATE_OUT
     expect(last().highlightIds.length).toBeGreaterThan(0);
   });
 
-  it('exact mode asks only questions; "Not sure" and "Skip" are unknown answers with a null value', () => {
+  it('exact mode asks only questions; "Not sure" and "Skip" are unknown answers with a null value', async () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
-    passStructure(tree);
-    press(tree, 'Not sure');
-    press(tree, 'Skip');
+    await passStructure(tree);
+    await press(tree, 'Not sure');
+    await press(tree, 'Skip');
     const a = useSession.getState().answers.filter((x) => x.questionId.startsWith('Q_DQ_'));
     expect(a).toEqual([
       expect.objectContaining({ questionId: 'Q_DQ_OVERHEAD', state: 'unknown', value: null }),
@@ -209,13 +218,13 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(useSession.getState().movementResults).toEqual([]);
   });
 
-  it('a red flag stops the flow and goes to the doctor path as the existing code does', () => {
+  it('a red flag stops the flow and goes to the doctor path as the existing code does', async () => {
     const replace = jest.spyOn(router.router, 'replace');
     useSession.setState({ runGate: jest.fn(() => 'RED_FLAG' as const) });
     const tree = render(createElement(LiveScreen));
     narrowSpy.mockClear(); // the first screen already seeded the candidates; an answer under a red flag must not narrow
-    press(tree, 'I tried it');
-    press(tree, 'No pain');
+    await press(tree, 'I tried it');
+    await press(tree, 'No pain');
     expect(replace).toHaveBeenCalledWith('/report/urgent');
     expect(narrowSpy).not.toHaveBeenCalled();
     replace.mockRestore();

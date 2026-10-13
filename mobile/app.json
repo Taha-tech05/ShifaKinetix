@@ -23,7 +23,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-asset"
+      "expo-asset",
+      "expo-sqlite"
     ],
     "scheme": "shifakinetix"
   }

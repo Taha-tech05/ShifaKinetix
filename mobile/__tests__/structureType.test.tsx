@@ -1,3 +1,9 @@
+// These are narrowing/UI unit tests with an injected gate; see safetyIntegration.test.tsx for the real gate.
+jest.mock('../src/gate/sessionEvaluator', () => ({
+  evaluateStoredSessionGate: (answers: unknown[]) => jest.requireActual('../src/gate/stub').evaluateStub(answers),
+}));
+jest.mock('../src/flow/SafeGuard', () => ({ SafeGuard: jest.requireActual('./support/narrowingGateFixture').FixtureSafeGuard }));
+jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), ...jest.requireActual('./support/safetyCheckpoint').savedSafetySession() }));
 import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
@@ -7,7 +13,7 @@ import LiveScreen from '../src/app/report/movement';
 import Result from '../src/app/report/result';
 import { narrow } from '../src/dev/narrowingStub';
 import type { NarrowingInput } from '../src/dev/narrowingStub';
-import { evaluate } from '../src/gate/evaluate';
+import { evaluateSessionGate as evaluate } from '../src/gate/sessionAdapter';
 import { Q_BONE_TENDER_AFTER_TRAUMA, Q_NUMB_OR_WEAK, Q_ONSET_SUDDEN_TRAUMA, structuredGateInputs } from '../src/flow/gateInputs';
 import { firstMuscleStep, liveSteps, nextStepIndex, submitMovement, submitQuestion, totalSteps } from '../src/flow/live';
 import { en } from '../src/i18n/en';
@@ -67,17 +73,20 @@ const textOf = (root: ReactTestInstance): string => {
   walk(root);
   return out.join(' | ');
 };
+const rendered: ReturnType<typeof create>[] = [];
+afterEach(() => act(() => { for(const tree of rendered.splice(0)) tree.unmount(); }));
 const render = (el: React.ReactElement) => {
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(el);
+    rendered.push(tree);
   });
   return tree;
 };
-const press = (tree: ReturnType<typeof create>, label: string) => {
+const press = async (tree: ReturnType<typeof create>, label: string) => {
   const el = tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === label)[0];
   if (!el) throw new Error(`no button "${label}" in: ${textOf(tree.root)}`);
-  act(() => el.props.onPress());
+  await act(async () => el.props.onPress());
 };
 
 // answers under which each type leads (placeholder table in shared/structure_type_bank_shoulder.json)
@@ -307,25 +316,25 @@ describe('the gate runs on every answer with structured inputs (no rule added)',
     expect(find(structuredGateInputs([], []), Q_NUMB_OR_WEAK)).toBeUndefined();
   });
 
-  it('the real gate accepts them and does not react (no gate rule was added)', () => {
+  it('the real adapter requests focused clarification for broad safety signals', () => {
     const g = structuredGateInputs([how('after_injury'), yes('Q_ST_BONE_POINT'), yes('Q_ST_TINGLE')], [move({ couldNot: true })]);
-    expect(evaluate(g)).toEqual({ verdict: 'SAFE', firedRules: [] });
+    expect(evaluate(g).verdict).toBe('CLARIFY');
   });
 });
 
 describe('screens', () => {
-  it('the live screen never shows the non-muscle card while asking; it offers the result only after every question', () => {
+  it('the live screen never shows the non-muscle card while asking; it offers the result only after every question', async () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
-    press(tree, 'Yes'); // bone point
-    press(tree, 'No'); // passive better: bone now leads, silently
+    await press(tree, 'Yes'); // bone point
+    await press(tree, 'No'); // passive better: bone now leads, silently
     let all = textOf(tree.root);
     expect(useSession.getState().liveState?.structure.leader).toBe('BONE');
     expect(all).not.toContain('may not be a muscle problem');
     expect(all).not.toContain('Talk to a doctor or physio');
     expect(all).not.toContain('See result');
     expect(all).toContain('Possible so far');
-    for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) press(tree, 'Not sure');
+    for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) await press(tree, 'Not sure');
     all = textOf(tree.root);
     expect(useSession.getState().liveState?.categoryResult).toBe('BONE');
     expect(all).toContain('See result');

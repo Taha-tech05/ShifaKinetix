@@ -1,0 +1,6256 @@
+{
+  "schemaVersion": 2,
+  "label": "draft, awaiting clinician review",
+  "note": "Synthetic engineering fixtures for live app signals under the focused follow-up policy, not patient data or clinical validation. Inputs are raw: both platforms derive safety signals from the app answers and movement results. Expected verdicts and rule ids are specified independently of both evaluators in scripts/build_app_signal_cases.py. Follow-up mappings are conservative draft policy awaiting clinician review. Danger cases first.",
+  "cases": [
+    {
+      "caseId": "confirmed_danger_with_weak_movement",
+      "description": "A confirmed canonical danger outranks pending follow-ups, which are still listed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_chest",
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "confirmed_yes_survives_app_uncertainty",
+      "description": "App uncertainty never replaces a reported canonical 'yes'",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_injury",
+        "U_sudden"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unable_movement_with_canonical_yes",
+      "description": "Raw inability plus a canonical 'unable = yes' stops under the unchanged rule",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_unable"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "followup_answered_yes",
+      "description": "A focused follow-up answered 'yes' stops under the unchanged sourced rule",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "after_injury",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [
+        "injury"
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_injury"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "weakness_followup_answered_yes",
+      "description": "Weak movement, then 'numb = yes' at the follow-up, stops under the unchanged rule",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable",
+        "numb",
+        "tingling"
+      ],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "redness_with_infection_risk",
+      "description": "Redness with a confirmed infection risk fires the existing combination rule",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "R_local_infection_risk"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "alias_wrong_type",
+      "description": "An app safety signal with the wrong type fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_UNABLE_TO_MOVE_ARM",
+          "type": "choice",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "alias_string_boolean",
+      "description": "An app safety signal with a string instead of a boolean fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_NUMB",
+          "type": "yesno",
+          "value": "true",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "alias_unknown_with_value",
+      "description": "An app safety signal marked unknown but carrying a value fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_TINGLE",
+          "type": "yesno",
+          "value": false,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "alias_bad_state",
+      "description": "An app safety signal with an unrecognised state fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_NUMB_OR_WEAK",
+          "type": "yesno",
+          "value": false,
+          "state": "done"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unmapped_danger_question",
+      "description": "An unmapped Q_DANGER_ input fails closed instead of disappearing",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_DANGER_NEW",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unmapped_flagged_answer",
+      "description": "An unmapped flagged answer fails closed instead of disappearing",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_SOMETHING_NEW",
+          "type": "yesno",
+          "value": true,
+          "state": "answered",
+          "flagged": true
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_unrecognised_value",
+      "description": "An unrecognised basics answer fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "gradually",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_bad_state",
+      "description": "A basics answer with an unrecognised state fails closed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "slowly",
+          "state": "done"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "invalid_canonical_among_app_answers",
+      "description": "A malformed canonical answer fails closed even with valid app answers",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": "false",
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_NUMB",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "RED_FLAG",
+      "expectedRuleIds": [
+        "INPUT_INVALID"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "raw_unable_movement",
+      "description": "Raw unableToDo with canonical negatives asks the 'unable' follow-up; it is not SAFE",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "raw_weak_movement",
+      "description": "Raw weakness with canonical negatives asks the unable, tingling and numb follow-ups",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "raw_unable_and_weak_movement",
+      "description": "Raw inability and weakness together ask the same three follow-ups",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": true,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "raw_unknown_movement",
+      "description": "A movement answered 'not sure' asks the unable, tingling and numb follow-ups",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "unknown"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "raw_skipped_among_done",
+      "description": "One unfinished movement among completed ones still asks the follow-ups",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        },
+        {
+          "movementId": "belly_press",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "skipped"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "derived_negative_never_clears_missing",
+      "description": "A completed movement never stands in for a missing canonical answer",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "M_unable"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "app_unable_signal",
+      "description": "An app-sent inability signal asks the 'unable' follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_UNABLE_TO_MOVE_ARM",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "app_onset_without_basics",
+      "description": "A combined onset signal without its basics answer asks injury and sudden",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ONSET_SUDDEN_TRAUMA",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury",
+        "U_sudden"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_after_injury",
+      "description": "Basics 'after an injury' asks only the injury follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "after_injury",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_suddenly",
+      "description": "Basics 'suddenly' asks only the sudden follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "suddenly",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_sudden"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_unknown",
+      "description": "Basics 'not sure' asks the injury and sudden follow-ups",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury",
+        "U_sudden"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "sensory_numb_yes",
+      "description": "Structure-type numbness asks unable, tingling and numb through the combined signal",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_NUMB",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "sensory_tingle_unknown",
+      "description": "Structure-type tingling 'not sure' asks unable, tingling and numb",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_TINGLE",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bone_point_after_injury",
+      "description": "A sore bone spot with an injury onset asks the injury follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "after_injury",
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_BONE_POINT",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bone_point_without_onset",
+      "description": "A sore bone spot with no onset answer is uncertain and asks the injury follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_BONE_POINT",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "only_app_answers",
+      "description": "App answers alone are not a completed safety screen",
+      "answers": [
+        {
+          "questionId": "Q_ST_NUMB",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_TINGLE",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "M_chest",
+        "M_breathing",
+        "M_injury",
+        "M_unable",
+        "M_shape",
+        "M_swelling",
+        "M_tingling",
+        "M_numb",
+        "M_temperature",
+        "M_sudden",
+        "M_severe",
+        "M_bilateral",
+        "M_fever",
+        "M_systemic",
+        "M_cancer",
+        "M_redness"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "partly_reviewed",
+      "description": "Answered follow-ups are resolved one by one; the unanswered one is still asked",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable",
+        "numb"
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_tingling"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "reviewed_but_not_sure",
+      "description": "A follow-up answered 'not sure' is still uncertain",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable",
+        "numb",
+        "tingling"
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "reviewed_not_sure_after_clarification",
+      "description": "Uncertainty that persists after clarification stays CLARIFY (contract v1.1)",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable",
+        "numb",
+        "tingling"
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "persistent_canonical_uncertainty",
+      "description": "Persistent canonical uncertainty without any app signal stays CLARIFY",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_chest"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "changed_movement_evidence",
+      "description": "A new movement result is new evidence: earlier follow-up answers no longer resolve it",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        },
+        {
+          "movementId": "belly_press",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "staleReview": {
+        "answers": [
+          {
+            "questionId": "chest",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "breathing",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "injury",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "unable",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "shape",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "swelling",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "tingling",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "numb",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "temperature",
+            "type": "choice",
+            "value": "normal",
+            "state": "answered"
+          },
+          {
+            "questionId": "sudden",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "severe",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "bilateral",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "fever",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "systemic",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "cancer",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "redness",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          }
+        ],
+        "movements": [
+          {
+            "movementId": "can_position_hold",
+            "painful": false,
+            "weak": true,
+            "unableToDo": false,
+            "measuredAngle": null,
+            "state": "answered"
+          }
+        ],
+        "ids": [
+          "unable",
+          "numb",
+          "tingling"
+        ]
+      },
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable",
+        "U_tingling",
+        "U_numb"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "changed_signal_evidence",
+      "description": "A different app signal for the same question is new evidence",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "suddenly",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "staleReview": {
+        "answers": [
+          {
+            "questionId": "chest",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "breathing",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "injury",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "unable",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "shape",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "swelling",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "tingling",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "numb",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "temperature",
+            "type": "choice",
+            "value": "normal",
+            "state": "answered"
+          },
+          {
+            "questionId": "sudden",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "severe",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "bilateral",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "fever",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "systemic",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "cancer",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "redness",
+            "type": "yesno",
+            "value": false,
+            "state": "answered"
+          },
+          {
+            "questionId": "Q_BASICS_HOW",
+            "type": "chooseone",
+            "value": null,
+            "state": "unknown"
+          }
+        ],
+        "movements": [],
+        "ids": [
+          "injury",
+          "sudden"
+        ]
+      },
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_sudden"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "corrected_basics_keeps_other_review",
+      "description": "Correcting the basics answer leaves an unrelated resolved follow-up resolved",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "after_injury",
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable"
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_injury"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "untrusted_review_record",
+      "description": "A review record with an arbitrary value resolves nothing",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_SAFETY_REVIEW_unable",
+          "type": "safety-review",
+          "state": "answered",
+          "value": "reviewed"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_unable"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "redness_without_infection_risk",
+      "description": "Redness makes infection risk required (contract v1.2)",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "M_infection_risk"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "redness_with_unknown_infection_risk",
+      "description": "Redness with 'not sure' about infection risk is not SAFE (contract v1.2)",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "CLARIFY",
+      "expectedRuleIds": [
+        "U_infection_risk"
+      ],
+      "mustNotBe": "SAFE",
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "painful_movements_only",
+      "description": "Completed painful movements are narrowing input, not safety signals",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": true,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        },
+        {
+          "movementId": "can_position_hold",
+          "painful": true,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "weak_movement_followups_answered_no",
+      "description": "Weakness with all three follow-ups answered 'no' for this evidence clears",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "can_position_hold",
+          "painful": false,
+          "weak": true,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable",
+        "numb",
+        "tingling"
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unable_movement_followup_answered_no",
+      "description": "One failed movement with 'unable = no' confirmed at the follow-up clears",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": true,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [
+        "unable"
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "basics_after_injury_followup_answered_no",
+      "description": "Basics 'after an injury' with 'injury = no' confirmed at the follow-up clears",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "after_injury",
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [
+        "injury"
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "redundant_onset_with_basics",
+      "description": "A combined onset signal is ignored when the specific basics answer is present",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "slowly",
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ONSET_SUDDEN_TRAUMA",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "sensory_both_no",
+      "description": "Structure-type numbness and tingling both 'no' raise no follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_NUMB",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_TINGLE",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [
+        {
+          "movementId": "sideways_raise",
+          "painful": false,
+          "weak": false,
+          "unableToDo": false,
+          "measuredAngle": null,
+          "state": "answered"
+        }
+      ],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "bone_point_with_slow_onset",
+      "description": "A sore bone spot with a slow onset raises no follow-up",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "slowly",
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_ST_BONE_POINT",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "ordinary_answers_ignored",
+      "description": "Ordinary app answers are not gate inputs",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_BASICS_HOW",
+          "type": "chooseone",
+          "value": "slowly",
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_DQ_OVERHEAD",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "Q_DQ_NIGHT",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "redness_with_no_infection_risk",
+      "description": "Redness with an explicit 'no' to infection risk can clear (contract v1.2)",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "no_app_answers",
+      "description": "Canonical all-clear screen with no app answers or movements",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "injury",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "tingling",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "sudden",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "severe",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "bilateral",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "systemic",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "cancer",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        }
+      ],
+      "movements": [],
+      "reviewed": [],
+      "expectedVerdict": "SAFE",
+      "expectedRuleIds": [],
+      "source": "docs/safety-integration.md",
+      "label": "draft, awaiting clinician review"
+    }
+  ]
+}

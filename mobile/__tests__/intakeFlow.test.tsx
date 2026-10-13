@@ -1,3 +1,5 @@
+jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: () => new Promise(() => {}) }));
+import { questions } from '../src/gate/evaluate';
 import { act, create } from 'react-test-renderer';
 import type { ReactTestInstance } from 'react-test-renderer';
 import { isCluster, narrow, unknownCount } from '../src/dev/narrowingStub';
@@ -112,16 +114,18 @@ describe('movements and narrowing are unreachable unless the verdict is SAFE', (
     act(() => useSession.setState({ gateVerdict: 'CLARIFY', reaskDone: true }));
     expect(redirects(render())).toEqual(['/report/unclear']);
     act(() => useSession.setState({ gateVerdict: 'SAFE' }));
-    expect(redirects(render())).toEqual([]);
+    const pending = render();
+    expect(redirects(pending)).toEqual([]);
+    expect(JSON.stringify(pending.toJSON())).not.toContain('protected content');
   });
 });
 
-describe('red-flag questions and the gate stub', () => {
-  it('uses the placeholder questions from shared/questions_shoulder.json', () => {
+describe('sourced red-flag questions and the real gate', () => {
+  it('uses the sourced questions from shared/questions_shoulder.json', () => {
     const qs = dangerQuestions();
     expect(qs.length).toBeGreaterThanOrEqual(3);
     expect(qs.some((q) => q.isKeyDangerQuestion)).toBe(true);
-    for (const q of qs) expect(q.source).toMatch(/PLACEHOLDER/);
+    for (const q of qs) expect(q.source).toMatch(/^https:\/\//);
   });
 
   it('a "yes" to a key danger question is RED_FLAG', () => {
@@ -139,15 +143,14 @@ describe('red-flag questions and the gate stub', () => {
     expect(unknownDangerQuestions(useSession.getState().answers).map((q) => q.questionId)).toEqual([a.questionId]);
   });
 
-  it('answering "no" in the re-ask can end SAFE; answering "not sure" again stays CLARIFY', () => {
+  it('resolved clarification can be SAFE; repeated uncertainty requires review', () => {
     const s = useSession.getState();
-    const keys = dangerQuestions().filter((q) => q.isKeyDangerQuestion);
-    for (const q of keys) s.recordAnswer(unknown(q));
-    expect(useSession.getState().runGate()).toBe('CLARIFY');
-    for (const q of keys) s.recordAnswer(unknown(q));
-    expect(useSession.getState().runGate()).toBe('CLARIFY');
-    for (const q of keys) s.recordAnswer(answered(q, false));
-    expect(useSession.getState().runGate()).toBe('SAFE');
+    for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:null,state:'unknown'});
+    expect(s.runGate()).toBe('CLARIFY');
+    for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:null,state:'unknown',clarificationAttempted:true});
+    expect(s.runGate()).toBe('CLARIFY');
+    for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:q.type==='choice'?'normal':false,state:'answered',clarificationAttempted:true});
+    expect(s.runGate()).toBe('SAFE');
   });
 });
 

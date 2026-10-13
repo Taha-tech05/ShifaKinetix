@@ -1,5 +1,6 @@
 import { evaluateStub } from '../src/gate/stub';
 import { useSession } from '../src/store/session';
+import { evaluate, questions } from '../src/gate/evaluate';
 import type { Answer } from '../src/gate/evaluate';
 
 const yes = (id: string, flagged = false): Answer & { flagged?: boolean } => ({
@@ -10,6 +11,9 @@ const yes = (id: string, flagged = false): Answer & { flagged?: boolean } => ({
   ...(flagged ? { flagged } : {}),
 });
 
+const seedSafe = () => questions.filter(q => q.required).forEach(q => useSession.getState().recordAnswer({
+  questionId:q.questionId,type:q.type,state:'answered',value:q.type==='choice'?'normal':false
+}));
 beforeEach(() => useSession.getState().reset());
 
 describe('session store', () => {
@@ -67,20 +71,21 @@ describe('session store', () => {
     expect(movementResults[0].painful).toBe(true);
   });
 
-  it('gate verdict is SAFE when no answer is flagged', () => {
+  it('complete negative safety answers are required for SAFE', () => {
+    seedSafe();
     useSession.getState().recordAnswer(yes('Q1'));
     expect(useSession.getState().runGate()).toBe('SAFE');
     expect(useSession.getState().gateVerdict).toBe('SAFE');
   });
 
   it('gate verdict is RED_FLAG for a flagged yes', () => {
-    useSession.getState().recordAnswer(yes('Q_DANGER_A', true));
+    useSession.getState().recordAnswer(yes('chest', true));
     expect(useSession.getState().runGate()).toBe('RED_FLAG');
   });
 
   it('flagged Not sure is never SAFE', () => {
     useSession.getState().recordAnswer({
-      questionId: 'Q_DANGER_A',
+      questionId: 'chest',
       type: 'yesno',
       value: null,
       state: 'unknown',
@@ -91,14 +96,15 @@ describe('session store', () => {
 
   it('keeps the complete { verdict, firedRules } and keeps gateVerdict equal to its verdict', () => {
     expect(useSession.getState().gateOutput).toBeNull();
-    useSession.getState().recordAnswer(yes('Q_DANGER_A', true));
+    useSession.getState().recordAnswer(yes('chest', true));
     useSession.getState().runGate();
     const s = useSession.getState();
-    expect(s.gateOutput).toEqual({ verdict: 'RED_FLAG', firedRules: [{ ruleId: 'STUB_FLAGGED', matchedAnswers: ['Q_DANGER_A'], source: 'stub' }] });
+    expect(s.gateOutput).toEqual(evaluate(s.answers));
     expect(s.gateVerdict).toBe(s.gateOutput!.verdict);
   });
 
   it('a SAFE result is not valid after an answer or a movement changes: the gate has to run again', () => {
+    seedSafe();
     const s = useSession.getState();
     s.recordAnswer(yes('Q1'));
     expect(s.runGate()).toBe('SAFE');
@@ -116,9 +122,9 @@ describe('session store', () => {
 
   it('a non-SAFE result stays until the gate runs again (the re-ask screen depends on it)', () => {
     const s = useSession.getState();
-    s.recordAnswer({ questionId: 'Q_DANGER_A', type: 'yesno', value: null, state: 'unknown', flagged: true } as Answer);
+    s.recordAnswer({ questionId: 'chest', type: 'yesno', value: null, state: 'unknown', flagged: true } as Answer);
     expect(s.runGate()).toBe('CLARIFY');
-    s.recordAnswer(yes('Q_DANGER_A', true));
+    s.recordAnswer(yes('chest', true));
     expect(useSession.getState().gateVerdict).toBe('CLARIFY');
     expect(s.runGate()).toBe('RED_FLAG');
   });

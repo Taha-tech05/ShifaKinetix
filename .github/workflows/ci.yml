@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, feature/A-gate, feature/C-server]
   push:
     branches: [develop]
 
@@ -24,6 +24,32 @@ jobs:
       - run: npm run lint
       - run: npm test -- --ci
 
+  offline-storage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      # Node 22 supplies the real SQLite test engine; app/gate jobs retain Node 20.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - run: npm run test:storage
+      - uses: actions/setup-python@v5
+        if: hashFiles('server/app/api.py') != ''
+        with:
+          python-version: "3.11"
+      - name: Install server for mobile sync integration
+        if: hashFiles('server/app/api.py') != ''
+        run: pip install -r ../server/requirements.txt
+      - name: Verify mobile SQLite upload and doctor access against real API
+        if: hashFiles('server/app/api.py') != ''
+        run: python ../scripts/check_mobile_sync.py
+
   server:
     runs-on: ubuntu-latest
     defaults:
@@ -39,6 +65,39 @@ jobs:
       - run: pip install -r requirements.txt
       - run: ruff check .
       - run: pytest -q
+      - name: Verify reviewed API safety boundaries
+        if: hashFiles('server/app/api.py') != ''
+        run: python -m pytest -q ../scripts/review_pr8_boundaries.py
+
+  # Runs the API tests against real PostgreSQL, including the append-only triggers.
+  server-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: server
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: server/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: pytest -q tests/test_api.py
 
   gate-parity:
     runs-on: ubuntu-latest
@@ -66,3 +125,9 @@ jobs:
       - name: Server gate tests
         working-directory: server
         run: pytest -q tests/test_gate.py
+      - name: Compare complete Python and TypeScript gate outputs
+        if: success() || failure()
+        run: python scripts/check_gate_parity.py
+      - name: Compare Python and TypeScript handling of live app signals
+        if: success() || failure()
+        run: python scripts/check_app_signal_parity.py

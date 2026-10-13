@@ -11,12 +11,18 @@ Demo only, not for real patients.
 
 `state` is `unknown` when the user says "not sure". An unknown answer to a key danger question must never produce `SAFE`.
 
+Shoulder v1 adds optional `clarificationAttempted: boolean`. Unknown values are
+always null; answered yes/no values are booleans. See
+[`docs/gate-contract.md`](../docs/gate-contract.md) for exact typing, completeness,
+uncertainty, validation and rule semantics. This v1 contract replaces the
+placeholder equality-rule format and needs C's Python implementation.
+
 ## 2. Gate output
 
 ```json
 {
   "verdict": "RED_FLAG | SAFE | CLARIFY",
-  "firedRules": [ { "ruleId": "string", "matchedAnswers": ["questionId"], "source": "string" } ]
+  "firedRules": [ { "ruleId": "string", "matchedAnswers": ["questionId"], "source": "string", "reason": "string" } ]
 }
 ```
 

@@ -7,6 +7,7 @@ const host = (name: string) => (props: { children?: ReactNode } & Record<string,
 
 export const View = host('View');
 export const Text = host('Text');
+export const TextInput = host('TextInput');
 export const Pressable = host('Pressable');
 export const ScrollView = host('ScrollView');
 export const Modal = host('Modal');

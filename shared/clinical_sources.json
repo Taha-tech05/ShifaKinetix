@@ -1,0 +1,42 @@
+{
+  "label": "draft, awaiting clinician review",
+  "checkedOn": "2026-10-10",
+  "sources": [
+    {
+      "url": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "title": "NHS: Shoulder pain",
+      "use": "Shoulder warning symptoms; context wording adapted.",
+      "limitation": "Not a validated questionnaire. Numeric input bounds are software choices."
+    },
+    {
+      "url": "https://www.nhs.uk/conditions/heart-attack/",
+      "title": "NHS: Heart attack",
+      "use": "Chest symptoms and breathing difficulty.",
+      "limitation": "Referral only; does not establish a diagnosis."
+    },
+    {
+      "url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "title": "Leicestershire Partnership NHS Trust: Shoulder pain",
+      "use": "Systemic symptoms and relevant history.",
+      "limitation": "UK referral wording must be localized by clinician; no UK phone numbers embedded."
+    },
+    {
+      "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+      "title": "StatPearls: Septic Arthritis",
+      "use": "Clinical features and risk factors.",
+      "limitation": "No source text copied; no diagnostic or treatment recommendations."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32438853/",
+      "title": "Finucane et al. (2020), doi:10.2519/jospt.2020.9971",
+      "use": "Background only: serious spinal pathology red-flag framework.",
+      "limitation": "Not shoulder validation; no shoulder rule attributed to this paper."
+    },
+    {
+      "url": "https://cks.nice.org.uk/topics/shoulder-pain/diagnosis/red-flags/",
+      "title": "NICE CKS: Shoulder pain red flags",
+      "use": "Pending verification; not used for rules.",
+      "limitation": "Inaccessible during source checking."
+    }
+  ]
+}

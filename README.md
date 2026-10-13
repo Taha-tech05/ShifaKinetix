@@ -23,6 +23,17 @@ ShifaKinetix is a final-year project: a mobile musculoskeletal-pain care app. A 
 | `shared/` | Formats, gate rules, questions and test cases used by both sides |
 | `docs/` | Project documentation |
 
+## Person A shoulder safety demo
+
+The feature branch adds sourced draft questions, a conservative TypeScript
+gate, offline SQLite storage, question screens and a doctor report integration
+component. See [run and integration instructions](docs/person-a-handoff.md),
+[verification evidence](docs/person-a-verification.md), and the
+[clinician review brief](docs/clinician-shoulder-summary.md).
+
+The Python gate, authenticated doctor API and full mobile-shell integration
+remain team dependencies. Do not merge while gate parity fails.
+
 ## How to contribute
 
 - Branch naming: `feature/<person>-<task>` (for example `feature/zaid-gate-rules`).
