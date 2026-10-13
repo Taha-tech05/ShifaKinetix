@@ -4,6 +4,19 @@ Draft, awaiting clinician review. Demo only, not for real patients.
 
 ## Current PR decision
 
+PR9, PR8 and PR2 are now merged. Verified develop commit:
+`e2d9471934a1730cf77496c0302e18d6ed5ad95e` (2026-10-13).
+The post-merge develop CI run passed:
+https://github.com/Taha-tech05/ShifaKinetix/actions/runs/38360506257
+
+Zaid's local develop is updated and current work continues on
+`feature/A-device-testing`. Android + Expo Go is the selected initial test path;
+Expo Go installation and physical-phone acceptance are pending. See
+[device-test-record.md](device-test-record.md). The earlier PR review record below
+is retained as history; there is no longer a PR9/PR8/PR2 merge blocker.
+
+### Earlier review record
+
 The three reproduced PR8 boundary issues are now fixed in [PR9](https://github.com/Taha-tech05/ShifaKinetix/pull/9),
 branch feature/A-pr8-safety-fixes, head c188c40. User authorized implementing the
 fixes and notifying Saud. A notification with the ready patch was posted on PR8.
@@ -77,7 +90,7 @@ records remain preserved but cannot yet sync across content versions.
   export passes; this does not constitute installed-device testing.
 - Isolated PR8 with corrected fixtures: 2471 existing server tests pass; Ruff
   passes; 47 canonical and 51 app-signal full-output parity cases pass.
-- The four boundary regressions pass on PR9; merge the reviewed fix before PR8.
+- The four boundary regressions pass and the reviewed fixes are now merged.
 - Local Python 3.12 / Node 22.16. CI uses Python 3.11 / Node 20, and Node 22 for
   SQLite. PR9's PostgreSQL CI passed; new mobile sync ran locally against SQLite.
   Installed-phone behavior remains unverified. The CI offline-storage job also
@@ -85,8 +98,7 @@ records remain preserved but cannot yet sync across content versions.
 
 ## Remaining work by owner
 
-1. Saud: review/merge the completed fix PR9, check updated PR8 CI, and obtain
-   results including PostgreSQL. The fixes no longer need reimplementation.
+1. PR9/PR8/PR2 review and merge are complete, including green post-merge CI.
 2. Saud: supply the demo API URL and patient/doctor sign-in provisioning, then
    run the completed mobile sync against that deployment. Ordered transport,
    authenticated client and local end-to-end tests are implemented. Legacy
