@@ -14,6 +14,7 @@ import { pendingSafetyFollowups, safetyAnswersFrom } from './sessionAdapter';
 import { questionHelp } from './questionHelp';
 import { openSafetySession } from './safetySession';
 import { withMovementUncertainty } from './sessionEvaluator';
+import { AssessmentSync } from './AssessmentSync';
 
 export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) {
   const { review } = useLocalSearchParams<{ review?: string }>();
@@ -84,6 +85,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
   const numeric = input.trim() && /^\d+(\.\d+)?$/.test(input.trim()) ? Number(input) : NaN;
   const validNumber = question && isValidAnswer({ questionId: question.questionId, type: question.type, value: numeric, state: 'answered' });
   return <Screen>
+    <AssessmentSync />
     <AppText variant="secondary" color={colors.caution}>draft, awaiting clinician review</AppText>
     {error ? <View><AppText accessibilityRole="alert" color={colors.danger}>{error}</AppText>
       <Button label="Retry" disabled={busy} onPress={() => { void perform(load); }} /></View> : null}

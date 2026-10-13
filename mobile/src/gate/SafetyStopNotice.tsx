@@ -5,6 +5,7 @@ import { useSession } from '../store/session';
 import { router } from 'expo-router';
 import { Button } from '../components/Button';
 import { questions } from './evaluate';
+import { AssessmentSync } from './AssessmentSync';
 
 /** Checkpoint a live-flow stop as soon as its route opens; this never grants clearance. */
 export function SafetyStopNotice() {
@@ -24,6 +25,7 @@ export function SafetyStopNotice() {
     return () => { active = false; };
   }, []);
   return <>
+    <AssessmentSync />
     <AppText variant="secondary">draft, awaiting clinician review</AppText>
     {output?.verdict === 'CLARIFY' && <AppText>We could not establish safety from these answers. This is uncertainty, not a diagnosis or a confirmed danger sign. Movement checks remain paused.</AppText>}
     {onsetStop && <>

@@ -1,4 +1,5 @@
 import { GateOutput } from '../gate/evaluate';
+import { validDoctorReport } from './validation';
 
 export interface DoctorReport {
   audience: 'doctor';
@@ -17,7 +18,7 @@ export interface DoctorReportAccess {
 export async function authorizedReport(access: DoctorReportAccess): Promise<DoctorReport> {
   if (access.role !== 'doctor') throw new Error('Doctor access required.');
   const report = await access.load();
-  if (report.audience !== 'doctor' || report.label !== 'draft, awaiting clinician review') {
+  if (!validDoctorReport(report)) {
     throw new Error('Unexpected report audience or review status.');
   }
   return report;

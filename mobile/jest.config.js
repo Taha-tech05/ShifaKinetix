@@ -10,6 +10,7 @@ module.exports = {
     // three is ES-modules only: load its module build and turn it into CommonJS (see transform below)
     '^three$': '<rootDir>/node_modules/three/build/three.module.js',
     '^react-native$': '<rootDir>/__tests__/support/react-native.tsx',
+    '^react-native-safe-area-context$': '<rootDir>/__tests__/support/safe-area.tsx',
     '^@expo/vector-icons$': '<rootDir>/__tests__/support/vector-icons.tsx',
     '^expo-linear-gradient$': '<rootDir>/__tests__/support/linear-gradient.tsx',
     '^expo-router$': '<rootDir>/__tests__/support/expo-router.tsx',

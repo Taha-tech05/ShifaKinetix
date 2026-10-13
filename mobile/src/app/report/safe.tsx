@@ -13,6 +13,7 @@ import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
 import { openSafetySession } from '../../gate/safetySession';
+import { AssessmentSync } from '../../gate/AssessmentSync';
 
 /** SAFE verdict (design P9). Only now can the patient go on to movements (region mode) or follow-up questions (exact mode). */
 export default function Safe() {
@@ -29,7 +30,7 @@ export default function Safe() {
   return (
     <SafeGuard>
       <Screen
-        scroll={false}
+        scroll={true}
         footer={
           <>
             <Button label={t('common.continue')} onPress={() => { void onSafe(); }} />
@@ -37,6 +38,7 @@ export default function Safe() {
           </>
         }
       >
+        <AssessmentSync />
         <View style={styles.center}>
           <View style={styles.halo}>
             <Ionicons name="checkmark-circle" size={96} color={colors.teal} />
