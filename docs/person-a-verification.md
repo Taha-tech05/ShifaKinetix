@@ -2,6 +2,12 @@
 
 ## PR8 fixes prepared in PR9, 2026-10-13
 
+GitHub CI subsequently passed all five jobs on c188c40: mobile, offline-storage,
+server, gate-parity and server-postgres. Evidence:
+https://github.com/Taha-tech05/ShifaKinetix/actions/runs/38340310738
+Saud's existing PR8 notification was updated with this result. PR9 is ready for
+independent review; no PR was automatically approved or merged.
+
 Head c188c40: 2484 tests pass (2480 server + four boundary regressions), both
 parity scripts pass (47 canonical, 51 app-signal outputs), Ruff passes. Invalid
 canonical events and incomplete movement flags stay blocked; legacy migration

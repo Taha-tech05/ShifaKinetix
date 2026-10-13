@@ -11,6 +11,9 @@ Saud should review/merge PR9 into feature/C-server after CI passes; it updates
 his existing PR8. Then review/merge PR8 into A and check combined PR2. No direct
 push was made to C, develop or main. PR2 remains draft pending integration.
 
+All five PR9 CI jobs passed on c188c40, including server-postgres. Evidence:
+https://github.com/Taha-tech05/ShifaKinetix/actions/runs/38340310738
+
 Local validation of the fix branch: 2484 tests pass (2480 server + 4 review
 regressions), 47 canonical and 51 app-signal complete outputs match, Ruff passes.
 The migration test also verifies that a fresh answer can restore SAFE and that
