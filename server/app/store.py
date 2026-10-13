@@ -16,7 +16,7 @@ from sqlalchemy import Connection, func, insert, select
 
 from app import db
 from app.audit import build_row
-from app.gate import CONTENT_VERSION, QUESTIONS
+from app.gate import CONTENT_VERSION, QUESTIONS, is_valid_answer
 from app.narrowing import MOVEMENTS
 from app.session_gate import (
     CANONICAL_IDS,
@@ -148,9 +148,12 @@ def _app_inputs(context: dict[str, Any]) -> tuple[Any, Any]:
 def gate_inputs(c: Connection, intake_id: str) -> tuple[Any, Any]:
     """(answers, movements) exactly as the session gate needs them."""
     app_answers, movements = _app_inputs(current_context(c, intake_id))
-    if app_answers is None:
+    canonical = current_answers(c, intake_id)
+    # Validate the canonical event boundary before the adapter filters app IDs.
+    # An invalid stored safety ID must not disappear as unrelated app context.
+    if app_answers is None or not isinstance(movements, list) or not all(is_valid_answer(a) for a in canonical):
         return None, movements
-    return current_answers(c, intake_id) + app_answers, movements
+    return canonical + app_answers, movements
 
 
 def reviewed_followups(c: Connection, intake_id: str) -> set[str]:

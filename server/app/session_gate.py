@@ -74,12 +74,24 @@ def _js_truthy(value: Any) -> bool:
     return True
 
 
+def _valid_movement(m: Any) -> bool:
+    if not isinstance(m, dict) or not isinstance(m.get("movementId"), str) or not m["movementId"].strip():
+        return False
+    if not all(isinstance(m.get(key), bool) for key in ("painful", "weak", "unableToDo")):
+        return False
+    angle = m.get("measuredAngle")
+    return angle is None or (
+        isinstance(angle, (int, float)) and not isinstance(angle, bool)
+        and (not isinstance(angle, float) or math.isfinite(angle))
+    )
+
+
 def _well_formed(answers: Any, movements: Any) -> bool:
     return (
         isinstance(answers, list)
         and all(isinstance(a, dict) and isinstance(a.get("questionId"), str) for a in answers)
         and isinstance(movements, list)
-        and all(isinstance(m, dict) for m in movements)
+        and all(_valid_movement(m) for m in movements)
     )
 
 
