@@ -39,6 +39,16 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
       - run: npm ci
       - run: npm run test:storage
+      - uses: actions/setup-python@v5
+        if: hashFiles('server/app/api.py') != ''
+        with:
+          python-version: "3.11"
+      - name: Install server for mobile sync integration
+        if: hashFiles('server/app/api.py') != ''
+        run: pip install -r ../server/requirements.txt
+      - name: Verify mobile SQLite upload and doctor access against real API
+        if: hashFiles('server/app/api.py') != ''
+        run: python ../scripts/check_mobile_sync.py
 
   server:
     runs-on: ubuntu-latest
