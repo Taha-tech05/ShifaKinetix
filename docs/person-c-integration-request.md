@@ -1,5 +1,14 @@
 # Saud: requirements for Person A integration
 
+## Ready fix PR9 ? supersedes the implementation requests below
+
+A implemented the three findings with the user's authorization. Review
+https://github.com/Taha-tech05/ShifaKinetix/pull/9 (base feature/C-server, head
+c188c40) and merge normally after CI passes. All 2484 local tests and both parity
+suites pass. No reimplementation needed. The existing PR8 then receives these
+changes. Ordered offline transport and final narrowing integration remain open.
+
+
 ## Latest review action ? PR8 f6c5601
 
 The current review is [pr8-review.md](pr8-review.md); it supersedes the older

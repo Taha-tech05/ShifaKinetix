@@ -1,5 +1,13 @@
 # PR8 and PR7 review — 2026-10-13
 
+**Update:** The findings below describe PR8 f6c5601. They are fixed and locally
+verified in [PR9](https://github.com/Taha-tech05/ShifaKinetix/pull/9), head c188c40:
+2484 tests pass, including all four boundary regressions, and both parity suites
+pass. Saud was notified on PR8 under the user's later authorization. Independent
+review/CI and merging PR9 into C are still required; the historical results and
+original no-message statement below describe the earlier review turn only.
+
+
 Draft, awaiting clinician review. Synthetic engineering tests only.
 
 ## Reviewed revisions

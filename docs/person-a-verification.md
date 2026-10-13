@@ -1,5 +1,16 @@
 # Person A verification — 2026-10-10
 
+## PR8 fixes prepared in PR9, 2026-10-13
+
+Head c188c40: 2484 tests pass (2480 server + four boundary regressions), both
+parity scripts pass (47 canonical, 51 app-signal outputs), Ruff passes. Invalid
+canonical events and incomplete movement flags stay blocked; legacy migration
+requires a fresh follow-up rather than reviving an old negative. Recovery and
+repeat-startup behavior are tested. Local SQLite/Python 3.12/Node 22.16.
+GitHub CI and PostgreSQL are separate checks. No new device test is claimed.
+PR9 targets Saud's branch and must be independently reviewed before merging.
+
+
 ## Independent PR8 review, 2026-10-13
 
 Reviewed f6c5601 in an isolated checkout. Both parity scripts pass (47 canonical,

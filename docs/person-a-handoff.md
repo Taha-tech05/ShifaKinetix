@@ -4,27 +4,23 @@ Draft, awaiting clinician review. Demo only, not for real patients.
 
 ## Current PR decision
 
-PR2 stays draft. PR8 at f6c5601 is reviewed but must not merge yet. PR7 remains
-merged at 52a5486; no newer PR7 revision was found. Full evidence and runnable
-regressions: [pr8-review.md](pr8-review.md).
+The three reproduced PR8 boundary issues are now fixed in [PR9](https://github.com/Taha-tech05/ShifaKinetix/pull/9),
+branch feature/A-pr8-safety-fixes, head c188c40. User authorized implementing the
+fixes and notifying Saud. A notification with the ready patch was posted on PR8.
+Saud should review/merge PR9 into feature/C-server after CI passes; it updates
+his existing PR8. Then review/merge PR8 into A and check combined PR2. No direct
+push was made to C, develop or main. PR2 remains draft pending integration.
 
-Saud now implements v1.2 / shoulder-2: independently verified 47 canonical and
-51 app-signal outputs match. His raw-movement derivation and six movement IDs
-are updated. His written independent engineering review of shared rules exists
-in PR8; clinician review is still pending.
+Local validation of the fix branch: 2484 tests pass (2480 server + 4 review
+regressions), 47 canonical and 51 app-signal complete outputs match, Ruff passes.
+The migration test also verifies that a fresh answer can restore SAFE and that
+restarting does not lose that review. Clinical rules and expected shared outputs
+are unchanged. GitHub CI/PostgreSQL results are separate from local SQLite tests.
 
-A corrected missing source/labels on seven fixtures and restored danger-first
-ordering without changing any inputs or expected gate outputs. With that patch,
-all 2471 existing server tests pass. However, four added API/migration tests
-expose three additional problems: invalid safety IDs disappear, incomplete
-movement flags can grant SAFE, and legacy migration can revive an old negative
-answer. Saud must resolve these in the same PR8. No server code was changed or
-merged into A during this review.
-
-CI now includes PRs targeting feature/A-gate, and the server job checks the new
-boundary regressions once the API exists. Saud must merge the latest A branch
-so PR8 receives the fixture fixes, tests and CI change. Keep independent review
-and normal merge commits; do not push directly to develop/main.
+PR7 remains merged at 52a5486; no newer PR7 revision was found. The historical
+review and exact reproductions remain in [pr8-review.md](pr8-review.md).
+Saud's independent engineering review of shared rules is in PR8. Clinician
+review remains pending.
 
 ## Implemented by Zaid
 
@@ -66,15 +62,15 @@ records remain preserved but cannot yet sync across content versions.
   warnings, no errors).
 - Isolated PR8 with corrected fixtures: 2471 existing server tests pass; Ruff
   passes; 47 canonical and 51 app-signal full-output parity cases pass.
-- Four additional boundary regressions FAIL and are explicit merge blockers.
+- The four boundary regressions pass on PR9; merge the reviewed fix before PR8.
 - Android export previously passed; not repeated for this data/test/CI change.
 - Local Python 3.12 / Node 22.16. CI uses Python 3.11 / Node 20, and Node 22 for
   SQLite. PostgreSQL and installed-phone behavior remain unverified.
 
 ## Remaining work by owner
 
-1. Saud: fix the three reproduced PR8 issues, merge A's latest corrections,
-   rerun existing and review tests, and obtain CI results including PostgreSQL.
+1. Saud: review/merge the completed fix PR9, check updated PR8 CI, and obtain
+   results including PostgreSQL. The fixes no longer need reimplementation.
 2. A + Saud: implement durable ordered context/answer sync and authenticated
    transport. Do not upload the latest snapshot before an old answer backlog:
    server receive order could mistake old negatives for fresh follow-ups.

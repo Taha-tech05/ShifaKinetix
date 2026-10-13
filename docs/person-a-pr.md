@@ -12,7 +12,7 @@ Validation: 426 mobile tests and 15 real SQLite tests pass, along with TypeScrip
 
 **Draft - do not merge yet:**
 - PR8 f6c5601 passes both parity suites (47 canonical, 51 app-signal cases). A's fixture metadata/order corrections remove the eight known test failures; all 2471 existing server tests pass in the isolated combined checkout.
-- Four new API/migration regressions expose three additional issues in C's PR: invalid safety IDs disappear, incomplete movement flags can grant SAFE, and legacy migration can revive an old negative. See docs/pr8-review.md and scripts/review_pr8_boundaries.py. C has not been merged here.
+- The three API/migration findings are fixed in PR9 (head c188c40), targeting C's branch. All 2484 local tests and both parity suites pass there. Review and merge PR9 into C, then verify PR8 before merging it here. Neither C nor its fix branch has been merged into this A branch yet.
 - CI now runs on stacked PRs into feature/A-gate and checks those boundary regressions when the server API exists. No tests were weakened.
 - Ordered context/answer sync, authenticated phone transport, final narrowing mapping, doctor-report integration, full audit, device acceptance and clinician review remain pending. See docs/person-a-handoff.md.
 
