@@ -1,5 +1,13 @@
 # Saud: requirements for Person A integration
 
+> Current update (2026-10-13): ordered mobile context/answer sync, authenticated
+> demo transport, doctor-report loading and live audit/history transport are now
+> implemented and tested locally against the PR9 server (4 real-HTTP scenarios).
+> Older statements below describing these as unimplemented are historical.
+> Remaining: reviewed PR9/PR8 merges, deployment URL/account provisioning,
+> B/C narrowing agreement, phone acceptance and clinician review. Current setup
+> and evidence: [mobile-sync.md](mobile-sync.md) and [person-a-handoff.md](person-a-handoff.md).
+
 ## Ready fix PR9 ? supersedes the implementation requests below
 
 A implemented the three findings with the user's authorization. Review

@@ -30,6 +30,14 @@ handling. Details and limitations: safety-integration.md.
 
 ## Delivery sequence
 
+Current completion update (2026-10-13): A's ordered offline sync, authenticated
+demo transport, server-authorized doctor report and live audit transport are
+implemented. 450 mobile tests, 20 SQLite tests and four local real-API integration
+scenarios pass. Typecheck, lint and Android export pass. See mobile-sync.md and
+person-a-handoff.md for the current state; earlier counts above are historical.
+Remaining acceptance depends on reviewed server merges, deployment/sign-in,
+phone tests, B/C narrowing agreement and clinician review.
+
 1. Document scope, sources, and shared gate contract.
 2. Add sourced shoulder questions and deterministic rules.
 3. Implement the TypeScript evaluator and shared danger-first fixtures.

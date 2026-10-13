@@ -1,5 +1,33 @@
 # Person A verification — 2026-10-10
 
+## Ordered mobile sync and authenticated report, 2026-10-13
+
+Current A implementation: `npm test -- --runInBand --silent`: **450 passed**;
+`npm run test:storage -- --silent`: **20 passed** using real Node SQLite;
+typecheck passes; lint passes with the same 25 existing warnings; Android export
+passes (1856 modules). No shared clinical rules or fixtures changed in this step.
+
+`python scripts/check_mobile_sync.py --server-root .expo/pr8-fix/server`:
+**4 passed**, real mobile coordinator/SQLite, real HTTP client and isolated PR9
+FastAPI/SQLite server at c188c40. Fictional accounts only, loopback only, no LLM.
+The script also works without --server-root after C's API is merged.
+
+- Offline onset follow-up, close/reopen, upload and full gate equality.
+- Old negatives followed by raw weakness remain CLARIFY; fresh follow-ups
+  restore SAFE; changed movement evidence requires review again.
+- Lost response after server commit preserves the local event, then safely
+  retries; repeated uncertainty and confirmed danger suppress differential.
+- Live movement/Back history and narrowing snapshots restore from SQLite and
+  arrive intact in the doctor-only audit; patient report access is denied.
+
+Unit/SQLite/UI additions cover exact acknowledgement validation, failures,
+timeouts, account binding, immutable history, transactional rollback, legacy
+retention, upload concurrency, doctor logout and late report responses.
+
+This is automated local verification, not a hosted-server or physical-phone
+acceptance record. The CI HTTP step is conditional on the real API being present;
+a skipped step is not integration evidence. See mobile-sync.md for manual tests.
+
 ## PR8 fixes prepared in PR9, 2026-10-13
 
 GitHub CI subsequently passed all five jobs on c188c40: mobile, offline-storage,

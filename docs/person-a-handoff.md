@@ -37,6 +37,16 @@ review remains pending.
 - Explicit correction with reevaluation; changed evidence invalidates review.
 - Doctor-report presentation component, clinician summary, review log, panel
   register, source provenance and engineering verification records.
+- Ordered context/answer upload with stable retry keys, verified server
+  acknowledgements, intake/account binding and retained local event history.
+- Authenticated demo API connection and doctor-report loading inside A's
+  safety screens. Tokens remain in memory; the app role picker grants no access.
+- Persistence/upload of live answer history, superseded entries, narrowing
+  snapshots and client gate records. Server independently recomputes its gate.
+
+These additions are tested against the real PR9 server locally. A hosted API
+URL and sign-in setup have **not** been supplied. See [mobile-sync.md](mobile-sync.md)
+for demo setup, exact limitations and the phone acceptance checklist.
 
 Taha's live submit/back checkpoint wiring and protected movement/result bodies
 are already included through PR7. His report/result, report/movement, flow/live,
@@ -59,31 +69,34 @@ records remain preserved but cannot yet sync across content versions.
 
 ## Verification and limits
 
-- Last full mobile run: 426 tests; last real SQLite run: 15 tests, all passing.
-- This review: 71 targeted mobile gate/integrity tests pass, including the new
-  fixture provenance/order regression. TypeScript and full lint pass (25 existing
-  warnings, no errors).
+- Current full mobile run: **450 tests**; real SQLite: **20 tests**, all passing.
+- Real mobile SQLite + HTTP + PR9 API: **4 integration scenarios pass**, including
+  fresh-evidence ordering, lost acknowledgement, restart, live Back history,
+  complete gate outputs and authenticated doctor access.
+- TypeScript and full lint pass (25 existing warnings, no errors). Android Metro
+  export passes; this does not constitute installed-device testing.
 - Isolated PR8 with corrected fixtures: 2471 existing server tests pass; Ruff
   passes; 47 canonical and 51 app-signal full-output parity cases pass.
 - The four boundary regressions pass on PR9; merge the reviewed fix before PR8.
-- Android export previously passed; not repeated for this data/test/CI change.
 - Local Python 3.12 / Node 22.16. CI uses Python 3.11 / Node 20, and Node 22 for
-  SQLite. PostgreSQL and installed-phone behavior remain unverified.
+  SQLite. PR9's PostgreSQL CI passed; new mobile sync ran locally against SQLite.
+  Installed-phone behavior remains unverified. The CI offline-storage job also
+  runs HTTP integration once the real server API is present in the branch.
 
 ## Remaining work by owner
 
 1. Saud: review/merge the completed fix PR9, check updated PR8 CI, and obtain
    results including PostgreSQL. The fixes no longer need reimplementation.
-2. A + Saud: implement durable ordered context/answer sync and authenticated
-   transport. Do not upload the latest snapshot before an old answer backlog:
-   server receive order could mistake old negatives for fresh follow-ups.
-   Agree version-aware handling of shoulder-1 events without silently deleting
-   them. The current local snapshot is not a complete event history.
+2. Saud: supply the demo API URL and patient/doctor sign-in provisioning, then
+   run the completed mobile sync against that deployment. Ordered transport,
+   authenticated client and local end-to-end tests are implemented. Legacy
+   assessments without ordered history, and old content versions, stay on the
+   device and require a new assessment; no unsafe migration or silent deletion.
 3. Taha + Saud: agree one narrowing bank/output and map results to the app's
    side-specific structures. Matching movement IDs alone does not finish this.
-4. A + team: connect the authorized doctor-report response, finish required
-   audit/history transport, and test retry, lost acknowledgement, ownership and
-   patient denial from doctor-only data using the real API.
+4. A + team: confirm the completed doctor-report and audit transport on the
+   deployed server/phone. Local real-API verification passes; production login,
+   automatic background sync and a phone audit-history viewer are not included.
 5. Taha + A: build/test on Android. Cover SAFE, danger, repeated unknown,
    conditional infection risk, new movement signals, failed saves, force-close
    and airplane-mode resume. Record commit, device, build and results.
