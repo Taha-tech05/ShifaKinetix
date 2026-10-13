@@ -124,7 +124,8 @@ test('context write failure cannot grant clearance', async () => {
   db.exec("CREATE TRIGGER fail_context BEFORE INSERT ON intake_context BEGIN SELECT RAISE(ABORT, 'disk full'); END;");
   await expect(session.save(no)).rejects.toThrow('disk full');
   expect(useSession.getState().gateVerdict).toBeNull();
-  expect(await store.answers('integrated')).toHaveLength(1);
+  // Context/evidence and its reviewing answer now roll back atomically.
+  expect(await store.answers('integrated')).toHaveLength(0);
 });
 afterEach(() => { db.close(); rmSync(directory, { recursive: true, force: true }); });
 

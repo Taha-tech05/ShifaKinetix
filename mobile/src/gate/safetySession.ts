@@ -4,12 +4,14 @@ import type { SessionState } from '../store/session';
 import type { IntakeStore } from '../storage/intakeStore';
 import { structuredGateInputs } from '../flow/gateInputs';
 import { withMovementUncertainty } from './sessionEvaluator';
-import { REVIEW_PREFIX, safetyReviewToken } from './sessionAdapter';
+import { evaluateSessionGate, REVIEW_PREFIX, safetyReviewToken } from './sessionAdapter';
 
 const ids = new Set(questions.map((q) => q.questionId));
-type Context = Pick<SessionState, 'mode' | 'selection' | 'answers' | 'movementResults' | 'reaskDone'>;
+type Context = Pick<SessionState, 'mode' | 'selection' | 'answers' | 'movementResults' | 'reaskDone'>
+  & Partial<Pick<SessionState, 'history' | 'narrowingTrail'>>;
 export const safetySnapshot = (s: Context): Context => ({ mode: s.mode, selection: s.selection,
-  answers: s.answers, movementResults: s.movementResults, reaskDone: s.reaskDone });
+  answers: s.answers, movementResults: s.movementResults, reaskDone: s.reaskDone,
+  history: s.history ?? [], narrowingTrail: s.narrowingTrail ?? [] });
 export const safetyFingerprint = (s: Context) => JSON.stringify(safetySnapshot(s));
 const reviewInput = (s: Context) => withMovementUncertainty([
   ...s.answers, ...structuredGateInputs(s.answers, s.movementResults),
@@ -27,6 +29,8 @@ function readContext(value: unknown): Context {
       || typeof s.selection.hitStructure.meshName !== 'string' || typeof s.selection.hitStructure.name !== 'string'
       || !['bone', 'muscle'].includes(s.selection.hitStructure.kind)))
     || typeof s.reaskDone !== 'boolean'
+    || (s.history !== undefined && !Array.isArray(s.history))
+    || (s.narrowingTrail !== undefined && !Array.isArray(s.narrowingTrail))
     || !Array.isArray(s.answers) || !Array.isArray(s.movementResults)
     || !s.answers.every((a) => a && typeof a.questionId === 'string' && typeof a.type === 'string'
       && (a.state === 'answered' || (a.state === 'unknown' && a.value === null)))
@@ -64,7 +68,8 @@ export class SafetySession {
     await this.store.createIntake(id);
     // New intake explicitly discards prior clinical clearance.
     useSession.setState({ answers: s.answers.filter((a) => !ids.has(a.questionId) && !a.questionId.startsWith(REVIEW_PREFIX)),
-      movementResults: [], reaskDone: false, gateOutput: null, gateVerdict: null });
+      movementResults: [], history: [], narrowingTrail: [], liveState: null,
+      reaskDone: false, gateOutput: null, gateVerdict: null });
     this.active = { id, selection: s.selection };
     await this.checkpoint();
   }
@@ -86,22 +91,34 @@ export class SafetySession {
     this.active = { id, selection: saved.selection };
     return this.checkpoint();
   }
-  async save(answer: SafetyAnswer) {
+  save(answer: SafetyAnswer) {
+    return this.serialize(() => this.saveAndConfirm(answer));
+  }
+  private async saveAndConfirm(answer: SafetyAnswer) {
     const id = this.activeId;
     if (!id || !isValidAnswer(answer)) throw new Error('Start or resume a safety intake first.');
     const previous = useSession.getState().answers.find((a) => a.questionId === answer.questionId);
     const next = { ...answer, clarificationAttempted: answer.clarificationAttempted || previous?.clarificationAttempted || false };
-    await this.store.saveAnswer(id, next);
-    if (this.activeId !== id) throw new Error('The intake changed while saving.');
+    const before = safetySnapshot(useSession.getState());
+    const fingerprint = safetyFingerprint(before);
+    try { await this.store.saveAnswer(id, next, before); }
+    catch (error) { useSession.setState({ gateOutput: null, gateVerdict: null }); throw error; }
+    if (this.activeId !== id || safetyFingerprint(useSession.getState()) !== fingerprint) {
+      useSession.setState({ gateOutput: null, gateVerdict: null });
+      throw new Error('The intake changed while saving. Please retry.');
+    }
     useSession.getState().recordAnswer(next);
     const state = useSession.getState();
     const token = safetyReviewToken(reviewInput(state), answer.questionId);
     if (token !== null) state.recordAnswer({ questionId: REVIEW_PREFIX + answer.questionId,
       type: 'safety-review', state: 'answered', value: token });
-    return this.checkpoint();
+    return this.confirm();
   }
   checkpoint() {
-    const pending = this.writes.then(() => this.confirm());
+    return this.serialize(() => this.confirm());
+  }
+  private serialize<T>(work: () => Promise<T>) {
+    const pending = this.writes.then(work);
     this.writes = pending.catch(() => undefined);
     return pending;
   }
@@ -119,7 +136,7 @@ export class SafetySession {
         type: a.type, state: a.state, value: a.value,
         clarificationAttempted: a.clarificationAttempted === true })).sort((a, b) => a.questionId.localeCompare(b.questionId)));
       if (stable(stored) !== stable(inMemory)) throw new Error('Saved answers do not match this assessment.');
-      await this.store.saveContext(id, safetySnapshot(s));
+      await this.store.saveContext(id, safetySnapshot(s), evaluateSessionGate(reviewInput(s)));
       if (this.activeId !== id || safetyFingerprint(useSession.getState()) !== fingerprint) throw new Error('Answers changed. Please retry.');
       useSession.getState().runGate();
       if (useSession.getState().gateVerdict === 'SAFE' && useSession.getState().escalation?.verdict === 'CLARIFY') {

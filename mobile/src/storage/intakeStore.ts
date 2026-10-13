@@ -1,6 +1,7 @@
 import bank from '../../../shared/questions_shoulder.json';
 import rules from '../../../shared/gate_rules.json';
-import { SafetyAnswer as Answer, CONTENT_VERSION, evaluate, isValidAnswer, Question } from '../gate/evaluate';
+import { SafetyAnswer as Answer, CONTENT_VERSION, evaluate, isValidAnswer, Question, GateOutput } from '../gate/evaluate';
+import { SavedContext, uploadContext, UploadContext } from './syncContext';
 
 type Bind = string | number | null;
 export interface SqlConnection {
@@ -19,6 +20,10 @@ export interface SyncEvent {
   contentVersion: string;
   answer: Answer;
 }
+export type OrderedSyncEvent = (SyncEvent & { kind: 'answer' }) | {
+  kind: 'context'; idempotencyKey: string; intakeId: string; contentVersion: string;
+  context: UploadContext & { recordedAt: string };
+};
 
 export class IntakeStore {
   private syncing = false;
@@ -40,7 +45,15 @@ export class IntakeStore {
       CREATE TABLE IF NOT EXISTS intake_content (
         version TEXT PRIMARY KEY, questions_json TEXT NOT NULL, rules_json TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS intake_context (
-        intake_id TEXT PRIMARY KEY, payload TEXT NOT NULL);`);
+        intake_id TEXT PRIMARY KEY, payload TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS intake_sync_state (
+        intake_id TEXT PRIMARY KEY, identity TEXT, last_context TEXT);
+      CREATE TABLE IF NOT EXISTS intake_event_history (
+        id INTEGER PRIMARY KEY, intake_id TEXT NOT NULL, payload TEXT NOT NULL);
+      CREATE TRIGGER IF NOT EXISTS intake_history_no_update BEFORE UPDATE ON intake_event_history
+        BEGIN SELECT RAISE(ABORT, 'intake history is append-only'); END;
+      CREATE TRIGGER IF NOT EXISTS intake_history_no_delete BEFORE DELETE ON intake_event_history
+        BEGIN SELECT RAISE(ABORT, 'intake history is append-only'); END;`);
     // Bundle is the only trusted content source until signed remote updates exist.
     await this.db.runAsync('INSERT OR REPLACE INTO intake_content VALUES (?, ?, ?)',
       CONTENT_VERSION, JSON.stringify(bank), JSON.stringify(rules));
@@ -57,7 +70,12 @@ export class IntakeStore {
 
   async createIntake(id: string) {
     if (!id.trim()) throw new Error('Intake ID is required.');
-    await this.db.runAsync('INSERT INTO intake_sessions (id, content_version) VALUES (?, ?)', id, CONTENT_VERSION);
+    await this.db.withExclusiveTransactionAsync(async (tx) => {
+      await tx.runAsync('INSERT INTO intake_sessions (id, content_version) VALUES (?, ?)', id, CONTENT_VERSION);
+      // Only newly created intakes have a provable ordered history. Do not
+      // invent ordering for old answer-only queues during schema migration.
+      await tx.runAsync('INSERT INTO intake_sync_state (intake_id) VALUES (?)', id);
+    });
     return id;
   }
 
@@ -67,9 +85,36 @@ export class IntakeStore {
     return row?.id ?? null;
   }
 
-  async saveContext(intakeId: string, context: unknown) {
-    await this.checkIntake(this.db, intakeId);
-    await this.db.runAsync('INSERT OR REPLACE INTO intake_context VALUES (?, ?)', intakeId, JSON.stringify(context));
+  async saveContext(intakeId: string, context: SavedContext, gate?: GateOutput) {
+    await this.db.withExclusiveTransactionAsync(async (tx) => {
+      await this.checkIntake(tx, intakeId);
+      await this.writeContext(tx, intakeId, context, gate);
+    });
+  }
+
+  private async writeContext(tx: SqlConnection, id: string, context: SavedContext, gate?: GateOutput) {
+    const snapshot = JSON.stringify(uploadContext(context, gate));
+    const sync = await tx.getFirstAsync<{ last_context: string | null }>(
+      'SELECT last_context FROM intake_sync_state WHERE intake_id = ?', id);
+    await tx.runAsync('INSERT OR REPLACE INTO intake_context VALUES (?, ?)', id, JSON.stringify(context));
+    if (sync && sync.last_context !== snapshot) {
+      await this.enqueue(tx, id,
+        JSON.stringify({ contentVersion: CONTENT_VERSION, kind: 'context',
+          context: { ...JSON.parse(snapshot), recordedAt: new Date().toISOString() } }));
+      await tx.runAsync('UPDATE intake_sync_state SET last_context = ? WHERE intake_id = ?', snapshot, id);
+    }
+  }
+
+  private async enqueue(tx: SqlConnection, id: string, payload: string) {
+    await tx.runAsync('INSERT INTO intake_outbox (intake_id, payload) VALUES (?, ?)', id, payload);
+    const row = await tx.getFirstAsync<{ id: number }>('SELECT last_insert_rowid() AS id');
+    if (!row) throw new Error('Could not record saved event.');
+    await tx.runAsync('INSERT INTO intake_event_history VALUES (?, ?, ?)', row.id, id, payload);
+  }
+
+  async history(intakeId: string) {
+    return this.db.getAllAsync<{ id: number; intake_id: string; payload: string }>(
+      'SELECT * FROM intake_event_history WHERE intake_id = ? ORDER BY id', intakeId);
   }
 
   async context(intakeId: string): Promise<unknown> {
@@ -84,16 +129,18 @@ export class IntakeStore {
     if (row?.content_version !== CONTENT_VERSION) throw new Error('Start a new intake for this safety content version.');
   }
 
-  async saveAnswer(intakeId: string, answer: Answer) {
+  async saveAnswer(intakeId: string, answer: Answer, context?: SavedContext) {
     if (!isValidAnswer(answer)) throw new Error('Invalid answer. Nothing was saved.');
     await this.db.withExclusiveTransactionAsync(async (tx) => {
       await this.checkIntake(tx, intakeId);
+      // Evidence and its reviewing answer are enqueued in the SAME transaction.
+      if (context) await this.writeContext(tx, intakeId, context);
       await tx.runAsync(`INSERT INTO intake_answers VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT(intake_id, question_id) DO UPDATE SET type=excluded.type,
         state=excluded.state, value_json=excluded.value_json, clarified=excluded.clarified`,
       intakeId, answer.questionId, answer.type, answer.state, JSON.stringify(answer.value), answer.clarificationAttempted ? 1 : 0);
-      await tx.runAsync('INSERT INTO intake_outbox (intake_id, payload) VALUES (?, ?)', intakeId,
-        JSON.stringify({ contentVersion: CONTENT_VERSION, answer }));
+      await this.enqueue(tx, intakeId,
+        JSON.stringify({ contentVersion: CONTENT_VERSION, answer, recordedAt: new Date().toISOString() }));
     });
     return this.savedGate(intakeId);
   }
@@ -114,12 +161,44 @@ export class IntakeStore {
     return evaluate(await this.answers(intakeId));
   }
 
-  async pending(): Promise<QueueItem[]> {
-    return this.db.getAllAsync<QueueItem>('SELECT * FROM intake_outbox ORDER BY id');
+  async pending(intakeId?: string): Promise<QueueItem[]> {
+    return intakeId === undefined ? this.db.getAllAsync<QueueItem>('SELECT * FROM intake_outbox ORDER BY id')
+      : this.db.getAllAsync<QueueItem>('SELECT * FROM intake_outbox WHERE intake_id = ? ORDER BY id', intakeId);
   }
 
-  // C supplies an authenticated transport. Resolve only after server acknowledgement.
-  // The server must deduplicate idempotencyKey. Failure preserves the ordered queue.
+  /** One selected intake/account; ordered delivery, stable keys, no silent legacy migration. */
+  async syncOrdered(intakeId: string, identity: string, send: (event: OrderedSyncEvent) => Promise<void>) {
+    if (this.syncing) throw new Error('An upload is already running.');
+    if (!identity.trim()) throw new Error('Sign in before uploading.');
+    this.syncing = true;
+    try {
+      await this.db.withExclusiveTransactionAsync(async (tx) => {
+        await this.checkIntake(tx, intakeId);
+        const sync = await tx.getFirstAsync<{ identity: string | null }>(
+          'SELECT identity FROM intake_sync_state WHERE intake_id = ?', intakeId);
+        if (!sync) throw new Error('This older assessment has no ordered upload history. Start a new assessment; its data is retained.');
+        if (sync.identity && sync.identity !== identity) throw new Error('This assessment is linked to a different account or server.');
+        await tx.runAsync('UPDATE intake_sync_state SET identity = ? WHERE intake_id = ?', identity, intakeId);
+      });
+      let sent = 0;
+      for (const item of await this.pending(intakeId)) {
+        const payload = JSON.parse(item.payload);
+        if (payload.contentVersion !== CONTENT_VERSION || (payload.kind === 'context'
+          ? !payload.context || !Array.isArray(payload.context.appAnswers) || !Array.isArray(payload.context.movements)
+          : !isValidAnswer(payload.answer))) throw new Error('Queued content is invalid. Sync stopped; data retained.');
+        await this.db.runAsync('UPDATE intake_outbox SET attempts = attempts + 1 WHERE id = ?', item.id);
+        await send({ ...payload, kind: payload.kind === 'context' ? 'context' : 'answer',
+          intakeId, idempotencyKey: `${intakeId}:${item.id}` });
+        await this.db.runAsync('DELETE FROM intake_outbox WHERE id = ?', item.id);
+        sent++;
+      }
+      return { sent, remaining: (await this.pending(intakeId)).length };
+    } finally { this.syncing = false; }
+  }
+
+  // Legacy answer-only interface, retained for earlier integrations/tests.
+  // The app uses syncOrdered with authenticated ApiClient acknowledgements.
+  // This interface stops at a context event rather than silently skipping it.
   async sync(send: (event: SyncEvent) => Promise<void>) {
     if (this.syncing) return;
     this.syncing = true;
