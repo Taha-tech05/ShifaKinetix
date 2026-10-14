@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { ApiClient } from '../storage/apiClient';
 import type { ApiIdentity } from '../storage/apiClient';
+import { DEFAULT_API_URL, DEMO_ACCOUNTS } from './defaults';
 
 // Plain http to a local or private address is only allowed in development builds.
 const DEV = typeof __DEV__ !== 'undefined' && __DEV__;
@@ -17,7 +18,13 @@ interface ConnectionState {
   /** The assessment a doctor is looking at (typed in, as the server has no list endpoint). */
   lookupId: string;
   setLookupId: (id: string) => void;
+  /** Intakes uploaded from this phone in this run, newest first (the doctor list can show them). */
+  recentIntakeIds: string[];
+  rememberIntake: (id: string) => void;
   signInDev: (baseUrl: string, userId: string, role: 'patient' | 'doctor') => Promise<void>;
+  /** One tap: sign in to the fixed demo account for that role, at the current address. */
+  signInDemo: (role: 'patient' | 'doctor') => Promise<void>;
+  setBaseUrl: (baseUrl: string) => void;
   connectWithToken: (baseUrl: string, token: string) => Promise<void>;
   disconnect: () => void;
 }
@@ -34,7 +41,7 @@ async function verify(baseUrl: string, token: string): Promise<{ api: ApiClient;
 }
 
 /** One server connection for the whole app. Kept in memory only: the token is never stored, and a restart signs out. */
-export const useServer = create<ConnectionState>((set) => {
+export const useServer = create<ConnectionState>((set, get) => {
   const attempt = async (baseUrl: string, work: (current: number) => Promise<{ api: ApiClient; identity: ApiIdentity }>) => {
     const current = ++generation;
     set({ status: 'connecting', error: '', api: null, identity: null, baseUrl });
@@ -48,20 +55,24 @@ export const useServer = create<ConnectionState>((set) => {
     }
   };
   return {
-    status: 'disconnected', baseUrl: process.env.EXPO_PUBLIC_API_URL ?? '', api: null, identity: null, error: '', lookupId: '',
+    status: 'disconnected', baseUrl: DEFAULT_API_URL, api: null, identity: null, error: '', lookupId: '',
     setLookupId: (lookupId) => set({ lookupId }),
+    recentIntakeIds: [],
+    rememberIntake: (id) => set((st) => ({ recentIntakeIds: [id, ...st.recentIntakeIds.filter((x) => x !== id)].slice(0, 10) })),
+    setBaseUrl: (baseUrl) => set({ baseUrl }),
     signInDev: (baseUrl, userId, role) => attempt(baseUrl.trim(), async () => {
       await ApiClient.health(baseUrl.trim(), fetch, DEV);
       const login = await ApiClient.devLogin(baseUrl.trim(), userId, role, fetch, DEV);
       return verify(baseUrl.trim(), login.token);
     }),
+    signInDemo: (role) => get().signInDev(get().baseUrl, DEMO_ACCOUNTS[role], role),
     connectWithToken: (baseUrl, token) => attempt(baseUrl.trim(), async () => {
       await ApiClient.health(baseUrl.trim(), fetch, DEV);
       return verify(baseUrl.trim(), token);
     }),
     disconnect: () => {
       generation++;
-      set({ status: 'disconnected', api: null, identity: null, error: '', lookupId: '' });
+      set({ status: 'disconnected', api: null, identity: null, error: '', lookupId: '', recentIntakeIds: [] });
     },
   };
 });

@@ -8,11 +8,10 @@ import { Problem, ServerScreen } from '../../server/ServerScreen';
 import { useServer } from '../../server/connection';
 import { colors, radius, spacing } from '../../theme';
 
-/** Connect to Person C's server and sign in. The role shown here is what the server reports, not what was picked. */
+/** Connect to Person C's server. One tap signs in to a fixed demo account; the role shown is what the server reports. */
 export default function ServerConnection() {
-  const { status, baseUrl, identity, error, signInDev, connectWithToken, disconnect } = useServer();
-  const [url, setUrl] = useState(baseUrl);
-  const [userId, setUserId] = useState('demo-patient');
+  const { status, baseUrl, identity, error, signInDemo, connectWithToken, setBaseUrl, disconnect } = useServer();
+  const [showToken, setShowToken] = useState(false);
   const [token, setToken] = useState('');
   const busy = status === 'connecting';
   const connected = status === 'connected' && identity !== null;
@@ -26,11 +25,11 @@ export default function ServerConnection() {
           <AppText variant="secondary" color={colors.muted}>{baseUrl}</AppText>
           {identity.role === 'patient' ? (
             <>
-              <Button label="Upload saved assessment" onPress={() => router.push('/server/sync' as never)} />
-              <Button label="Server report" variant="outline" onPress={() => router.push('/server/report' as never)} />
+              <Button label="Server report" onPress={() => router.push('/server/report' as never)} />
+              <Button label="Sync status" variant="outline" onPress={() => router.push('/server/sync' as never)} />
             </>
           ) : (
-            <Button label="Look up an assessment" onPress={() => router.push('/server/doctor' as never)} />
+            <Button label="Latest cases" onPress={() => router.push('/server/doctor' as never)} />
           )}
           <Button label="Disconnect" variant="text" onPress={disconnect} />
         </Card>
@@ -38,23 +37,28 @@ export default function ServerConnection() {
         <Card>
           <AppText variant="bodyStrong" color={colors.navy}>Not connected</AppText>
           <AppText variant="secondary" color={colors.muted}>
-            Safety checks work without a server. Use the address of the team server on the same network.
+            Safety checks work without a server. The server decides each account's role.
           </AppText>
-          <Field label="API address" value={url} onChange={setUrl} placeholder="http://192.168.x.x:8000" editable={!busy} />
-          <Field label="User name" value={userId} onChange={setUserId} placeholder="demo-patient" editable={!busy} />
-          <View style={styles.row}>
-            <Button label="Sign in as patient" disabled={busy || !url.trim()} fullWidth={false} style={styles.grow}
-              onPress={() => void signInDev(url, userId, 'patient')} />
-            <Button label="Sign in as doctor" variant="outline" disabled={busy || !url.trim()} fullWidth={false} style={styles.grow}
-              onPress={() => void signInDev(url, userId, 'doctor')} />
+          <View style={styles.field}>
+            <AppText variant="secondary" color={colors.navy} style={styles.label}>API address</AppText>
+            <TextInput accessibilityLabel="API address" value={baseUrl} onChangeText={setBaseUrl} placeholder="http://10.0.2.2:8000"
+              editable={!busy} autoCapitalize="none" autoCorrect={false} style={styles.input} />
           </View>
-          <AppText variant="secondary" color={colors.muted}>
-            The server decides the role. If development sign-in is off, paste a server-issued access token:
-          </AppText>
-          <Field label="Access token" value={token} onChange={setToken} placeholder="Server-issued access token" secure editable={!busy} />
-          <Button label="Connect with token" variant="outline" disabled={busy || !url.trim() || !token.trim()}
-            onPress={() => void connectWithToken(url, token).then(() => setToken(''))} />
+          <Button label="Sign in as Patient" disabled={busy || !baseUrl.trim()} onPress={() => void signInDemo('patient')} />
+          <Button label="Sign in as Doctor" variant="outline" disabled={busy || !baseUrl.trim()} onPress={() => void signInDemo('doctor')} />
           {busy ? <AppText accessibilityRole="alert">Contacting the server…</AppText> : null}
+          <Button label={showToken ? 'Hide access token' : 'Use an access token instead'} variant="text" onPress={() => setShowToken((v) => !v)} />
+          {showToken ? (
+            <>
+              <View style={styles.field}>
+                <AppText variant="secondary" color={colors.navy} style={styles.label}>Access token</AppText>
+                <TextInput accessibilityLabel="Access token" value={token} onChangeText={setToken} placeholder="Server-issued access token"
+                  editable={!busy} secureTextEntry autoCapitalize="none" autoCorrect={false} style={styles.input} />
+              </View>
+              <Button label="Connect with token" variant="outline" disabled={busy || !baseUrl.trim() || !token.trim()}
+                onPress={() => void connectWithToken(baseUrl, token).then(() => setToken(''))} />
+            </>
+          ) : null}
         </Card>
       )}
       <Problem text={error} />
@@ -62,22 +66,8 @@ export default function ServerConnection() {
   );
 }
 
-function Field({ label, value, onChange, placeholder, secure = false, editable }: {
-  label: string; value: string; onChange: (v: string) => void; placeholder: string; secure?: boolean; editable: boolean;
-}) {
-  return (
-    <View style={styles.field}>
-      <AppText variant="secondary" color={colors.navy} style={styles.label}>{label}</AppText>
-      <TextInput accessibilityLabel={label} value={value} onChangeText={onChange} placeholder={placeholder} editable={editable}
-        secureTextEntry={secure} autoCapitalize="none" autoCorrect={false} style={styles.input} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   field: { gap: 4 },
   label: { fontWeight: '700' },
   input: { minHeight: 48, borderWidth: 2, borderColor: colors.fieldBorder, borderRadius: radius.card, paddingHorizontal: spacing.md, backgroundColor: colors.white },
-  row: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
-  grow: { flexGrow: 1, flexBasis: 140 },
 });
