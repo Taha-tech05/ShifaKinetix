@@ -14,7 +14,8 @@ import os
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import Body, Depends, FastAPI, Header, HTTPException
+from fastapi import Body, Depends, FastAPI, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import Engine
 from sqlalchemy.exc import IntegrityError
 
@@ -56,12 +57,16 @@ def create_app(database_url: str | None = None, dev_login: bool | None = None, w
 
     # ------------------------------------------------------------ identity
 
-    def current_user(authorization: str | None = Header(default=None)) -> dict[str, Any]:
-        scheme, _, token = (authorization or "").partition(" ")
-        if scheme.lower() != "bearer" or not token.strip():
+    # Declared as a security scheme so /docs shows an Authorize button. A plain header parameter named
+    # "Authorization" is dropped by the docs page, so the token was never sent from there.
+    bearer = HTTPBearer(auto_error=False, description="Token from POST /auth/dev-login or python -m app.seed.")
+
+    def current_user(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)) -> dict[str, Any]:
+        token = credentials.credentials.strip() if credentials is not None else ""
+        if not token:
             raise error(401, "NOT_AUTHENTICATED", "Send 'Authorization: Bearer <token>'.")
         with engine.connect() as c:
-            user = store.user_for_token(c, token.strip())
+            user = store.user_for_token(c, token)
         if user is None:
             raise error(401, "NOT_AUTHENTICATED", "The token is unknown or has expired.")
         return user
