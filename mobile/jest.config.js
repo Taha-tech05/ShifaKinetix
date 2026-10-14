@@ -4,6 +4,8 @@ const SEP = '[\\\\/]'; // regex class that matches / and \ (Windows paths use \)
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  // the screens that end the safety flow upload on their own; the older screen tests must not call a server
+  setupFiles: ['<rootDir>/__tests__/support/autoUploadOff.ts'],
   testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
   // component tests use a tiny react-native stand-in instead of the native runtime
   moduleNameMapper: {

@@ -37,7 +37,7 @@ export default function ServerConnection() {
         <Card>
           <AppText variant="bodyStrong" color={colors.navy}>Not connected</AppText>
           <AppText variant="secondary" color={colors.muted}>
-            Safety checks work without a server. The server decides each account's role.
+            Safety checks work without a server. The server decides the role of each account.
           </AppText>
           <View style={styles.field}>
             <AppText variant="secondary" color={colors.navy} style={styles.label}>API address</AppText>

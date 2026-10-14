@@ -7,6 +7,7 @@ import { Button } from '../../components/Button';
 import { useT } from '../../store/settings';
 import { colors } from '../../theme';
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
+import { AutoUploadNotice } from '../../server/autoUpload';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
@@ -28,6 +29,7 @@ export default function Urgent() {
       }
     >
       <SafetyStopNotice />
+      <AutoUploadNotice />
       <View style={styles.center}>
         <View style={styles.halo}>
           <View style={styles.disc}>

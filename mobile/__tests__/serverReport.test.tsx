@@ -61,18 +61,21 @@ beforeEach(() => {
 });
 afterEach(() => { if (tree) act(() => tree.unmount()); request.mockRestore(); useServer.getState().disconnect(); useSession.setState({ gateVerdict: null }); });
 
+const callButtons = () => tree.root.findAll((n) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === 'Call 1122').length;
 const NEVER_SHOWN = ['Subacromial', 'impingement', 'Rotator cuff', 'differential', 'score'];
 test('phone SAFE and server READY: muscles are listed, with the demo and doctor notices', async () => {
   connect(); await render('SAFE', READY);
   expect(text()).toContain('Muscles that may be involved');
   expect(text()).toContain('Supraspinatus');
+  expect(callButtons()).toBe(1); // only the SOS sheet in the header
   expect(text()).toContain('No safety stop found by the phone or the server.');
   expect(text()).toContain('Demo only, not for real patients.');
   expect(text()).toContain('talk to a doctor');
   expect(request.mock.calls[0][0]).toBe('https://demo.example/intakes/intake-1/report');
 });
-test('server REFER is shown as urgent, with no muscles', async () => {
+test('server REFER is shown as urgent, with no muscles and a Call 1122 button', async () => {
   connect(); await render('SAFE', REFER);
+  expect(callButtons()).toBe(2); // the SOS sheet in the header and the one on the report
   expect(text()).toContain('Urgent: please see a doctor now.');
   expect(text()).toContain('Please talk to a doctor about your shoulder');
   expect(text()).not.toContain('Muscles that may be involved');

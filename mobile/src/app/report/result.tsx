@@ -13,6 +13,7 @@ import { Screen } from '../../components/Screen';
 import { StepProgress } from '../../components/StepProgress';
 import { ASSISTANT_ENABLED } from '../../config';
 import { SafeGuard } from '../../flow/SafeGuard';
+import { AutoUploadNotice } from '../../server/autoUpload';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
 import { approxAreaIds } from '../../narrowing/approxArea';
 import { questionText } from '../../narrowing/bank';
@@ -166,6 +167,7 @@ function ResultBody() {
           </>
         }
       >
+        <AutoUploadNotice />
         <StepProgress step={5} total={5} />
         <AppText variant="h1" color={colors.navy} style={styles.title}>
           {t('result.title')}

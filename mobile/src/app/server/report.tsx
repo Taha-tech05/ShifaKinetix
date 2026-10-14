@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Linking } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -100,6 +101,7 @@ export default function ServerReport() {
               <AppText variant="secondary" color={colors.muted}>{report.guidance}</AppText>
             </>
           ) : null}
+          {shown.verdict === 'RED_FLAG' ? <Button label="Call 1122" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} style={{ backgroundColor: colors.danger }} /> : null}
           <AppText variant="secondary" color={colors.muted}>{`${report.banner} Please talk to a doctor about your shoulder.`}</AppText>
           <Button label="Sync status" variant="outline" onPress={() => router.replace('/server/sync' as never)} />
         </Card>
