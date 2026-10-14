@@ -1,5 +1,7 @@
 import { act, create } from 'react-test-renderer';
 import DoctorLookup from '../src/app/server/doctor';
+import * as expoRouter from 'expo-router';
+import { candidateIds, loadCases } from '../src/server/cases';
 import DoctorReportRoute from '../src/app/server/doctor/report';
 import DoctorAudit from '../src/app/server/doctor/audit';
 import { useServer } from '../src/server/connection';
@@ -51,7 +53,7 @@ beforeEach(() => { request = jest.spyOn(globalThis, 'fetch'); });
 afterEach(() => { if (tree) act(() => tree.unmount()); request.mockRestore(); useServer.getState().disconnect(); });
 
 describe('who may open the doctor screens', () => {
-  test.each([['lookup', <DoctorLookup key="a" />], ['report', <DoctorReportRoute key="b" />], ['audit', <DoctorAudit key="c" />]])(
+  test.each([['cases', <DoctorLookup key="a" />], ['report', <DoctorReportRoute key="b" />], ['audit', <DoctorAudit key="c" />]])(
     'a patient account sees "Doctor access required" on the %s screen and nothing is requested', async (_n, el) => {
       connect('patient'); serverRole('patient');
       await render(el);
@@ -59,7 +61,7 @@ describe('who may open the doctor screens', () => {
       expect(text()).not.toContain('Subacromial');
       expect(urls().filter((u) => !u.endsWith('/auth/me'))).toEqual([]);
     });
-  test.each([['lookup', <DoctorLookup key="a" />], ['report', <DoctorReportRoute key="b" />], ['audit', <DoctorAudit key="c" />]])(
+  test.each([['cases', <DoctorLookup key="a" />], ['report', <DoctorReportRoute key="b" />], ['audit', <DoctorAudit key="c" />]])(
     'not connected: the %s screen says so and requests nothing', async (_n, el) => {
       await render(el);
       expect(text()).toContain('Not connected to the server.');
@@ -75,7 +77,7 @@ describe('who may open the doctor screens', () => {
 });
 
 describe('every doctor screen carries the demo notice and the Doctor chip', () => {
-  test.each([['lookup', <DoctorLookup key="a" />], ['audit', <DoctorAudit key="c" />]])('%s', async (_n, el) => {
+  test.each([['cases', <DoctorLookup key="a" />], ['audit', <DoctorAudit key="c" />]])('%s', async (_n, el) => {
     connect('doctor'); serverRole('doctor', { '/audit': [AUDIT] });
     await render(el);
     expect(text()).toContain('Demo only, not for real patients.');
@@ -89,17 +91,80 @@ describe('every doctor screen carries the demo notice and the Doctor chip', () =
   });
 });
 
-describe('assessment lookup', () => {
-  test('both actions need an ID and the typed ID is kept for the next screen', async () => {
-    connect('doctor', '');
+const GATE = (verdict: string) => ({ verdict, firedRules: verdict === 'SAFE' ? [] : [{ ruleId: 'R', reason: 'r', source: 's', matchedAnswers: [] }] });
+/** The server's gate answers for the three demo cases; a case missing here is "not found" (404). */
+function gates(table: Record<string, string | number>, role: 'patient' | 'doctor' = 'doctor') {
+  request.mockImplementation(async (url: string) => {
+    if (url.endsWith('/auth/me')) return json({ id: 'demo', role });
+    const m = /\/intakes\/([^/]+)\/gate$/.exec(url);
+    if (m) {
+      const v = table[decodeURIComponent(m[1])];
+      return typeof v === 'string' ? json(GATE(v)) : json({}, typeof v === 'number' ? v : 404);
+    }
+    return json({}, 404);
+  });
+}
+const order = () => (JSON.stringify(tree.toJSON()).match(/"(?:Urgent|Not sure|Safe|Could not load)"/g) ?? []).map((x) => x.replace(/"/g, ''));
+
+describe('latest cases', () => {
+  const ALL = { 'demo-case-safe': 'SAFE', 'demo-case-danger': 'RED_FLAG', 'demo-case-unsure': 'CLARIFY' };
+  test('lists the cases urgent first, judged by the server gate, with no ID typing', async () => {
+    connect('doctor', ''); gates(ALL);
     await render(<DoctorLookup />);
-    const button = (l: string) => tree.root.findAll((n) => (n.type as unknown) === 'Pressable' && n.props.accessibilityLabel === l)[0];
-    expect(button('Doctor report').props.disabled).toBe(true);
-    expect(button('Audit trail').props.disabled).toBe(true);
-    await act(async () => { tree.root.findAll((n) => (n.type as unknown) === 'TextInput')[0].props.onChangeText('  intake-9  '); });
-    expect(button('Doctor report').props.disabled).toBe(false);
-    await act(async () => { button('Audit trail').props.onPress(); });
-    expect(useServer.getState().lookupId).toBe('intake-9');
+    expect(order().slice(0, 3)).toEqual(['Urgent', 'Not sure', 'Safe']);
+    expect(text()).toContain('Latest cases');
+    expect(tree.root.findAll((n) => (n.type as unknown) === 'TextInput')).toHaveLength(0);
+    expect(urls().filter((u) => u.endsWith('/gate')).sort()).toEqual(
+      ['demo-case-danger', 'demo-case-safe', 'demo-case-unsure'].map((id) => `https://demo.example/intakes/${id}/gate`));
+  });
+  test('tapping a case opens its doctor report', async () => {
+    connect('doctor', ''); gates(ALL);
+    const push = jest.spyOn(expoRouter.router, 'push');
+    await render(<DoctorLookup />);
+    const danger = tree.root.findAll((n) => (n.type as unknown) === 'Pressable' && String(n.props.accessibilityLabel).startsWith('Urgent:'))[0];
+    await act(async () => { danger.props.onPress(); });
+    expect(useServer.getState().lookupId).toBe('demo-case-danger');
+    expect(push).toHaveBeenCalledWith('/server/doctor/report');
+    push.mockRestore();
+  });
+  test('cases uploaded from this phone are listed too, and ranked by their own verdict', async () => {
+    connect('doctor', ''); useServer.setState({ recentIntakeIds: ['intake-77'] });
+    gates({ ...ALL, 'demo-case-danger': 'SAFE', 'intake-77': 'RED_FLAG' });
+    await render(<DoctorLookup />);
+    expect(text()).toContain('Uploaded from this phone');
+    expect(order()[0]).toBe('Urgent');
+    expect(text().indexOf('intake-77')).toBeLessThan(text().indexOf('demo-case-unsure'));
+  });
+  test('a case the server could not judge is never shown as safe and is not placed after the safe ones', async () => {
+    connect('doctor', ''); gates({ 'demo-case-safe': 'SAFE', 'demo-case-danger': 500, 'demo-case-unsure': 'CLARIFY' });
+    await render(<DoctorLookup />);
+    expect(order().slice(0, 3)).toEqual(['Not sure', 'Could not load', 'Safe']);
+  });
+  test('if no case can be loaded it says so and shows no verdict', async () => {
+    connect('doctor', ''); request.mockImplementation(async (url: string) => url.endsWith('/auth/me') ? json({ id: 'demo', role: 'doctor' }) : json({}, 503));
+    await render(<DoctorLookup />);
+    expect(text()).toContain('None of the cases could be loaded');
+    expect(text()).toContain('This is not a result');
+    expect(order().every((x) => x === 'Could not load')).toBe(true);
+    expect(text()).not.toContain('"Safe"');
+  });
+  test('a network failure is not a verdict either', async () => {
+    connect('doctor', ''); request.mockRejectedValue(new Error('Network request failed'));
+    await render(<DoctorLookup />);
+    expect(text()).toContain('None of the cases could be loaded');
+  });
+  test('cases are not asked for as a patient', async () => {
+    connect('patient', ''); gates(ALL, 'patient');
+    await render(<DoctorLookup />);
+    expect(text()).toContain('Doctor access required.');
+    expect(urls().some((u) => u.endsWith('/gate'))).toBe(false);
+  });
+  test('the list logic: urgent, not sure, unjudged, then safe; ids are not repeated', async () => {
+    expect(candidateIds(['demo-case-safe', 'x']).map((c) => c.id)).toEqual(['demo-case-safe', 'x', 'demo-case-danger', 'demo-case-unsure']);
+    const api = new ApiClient('https://demo.example', 'tok', fetch, false, 200);
+    gates({ a: 'SAFE', b: 'CLARIFY', c: 404, d: 'RED_FLAG', 'demo-case-safe': 'SAFE', 'demo-case-danger': 'SAFE', 'demo-case-unsure': 'SAFE' });
+    const rows = await loadCases(api, ['a', 'b', 'c', 'd']);
+    expect(rows.slice(0, 4).map((r) => r.verdict)).toEqual(['RED_FLAG', 'CLARIFY', null, 'SAFE']);
   });
 });
 

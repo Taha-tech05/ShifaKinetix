@@ -23,7 +23,8 @@ export default function DoctorReportRoute() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.page }}>
       <View style={{ padding: spacing.md }}>
-        <Button label="Back to lookup" variant="outline" onPress={() => router.back()} />
+        <Button label="Back to cases" variant="outline" onPress={() => router.back()} />
+        <Button label="Audit trail" variant="text" onPress={() => router.push('/server/doctor/audit' as never)} />
       </View>
       <DoctorReportScreen access={access} />
     </View>
