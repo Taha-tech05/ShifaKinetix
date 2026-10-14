@@ -26,9 +26,12 @@ export default function ServerSync() {
     try { setInfo(await savedAssessment()); } catch { setInfo(null); setError('The saved assessment could not be read on this phone.'); }
   };
   useEffect(() => {
-    if (patient) void refresh();
-    return () => { generation.current++; };
-  }, [patient, api]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!patient) return;
+    let active = true;
+    savedAssessment().then((v) => { if (active) setInfo(v); })
+      .catch(() => { if (active) { setInfo(null); setError('The saved assessment could not be read on this phone.'); } });
+    return () => { active = false; generation.current++; };
+  }, [patient, api]);
 
   if (!patient) {
     return (
