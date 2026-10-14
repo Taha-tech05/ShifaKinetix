@@ -1,5 +1,6 @@
 import type { DoctorReport } from '../reports/doctorReport';
-import { validDoctorReport, validGate } from '../reports/validation';
+import { validDoctorReport, validGate, validPatientReport } from '../reports/validation';
+import type { PatientReport } from '../reports/validation';
 import type { OrderedSyncEvent } from './intakeStore';
 
 /** The API address rules: https, or http only for localhost / private network addresses in development. Returns it without a trailing slash. */
@@ -95,6 +96,12 @@ export class ApiClient {
   async gate(intakeId: string) {
     const value = await this.json(`/intakes/${encodeURIComponent(intakeId)}/gate`);
     if (!validGate(value)) throw new Error('Invalid server safety response.');
+    return value;
+  }
+  /** The patient-safe report. Anything beyond the allowed fields (a differential, a score, a condition name) is rejected whole. */
+  async patientReport(intakeId: string): Promise<PatientReport> {
+    const value = await this.json(`/intakes/${encodeURIComponent(intakeId)}/report`);
+    if (!validPatientReport(value) || value.intakeId !== intakeId) throw new Error('The server report was not in the expected form, so it is not shown.');
     return value;
   }
   async doctorReport(intakeId: string): Promise<DoctorReport> {
