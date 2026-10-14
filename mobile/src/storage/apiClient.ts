@@ -2,24 +2,59 @@ import type { DoctorReport } from '../reports/doctorReport';
 import { validDoctorReport, validGate } from '../reports/validation';
 import type { OrderedSyncEvent } from './intakeStore';
 
+/** The API address rules: https, or http only for localhost / private network addresses in development. Returns it without a trailing slash. */
+export function checkBaseUrl(baseUrl: string, allowLocalHttp: boolean): string {
+  const url = new URL(baseUrl);
+  const octets = url.hostname.split('.').map(Number);
+  const privateIp = /^\d+\.\d+\.\d+\.\d+$/.test(url.hostname)
+    && octets.every((n) => n >= 0 && n <= 255)
+    && (octets[0] === 10 || (octets[0] === 192 && octets[1] === 168)
+      || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31));
+  const local = ['localhost', '127.0.0.1'].includes(url.hostname) || privateIp;
+  if (url.username || url.password || url.search || url.hash
+    || (url.protocol !== 'https:' && !(url.protocol === 'http:' && allowLocalHttp && local))) {
+    throw new Error('Use an HTTPS API address, or a local development server.');
+  }
+  return url.href.replace(/\/$/, '');
+}
+
 export interface ApiIdentity { id: string; role: 'patient' | 'doctor' }
 export class ApiClient {
   readonly baseUrl: string;
   constructor(baseUrl: string, private readonly token: string, private readonly request: typeof fetch = fetch,
     allowLocalHttp = false, private readonly timeoutMs = 15000) {
-    const url = new URL(baseUrl);
-    const octets = url.hostname.split('.').map(Number);
-    const privateIp = /^\d+\.\d+\.\d+\.\d+$/.test(url.hostname)
-      && octets.every((n) => n >= 0 && n <= 255)
-      && (octets[0] === 10 || (octets[0] === 192 && octets[1] === 168)
-        || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31));
-    const local = ['localhost', '127.0.0.1'].includes(url.hostname) || privateIp;
-    if (url.username || url.password || url.search || url.hash
-      || (url.protocol !== 'https:' && !(url.protocol === 'http:' && allowLocalHttp && local))) {
-      throw new Error('Use an HTTPS API address, or a local development server.');
-    }
+    this.baseUrl = checkBaseUrl(baseUrl, allowLocalHttp);
     if (!token.trim() || /[\r\n]/.test(token)) throw new Error('An access token is required.');
-    this.baseUrl = url.href.replace(/\/$/, '');
+  }
+  /** Development sign-in (the server answers 404 unless it was started with SHIFA_DEV_LOGIN=1). The role is only a request: the server fixes it per account. */
+  static async devLogin(baseUrl: string, userId: string, role: 'patient' | 'doctor', request: typeof fetch = fetch,
+    allowLocalHttp = false, timeoutMs = 15000): Promise<{ token: string; identity: ApiIdentity }> {
+    const base = checkBaseUrl(baseUrl, allowLocalHttp);
+    if (!userId.trim()) throw new Error('Enter a user name.');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await request(`${base}/auth/dev-login`, { method: 'POST', redirect: 'error', signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: userId.trim(), role }) });
+      if (response.status === 404) throw new Error('Development sign-in is switched off on this server. Paste a server-issued access token instead.');
+      if (response.status === 409) throw new Error('That user name already belongs to an account with a different role.');
+      if (!response.ok) throw new Error(`Sign-in failed (${response.status}).`);
+      const v = await response.json() as { token?: unknown; user?: { id?: unknown; role?: unknown } } | null;
+      if (!v || typeof v.token !== 'string' || !v.token.trim() || !v.user || typeof v.user.id !== 'string'
+        || !['patient', 'doctor'].includes(v.user.role as string)) throw new Error('The server sign-in response was not valid.');
+      return { token: v.token, identity: { id: v.user.id, role: v.user.role as ApiIdentity['role'] } };
+    } finally { clearTimeout(timer); }
+  }
+  /** Is a server answering at this address? Only {"status":"ok"} counts. */
+  static async health(baseUrl: string, request: typeof fetch = fetch, allowLocalHttp = false, timeoutMs = 8000): Promise<void> {
+    const base = checkBaseUrl(baseUrl, allowLocalHttp);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await request(`${base}/health`, { redirect: 'error', signal: controller.signal });
+      const v = response.ok ? await response.json() as { status?: unknown } | null : null;
+      if (!v || v.status !== 'ok') throw new Error('No ShifaKinetix server answered at this address.');
+    } finally { clearTimeout(timer); }
   }
   private async json(path: string, body?: unknown): Promise<unknown> {
     const controller = new AbortController();
