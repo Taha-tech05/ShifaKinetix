@@ -50,3 +50,24 @@ export function validPatientReport(v: unknown): v is PatientReport {
   }
   return false;
 }
+
+export interface AuditTrail {
+  intakeId: string;
+  ruleVersion: string;
+  gateRuns: { id: number; ts: string; cause: string; verdict: 'SAFE' | 'CLARIFY' | 'RED_FLAG'; firedRules: { ruleId: string; reason: string; source: string }[]; ruleVersion: string }[];
+  answerHistory: { seq: number; receivedAt: string; questionId: string; answer: Record<string, unknown>; contentVersion: string; idempotencyKey: string }[];
+  contextHistory: { seq: number; receivedAt: string; context: Record<string, unknown>; contentVersion: string; idempotencyKey: string }[];
+  doctorActions: { id: number; at: string; doctorId: string; action: string }[];
+}
+const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const list = (v: unknown, each: (item: Record<string, unknown>) => boolean): boolean =>
+  Array.isArray(v) && v.every((item: unknown) => record(item) && each(item));
+/** The doctor's history of one assessment, checked field by field. Anything unexpected makes the whole response invalid. */
+export function validAudit(v: unknown): v is AuditTrail {
+  return record(v) && text(v.intakeId) && text(v.ruleVersion)
+    && list(v.gateRuns, (r) => num(r.id) && text(r.ts) && text(r.cause) && ['SAFE', 'CLARIFY', 'RED_FLAG'].includes(r.verdict as string) && text(r.ruleVersion)
+      && list(r.firedRules, (f) => text(f.ruleId) && text(f.reason) && text(f.source)))
+    && list(v.answerHistory, (a) => num(a.seq) && text(a.receivedAt) && text(a.questionId) && record(a.answer) && text(a.contentVersion) && text(a.idempotencyKey))
+    && list(v.contextHistory, (c) => num(c.seq) && text(c.receivedAt) && record(c.context) && text(c.contentVersion) && text(c.idempotencyKey))
+    && list(v.doctorActions, (d) => num(d.id) && text(d.at) && text(d.doctorId) && text(d.action));
+}

@@ -127,3 +127,26 @@ test('live movement/back history and narrowing snapshots survive restart and rea
   expect(audit.answerHistory).toHaveLength(questions.filter((q) => q.required).length);
   expect(audit.gateRuns.length).toBeGreaterThan(0);
 }, 30000);
+
+test('the server screens\' API calls work against the real server: sign-in, patient report without differential, doctor audit', async () => {
+  await ApiClient.health(url, fetch, true);
+  const login = await ApiClient.devLogin(url, 'fictional-patient', 'patient', fetch, true);
+  expect(login.identity).toEqual({ id: 'fictional-patient', role: 'patient' });
+  // asking for the other role does not change the account's role: the server refuses
+  await expect(ApiClient.devLogin(url, 'fictional-patient', 'doctor', fetch, true)).rejects.toThrow('different role');
+  await upload();
+  const ready = await patient.patientReport(intakeId);
+  expect(ready.status).toBe('READY');
+  expect(JSON.stringify(ready)).not.toMatch(/differential|condition|score|firedRules/);
+  await session.save({ ...negative('numb'), value: true }); await upload();
+  const refer = await patient.patientReport(intakeId);
+  expect(refer.status).toBe('REFER');
+  expect(refer.musclesThatMayBeInvolved).toBeUndefined();
+  await expect(otherPatient.patientReport(intakeId)).rejects.toThrow('not allowed');
+  const audit = await doctor.audit(intakeId);
+  expect(audit.intakeId).toBe(intakeId);
+  expect(audit.gateRuns.length).toBeGreaterThan(0);
+  await expect(patient.audit(intakeId)).rejects.toThrow('Doctor access');
+  const direct = await fetch(`${url}/intakes/${intakeId}/audit`, { headers: { Authorization: `Bearer ${login.token}` } });
+  expect(direct.status).toBe(403);
+}, 30000);

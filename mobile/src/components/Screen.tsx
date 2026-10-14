@@ -18,15 +18,17 @@ interface Props {
   bareFooter?: boolean;
   /** Kept so call sites can name the screen; the design has no title in the top bar. */
   title?: string;
+  /** Role chip text in the top bar (default: Patient). */
+  roleLabel?: string;
   children: React.ReactNode;
 }
 
 /** Standard patient screen: navy top bar with SOS, light grey page, padded body, optional fixed footer. */
-export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = false, footer, bareFooter = false, banner, children }: Props) {
+export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = false, footer, bareFooter = false, banner, roleLabel, children }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.root}>
-      <ScreenHeader onBack={onBack} compact={compact} />
+      <ScreenHeader onBack={onBack} compact={compact} roleLabel={roleLabel} />
       {banner}
       {scroll ? (
         <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>

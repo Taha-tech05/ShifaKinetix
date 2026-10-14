@@ -3,13 +3,15 @@ import { StyleSheet, View } from 'react-native';
 import { AppText } from '../components/AppText';
 import { Screen } from '../components/Screen';
 import { colors, radius, spacing } from '../theme';
+import { useServer } from './connection';
 
 export const DEMO_NOTE = 'Demo only, not for real patients.';
 
 /** Every server screen: the standard screen plus the demo notice in the page itself, so it is there whatever the app shell shows. */
 export function ServerScreen({ title, children, footer, onBack }: { title: string; children: React.ReactNode; footer?: React.ReactNode; onBack?: () => void }) {
+  const role = useServer((st) => st.identity?.role);
   return (
-    <Screen onBack={onBack ?? (() => router.back())} footer={footer}>
+    <Screen onBack={onBack ?? (() => router.back())} footer={footer} roleLabel={role === 'doctor' ? 'Doctor' : undefined}>
       <View accessibilityRole="alert" style={styles.demo}>
         <AppText variant="secondary" color={colors.navy} style={styles.demoText}>{DEMO_NOTE}</AppText>
       </View>

@@ -1,6 +1,6 @@
 import type { DoctorReport } from '../reports/doctorReport';
-import { validDoctorReport, validGate, validPatientReport } from '../reports/validation';
-import type { PatientReport } from '../reports/validation';
+import { validAudit, validDoctorReport, validGate, validPatientReport } from '../reports/validation';
+import type { AuditTrail, PatientReport } from '../reports/validation';
 import type { OrderedSyncEvent } from './intakeStore';
 
 /** The API address rules: https, or http only for localhost / private network addresses in development. Returns it without a trailing slash. */
@@ -109,6 +109,13 @@ export class ApiClient {
     if ((await this.identity()).role !== 'doctor') throw new Error('Doctor access required.');
     const value = await this.json(`/intakes/${encodeURIComponent(intakeId)}/doctor-report`);
     if (!validDoctorReport(value) || value.intakeId !== intakeId) throw new Error('Invalid doctor report response.');
+    return value;
+  }
+  /** The doctor-only history of one assessment. The server enforces the role; the check here only saves a pointless request. */
+  async audit(intakeId: string): Promise<AuditTrail> {
+    if ((await this.identity()).role !== 'doctor') throw new Error('Doctor access required.');
+    const value = await this.json(`/intakes/${encodeURIComponent(intakeId)}/audit`);
+    if (!validAudit(value) || value.intakeId !== intakeId) throw new Error('Invalid audit response.');
     return value;
   }
 }

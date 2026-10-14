@@ -14,6 +14,9 @@ interface ConnectionState {
   /** Who the SERVER says this is (GET /auth/me). Never set from the app's own settings or from what the user picked. */
   identity: ApiIdentity | null;
   error: string;
+  /** The assessment a doctor is looking at (typed in, as the server has no list endpoint). */
+  lookupId: string;
+  setLookupId: (id: string) => void;
   signInDev: (baseUrl: string, userId: string, role: 'patient' | 'doctor') => Promise<void>;
   connectWithToken: (baseUrl: string, token: string) => Promise<void>;
   disconnect: () => void;
@@ -45,7 +48,8 @@ export const useServer = create<ConnectionState>((set) => {
     }
   };
   return {
-    status: 'disconnected', baseUrl: process.env.EXPO_PUBLIC_API_URL ?? '', api: null, identity: null, error: '',
+    status: 'disconnected', baseUrl: process.env.EXPO_PUBLIC_API_URL ?? '', api: null, identity: null, error: '', lookupId: '',
+    setLookupId: (lookupId) => set({ lookupId }),
     signInDev: (baseUrl, userId, role) => attempt(baseUrl.trim(), async () => {
       await ApiClient.health(baseUrl.trim(), fetch, DEV);
       const login = await ApiClient.devLogin(baseUrl.trim(), userId, role, fetch, DEV);
@@ -57,7 +61,7 @@ export const useServer = create<ConnectionState>((set) => {
     }),
     disconnect: () => {
       generation++;
-      set({ status: 'disconnected', api: null, identity: null, error: '' });
+      set({ status: 'disconnected', api: null, identity: null, error: '', lookupId: '' });
     },
   };
 });

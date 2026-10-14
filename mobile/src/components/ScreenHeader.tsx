@@ -13,10 +13,12 @@ interface Props {
   hero?: boolean;
   /** A slimmer bar (52 instead of 56 dp). */
   compact?: boolean;
+  /** Text of the role chip. The patient screens use the default; the doctor screens say Doctor. */
+  roleLabel?: string;
 }
 
 /** Top bar: back arrow (or logo), role chip, EN/Urdu/Roman toggle, SOS. Every patient screen has it. */
-export function ScreenHeader({ onBack, hero = false, compact = false }: Props) {
+export function ScreenHeader({ onBack, hero = false, compact = false, roleLabel }: Props) {
   const t = useT();
   return (
     <View style={[styles.bar, !hero && styles.solid, compact && styles.barCompact]}>
@@ -37,7 +39,7 @@ export function ScreenHeader({ onBack, hero = false, compact = false }: Props) {
       <View style={styles.chip}>
         <View style={styles.dot} />
         <AppText variant="secondary" color={colors.white} style={styles.chipText}>
-          {t('common.patient')}
+          {roleLabel ?? t('common.patient')}
         </AppText>
       </View>
       <View style={styles.spacer} />
