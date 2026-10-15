@@ -3,8 +3,10 @@ import { ApiClient } from '../storage/apiClient';
 import type { ApiIdentity } from '../storage/apiClient';
 import { DEFAULT_API_URL, DEMO_ACCOUNTS } from './defaults';
 
-// Plain http to a local or private address is only allowed in development builds.
-const DEV = typeof __DEV__ !== 'undefined' && __DEV__;
+// Plain http is only accepted for localhost and private network addresses (see checkBaseUrl), and only in development builds or in a
+// demo build made with EXPO_PUBLIC_ALLOW_LOCAL_HTTP=1 (the demo APK, which talks to the team's laptop on the same Wi-Fi). Any other
+// address must be https.
+const DEV = (typeof __DEV__ !== 'undefined' && __DEV__) || process.env.EXPO_PUBLIC_ALLOW_LOCAL_HTTP === '1';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
 

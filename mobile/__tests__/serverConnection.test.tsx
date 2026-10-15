@@ -154,3 +154,32 @@ describe('one-tap demo sign-in', () => {
     expect(useServer.getState().identity?.role).toBe('patient');
   });
 });
+
+describe('plain http', () => {
+  const load = () => { let mod: typeof import('../src/server/connection') = undefined as never; jest.isolateModules(() => { mod = require('../src/server/connection'); }); return mod.useServer; };
+  afterEach(() => { delete process.env.EXPO_PUBLIC_ALLOW_LOCAL_HTTP; (globalThis as { __DEV__?: boolean }).__DEV__ = undefined; });
+  test('a release build refuses http, even to a private address, unless the demo flag is set', async () => {
+    const store = load();
+    server('patient');
+    await act(async () => { await store.getState().signInDev('http://192.168.18.84:8000', 'demo-patient', 'patient'); });
+    expect(store.getState().status).toBe('disconnected');
+    expect(store.getState().error).toContain('HTTPS');
+    expect(request).not.toHaveBeenCalled();
+  });
+  test('the demo flag allows http to a private address', async () => {
+    process.env.EXPO_PUBLIC_ALLOW_LOCAL_HTTP = '1';
+    const store = load();
+    server('patient');
+    await act(async () => { await store.getState().signInDev('http://192.168.18.84:8000', 'demo-patient', 'patient'); });
+    expect(store.getState().status).toBe('connected');
+  });
+  test('the demo flag still refuses http to a public address', async () => {
+    process.env.EXPO_PUBLIC_ALLOW_LOCAL_HTTP = '1';
+    const store = load();
+    server('patient');
+    await act(async () => { await store.getState().signInDev('http://example.com', 'demo-patient', 'patient'); });
+    expect(store.getState().status).toBe('disconnected');
+    expect(store.getState().error).toContain('HTTPS');
+    expect(request).not.toHaveBeenCalled();
+  });
+});
