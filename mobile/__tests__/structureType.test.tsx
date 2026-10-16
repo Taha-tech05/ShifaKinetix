@@ -333,7 +333,7 @@ describe('screens', () => {
     expect(all).not.toContain('may not be a muscle problem');
     expect(all).not.toContain('Talk to a doctor or physio');
     expect(all).not.toContain('See result');
-    expect(all).toContain('Possible so far');
+    expect(all).toContain('Muscles that may be involved');
     for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) await press(tree, 'Not sure');
     all = textOf(tree.root);
     expect(useSession.getState().liveState?.categoryResult).toBe('BONE');

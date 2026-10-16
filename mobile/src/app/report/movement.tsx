@@ -1,19 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import type { LayoutChangeEvent } from 'react-native';
+import { Alert, BackHandler } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
-import { DemoCautionStrip } from '../../components/DemoCautionStrip';
-import { MovementStage } from '../../components/movement/MovementStage';
-import { CandidateStrip } from '../../components/narrowing/CandidateStrip';
-import { ProgressBar } from '../../components/ProgressBar';
-import { Screen } from '../../components/Screen';
+import { muscleName } from '../../components/narrowing/CandidateStrip';
 import type { TKey } from '../../i18n';
 import { activeHistory, firstOpenStep, goBackDurable, seedLiveState, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, stepIndexOf, submitMovementDurable, submitQuestionDurable, totalSteps } from '../../flow/live';
 import type { LiveOutcome } from '../../flow/live';
-import { namesFor, textMaxFor, VIEWER_MIN } from '../../flow/liveLayout';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { MOVEMENTS, localized, movementById } from '../../movement/movements';
 import { buildMovementResult } from '../../movement/result';
@@ -22,11 +15,14 @@ import { discriminatorQuestions } from '../../narrowing/bank';
 import { structureQuestions } from '../../narrowing/structureBank';
 import { answered, unknown } from '../../questions/answer';
 import { sideOfRegion } from '../../regions/shoulder';
-import { useChrome } from '../../store/chrome';
 import { useSession } from '../../store/session';
 import type { HistoryEntry } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, MIN_TAP, radius } from '../../theme';
+import { BotBubble, ChipRow } from '../../ui/chat';
+import { Chip } from '../../ui/Chip';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
+import { useScene } from '../../ui/scene';
+import { useTheme } from '../../ui/ThemeProvider';
 
 type Key = 'noPain' | 'pain' | 'weak' | 'couldNot' | 'unsure';
 const FEEL: { key: Key; label: TKey }[] = [
@@ -36,17 +32,6 @@ const FEEL: { key: Key; label: TKey }[] = [
   { key: 'couldNot', label: 'movement.couldNot' },
   { key: 'unsure', label: 'answer.notSure' },
 ];
-
-/** A tap-to-answer chip: at least 48 high, shares the row with the others, mirrors in right-to-left languages. */
-function Chip({ label, on = false, onPress, grow = true }: { label: string; on?: boolean; onPress: () => void; grow?: boolean }) {
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: on }} onPress={onPress} style={[styles.chip, grow && styles.grow, on && styles.chipOn]}>
-      <AppText variant="button" color={on ? colors.white : colors.navy} style={styles.chipText} numberOfLines={3}>
-        {label}
-      </AppText>
-    </Pressable>
-  );
-}
 
 /** What a stored movement answer looked like, to show it selected again when the question is shown a second time. */
 function pickedFrom(entry: HistoryEntry | null): Set<Key> {
@@ -82,6 +67,7 @@ export default function LiveScreen() {
 
 function LiveScreenBody() {
   const t = useT();
+  const { colors } = useTheme();
   const params = useLocalSearchParams<{ review?: string }>();
   const mode = useSession((s) => s.mode);
   const selection = useSession((s) => s.selection);
@@ -104,18 +90,11 @@ function LiveScreenBody() {
   const [prefill, setPrefill] = useState<HistoryEntry | null>(() => (reviewIndex >= 0 ? activeHistory().find((h) => h.id === params.review) ?? null : null));
   const [finished, setFinished] = useState(() => reviewIndex < 0 && useSession.getState().liveState?.stop === true);
   const [reviewing, setReviewing] = useState(reviewIndex >= 0);
-  const [touching, setTouching] = useState(false);
   const [cameraNote, setCameraNote] = useState(false);
-  const [height, setHeight] = useState(0);
+  const [lieDownOk, setLieDownOk] = useState('');
   const [lastMovement, setLastMovement] = useState(MOVEMENTS[0]);
   // true while an answer is being saved: further taps are ignored so one answer is never saved twice
   const saving = useRef(false);
-
-  // the question screen draws one strip with both the demo and the caution message instead of two banners
-  useEffect(() => {
-    useChrome.getState().setCompact(true);
-    return () => useChrome.getState().setCompact(false);
-  }, []);
 
   // opened from "Review answers": show that question again with the current answer selected
   useEffect(() => {
@@ -238,123 +217,110 @@ function LiveScreenBody() {
     return kind === 'unsure' ? a.state === 'unknown' : a.state === 'answered' && a.value === (kind === 'yes');
   };
 
-  if (!mode) return <Redirect href="/report/fork" />;
   const asked = (liveState ? liveState.structure.asked + liveState.asked : 0) + 1;
   const n = Math.min(asked, total);
-  const textMax = textMaxFor(height);
+  // ---- presentation only: how the shared scene (3D body + sheet) should look for this step ----
+  const lieDown = onMovement && needsLieDown(current.id) && lieDownOk !== current.id;
+  const sceneMode = finished || step.kind !== 'movement' ? 'questions' : phase === 'try' ? 'moving' : 'feel';
+  const stepKey = `${finished ? 'done' : step.kind}-${step.id}${reviewing ? '-review' : ''}`;
+  const involved = useMemo(() => [...new Set((liveState?.candidates ?? []).map((c) => muscleName(c.muscleId)))].sort(), [liveState]);
+  useSceneStep({
+    stepKey,
+    mode: lieDown ? 'questions' : sceneMode,
+    instruction: onMovement && phase === 'try' && !lieDown ? localized(current.instruction) : null,
+    progress: { label: t('scene.phaseMove', { n, total }), value: n / total },
+    stage: { movement: current, side, paused: !onMovement || lieDown, highlightIds, autoFocus: !onMovement },
+  });
+  // the animation has played once: show the answers (the sheet opens by itself unless the patient has moved it)
+  const played = useScene((st) => st.playedNonce);
+  const baseline = useRef(played);
+  useEffect(() => {
+    baseline.current = useScene.getState().playedNonce;
+  }, [stepKey]);
+  useEffect(() => {
+    if (played > baseline.current && onMovement && phase === 'try') setPhase('feel');
+  }, [played]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!mode) return <Redirect href="/report/fork" />;
 
   return (
+    <SceneSheetContent contentKey={stepKey} ownIds={[step.id]} onBack={previous}>
+      {finished ? (
+        <>
+          <BotBubble>{t('live.enough')}</BotBubble>
+          {involved.length > 0 ? <InvolvedBubble names={involved} /> : null}
+          <Button label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
+        </>
+      ) : step.kind === 'movement' && lieDown ? (
+        <>
+          <BotBubble tone="caution">{t('scene.lieDown')}</BotBubble>
+          <Button label={t('common.continue')} onPress={() => setLieDownOk(current.id)} />
+        </>
+      ) : step.kind === 'movement' && phase === 'try' ? (
+        <>
+          <BotBubble>
+            <AppText variant="bodyStrong">{localized(current.name)}</AppText>
+            <AppText variant="secondary">{localized(current.instruction)}</AppText>
+            <AppText variant="secondary" color={colors.caution}>
+              {t('moveSafely')}
+            </AppText>
+          </BotBubble>
+          {current.cameraMeasurable ? (
+            <ChipRow>
+              <Chip label={cameraNote ? t('movement.cameraNote') : t('movement.camera')} onPress={() => setCameraNote(true)} />
+            </ChipRow>
+          ) : null}
+          <ChipRow>
+            <Chip large selected label={t('movement.tried')} onPress={() => setPhase('feel')} />
+            <Chip large label={t('movement.skip')} onPress={skipMovement} />
+          </ChipRow>
+        </>
+      ) : step.kind === 'movement' ? (
+        <>
+          <BotBubble>
+            <AppText variant="bodyStrong">{localized(current.name)}</AppText>
+            <AppText variant="secondary">{t('movement.feelTitle')}</AppText>
+          </BotBubble>
+          <ChipRow>
+            {FEEL.map((f) => (
+              <Chip key={f.key} large label={t(f.label)} selected={picked.has(f.key)} onPress={() => toggle(f.key)} />
+            ))}
+            <Chip large label={t('movement.skip')} onPress={skipMovement} />
+          </ChipRow>
+          {picked.size > 0 ? <Button label={t('live.done')} onPress={submitPicked} /> : null}
+        </>
+      ) : question ? (
+        <>
+          <BotBubble>{question.text}</BotBubble>
+          <ChipRow>
+            <Chip large label={t('answer.yes')} selected={selected('yes')} onPress={() => answerQuestion('yes')} />
+            <Chip large label={t('answer.no')} selected={selected('no')} onPress={() => answerQuestion('no')} />
+            <Chip large label={t('answer.notSure')} selected={selected('unsure')} onPress={() => answerQuestion('unsure')} />
+            <Chip large label={t('movement.skip')} onPress={() => answerQuestion('unsure')} />
+          </ChipRow>
+          {involved.length > 0 ? <InvolvedBubble names={involved} /> : null}
+        </>
+      ) : null}
+    </SceneSheetContent>
+  );
+}
+
+/** The model highlights these. Names only, in alphabetical order: no scores, no ranking, no confidence. */
+function InvolvedBubble({ names }: { names: string[] }) {
+  const t = useT();
+  return (
     <>
-      <Screen scroll={false} compact onBack={() => void previous()} banner={<DemoCautionStrip />}>
-        <View style={styles.fill} onLayout={(e: LayoutChangeEvent) => setHeight(e.nativeEvent.layout.height)}>
-          <MovementStage
-            movement={current}
-            side={side}
-            style={styles.viewer}
-            paused={!onMovement}
-            highlightIds={highlightIds}
-            autoFocus={!onMovement}
-            onInteract={setTouching}
-          />
-          <View style={styles.bottom}>
-            <View style={styles.progressRow}>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('live.back')} onPress={previous} style={styles.backBtn}>
-                <Ionicons name="chevron-back" size={24} color={colors.navy} />
-              </Pressable>
-              <View style={styles.progress}>
-                <AppText variant="secondary" color={colors.muted} style={styles.bold} numberOfLines={1}>
-                  {t('live.questionOf', { n, total })}
-                </AppText>
-                <ProgressBar value={n / total} />
-              </View>
-            </View>
-            <CandidateStrip state={liveState} maxShown={namesFor(height)} />
-            <View style={styles.card}>
-              {finished ? (
-                <Button label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
-              ) : step.kind === 'movement' && phase === 'try' ? (
-                <>
-                  <ScrollView style={{ maxHeight: textMax }} scrollEnabled={!touching} showsVerticalScrollIndicator={false}>
-                    <AppText variant="h3" color={colors.navy}>
-                      {localized(current.name)}
-                    </AppText>
-                    <AppText variant="secondary">{localized(current.instruction)}</AppText>
-                    {current.cameraMeasurable ? (
-                      <Pressable accessibilityRole="button" onPress={() => setCameraNote(true)} style={styles.cameraLink}>
-                        <AppText variant="secondary" color={colors.linkTeal} style={styles.bold}>
-                          {cameraNote ? t('movement.cameraNote') : t('movement.camera')}
-                        </AppText>
-                      </Pressable>
-                    ) : null}
-                  </ScrollView>
-                  <View style={styles.row}>
-                    <Pressable accessibilityRole="button" accessibilityLabel={t('movement.tried')} onPress={() => setPhase('feel')} style={[styles.primary, styles.grow2]}>
-                      <AppText variant="button" color={colors.white}>
-                        {t('movement.tried')}
-                      </AppText>
-                    </Pressable>
-                    <Chip label={t('movement.skip')} onPress={skipMovement} />
-                  </View>
-                </>
-              ) : step.kind === 'movement' ? (
-                <>
-                  <AppText variant="h3" color={colors.navy} numberOfLines={2}>
-                    {t('movement.feelTitle')}
-                  </AppText>
-                  <View style={styles.rowWrap}>
-                    {FEEL.map((f) => (
-                      <Chip key={f.key} label={t(f.label)} on={picked.has(f.key)} onPress={() => toggle(f.key)} />
-                    ))}
-                    <Chip label={t('movement.skip')} onPress={skipMovement} />
-                  </View>
-                  {picked.size > 0 ? (
-                    <Pressable accessibilityRole="button" accessibilityLabel={t('live.done')} onPress={submitPicked} style={styles.primary}>
-                      <AppText variant="button" color={colors.white}>
-                        {t('live.done')}
-                      </AppText>
-                    </Pressable>
-                  ) : null}
-                </>
-              ) : question ? (
-                <>
-                  <ScrollView style={{ maxHeight: textMax }} scrollEnabled={!touching} showsVerticalScrollIndicator={false}>
-                    <AppText variant="h2" color={colors.navy}>
-                      {question.text}
-                    </AppText>
-                  </ScrollView>
-                  <View style={styles.row}>
-                    <Chip label={t('answer.yes')} on={selected('yes')} onPress={() => answerQuestion('yes')} />
-                    <Chip label={t('answer.no')} on={selected('no')} onPress={() => answerQuestion('no')} />
-                    <Chip label={t('answer.notSure')} on={selected('unsure')} onPress={() => answerQuestion('unsure')} />
-                    <Chip label={t('movement.skip')} onPress={() => answerQuestion('unsure')} />
-                  </View>
-                </>
-              ) : null}
-            </View>
-          </View>
-        </View>
-      </Screen>
+      <BotBubble>
+        <AppText variant="bodyStrong">{t('scene.involved')}</AppText>
+      </BotBubble>
+      <ChipRow>
+        {names.map((nm) => (
+          <Chip key={nm} label={nm} />
+        ))}
+      </ChipRow>
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  fill: { flex: 1, gap: 6 },
-  // the viewer takes whatever height is left after the controls, but never less than VIEWER_MIN
-  viewer: { flex: 1, minHeight: VIEWER_MIN },
-  bottom: { flexShrink: 0, gap: 6 },
-  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  backBtn: { width: MIN_TAP, height: MIN_TAP, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
-  progress: { flex: 1, gap: 4 },
-  bold: { fontWeight: '700' },
-  card: { gap: 10, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  rowWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  grow: { flexGrow: 1, flexBasis: 74, minWidth: 70 },
-  grow2: { flexGrow: 2, flexBasis: 150 },
-  chip: { minHeight: 52, minWidth: MIN_TAP, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 26, borderWidth: 2, borderColor: colors.fieldBorder, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
-  chipText: { textAlign: 'center', fontWeight: '700' },
-  primary: { minHeight: 52, borderRadius: 26, backgroundColor: colors.teal, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
-  cameraLink: { minHeight: 32, justifyContent: 'center' },
-});
+/** A leg movement the patient should do lying down (none in the shoulder set yet). */
+const needsLieDown = (id: string) => /straight.?leg/i.test(id);

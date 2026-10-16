@@ -3,49 +3,37 @@ import { router } from 'expo-router';
 import { Linking, StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
-import { Screen } from '../../components/Screen';
 import { useT } from '../../store/settings';
-
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
 import { AutoUploadNotice } from '../../server/autoUpload';
-import { useMemo } from 'react';
+import { BotBubble } from '../../ui/chat';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
 import { useTheme } from '../../ui/ThemeProvider';
-import type { Palette } from '../../ui/theme';
 
-/** Still unclear after the re-ask (design P32). The flow stops: to be safe, the patient is sent to a doctor. */
+/** Still unclear after the re-ask (design P32). The flow stops: to be safe, the patient is sent to a doctor. Same calm takeover as the urgent state. */
 export default function Unclear() {
-  const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
+  const { colors } = useTheme();
+  useSceneStep({ stepKey: 'unclear', mode: 'caution', progress: { label: t('unclear.doctor'), value: 1 } });
   return (
-    <Screen
-      scroll={true}
-      footer={
-        <>
-          <Button label={t('unclear.doctor')} onPress={() => router.push('/report/doctor')} />
-          <Button label={t('sos.call')} variant="outline" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} />
-        </>
-      }
-    >
+    <SceneSheetContent contentKey="unclear">
       <SafetyStopNotice />
       <AutoUploadNotice />
-      <View style={styles.center}>
-        <View style={styles.halo}>
-          <View style={styles.disc}>
-            <Ionicons name="help-circle-outline" size={56} color={colors.cautionBase} />
-          </View>
+      <BotBubble tone="caution" label={t('unclear.title')}>
+        <View style={styles.row}>
+          <Ionicons name="help-circle-outline" size={28} color={colors.cautionBase} />
+          <AppText variant="bodyStrong" color={colors.text} style={styles.title} accessibilityRole="header">
+            {t('unclear.title')}
+          </AppText>
         </View>
-        <AppText variant="h1" color={colors.text} style={styles.title}>
-          {t('unclear.title')}
-        </AppText>
-      </View>
-    </Screen>
+      </BotBubble>
+      <Button label={t('unclear.doctor')} onPress={() => router.push('/report/doctor')} />
+      <Button label={`${t('scene.callHelp')} · ${t('scene.callHelpSub')}`} variant="outline" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} />
+    </SceneSheetContent>
   );
 }
 
-const makeStyles = (colors: Palette) => StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 },
-  halo: { width: 160, height: 160, borderRadius: 80, backgroundColor: '#FBF1DC', alignItems: 'center', justifyContent: 'center' },
-  disc: { width: 108, height: 108, borderRadius: 54, backgroundColor: '#F6E3B8', alignItems: 'center', justifyContent: 'center' },
-  title: { textAlign: 'center' },
+const styles = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  title: { flex: 1 },
 });

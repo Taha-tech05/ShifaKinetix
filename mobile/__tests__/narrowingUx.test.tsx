@@ -123,16 +123,16 @@ describe('fix 1: candidates are highlighted from the first screen and follow eve
   it('the screen shows them from the first render, names without bands first, then with bands', async () => {
     const tree = render(createElement(LiveScreen));
     let all = textOf(tree.root);
-    expect(all).toContain('Still narrowing - keep going');
-    expect(all).toContain('Possible so far');
+    // the patient sees the muscles that may be involved by name only: no bands, no strength, no score, no order
+    expect(all).toContain('Muscles that may be involved');
     expect(all).not.toMatch(/Low|Moderate|Higher/);
     await press(tree, 'Yes');
     await press(tree, 'No');
     all = textOf(tree.root);
-    expect(all).toContain('Possible so far');
-    expect(all).toMatch(/Low|Moderate|Higher/);
-    expect(all).toContain('match strength, not a probability');
-    expect(all).not.toMatch(/%/);
+    expect(all).toContain('Muscles that may be involved');
+    expect(all).not.toMatch(/Low|Moderate|Higher/);
+    expect(all).not.toContain('match strength');
+    expect(all).not.toMatch(/%|\d/);
   });
 });
 
@@ -216,10 +216,9 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
         p = p.parent;
       }
     }
-    // the question text is inside a ScrollView of its own
-    const scrolls = tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'ScrollView');
-    expect(scrolls.length).toBe(1);
-    expect(textOf(scrolls[0])).toContain('Is there one small spot on a bone');
+    // the scrolling lives in the shared sheet, not in this route
+    expect(tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'ScrollView').length).toBe(0);
+    expect(src('ui/GlassSheet.tsx')).toContain('BottomSheetScrollView');
   });
 
   it('Yes, No, Not sure and Skip share one row, each at least 48 dp', () => {
@@ -231,15 +230,17 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
     };
     const parents = ['Yes', 'No', 'Not sure', 'Skip'].map((l) => rowOf(buttons(tree, l)[0]));
     expect(new Set(parents).size).toBe(1);
-    const source = src('app/report/movement.tsx');
-    expect(source).toContain('minHeight: 52');
+    const source = src('ui/Chip.tsx');
+    expect(source).toContain('large ? 52');
     expect(TOUCH_MIN).toBe(48);
   });
 
   it('one slim strip carries both messages; the demo banner is not drawn twice', () => {
-    const all = textOf(render(createElement(LiveScreen)).root);
-    expect(all).toContain('Demo only, not for real patients');
-    expect(all).toContain('Move only as far as comfortable. Stop if pain is sharp or severe.');
+    // the scene draws one dismissible demo banner of its own and the caution line on the movement chip; the app-wide strip is off
+    const host = src('ui/SceneHost.tsx');
+    expect(host).toContain("t('demoBanner')");
+    expect(host).toContain('dismissDemo');
+    expect(host).toContain("t('moveSafely')");
     expect(src('app/_layout.tsx')).toContain('compact ? null : <Banner kind="demo" />');
   });
 
@@ -260,9 +261,9 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
   });
 
   it('long text (Urdu, Roman Urdu, large font) scrolls inside the card; the buttons stay', () => {
-    const s = src('app/report/movement.tsx');
-    expect(s).toContain('maxHeight: textMax');
-    expect(s).not.toMatch(/<Screen[^>]*scroll(?!=\{false\})/);
+    // the sheet scrolls its content (drag handle, three snap points); the route does not use a Screen of its own
+    expect(src('app/report/movement.tsx')).not.toContain('<Screen');
+    expect(src('ui/GlassSheet.tsx')).toContain('SNAPS');
     expect(src('flow/liveLayout.ts')).toContain('TEXT_MAX_FRACTION');
   });
 });
@@ -391,7 +392,7 @@ describe('fix 5: back, history and recompute', () => {
     const src2 = src('app/report/movement.tsx');
     expect(src2).toContain("BackHandler.addEventListener('hardwareBackPress'");
     expect(src2).toContain('previous();');
-    expect(src2).toContain('onBack={() => void previous()}'); // the header arrow too
+    expect(src2).toContain('onBack={previous}'); // the back control of the sheet too
   });
 
   it('the result has "Review answers": every current answer with a Change button that reopens it; a change recomputes', async () => {
@@ -440,15 +441,15 @@ describe('the options and the muscle names are shown in full', () => {
       expect(strip).toContain(name);
       const node = texts(tree.root).find((n) => textOf(n) === name);
       expect(node).toBeDefined();
-      expect(node!.props.numberOfLines).toBeUndefined();
+      expect(node!.props.numberOfLines === undefined || node!.props.numberOfLines >= 2).toBe(true); // wraps, never one cut line
     }
     expect(src('components/narrowing/CandidateStrip.tsx')).not.toContain('numberOfLines={1}');
   });
 
   it('the viewer takes the height that is left, the controls are never given a fixed share', () => {
-    const s = src('app/report/movement.tsx');
-    expect(s).toContain('viewer: { flex: 1, minHeight: VIEWER_MIN }');
-    expect(s).toContain("flexWrap: 'wrap'"); // chips wrap instead of being cut
+    // the body fills the screen behind the sheet and is framed in the part above it
+    expect(src('ui/SceneHost.tsx')).toContain('stageBottom');
+    expect(src('ui/chat.tsx')).toContain("flexWrap: 'wrap'"); // chips wrap instead of being cut
   });
 });
 

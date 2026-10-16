@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { Page, styles } from '../components/SafetyUI';
+import { Page, useSafetyStyles } from '../components/SafetyUI';
 import { authorizedReport, DoctorReport, DoctorReportAccess } from './doctorReport';
 
 // Integration component, deliberately absent from the patient Router routes.
 // C's endpoint must enforce doctor authorization; this client check is not security.
 export function DoctorReportScreen({ access }: { access: DoctorReportAccess }) {
+  const styles = useSafetyStyles();
   const [loaded, setLoaded] = useState<{ access: DoctorReportAccess; report: DoctorReport } | null>(null);
   const [failure, setFailure] = useState<{ access: DoctorReportAccess; message: string } | null>(null);
   useEffect(() => {

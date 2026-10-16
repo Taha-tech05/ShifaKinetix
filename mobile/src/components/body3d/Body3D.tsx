@@ -28,7 +28,17 @@ type Control = {
 /** What a tap did: a shoulder selection, a tap on another body area (full project), or nothing. */
 export type PickResult = { type: 'selection'; selection: BodySelection } | { type: 'outOfScope'; packRegion: string } | { type: 'none' };
 
+/** Screen position of a model-space point, for a label that follows it. `facing` is 1 when the point faces the camera and 0 when it has turned away. */
+export interface ProjectedPoint {
+  x: number;
+  y: number;
+  facing: number;
+}
+
 export interface Body3DProps {
+  /** A model-space point to follow on screen (the tapped point). With onProject, called about 30 times a second, never through React state. */
+  anchor?: Point3D | null;
+  onProject?: (p: ProjectedPoint | null) => void;
   pack: LoadedPack;
   layer: BodyLayer;
   /** Mesh names to show highlighted (cyan fill and outline). */
@@ -42,7 +52,8 @@ export interface Body3DProps {
 
 type Highlighted = { part: LoadedPack['parts'][number]; index: number; outline: THREE.Mesh | null };
 
-function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anchor, onProject }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+  const projectTmp = useMemo(() => ({ p: new THREE.Vector3(), cam: new THREE.Vector3() }), []);
   const pivot = useRef<THREE.Group>(null);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const highlighted = useRef<Highlighted[]>([]);
@@ -116,6 +127,30 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
 
     frames.current++;
     if (frames.current === 2) onFirstFrame();
+
+    // follow the anchor on screen: project it with the camera, throttled to every second frame (no React state involved)
+    if (anchor && onProject && frames.current % 2 === 0 && pivot.current) {
+      const { p, cam } = projectTmp;
+      pivot.current.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      // model space -> the fitted group (scale and centre) -> world
+      p.set(anchor.x, anchor.y, anchor.z).sub(fitted.center).multiplyScalar(fitted.scale);
+      const local = p.clone();
+      pivot.current.localToWorld(p);
+      p.project(camera);
+      // facing: compare the outward direction of the point (from the body axis) with the direction to the camera, in pivot space
+      cam.copy(camera.position);
+      pivot.current.worldToLocal(cam);
+      const nx = local.x;
+      const nz = local.z;
+      const nl = Math.hypot(nx, nz) || 1;
+      const vx = cam.x - local.x;
+      const vz = cam.z - local.z;
+      const vl = Math.hypot(vx, vz) || 1;
+      const dot = (nx / nl) * (vx / vl) + (nz / nl) * (vz / vl);
+      const facing = Math.min(1, Math.max(0, (dot + 0.1) / 0.35));
+      onProject({ x: ((p.x + 1) / 2) * size.width, y: ((1 - p.y) / 2) * size.height, facing });
+    }
 
     if (c.tap) {
       const { x, y } = c.tap;

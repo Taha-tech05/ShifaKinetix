@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { AccessibilityInfo, ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
@@ -59,8 +59,22 @@ interface Props {
   approx?: boolean;
   /** Frame the highlighted muscles with an eased camera move when they change (question phase). A touch cancels it. */
   autoFocus?: boolean;
+  /** Scene mode: transparent (the page gradient is the studio) and no buttons of its own; the host draws them and uses the handle. */
+  bare?: boolean;
+  /** Called when the layer (muscle or bone) changes by itself, e.g. because the highlighted structures are bones. */
+  onLayerChange?: (layer: BodyLayer) => void;
+  /** Called once each time the movement animation has played through once (after a start or a replay). */
+  onPlayedOnce?: () => void;
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
+}
+
+/** What a host can do to the stage from outside (floating controls). */
+export interface MovementStageHandle {
+  replay: () => void;
+  resetView: () => void;
+  refocus: () => void;
+  setLayer: (layer: BodyLayer) => void;
 }
 
 /**
@@ -70,7 +84,7 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady }: Props) {
+export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, bare = false, onLayerChange, onPlayedOnce }, ref) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const preset = cameraPreset ?? movement.camera;
@@ -94,6 +108,30 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const control = useRef<AnimControl>({ playing: true, speed: 1, seek: null, t: 0 });
   const rig = useRef<CameraRig | null>(null);
   if (rig.current === null) rig.current = createCameraRig(presetForSide(preset, side));
+
+  const lastT = useRef(0);
+  useImperativeHandle(ref, () => ({
+    replay: () => {
+      lastT.current = 0; // the jump back to the start is not a finished play
+      replay(control.current);
+    },
+    resetView: () => resetView(rig.current!),
+    refocus: () => refocus(rig.current!, FOCUS_SECONDS, reduceMotion),
+    setLayer: (l) => setLayer(l),
+  }));
+  useEffect(() => onLayerChange?.(layer), [layer]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // "played once": the loop clock wraps from near 1 back to near 0. Read-only watch of the clock, it never changes the animation.
+  useEffect(() => {
+    if (!onPlayedOnce || paused) return;
+    lastT.current = 0;
+    const timer = setInterval(() => {
+      const t = control.current.t;
+      if (t < lastT.current - 0.5) onPlayedOnce();
+      lastT.current = t;
+    }, 100);
+    return () => clearInterval(timer);
+  }, [onPlayedOnce, paused, movement.id]);
 
   useEffect(() => {
     if (FORCE_SIMPLE || pack.status !== 'loading') return;
@@ -182,7 +220,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   }
 
   return (
-    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => {
+    <Studio bare={bare} style={[styles.box, bare && styles.bare, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => {
         setBoxWidth(e.nativeEvent.layout.width);
         setBoxHeight(e.nativeEvent.layout.height);
       }}>
@@ -216,6 +254,8 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
             {t('body.loading3d')}
           </AppText>
         </View>
+      ) : bare ? (
+        anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null
       ) : (
         <>
           {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null}
@@ -264,12 +304,23 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
           )}
         </>
       )}
+    </Studio>
+  );
+});
+
+/** The studio card (gradient) or, in scene mode, a transparent box. */
+function Studio({ bare, style, onLayout, children }: { bare: boolean; style: StyleProp<ViewStyle>; onLayout: (e: LayoutChangeEvent) => void; children: React.ReactNode }) {
+  if (bare) return <View style={style} onLayout={onLayout}>{children}</View>;
+  return (
+    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={style} onLayout={onLayout}>
+      {children}
     </LinearGradient>
   );
 }
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
   box: { borderRadius: 24, overflow: 'hidden' },
+  bare: { borderRadius: 0 },
   flex: { flex: 1 },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: 8 },
   simple: { gap: 6 },

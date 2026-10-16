@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Text } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Action, Page, styles } from '../components/SafetyUI';
+import { Action, Page, useSafetyStyles } from '../components/SafetyUI';
 import { GateOutput } from '../gate/evaluate';
 import { openIntakeStore } from '../storage/nativeStore';
 
 export default function GateResult() {
+  const styles = useSafetyStyles();
   const params = useLocalSearchParams<{ intakeId?: string | string[] }>();
   const id = typeof params.intakeId === 'string' ? params.intakeId : '';
   const [gate, setGate] = useState<GateOutput | null>(null);

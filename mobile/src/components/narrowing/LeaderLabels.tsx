@@ -64,6 +64,6 @@ export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width
 const makeStyles = (colors: Palette) => StyleSheet.create({
   line: { position: 'absolute', height: 1.5, backgroundColor: colors.chrome },
   dot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: colors.chrome, borderWidth: 1.5, borderColor: colors.surface },
-  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1, borderColor: colors.lineStrong },
+  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.lineStrong },
   text: { fontWeight: '700', fontSize: 13, lineHeight: 16 },
 });

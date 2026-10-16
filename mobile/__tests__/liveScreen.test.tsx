@@ -20,6 +20,7 @@ import { useSession } from '../src/store/session';
 import { submitMovement, submitQuestion } from '../src/flow/live';
 import { buildMovementResult } from '../src/movement/result';
 import { setLanguage } from '../src/i18n';
+import { useScene } from '../src/ui/scene';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -118,15 +119,14 @@ describe('live screen: one idea at a time, tap to answer', () => {
     expect(textOf(tree.root)).toContain('Is it worse when you lift your arm overhead?');
   });
 
-  it('the model is on top and takes the height that is left; it is the same stage on every step', () => {
+  it('the route publishes the one shared stage (the 3D body lives in report/_layout) and collapses the sheet while the movement plays', () => {
     seedMuscleLeads();
     const tree = render(createElement(LiveScreen));
-    const last = mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { height?: number; style: { flex: number; minHeight: number }; movement: { id: string }; paused: boolean };
-    expect(last.height).toBeUndefined();
-    expect(last.style).toMatchObject({ flex: 1 });
-    expect(last.style.minHeight).toBeGreaterThanOrEqual(80);
-    expect(last.movement.id).toBe('sideways_raise');
-    expect(last.paused).toBe(false);
+    const scene = useScene.getState();
+    expect(scene.stage?.movement.id).toBe('sideways_raise');
+    expect(scene.stage?.paused).toBe(false);
+    expect(scene.mode).toBe('moving'); // sheet at peek, instruction chip over the body
+    expect(scene.instruction).toBe('Slowly lift your arm out to the side, then lower it.');
     expect(tree).toBeDefined();
   });
 
@@ -180,7 +180,6 @@ describe('live screen: one idea at a time, tap to answer', () => {
     await move(['Pain']); // sideways raise: deltoid and supraspinatus
     expect(useSession.getState().liveState?.provisional).toBe(true);
     expect(useSession.getState().liveState?.candidates.length).toBeGreaterThan(0); // highlighted after the first movement, not at the end
-    expect(textOf(tree.root)).toContain('Possible so far');
     await press(tree, 'Skip'); // forward raise skipped
     await move(['Pain']); // can position: supraspinatus
     const state = useSession.getState().liveState!;
@@ -194,7 +193,7 @@ describe('live screen: one idea at a time, tap to answer', () => {
   it('the stage is paused (hand at rest) on question steps and tints the current candidates', async () => {
     useSession.getState().setMode('exact');
     const tree = render(createElement(LiveScreen));
-    const last = () => mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { paused: boolean; highlightIds: string[] };
+    const last = () => useScene.getState().stage as { paused: boolean; highlightIds: string[] };
     expect(last().paused).toBe(true);
     expect(textOf(tree.root)).toContain('Is there one small spot on a bone that is very sore when you press it?');
     await passStructure(tree);

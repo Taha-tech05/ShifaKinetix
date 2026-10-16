@@ -79,10 +79,10 @@ export default function LanguageScreen() {
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
   opt: { minHeight: 64, borderWidth: 2, borderColor: 'transparent' },
-  on: { borderColor: colors.accentFill, backgroundColor: '#F3FAFA' },
+  on: { borderColor: colors.accentFill, backgroundColor: colors.accentTint },
   badge: { width: 48, height: 48, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   col: { flex: 1 },
-  radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: '#A9B6C2', alignItems: 'center', justifyContent: 'center' },
+  radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center' },
   radioOn: { borderColor: colors.accentFill, backgroundColor: colors.accentFill },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.surface },
 });

@@ -16,6 +16,7 @@ module.exports = {
     '^@expo/vector-icons$': '<rootDir>/__tests__/support/vector-icons.tsx',
     '^expo-linear-gradient$': '<rootDir>/__tests__/support/linear-gradient.tsx',
     '^expo-blur$': '<rootDir>/__tests__/support/expo-blur.tsx',
+    '^react-native-reanimated$': '<rootDir>/__tests__/support/reanimated.tsx',
     '^expo-router$': '<rootDir>/__tests__/support/expo-router.tsx',
   },
   // node_modules stay untouched, except three
