@@ -10,7 +10,7 @@ import type { Movement } from '../../movement/movements';
 import type { Side } from '../../movement/rig';
 import type { BodyLayer } from '../../regions/types';
 import { useT } from '../../store/settings';
-import { colors, gradients } from '../../theme';
+import { gradients } from '../../theme';
 import { AppText } from '../AppText';
 import { Boundary } from '../body3d/Boundary';
 import { boxFocusView, createCameraRig, FOCUS_SECONDS, presetForSide, refocus, resetView, setPreset, startFocus } from '../body3d/cameraRig';
@@ -27,6 +27,8 @@ import { SegmentedBody } from '../body3d/SegmentedBody';
 import { usePack } from '../body3d/usePack';
 import { useScreenFocused } from '../body3d/useScreenFocused';
 import { MovementPlayer } from './MovementPlayer';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 // EXPO_PUBLIC_SIMPLE_ANIM=1 shows the simple diagram instead of the 3D body (also used when 3D is switched off).
 const FORCE_SIMPLE = process.env.EXPO_PUBLIC_SIMPLE_ANIM === '1' || process.env.EXPO_PUBLIC_DISABLE_3D === '1';
@@ -69,6 +71,8 @@ interface Props {
  * never depend on it.
  */
 export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const preset = cameraPreset ?? movement.camera;
   const t = useT();
   const focused = useScreenFocused();
@@ -207,7 +211,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
       ) : null}
       {!ready || !firstFrame ? (
         <View style={styles.loading} pointerEvents="none">
-          <ActivityIndicator color={colors.teal} />
+          <ActivityIndicator color={colors.accent} />
           <AppText variant="secondary" color={colors.muted}>
             {t('body.loading3d')}
           </AppText>
@@ -220,7 +224,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
               const on = l.value === layer;
               return (
                 <Pressable key={l.value} accessibilityRole="button" accessibilityLabel={l.label} accessibilityState={{ selected: on }} onPress={() => setLayer(l.value)} style={[styles.pill, on && styles.pillOn]}>
-                  <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+                  <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.bold}>
                     {l.label}
                   </AppText>
                 </Pressable>
@@ -230,23 +234,23 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
           <View style={styles.buttons}>
             {paused ? null : (
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.replay')} onPress={() => replay(control.current)} style={styles.pill}>
-              <Ionicons name="refresh" size={18} color={colors.navy} />
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <Ionicons name="refresh" size={18} color={colors.text} />
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t('movement.replay')}
               </AppText>
             </Pressable>
             )}
             {autoFocus && highlightIds && highlightIds.length > 0 ? (
               <Pressable accessibilityRole="button" accessibilityLabel={t('movement.refocus')} onPress={() => refocus(rig.current!, FOCUS_SECONDS, reduceMotion)} style={styles.pill}>
-                <Ionicons name="scan" size={18} color={colors.navy} />
-                <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+                <Ionicons name="scan" size={18} color={colors.text} />
+                <AppText variant="secondary" color={colors.text} style={styles.bold}>
                   {t('movement.refocus')}
                 </AppText>
               </Pressable>
             ) : null}
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.resetView')} onPress={() => resetView(rig.current!)} style={styles.pill}>
-              <Ionicons name="locate" size={18} color={colors.navy} />
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <Ionicons name="locate" size={18} color={colors.text} />
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t('movement.resetView')}
               </AppText>
             </Pressable>
@@ -264,7 +268,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   box: { borderRadius: 24, overflow: 'hidden' },
   flex: { flex: 1 },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: 8 },
@@ -274,6 +278,6 @@ const styles = StyleSheet.create({
   buttons: { position: 'absolute', bottom: 10, end: 10, flexDirection: 'row', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '100%' },
   hint: { position: 'absolute', top: 14, end: 12, maxWidth: '45%' },
   pill: { minHeight: 44, minWidth: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 12, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: colors.line },
-  pillOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  pillOn: { backgroundColor: colors.chrome, borderColor: colors.chrome },
   bold: { fontWeight: '700' },
 });

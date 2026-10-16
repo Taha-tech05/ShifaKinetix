@@ -1,11 +1,13 @@
 import { View } from 'react-native';
 import { useT } from '../store/settings';
-import { colors } from '../theme';
+
 import { AppText } from './AppText';
 import { ProgressBar } from './ProgressBar';
+import { useTheme } from '../ui/ThemeProvider';
 
 /** "Step 1 of 5" label above a progress bar, at the top of every flow screen. */
 export function StepProgress({ step, total, label }: { step: number; total: number; label?: string }) {
+  const { colors } = useTheme();
   const t = useT();
   return (
     <View style={{ gap: 8 }}>

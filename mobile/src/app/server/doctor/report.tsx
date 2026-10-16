@@ -6,10 +6,12 @@ import { DoctorReportScreen } from '../../../reports/DoctorReportScreen';
 import type { DoctorReportAccess } from '../../../reports/doctorReport';
 import { DoctorRequired, useDoctorApi } from '../../../server/doctorAccess';
 import { useServer } from '../../../server/connection';
-import { colors, spacing } from '../../../theme';
+import { spacing } from '../../../theme';
+import { useTheme } from '../../../ui/ThemeProvider';
 
 /** The existing DoctorReportScreen, fed by the server's doctor-report endpoint with the role the SERVER reported. */
 export default function DoctorReportRoute() {
+  const { colors } = useTheme();
   const doctor = useDoctorApi();
   const id = useServer((s) => s.lookupId);
   const api = doctor?.api;

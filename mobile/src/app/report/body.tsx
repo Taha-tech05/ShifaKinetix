@@ -12,7 +12,9 @@ import { highlightNamesFor } from '../../regions/regionMap';
 import { regionLabel, selectionKey } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, radius, shadows } from '../../theme';
+import { radius, shadows } from '../../theme';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /**
  * P5 (design): body with tappable spots and a bottom sheet showing the selected spot and Next.
@@ -20,6 +22,8 @@ import { colors, radius, shadows } from '../../theme';
  * of that side and sub-region in the active layer).
  */
 export default function Body() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const mode = useSession((s) => s.mode);
   const selection = useSession((s) => s.selection);
@@ -37,7 +41,7 @@ export default function Body() {
           <AppText variant="secondary" color={colors.muted}>
             {t('body.selectedSpot')}
           </AppText>
-          <AppText variant="h2" color={colors.navy}>
+          <AppText variant="h2" color={colors.text}>
             {label ?? '—'}
           </AppText>
         </View>
@@ -53,7 +57,7 @@ export default function Body() {
   return (
     <Screen scroll={false} onBack={() => router.back()} footer={sheet} bareFooter>
       <StepProgress step={1} total={5} />
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {t('body.title')}
       </AppText>
       <BodyViewer
@@ -67,9 +71,9 @@ export default function Body() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   sheet: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopStartRadius: radius.sheet,
     borderTopEndRadius: radius.sheet,
     paddingHorizontal: 20,

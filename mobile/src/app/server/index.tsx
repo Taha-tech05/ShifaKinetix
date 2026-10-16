@@ -6,10 +6,15 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { Problem, ServerScreen } from '../../server/ServerScreen';
 import { useServer } from '../../server/connection';
-import { colors, radius, spacing } from '../../theme';
+import { radius, spacing } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /** Connect to Person C's server. One tap signs in to a fixed demo account; the role shown is what the server reports. */
 export default function ServerConnection() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { status, baseUrl, identity, error, signInDemo, connectWithToken, setBaseUrl, disconnect } = useServer();
   const [showToken, setShowToken] = useState(false);
   const [token, setToken] = useState('');
@@ -20,7 +25,7 @@ export default function ServerConnection() {
     <ServerScreen title="Server connection">
       {connected ? (
         <Card>
-          <AppText variant="bodyStrong" color={colors.navy}>Connected</AppText>
+          <AppText variant="bodyStrong" color={colors.text}>Connected</AppText>
           <AppText>{`Signed in as ${identity.id} (${identity.role}), confirmed by the server.`}</AppText>
           <AppText variant="secondary" color={colors.muted}>{baseUrl}</AppText>
           {identity.role === 'patient' ? (
@@ -35,12 +40,12 @@ export default function ServerConnection() {
         </Card>
       ) : (
         <Card>
-          <AppText variant="bodyStrong" color={colors.navy}>Not connected</AppText>
+          <AppText variant="bodyStrong" color={colors.text}>Not connected</AppText>
           <AppText variant="secondary" color={colors.muted}>
             Safety checks work without a server. The server decides the role of each account.
           </AppText>
           <View style={styles.field}>
-            <AppText variant="secondary" color={colors.navy} style={styles.label}>API address</AppText>
+            <AppText variant="secondary" color={colors.text} style={styles.label}>API address</AppText>
             <TextInput accessibilityLabel="API address" value={baseUrl} onChangeText={setBaseUrl} placeholder="http://10.0.2.2:8000"
               editable={!busy} autoCapitalize="none" autoCorrect={false} style={styles.input} />
           </View>
@@ -51,7 +56,7 @@ export default function ServerConnection() {
           {showToken ? (
             <>
               <View style={styles.field}>
-                <AppText variant="secondary" color={colors.navy} style={styles.label}>Access token</AppText>
+                <AppText variant="secondary" color={colors.text} style={styles.label}>Access token</AppText>
                 <TextInput accessibilityLabel="Access token" value={token} onChangeText={setToken} placeholder="Server-issued access token"
                   editable={!busy} secureTextEntry autoCapitalize="none" autoCorrect={false} style={styles.input} />
               </View>
@@ -66,8 +71,8 @@ export default function ServerConnection() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   field: { gap: 4 },
   label: { fontWeight: '700' },
-  input: { minHeight: 48, borderWidth: 2, borderColor: colors.fieldBorder, borderRadius: radius.card, paddingHorizontal: spacing.md, backgroundColor: colors.white },
+  input: { minHeight: 48, borderWidth: 2, borderColor: colors.lineStrong, borderRadius: radius.card, paddingHorizontal: spacing.md, backgroundColor: colors.surface },
 });

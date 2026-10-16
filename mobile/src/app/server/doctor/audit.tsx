@@ -5,7 +5,8 @@ import type { AuditTrail } from '../../../reports/validation';
 import { DoctorRequired, useDoctorApi } from '../../../server/doctorAccess';
 import { useServer } from '../../../server/connection';
 import { Problem, ServerScreen } from '../../../server/ServerScreen';
-import { colors } from '../../../theme';
+import { useTheme } from '../../../ui/ThemeProvider';
+
 
 const shortValue = (v: unknown): string => {
   if (v === null || v === undefined) return 'unknown';
@@ -15,6 +16,7 @@ const shortValue = (v: unknown): string => {
 
 /** Read-only history of one assessment: every server gate run, every answer as received, every context snapshot, every doctor view. */
 export default function DoctorAudit() {
+  const { colors } = useTheme();
   const doctor = useDoctorApi();
   const id = useServer((s) => s.lookupId);
   const [state, setState] = useState<{ audit?: AuditTrail; error?: string }>({});
@@ -39,26 +41,26 @@ export default function DoctorAudit() {
       {a ? (
         <>
           <Card>
-            <AppText variant="bodyStrong" color={colors.navy}>{`Server gate runs (${a.gateRuns.length})`}</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>{`Server gate runs (${a.gateRuns.length})`}</AppText>
             <AppText variant="secondary" color={colors.muted}>{`Rule version ${a.ruleVersion}`}</AppText>
             {a.gateRuns.map((r) => (
               <AppText key={r.id}>{`${r.ts} · ${r.cause} · ${r.verdict}${r.firedRules.length ? ` · ${r.firedRules.map((f) => `${f.ruleId} (${f.reason}; ${f.source})`).join('; ')}` : ''}`}</AppText>
             ))}
           </Card>
           <Card>
-            <AppText variant="bodyStrong" color={colors.navy}>{`Answers as received (${a.answerHistory.length})`}</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>{`Answers as received (${a.answerHistory.length})`}</AppText>
             {a.answerHistory.map((x) => (
               <AppText key={x.seq}>{`#${x.seq} ${x.receivedAt} · ${x.questionId} = ${x.answer.state === 'unknown' ? 'unknown' : shortValue(x.answer.value)}`}</AppText>
             ))}
           </Card>
           <Card>
-            <AppText variant="bodyStrong" color={colors.navy}>{`Context snapshots (${a.contextHistory.length})`}</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>{`Context snapshots (${a.contextHistory.length})`}</AppText>
             {a.contextHistory.map((x) => (
               <AppText key={x.seq}>{`#${x.seq} ${x.receivedAt} · ${shortValue(x.context.regionId)} · ${Array.isArray(x.context.appAnswers) ? x.context.appAnswers.length : 0} app answers · ${Array.isArray(x.context.movements) ? x.context.movements.length : 0} movements`}</AppText>
             ))}
           </Card>
           <Card>
-            <AppText variant="bodyStrong" color={colors.navy}>{`Doctor views (${a.doctorActions.length})`}</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>{`Doctor views (${a.doctorActions.length})`}</AppText>
             {a.doctorActions.map((d) => <AppText key={d.id}>{`${d.at} · ${d.doctorId} · ${d.action}`}</AppText>)}
           </Card>
         </>

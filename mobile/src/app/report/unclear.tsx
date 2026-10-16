@@ -5,12 +5,17 @@ import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { Screen } from '../../components/Screen';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
 import { AutoUploadNotice } from '../../server/autoUpload';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /** Still unclear after the re-ask (design P32). The flow stops: to be safe, the patient is sent to a doctor. */
 export default function Unclear() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <Screen
@@ -30,7 +35,7 @@ export default function Unclear() {
             <Ionicons name="help-circle-outline" size={56} color={colors.cautionBase} />
           </View>
         </View>
-        <AppText variant="h1" color={colors.navy} style={styles.title}>
+        <AppText variant="h1" color={colors.text} style={styles.title}>
           {t('unclear.title')}
         </AppText>
       </View>
@@ -38,7 +43,7 @@ export default function Unclear() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 },
   halo: { width: 160, height: 160, borderRadius: 80, backgroundColor: '#FBF1DC', alignItems: 'center', justifyContent: 'center' },
   disc: { width: 108, height: 108, borderRadius: 54, backgroundColor: '#F6E3B8', alignItems: 'center', justifyContent: 'center' },

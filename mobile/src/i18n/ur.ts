@@ -312,6 +312,10 @@ export const ur: Translations = {
     signOut: 'سائن آؤٹ',
     about: 'تعارف اور رازداری',
     restartNote: 'سمت کی تبدیلی مکمل کرنے کے لیے ایپ دوبارہ شروع کریں۔',
+    theme: 'ظاہری شکل',
+    themeSystem: 'سسٹم',
+    themeLight: 'روشن',
+    themeDark: 'گہرا',
   },
   about: {
     title: 'تعارف اور رازداری',

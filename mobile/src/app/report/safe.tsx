@@ -11,12 +11,17 @@ import { routeAfterGate, routeAfterSafe } from '../../flow/intake';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+
 import { openSafetySession } from '../../gate/safetySession';
 import { AssessmentSync } from '../../gate/AssessmentSync';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /** SAFE verdict (design P9). Only now can the patient go on to movements (region mode) or follow-up questions (exact mode). */
 export default function Safe() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const mode = useSession((s) => s.mode) ?? 'region';
   const region = mode === 'region';
@@ -41,10 +46,10 @@ export default function Safe() {
         <AssessmentSync />
         <View style={styles.center}>
           <View style={styles.halo}>
-            <Ionicons name="checkmark-circle" size={96} color={colors.teal} />
+            <Ionicons name="checkmark-circle" size={96} color={colors.accent} />
           </View>
           <StatusChip status="safe" label={t('safe.chip')} />
-          <AppText variant="h1" color={colors.navy} style={styles.title}>
+          <AppText variant="h1" color={colors.text} style={styles.title}>
             {t('safe.title')}
           </AppText>
           <AppText variant="body" color={colors.muted} style={styles.title}>
@@ -54,7 +59,7 @@ export default function Safe() {
         <Card row>
           <IconTile icon={region ? 'body-outline' : 'chatbubble-ellipses-outline'} tone="teal" />
           <View style={styles.col}>
-            <AppText variant="bodyStrong" color={colors.navy}>
+            <AppText variant="bodyStrong" color={colors.text}>
               {region ? t('safe.cardMovements') : t('safe.cardQuestions')}
             </AppText>
             <AppText variant="secondary" color={colors.muted}>
@@ -67,9 +72,9 @@ export default function Safe() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14 },
-  halo: { width: 150, height: 150, borderRadius: 75, backgroundColor: colors.tealTint, alignItems: 'center', justifyContent: 'center' },
+  halo: { width: 150, height: 150, borderRadius: 75, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
   title: { textAlign: 'center' },
   col: { flex: 1 },
 });

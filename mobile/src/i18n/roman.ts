@@ -312,6 +312,10 @@ export const roman: Translations = {
     signOut: 'Sign out',
     about: 'Taaruf aur raazdari',
     restartNote: 'Layout ki simt tabdeel karne ke liye app dobara shuru karein.',
+    theme: 'Zaahiri shakl',
+    themeSystem: 'System',
+    themeLight: 'Roshan',
+    themeDark: 'Gehra',
   },
   about: {
     title: 'Taaruf aur raazdari',

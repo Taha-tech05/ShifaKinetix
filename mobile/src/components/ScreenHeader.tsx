@@ -1,44 +1,40 @@
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
+import { useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useT } from '../store/settings';
-import { colors, gradients } from '../theme';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
+import { FloatingControl } from '../ui/FloatingControl';
 import { AppText } from './AppText';
 import { LanguageToggle } from './LanguageToggle';
 import { SosButton } from './SosButton';
 
 interface Props {
   onBack?: () => void;
-  /** Transparent bar for use over the Home hero gradient; shows the logo instead of a back arrow. */
+  /** Kept for old call sites: the bar is transparent over the gradient on every screen now. */
   hero?: boolean;
-  /** A slimmer bar (52 instead of 56 dp). */
   compact?: boolean;
   /** Text of the role chip. The patient screens use the default; the doctor screens say Doctor. */
   roleLabel?: string;
 }
 
-/** Top bar: back arrow (or logo), role chip, EN/Urdu/Roman toggle, SOS. Every patient screen has it. */
-export function ScreenHeader({ onBack, hero = false, compact = false, roleLabel }: Props) {
+/** Top bar over the gradient: glass back button (or logo), role chip, EN / Urdu / Roman toggle, SOS. */
+export function ScreenHeader({ onBack, compact = false, roleLabel }: Props) {
   const t = useT();
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
-    <View style={[styles.bar, !hero && styles.solid, compact && styles.barCompact]}>
+    <View style={[styles.bar, compact && styles.barCompact]}>
       {onBack ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          onPress={onBack}
-          style={styles.back}
-        >
-          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={26} color={colors.white} />
-        </Pressable>
+        <FloatingControl icon={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} onPress={onBack} />
       ) : (
-        <LinearGradient colors={[...gradients.logo]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.logo}>
-          <Ionicons name="pulse" size={22} color={colors.white} />
-        </LinearGradient>
+        <View style={styles.logo}>
+          <Ionicons name="pulse" size={22} color={colors.onAccent} />
+        </View>
       )}
       <View style={styles.chip}>
         <View style={styles.dot} />
-        <AppText variant="secondary" color={colors.white} style={styles.chipText}>
+        <AppText variant="secondary" color={colors.text} style={styles.chipText}>
           {roleLabel ?? t('common.patient')}
         </AppText>
       </View>
@@ -49,31 +45,13 @@ export function ScreenHeader({ onBack, hero = false, compact = false, roleLabel 
   );
 }
 
-const styles = StyleSheet.create({
-  bar: { height: 56, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
-  solid: { backgroundColor: colors.navy },
-  barCompact: { height: 52, paddingHorizontal: 8 },
-  back: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  chip: {
-    height: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 8,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#7FD0D0' },
-  chipText: { fontWeight: '700' },
-  spacer: { flex: 1 },
-});
+const makeStyles = (colors: Palette) =>
+  StyleSheet.create({
+    bar: { height: 64, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
+    barCompact: { height: 56, paddingHorizontal: 8 },
+    logo: { width: 40, height: 40, borderRadius: 14, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    chip: { height: 32, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, borderRadius: 16, backgroundColor: colors.glassFill, borderWidth: 1, borderColor: colors.glassBorder },
+    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.accent },
+    chipText: { fontWeight: '700' },
+    spacer: { flex: 1 },
+  });

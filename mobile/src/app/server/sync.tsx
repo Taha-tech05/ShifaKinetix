@@ -9,10 +9,12 @@ import { savedAssessment, uploadSavedAssessment } from '../../server/uploadAsses
 import type { UploadResult } from '../../server/uploadAssessment';
 import { shownVerdict, verdictText } from '../../server/verdict';
 import { useSession } from '../../store/session';
-import { colors } from '../../theme';
+import { useTheme } from '../../ui/ThemeProvider';
+
 
 /** Sync status and upload for the patient. The role check uses what the server reported when the person signed in. */
 export default function ServerSync() {
+  const { colors } = useTheme();
   const { status, identity, api } = useServer();
   const phone = useSession((s) => s.gateVerdict);
   const [info, setInfo] = useState<{ intakeId: string | null; pending: number } | null>(null);
@@ -37,7 +39,7 @@ export default function ServerSync() {
     return (
       <ServerScreen title="Sync status">
         <Card>
-          <AppText variant="bodyStrong" color={colors.navy}>
+          <AppText variant="bodyStrong" color={colors.text}>
             {status === 'connected' ? 'A patient account is required for this screen.' : 'Not connected to the server.'}
           </AppText>
           <Button label="Server connection" onPress={() => router.replace('/server' as never)} />
@@ -66,15 +68,15 @@ export default function ServerSync() {
   return (
     <ServerScreen title="Sync status">
       <Card>
-        <AppText variant="bodyStrong" color={colors.navy}>This phone</AppText>
+        <AppText variant="bodyStrong" color={colors.text}>This phone</AppText>
         <AppText>{info?.intakeId ? `Assessment ${info.intakeId}` : 'No saved assessment yet. Complete the safety questions first.'}</AppText>
         <AppText variant="secondary" color={colors.muted}>{info ? `${info.pending} saved event(s) waiting to upload` : 'Checking saved data…'}</AppText>
         <AppText variant="secondary" color={colors.muted}>{`Signed in as ${identity.id}, confirmed by the server.`}</AppText>
         <Button label={busy ? 'Uploading…' : 'Upload saved assessment'} disabled={busy || !info?.intakeId} onPress={() => void upload()} />
       </Card>
       <Card>
-        <AppText variant="bodyStrong" color={colors.navy}>Safety result</AppText>
-        <AppText accessibilityRole="alert" color={shown.verdict === 'RED_FLAG' ? colors.danger : colors.navy}>{verdictText(shown)}</AppText>
+        <AppText variant="bodyStrong" color={colors.text}>Safety result</AppText>
+        <AppText accessibilityRole="alert" color={shown.verdict === 'RED_FLAG' ? colors.danger : colors.text}>{verdictText(shown)}</AppText>
         <AppText variant="secondary" color={colors.muted}>{`Phone: ${phone ?? 'not checked'}. Server: ${serverVerdict ?? 'not confirmed'}.`}</AppText>
         {result && result.remaining > 0 ? (
           <AppText variant="secondary" color={colors.caution}>{`${result.sent} uploaded, ${result.remaining} still waiting. Upload again.`}</AppText>

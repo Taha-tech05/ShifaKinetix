@@ -15,6 +15,7 @@ module.exports = {
     '^react-native-safe-area-context$': '<rootDir>/__tests__/support/safe-area.tsx',
     '^@expo/vector-icons$': '<rootDir>/__tests__/support/vector-icons.tsx',
     '^expo-linear-gradient$': '<rootDir>/__tests__/support/linear-gradient.tsx',
+    '^expo-blur$': '<rootDir>/__tests__/support/expo-blur.tsx',
     '^expo-router$': '<rootDir>/__tests__/support/expo-router.tsx',
   },
   // node_modules stay untouched, except three

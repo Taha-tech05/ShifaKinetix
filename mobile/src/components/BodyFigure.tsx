@@ -1,6 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients } from '../theme';
+import { gradients } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export interface Hotspot {
   id: string;
@@ -24,6 +27,8 @@ interface Props {
 const SOFT = ['#F4F8FB', '#DCE6EE'] as const;
 
 function Part({ style }: { style: object }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return <LinearGradient colors={[...SOFT]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.part, style]} />;
 }
 
@@ -32,6 +37,8 @@ function Part({ style }: { style: object }) {
  * Stand-in until the 3D body is wired in; the figure has tappable hotspots for the shoulders.
  */
 export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onHotspot, marker = null, children }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <LinearGradient
       colors={[...gradients.studio]}
@@ -71,7 +78,7 @@ export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onH
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   studio: { borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   fill: { flex: 1 },
   figure: { width: '70%', height: '88%' },
@@ -85,7 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     backgroundColor: colors.danger,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: colors.surface,
   },
   hit: { position: 'absolute', width: 48, height: 48, marginStart: -24, marginTop: -24, alignItems: 'center', justifyContent: 'center' },
   ring: {
@@ -97,5 +104,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ringOn: { backgroundColor: 'rgba(192,57,43,0.32)', transform: [{ scale: 1.2 }] },
-  dot2: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.danger, borderWidth: 2, borderColor: colors.white },
+  dot2: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.danger, borderWidth: 2, borderColor: colors.surface },
 });

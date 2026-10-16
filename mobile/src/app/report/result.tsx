@@ -26,8 +26,10 @@ import { sideOfRegion } from '../../regions/shoulder';
 import { narrowingInputFrom, useSession } from '../../store/session';
 import type { HistoryEntry } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, radius, shadows } from '../../theme';
+import { radius, shadows } from '../../theme';
 import type { CameraPreset } from '../../components/body3d/cameraRig';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /** Upper-body camera for the result (right-side values; the left side mirrors them): front-oblique, or from behind. */
 const FRONT: CameraPreset = { position: [-0.55, 1.35, 1.35], target: [-0.12, 1.25, 0], fov: 45, zoom: 1 };
@@ -49,11 +51,13 @@ function answerWords(entry: HistoryEntry, t: ReturnType<typeof useT>): string {
 
 /** "Review answers": every current answer in the order given, each with a Change button that reopens that question. */
 function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   if (entries.length === 0) return null;
   return (
     <View style={styles.review}>
-      <AppText variant="h3" color={colors.navy}>
+      <AppText variant="h3" color={colors.text}>
         {t('live.reviewAnswers')}
       </AppText>
       <AppText variant="secondary" color={colors.muted}>
@@ -62,14 +66,14 @@ function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
       {entries.map((e) => (
         <Pressable key={e.seq} accessibilityRole="button" accessibilityLabel={`${t('live.change')}: ${evidenceName(e.id)}`} onPress={() => router.push(`/report/movement?review=${e.id}` as never)} style={styles.reviewRow}>
           <View style={styles.col}>
-            <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+            <AppText variant="secondary" color={colors.text} style={styles.bold}>
               {evidenceName(e.id)}
             </AppText>
             <AppText variant="secondary" color={colors.muted}>
               {answerWords(e, t)}
             </AppText>
           </View>
-          <AppText variant="secondary" color={colors.linkTeal} style={styles.bold}>
+          <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
             {t('live.change')}
           </AppText>
         </Pressable>
@@ -79,15 +83,17 @@ function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
 }
 
 function CandidateRow({ c }: { c: LiveCandidate }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <View style={styles.item}>
       <View style={styles.itemTop}>
-        <AppText variant="bodyStrong" color={colors.navy} style={styles.col}>
+        <AppText variant="bodyStrong" color={colors.text} style={styles.col}>
           {muscleName(c.muscleId)}
         </AppText>
         <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
-          <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+          <AppText variant="secondary" color={colors.text} style={styles.bold}>
             {t(`live.band.${c.band}` as const)}
           </AppText>
         </View>
@@ -127,6 +133,8 @@ export default function Result() {
 }
 
 function ResultBody() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const saved = useSession((s) => s.liveState);
   const history = useSession((s) => s.history);
@@ -169,7 +177,7 @@ function ResultBody() {
       >
         <AutoUploadNotice />
         <StepProgress step={5} total={5} />
-        <AppText variant="h1" color={colors.navy} style={styles.title}>
+        <AppText variant="h1" color={colors.text} style={styles.title}>
           {t('result.title')}
         </AppText>
         <NarrowingChips />
@@ -181,15 +189,15 @@ function ResultBody() {
         ) : null}
         {doctor && !categoryResult ? (
           <Card tone="mint" row>
-            <Ionicons name="medkit-outline" size={24} color={colors.tealDark} />
-            <AppText variant="body" color={colors.navy} style={styles.col}>
+            <Ionicons name="medkit-outline" size={24} color={colors.accentText} />
+            <AppText variant="body" color={colors.text} style={styles.col}>
               {t('result.suggestDoctor')}
             </AppText>
           </Card>
         ) : null}
         {categoryResult ? (
           <>
-            <AppText variant="h2" color={colors.navy}>
+            <AppText variant="h2" color={colors.text}>
               {categoryResult === 'UNCLEAR' ? categoryName('UNCLEAR') : t('live.notMuscleTitle')}
             </AppText>
             <AppText variant="body" color={colors.muted}>
@@ -262,17 +270,17 @@ function ResultBody() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   title: { paddingTop: 4 },
   bold: { fontWeight: '700' },
   italic: { fontStyle: 'italic' },
   col: { flex: 1 },
   review: { gap: 8, paddingTop: 4 },
-  reviewRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
-  item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.white, ...shadows.card },
+  reviewRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.card, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
+  item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.surface, ...shadows.card },
   itemTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   band: { paddingHorizontal: 10, minHeight: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  bandLow: { backgroundColor: colors.neutralTint },
+  bandLow: { backgroundColor: colors.neutral },
   bandModerate: { backgroundColor: colors.cautionTint },
-  bandHigher: { backgroundColor: colors.tealTint },
+  bandHigher: { backgroundColor: colors.accentTint },
 });

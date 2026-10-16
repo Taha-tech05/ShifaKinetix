@@ -9,10 +9,12 @@ import { forkResult } from '../../flow/intake';
 import type { ForkChoice } from '../../flow/intake';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+import { useTheme } from '../../ui/ThemeProvider';
+
 
 /** First question of the flow (design P29): can the patient point to the exact spot? "Not sure" gives region mode. */
 export default function Fork() {
+  const { colors } = useTheme();
   const t = useT();
   const [picked, setPicked] = useState<ForkChoice | null>(null);
   const setMode = useSession((s) => s.setMode);
@@ -35,7 +37,7 @@ export default function Fork() {
       }
     >
       <StepProgress step={1} total={5} />
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {t('fork.title')}
       </AppText>
       <AppText variant="body" color={colors.muted}>

@@ -9,7 +9,10 @@ import { answered, unknown } from '../../questions/answer';
 import type { Question, QuestionType } from '../../questions/types';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, radius, shadows } from '../../theme';
+import { radius, shadows } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 // Symptom basics (design P27). Content is draft, awaiting clinician review. "Not sure" is stored as unknown.
 const q = (id: string, type: QuestionType, text: string): Question => ({ questionId: id, type, text, source: 'PLACEHOLDER, Person C replaces', label: 'draft, awaiting clinician review' });
@@ -35,6 +38,8 @@ const ALWAYS: { id: string; label: TKey }[] = [
 ];
 
 function ChoiceRow({ question, title, options }: { question: Question; title: string; options: { id: string; label: string }[] }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const answers = useSession((s) => s.answers);
   const recordAnswer = useSession((s) => s.recordAnswer);
@@ -42,7 +47,7 @@ function ChoiceRow({ question, title, options }: { question: Question; title: st
   const all = [...options, { id: '__unsure', label: t('answer.notSure') }];
   return (
     <View style={styles.group}>
-      <AppText variant="bodyStrong" color={colors.navy}>
+      <AppText variant="bodyStrong" color={colors.text}>
         {title}
       </AppText>
       <View style={styles.row}>
@@ -58,7 +63,7 @@ function ChoiceRow({ question, title, options }: { question: Question; title: st
               onPress={() => recordAnswer(unsure ? unknown(question) : answered(question, o.id))}
               style={[styles.chip, on && styles.chipOn]}
             >
-              <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.chipText} numberOfLines={2}>
+              <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.chipText} numberOfLines={2}>
                 {o.label}
               </AppText>
             </Pressable>
@@ -70,6 +75,8 @@ function ChoiceRow({ question, title, options }: { question: Question; title: st
 }
 
 function PainNow({ title }: { title: string }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const answers = useSession((s) => s.answers);
   const recordAnswer = useSession((s) => s.recordAnswer);
@@ -77,7 +84,7 @@ function PainNow({ title }: { title: string }) {
   const steps = Array.from({ length: 11 }, (_, i) => i);
   return (
     <View style={styles.group}>
-      <AppText variant="bodyStrong" color={colors.navy}>
+      <AppText variant="bodyStrong" color={colors.text}>
         {title}
       </AppText>
       <View style={styles.row}>
@@ -92,7 +99,7 @@ function PainNow({ title }: { title: string }) {
               onPress={() => recordAnswer(answered(Q_NOW, n))}
               style={[styles.num, on && styles.chipOn]}
             >
-              <AppText variant="bodyStrong" color={on ? colors.white : colors.navy}>
+              <AppText variant="bodyStrong" color={on ? colors.onAccent : colors.text}>
                 {n}
               </AppText>
             </Pressable>
@@ -105,7 +112,7 @@ function PainNow({ title }: { title: string }) {
           onPress={() => recordAnswer(unknown(Q_NOW))}
           style={[styles.chip, current?.state === 'unknown' && styles.chipOn]}
         >
-          <AppText variant="secondary" color={current?.state === 'unknown' ? colors.white : colors.navy} style={styles.chipText}>
+          <AppText variant="secondary" color={current?.state === 'unknown' ? colors.onAccent : colors.text} style={styles.chipText}>
             {t('answer.notSure')}
           </AppText>
         </Pressable>
@@ -116,6 +123,8 @@ function PainNow({ title }: { title: string }) {
 
 /** P27: four short questions about the pain. Next is enabled when every one has an answer, "not sure" included. */
 export default function Basics() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const answers = useSession((s) => s.answers);
   const done = IDS.every((id) => answers.some((a) => a.questionId === id));
@@ -123,7 +132,7 @@ export default function Basics() {
   return (
     <Screen onBack={() => router.back()} footer={<Button label={t('common.next')} disabled={!done} onPress={() => router.push('/report/danger')} />}>
       <StepProgress step={2} total={5} />
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {t('basics.title')}
       </AppText>
       <View style={styles.tag}>
@@ -139,7 +148,7 @@ export default function Basics() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   group: { gap: 8 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
@@ -149,16 +158,16 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 2,
     borderColor: colors.line,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.card,
     shadowOpacity: 0.05,
     elevation: 1,
   },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chipOn: { backgroundColor: colors.chrome, borderColor: colors.chrome },
   chipText: { fontWeight: '700', textAlign: 'center' },
-  num: { width: 48, height: 48, borderRadius: radius.pill, borderWidth: 2, borderColor: colors.line, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
+  num: { width: 48, height: 48, borderRadius: radius.pill, borderWidth: 2, borderColor: colors.line, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   tag: { alignSelf: 'flex-start', backgroundColor: colors.cautionTint, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
   tagText: { fontWeight: '700' },
 });

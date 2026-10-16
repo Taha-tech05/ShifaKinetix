@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BodyLayer, BodySelection } from '../regions/types';
 import { useT } from '../store/settings';
-import { colors, gradients, MIN_TAP, shadows, spacing } from '../theme';
+import { gradients, MIN_TAP, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { Body3D } from './body3d/Body3D';
 import { usePack } from './body3d/usePack';
@@ -12,6 +12,9 @@ import { useScreenFocused } from './body3d/useScreenFocused';
 import { BodyPicker } from './BodyPicker';
 import { Button } from './Button';
 import { Card } from './Card';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export type { BodyLayer, BodySelection } from '../regions/types';
 
@@ -47,6 +50,8 @@ class Boundary extends Component<{ onError: () => void; children: ReactNode }, {
 
 /** Two-option layer menu: Muscle (default) and Bone. No skin layer. */
 function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLayer) => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const options: { value: BodyLayer; label: string }[] = [
     { value: 'muscle', label: t('layers.muscle') },
@@ -65,7 +70,7 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
             onPress={() => onChange(o.value)}
             style={[styles.menuBtn, on && styles.menuOn]}
           >
-            <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+            <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.bold}>
               {o.label}
             </AppText>
           </Pressable>
@@ -82,6 +87,8 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
  * Nothing else in the app depends on this component working.
  */
 export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [layer, setLayer] = useState<BodyLayer>(initialLayer);
   const focused = useScreenFocused();
@@ -113,7 +120,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
     return (
       <View style={styles.fill}>
         <Card tone="gray">
-          <AppText variant="body" color={colors.navy}>
+          <AppText variant="body" color={colors.text}>
             {t('body.unavailable')}
           </AppText>
         </Card>
@@ -152,7 +159,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
         ) : null}
         {!ready || !firstFrame ? (
           <View style={styles.loading} pointerEvents="none">
-            <ActivityIndicator size="large" color={colors.teal} />
+            <ActivityIndicator size="large" color={colors.accent} />
             <AppText variant="body" color={colors.muted}>
               {t('body.loading3d')}
             </AppText>
@@ -160,7 +167,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
         ) : null}
         {ready ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
       </LinearGradient>
-      <AppText variant="secondary" color={message === 'none' ? colors.muted : colors.navy} style={styles.hint}>
+      <AppText variant="secondary" color={message === 'none' ? colors.muted : colors.text} style={styles.hint}>
         {message === 'outOfScope' ? t('body.outOfScope') : message === 'miss' ? t('body.tapShoulder') : t('body.tapHint')}
       </AppText>
       <Button variant="text" label={t('body.useList')} onPress={() => setUsePlain(true)} />
@@ -168,7 +175,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   fill: { flex: 1, gap: spacing.xs },
   canvas: { flex: 1, borderRadius: 24, overflow: 'hidden' },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: spacing.md },
@@ -181,10 +188,10 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 4,
     borderRadius: 24,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     ...shadows.card,
   },
   menuBtn: { minHeight: MIN_TAP, minWidth: MIN_TAP + 16, paddingHorizontal: 12, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  menuOn: { backgroundColor: colors.navy },
+  menuOn: { backgroundColor: colors.chrome },
   bold: { fontWeight: '700' },
 });

@@ -3,11 +3,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
-import { colors, radius, spacing } from '../theme';
+import { radius, spacing } from '../theme';
 import { useServer } from './connection';
 import { autoUploadEnabled } from './defaults';
 import { savedAssessment, uploadSavedAssessment } from './uploadAssessment';
 import type { UploadDeps } from './uploadAssessment';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export type AutoUploadResult = { ok: true; intakeId: string } | { ok: false; message: string };
 
@@ -38,6 +41,8 @@ export async function autoUploadAssessment(isCurrent: () => boolean = () => true
  * If anything fails it stays on the current screen and says so, with a retry; it never shows a result of its own.
  */
 export function AutoUploadNotice() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const [state, setState] = useState<{ phase: 'working' } | { phase: 'failed'; message: string } | { phase: 'off' }>(
     autoUploadEnabled() ? { phase: 'working' } : { phase: 'off' },
   );
@@ -69,11 +74,11 @@ export function AutoUploadNotice() {
   return (
     <View accessibilityRole="alert" style={[styles.box, state.phase === 'failed' && styles.failed]}>
       {state.phase === 'working' ? (
-        <AppText variant="secondary" color={colors.navy}>Sending your answers to the server…</AppText>
+        <AppText variant="secondary" color={colors.text}>Sending your answers to the server…</AppText>
       ) : (
         <>
           <AppText variant="bodyStrong" color={colors.danger}>Not sent to the server</AppText>
-          <AppText variant="secondary" color={colors.navy}>{state.message}</AppText>
+          <AppText variant="secondary" color={colors.text}>{state.message}</AppText>
           <Button label="Try again" variant="outline" onPress={() => void run()} />
         </>
       )}
@@ -81,7 +86,7 @@ export function AutoUploadNotice() {
   );
 }
 
-const styles = StyleSheet.create({
-  box: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.card, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  box: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.card, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
   failed: { borderColor: colors.danger, borderWidth: 2 },
 });

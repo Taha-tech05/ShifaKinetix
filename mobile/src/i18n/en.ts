@@ -310,6 +310,10 @@ export const en = {
     signOut: 'Sign out',
     about: 'About and privacy',
     restartNote: 'Restart the app to finish switching the layout direction.',
+    theme: 'Appearance',
+    themeSystem: 'System',
+    themeLight: 'Light',
+    themeDark: 'Dark',
   },
   about: {
     title: 'About and privacy',

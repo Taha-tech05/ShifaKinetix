@@ -5,9 +5,12 @@ import { AppText } from '../../components/AppText';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
 import { AutoUploadNotice } from '../../server/autoUpload';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
@@ -16,6 +19,8 @@ const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hos
  * doctor now and can call 1122. There is no advice text.
  */
 export default function Urgent() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <Screen
@@ -36,7 +41,7 @@ export default function Urgent() {
             <Ionicons name="warning-outline" size={56} color={colors.danger} />
           </View>
         </View>
-        <AppText variant="h1" color={colors.navy} style={styles.title}>
+        <AppText variant="h1" color={colors.text} style={styles.title}>
           {t('urgent.title')}
         </AppText>
       </View>
@@ -44,7 +49,7 @@ export default function Urgent() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 },
   halo: { width: 160, height: 160, borderRadius: 80, backgroundColor: colors.dangerTint, alignItems: 'center', justifyContent: 'center' },
   disc: { width: 108, height: 108, borderRadius: 54, backgroundColor: '#F7D4CF', alignItems: 'center', justifyContent: 'center' },

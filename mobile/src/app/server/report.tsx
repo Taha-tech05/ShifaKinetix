@@ -10,7 +10,8 @@ import { savedAssessment } from '../../server/uploadAssessment';
 import { isCleared, shownVerdict, verdictText } from '../../server/verdict';
 import type { PatientReport } from '../../reports/validation';
 import { useSession } from '../../store/session';
-import { colors } from '../../theme';
+import { useTheme } from '../../ui/ThemeProvider';
+
 
 const STATUS_VERDICT = { READY: 'SAFE', INCOMPLETE: 'CLARIFY', REFER: 'RED_FLAG' } as const;
 const label = (id: string) => id.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -23,6 +24,7 @@ type Loaded = { kind: 'loading' } | { kind: 'none' } | { kind: 'report'; report:
  * report holds no differential, condition name or score, and the client rejects a response that does.
  */
 export default function ServerReport() {
+  const { colors } = useTheme();
   const { status, identity, api } = useServer();
   const phone = useSession((s) => s.gateVerdict);
   const [loaded, setLoaded] = useState<Loaded>({ kind: 'loading' });
@@ -48,7 +50,7 @@ export default function ServerReport() {
     return (
       <ServerScreen title="Report from the server">
         <Card>
-          <AppText variant="bodyStrong" color={colors.navy}>
+          <AppText variant="bodyStrong" color={colors.text}>
             {status === 'connected' ? 'A patient account is required for this screen.' : 'Not connected to the server.'}
           </AppText>
           <Button label="Server connection" onPress={() => router.replace('/server' as never)} />
@@ -67,7 +69,7 @@ export default function ServerReport() {
       {loaded.kind === 'loading' ? <AppText accessibilityRole="alert">Loading the report…</AppText> : null}
       {loaded.kind === 'none' ? (
         <Card>
-          <AppText variant="bodyStrong" color={colors.navy}>No saved assessment yet.</AppText>
+          <AppText variant="bodyStrong" color={colors.text}>No saved assessment yet.</AppText>
           <AppText>Complete the safety questions and upload the assessment first.</AppText>
           <Button label="Sync status" onPress={() => router.replace('/server/sync' as never)} />
         </Card>
@@ -76,7 +78,7 @@ export default function ServerReport() {
         <>
           <Problem text={`Report unavailable. ${loaded.message}`} />
           <Card>
-            <AppText variant="bodyStrong" color={colors.navy}>This is not a result and not a clearance.</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>This is not a result and not a clearance.</AppText>
             <AppText>If you are unsure about your shoulder, please talk to a doctor.</AppText>
             <Button label="Try again" variant="outline" onPress={() => { setLoaded({ kind: 'loading' }); setAttempt((n) => n + 1); }} />
           </Card>
@@ -84,7 +86,7 @@ export default function ServerReport() {
       ) : null}
       {report ? (
         <Card>
-          <AppText accessibilityRole="alert" variant="bodyStrong" color={shown.verdict === 'RED_FLAG' ? colors.danger : colors.navy}>
+          <AppText accessibilityRole="alert" variant="bodyStrong" color={shown.verdict === 'RED_FLAG' ? colors.danger : colors.text}>
             {verdictText(shown)}
           </AppText>
           {report.status !== 'READY' ? <AppText>{report.message}</AppText> : null}
@@ -93,7 +95,7 @@ export default function ServerReport() {
           ) : null}
           {cleared ? (
             <>
-              <AppText variant="bodyStrong" color={colors.navy}>Muscles that may be involved</AppText>
+              <AppText variant="bodyStrong" color={colors.text}>Muscles that may be involved</AppText>
               {report.musclesThatMayBeInvolved?.length
                 ? report.musclesThatMayBeInvolved.map((m) => <AppText key={m}>{`• ${label(m)}`}</AppText>)
                 : <AppText>No specific muscle stood out.</AppText>}

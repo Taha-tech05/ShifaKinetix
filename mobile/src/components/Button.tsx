@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, MIN_TAP, radius, shadows } from '../theme';
+import { MIN_TAP, radius } from '../theme';
+import { useTheme } from '../ui/ThemeProvider';
+import { softShadow } from '../ui/theme';
 import { AppText } from './AppText';
 
 export type ButtonVariant = 'primary' | 'outline' | 'text';
@@ -16,25 +18,17 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Primary: teal, 56 high, radius 20 (design .btn). Outline: white with navy border (.btn.line). Text: underlined link (.txt). */
-export function Button({
-  label,
-  onPress,
-  variant = 'primary',
-  disabled = false,
-  icon,
-  fullWidth = true,
-  style,
-}: Props) {
+/** Primary: filled accent, 56 high, large radius. Outline: glass with a border. Text: underlined link. */
+export function Button({ label, onPress, variant = 'primary', disabled = false, icon, fullWidth = true, style }: Props) {
+  const { colors } = useTheme();
   const isText = variant === 'text';
-  const textColor =
+  const textColor = variant === 'primary' ? (disabled ? colors.disabledText : colors.onAccent) : variant === 'outline' ? colors.text : colors.accentText;
+  const fill =
     variant === 'primary'
-      ? disabled
-        ? colors.disabledText
-        : colors.white
+      ? { height: 56, backgroundColor: disabled ? colors.disabled : colors.accentFill, ...(disabled ? null : softShadow(colors, 1.3)) }
       : variant === 'outline'
-        ? colors.navy
-        : colors.linkTeal;
+        ? { height: 56, borderWidth: 1.5, borderColor: colors.lineStrong, backgroundColor: colors.glassFill }
+        : { height: 48, backgroundColor: 'transparent' };
   return (
     <Pressable
       accessibilityRole="button"
@@ -42,23 +36,11 @@ export function Button({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.base,
-        variant === 'primary' && (disabled ? styles.primaryOff : styles.primary),
-        variant === 'outline' && styles.outline,
-        isText && styles.text,
-        fullWidth && styles.full,
-        pressed && styles.pressed,
-        style,
-      ]}
+      style={({ pressed }) => [styles.base, fill, fullWidth && styles.full, pressed && styles.pressed, style]}
     >
       <View style={styles.row}>
         {icon ? <Ionicons name={icon} size={20} color={textColor} /> : null}
-        <AppText
-          variant="button"
-          color={textColor}
-          style={isText ? styles.underline : undefined}
-        >
+        <AppText variant="button" color={textColor} style={isText ? styles.underline : undefined}>
           {label}
         </AppText>
       </View>
@@ -67,18 +49,8 @@ export function Button({
 }
 
 const styles = StyleSheet.create({
-  base: {
-    minHeight: MIN_TAP,
-    paddingHorizontal: 16,
-    borderRadius: radius.button,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  base: { minHeight: MIN_TAP, paddingHorizontal: 16, borderRadius: radius.xl, alignItems: 'center', justifyContent: 'center' },
   full: { alignSelf: 'stretch' },
-  primary: { height: 56, backgroundColor: colors.teal, ...shadows.button },
-  primaryOff: { height: 56, backgroundColor: colors.disabled },
-  outline: { height: 56, borderWidth: 2, borderColor: colors.navy, backgroundColor: colors.white },
-  text: { height: 48, backgroundColor: 'transparent' },
   underline: { textDecorationLine: 'underline' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pressed: { opacity: 0.85 },

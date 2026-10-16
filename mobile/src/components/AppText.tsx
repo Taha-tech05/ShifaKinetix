@@ -1,7 +1,8 @@
 import { Text } from 'react-native';
 import type { TextProps } from 'react-native';
 import { useSettings } from '../store/settings';
-import { colors, typography } from '../theme';
+import { typography } from '../theme';
+import { useTheme } from '../ui/ThemeProvider';
 
 type Props = TextProps & {
   variant?: keyof typeof typography;
@@ -12,8 +13,9 @@ type Props = TextProps & {
 export const URDU_LINE_HEIGHT = 1.35;
 
 /** Themed text. Alignment is left to the layout so RTL mirrors by itself. */
-export function AppText({ variant = 'body', color = colors.ink, style, ...rest }: Props) {
+export function AppText({ variant = 'body', color, style, ...rest }: Props) {
   const urdu = useSettings((s) => s.language) === 'ur';
+  const { colors } = useTheme();
   const base = typography[variant];
-  return <Text {...rest} style={[base, urdu ? { lineHeight: Math.round(base.lineHeight * URDU_LINE_HEIGHT) } : null, { color }, style]} />;
+  return <Text {...rest} style={[base, urdu ? { lineHeight: Math.round(base.lineHeight * URDU_LINE_HEIGHT) } : null, { color: color ?? colors.text }, style]} />;
 }

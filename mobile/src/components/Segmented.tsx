@@ -1,6 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors } from '../theme';
+
 import { AppText } from './AppText';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 interface Props<T extends string> {
   options: { value: T; label: string }[];
@@ -10,6 +13,8 @@ interface Props<T extends string> {
 
 /** Segmented control (design .seg): grey track, selected segment is a white raised pill. */
 export function Segmented<T extends string>({ options, value, onChange }: Props<T>) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <View style={styles.track}>
       {options.map((o) => {
@@ -23,7 +28,7 @@ export function Segmented<T extends string>({ options, value, onChange }: Props<
             onPress={() => onChange(o.value)}
             style={[styles.seg, on && styles.on]}
           >
-            <AppText variant="secondary" color={on ? colors.navy : colors.disabledText} style={styles.label}>
+            <AppText variant="secondary" color={on ? colors.text : colors.disabledText} style={styles.label}>
               {o.label}
             </AppText>
           </Pressable>
@@ -33,12 +38,12 @@ export function Segmented<T extends string>({ options, value, onChange }: Props<
   );
 }
 
-const styles = StyleSheet.create({
-  track: { flexDirection: 'row', backgroundColor: colors.neutralTint, borderRadius: 20, padding: 4 },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  track: { flexDirection: 'row', backgroundColor: colors.neutral, borderRadius: 20, padding: 4 },
   seg: { flex: 1, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   on: {
-    backgroundColor: colors.white,
-    shadowColor: colors.navy,
+    backgroundColor: colors.surface,
+    shadowColor: colors.text,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,

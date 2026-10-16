@@ -9,17 +9,22 @@ import type { CaseRow } from '../../../server/cases';
 import { DoctorRequired, useDoctorApi } from '../../../server/doctorAccess';
 import { useServer } from '../../../server/connection';
 import { Problem, ServerScreen } from '../../../server/ServerScreen';
-import { colors, radius, spacing } from '../../../theme';
+import { radius, spacing } from '../../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../../ui/ThemeProvider';
+import type { Palette } from '../../../ui/theme';
 
-const CHIP = {
+const chips = (colors: Palette) => ({
   RED_FLAG: { text: 'Urgent', color: colors.danger },
   CLARIFY: { text: 'Not sure', color: colors.caution },
   SAFE: { text: 'Safe', color: colors.safe },
   NONE: { text: 'Could not load', color: colors.danger },
-} as const;
+} as const);
 
 /** Latest cases, urgent first, each judged by the server's gate. Tap one to open its doctor report. */
 export default function DoctorCases() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const doctor = useDoctorApi();
   const recent = useServer((s) => s.recentIntakeIds);
   const setLookupId = useServer((s) => s.setLookupId);
@@ -50,14 +55,14 @@ export default function DoctorCases() {
         <Problem text="None of the cases could be loaded from the server. This is not a result: check the connection, or run the seed script (python -m app.seed_cases)." />
       ) : null}
       {rows?.map((c) => {
-        const chip = CHIP[c.verdict ?? 'NONE'];
+        const chip = chips(colors)[c.verdict ?? 'NONE'];
         return (
           <Card key={c.id} accessibilityLabel={`${chip.text}: ${c.label}`} onPress={() => { setLookupId(c.id); router.push('/server/doctor/report' as never); }}>
             <View style={styles.row}>
               <AppText variant="bodyStrong" color={chip.color}>{chip.text}</AppText>
               <AppText variant="secondary" color={colors.muted}>Open report</AppText>
             </View>
-            <AppText variant="bodyStrong" color={colors.navy}>{c.label}</AppText>
+            <AppText variant="bodyStrong" color={colors.text}>{c.label}</AppText>
             <AppText variant="secondary" color={colors.muted}>{c.id}</AppText>
           </Card>
         );
@@ -70,6 +75,6 @@ export default function DoctorCases() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 0, borderRadius: radius.card, gap: spacing.sm },
 });

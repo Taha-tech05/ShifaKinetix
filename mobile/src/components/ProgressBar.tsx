@@ -1,9 +1,12 @@
 import { StyleSheet, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 /** `value` is 0 to 1. Grey track, teal gradient fill (design .prog). */
 export function ProgressBar({ value }: { value: number }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const pct = Math.max(0, Math.min(1, value));
   return (
     <View
@@ -11,17 +14,12 @@ export function ProgressBar({ value }: { value: number }) {
       accessibilityValue={{ min: 0, max: 100, now: Math.round(pct * 100) }}
       style={styles.track}
     >
-      <LinearGradient
-        colors={[...gradients.progress]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={[styles.fill, { width: `${pct * 100}%` }]}
-      />
+      <View style={[styles.fill, { width: `${pct * 100}%`, backgroundColor: colors.accent }]} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   track: { height: 8, borderRadius: 4, backgroundColor: colors.track, overflow: 'hidden' },
   fill: { height: 8, borderRadius: 4 },
 });

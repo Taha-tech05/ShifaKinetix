@@ -11,7 +11,10 @@ import { StepProgress } from '../../components/StepProgress';
 import { regionLabel } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
+
 
 /**
  * P6 (design): preview with marker, "You selected" card, Yes this is right, Change.
@@ -19,6 +22,8 @@ import { colors } from '../../theme';
  * and the note says this is where the patient tapped, not a diagnosis.
  */
 export default function Confirm() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const selection = useSession((s) => s.selection);
   const label = selection ? regionLabel(selection.regionId, selection.subRegionId) : null;
@@ -50,7 +55,7 @@ export default function Confirm() {
           <AppText variant="secondary" color={colors.muted}>
             {t('confirm.selectedLabel')}
           </AppText>
-          <AppText variant="h2" color={colors.navy}>
+          <AppText variant="h2" color={colors.text}>
             {label}
           </AppText>
           {hint ? (
@@ -68,6 +73,6 @@ export default function Confirm() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   col: { flex: 1 },
 });

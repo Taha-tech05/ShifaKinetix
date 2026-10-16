@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import { useT } from '../store/settings';
-import { colors } from '../theme';
+
 import { AppText } from './AppText';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 /**
  * One slim strip with both required messages: the demo notice and the movement caution line. Used on the question screen, where
@@ -10,15 +13,17 @@ import { AppText } from './AppText';
  * visible as before.
  */
 export function DemoCautionStrip() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <View style={styles.strip} accessibilityRole="alert">
-      <Ionicons name="warning-outline" size={18} color="#6B4A0F" />
+      <Ionicons name="warning-outline" size={18} color={colors.caution} />
       <View style={styles.texts}>
-        <AppText variant="secondary" color={colors.navy} style={styles.demo} numberOfLines={1}>
+        <AppText variant="secondary" color={colors.text} style={styles.demo} numberOfLines={1}>
           {t('demoBanner')}
         </AppText>
-        <AppText variant="secondary" color="#6B4A0F" style={styles.caution}>
+        <AppText variant="secondary" color={colors.caution} style={styles.caution}>
           {t('moveSafely')}
         </AppText>
       </View>
@@ -26,8 +31,8 @@ export function DemoCautionStrip() {
   );
 }
 
-const styles = StyleSheet.create({
-  strip: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: colors.cautionTint, borderBottomWidth: 1, borderBottomColor: '#EBD6A6' },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  strip: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: colors.cautionTint, borderBottomWidth: 1, borderBottomColor: colors.line },
   texts: { flex: 1 },
   demo: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
   caution: { fontSize: 12, lineHeight: 16, fontWeight: '700' },

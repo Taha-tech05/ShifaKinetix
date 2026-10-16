@@ -7,15 +7,20 @@ import { IconTile } from '../../components/IconTile';
 import { Screen } from '../../components/Screen';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
+
 
 /** After the result (design P13b): talk to a doctor, or get advice from the AI assistant. Both are stubs. */
 export default function Choice() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <SafeGuard>
       <Screen onBack={() => router.back()}>
-        <AppText variant="h1" color={colors.navy}>
+        <AppText variant="h1" color={colors.text}>
           {t('choice.title')}
         </AppText>
         <AppText variant="body" color={colors.muted}>
@@ -24,7 +29,7 @@ export default function Choice() {
         <Card onPress={() => router.push('/report/assistant')} accessibilityLabel={t('choice.assistant')} style={styles.card}>
           <View style={styles.row}>
             <IconTile icon="sparkles-outline" tone="teal" />
-            <AppText variant="bodyStrong" color={colors.navy} style={styles.col}>
+            <AppText variant="bodyStrong" color={colors.text} style={styles.col}>
               {t('choice.assistant')}
             </AppText>
           </View>
@@ -32,7 +37,7 @@ export default function Choice() {
             {t('choice.assistantSub')}
           </AppText>
           <View style={styles.tag}>
-            <AppText variant="secondary" color={colors.tealDark} style={styles.tagText}>
+            <AppText variant="secondary" color={colors.accentText} style={styles.tagText}>
               {t('choice.infoOnly')}
             </AppText>
           </View>
@@ -40,7 +45,7 @@ export default function Choice() {
         <Card onPress={() => router.push('/report/doctor')} accessibilityLabel={t('choice.doctor')} style={styles.card}>
           <View style={styles.row}>
             <IconTile icon="chatbubble-outline" tone="navy" />
-            <AppText variant="bodyStrong" color={colors.navy} style={styles.col}>
+            <AppText variant="bodyStrong" color={colors.text} style={styles.col}>
               {t('choice.doctor')}
             </AppText>
           </View>
@@ -54,10 +59,10 @@ export default function Choice() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   card: { gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   col: { flex: 1 },
-  tag: { alignSelf: 'flex-start', backgroundColor: colors.tealTint, borderRadius: 8, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
+  tag: { alignSelf: 'flex-start', backgroundColor: colors.accentTint, borderRadius: 8, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
   tagText: { fontWeight: '700' },
 });
