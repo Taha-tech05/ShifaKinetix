@@ -18,7 +18,7 @@ import { useT } from '../store/settings';
 import { useFpsGuard } from './blur';
 import { Callout } from './Callout';
 import { ChatHistory } from './ChatHistory';
-import { BotBubble, TypingDots, useTypingDelay } from './chat';
+import { TypingDots, useTypingDelay } from './chat';
 import { Chip } from './Chip';
 import { FloatingControl } from './FloatingControl';
 import { GlassCard } from './GlassCard';
@@ -49,11 +49,11 @@ function useReduceMotion() {
 function SheetOutlet({ afterConfirm, reduceMotion }: { afterConfirm: boolean; reduceMotion: boolean }) {
   const t = useT();
   const sheet = useScene((s) => s.sheet);
-  const last = useRef<typeof sheet>(null);
+  const [last, setLast] = useState<typeof sheet>(null);
   const typing = useTypingDelay(sheet?.contentKey ?? '', reduceMotion);
-  if (sheet && !typing) last.current = sheet;
+  if (sheet && !typing && last !== sheet) setLast(sheet);
   // while the dots show, the previous message stays above them
-  const shown = typing ? last.current : sheet;
+  const shown = typing ? last : sheet;
   return (
     <>
       <ChatHistory exclude={sheet?.ownIds ?? []} afterConfirm={afterConfirm} />
@@ -101,6 +101,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
   const facing = useSharedValue(0);
   const onProject = useCallback(
     (p: { x: number; y: number; facing: number } | null) => {
+      /* eslint-disable react-hooks/immutability -- shared values are written from the 3D frame loop on purpose: no React render per frame */
       if (!p) {
         facing.value = 0;
         return;
@@ -108,6 +109,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
       px.value = p.x;
       py.value = p.y;
       facing.value = p.facing;
+      /* eslint-enable react-hooks/immutability */
     },
     [px, py, facing],
   );

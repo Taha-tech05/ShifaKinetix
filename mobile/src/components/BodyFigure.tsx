@@ -1,6 +1,4 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { gradients } from '../theme';
 import { useMemo } from 'react';
 import { useTheme } from '../ui/ThemeProvider';
 import type { Palette } from '../ui/theme';
@@ -24,12 +22,10 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const SOFT = ['#F4F8FB', '#DCE6EE'] as const;
-
 function Part({ style }: { style: object }) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  return <LinearGradient colors={[...SOFT]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.part, style]} />;
+  return <View style={[styles.part, { backgroundColor: colors.surface }, style]} />;
 }
 
 /**
@@ -40,12 +36,7 @@ export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onH
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
-    <LinearGradient
-      colors={[...gradients.studio]}
-      start={{ x: 0.5, y: 0.1 }}
-      end={{ x: 0.5, y: 1 }}
-      style={[styles.studio, height === 'fill' ? styles.fill : { height }]}
-    >
+    <View style={[styles.studio, { backgroundColor: colors.cardFill, borderColor: colors.glassBorder }, height === 'fill' ? styles.fill : { height }]}>
       <View style={styles.figure}>
         <Part style={{ left: '38%', top: '2%', width: '24%', height: '12%', borderRadius: 999 }} />
         <Part style={{ left: '30%', top: '15%', width: '40%', height: '34%', borderRadius: 28 }} />
@@ -74,12 +65,12 @@ export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onH
         })}
       </View>
       {children}
-    </LinearGradient>
+    </View>
   );
 }
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
-  studio: { borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  studio: { borderRadius: 24, borderWidth: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   fill: { flex: 1 },
   figure: { width: '70%', height: '88%' },
   part: { position: 'absolute' },
@@ -99,10 +90,10 @@ const makeStyles = (colors: Palette) => StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(192,57,43,0.18)',
+    backgroundColor: colors.dangerTint,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ringOn: { backgroundColor: 'rgba(192,57,43,0.32)', transform: [{ scale: 1.2 }] },
+  ringOn: { backgroundColor: colors.dangerTint, transform: [{ scale: 1.2 }] },
   dot2: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.danger, borderWidth: 2, borderColor: colors.surface },
 });

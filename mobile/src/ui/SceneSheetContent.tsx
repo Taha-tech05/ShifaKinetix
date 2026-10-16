@@ -53,7 +53,7 @@ export function SceneSheetContent({ contentKey, ownIds = [], onBack, children }:
     () => () => {
       if (hosted && useScene.getState().sheet?.contentKey === contentKey) useScene.getState().setSheet(null);
     },
-    [hosted, contentKey, key], // eslint-disable-line react-hooks/exhaustive-deps
+    [hosted, contentKey, key],
   );
   const t = useT();
   if (host) return null;

@@ -168,6 +168,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
             highlightNames={highlightNames}
             anchor={anchor}
             onProject={onProject}
+            accessibilityLabel={t('body.tapHint')}
             onFirstFrame={() => setFirstFrame(true)}
             onPick={
               readOnly

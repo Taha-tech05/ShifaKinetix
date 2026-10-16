@@ -39,6 +39,8 @@ export interface Body3DProps {
   /** A model-space point to follow on screen (the tapped point). With onProject, called about 30 times a second, never through React state. */
   anchor?: Point3D | null;
   onProject?: (p: ProjectedPoint | null) => void;
+  /** Screen-reader label of the touch area (the tap target). */
+  accessibilityLabel?: string;
   pack: LoadedPack;
   layer: BodyLayer;
   /** Mesh names to show highlighted (cyan fill and outline). */
@@ -232,7 +234,7 @@ export function Body3D(props: Body3DProps) {
   );
 
   return (
-    <View style={styles.fill} {...responder.panHandlers}>
+    <View style={styles.fill} accessible={props.accessibilityLabel !== undefined} accessibilityLabel={props.accessibilityLabel} {...responder.panHandlers}>
       <Canvas camera={{ position: [0, 0, 5], fov: FOV, near: 0.05, far: 100 }}>
         <StudioLights />
         <Scene {...props} control={control} />
