@@ -7,7 +7,10 @@ import { IconTile } from '../components/IconTile';
 import { Screen } from '../components/Screen';
 import type { TKey } from '../i18n';
 import { useSettings, useT } from '../store/settings';
-import { colors } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
+
 
 const POINTS: { icon: 'document-text-outline' | 'lock-closed-outline' | 'refresh-outline'; tone: 'teal' | 'navy' | 'safe'; text: TKey }[] = [
   { icon: 'document-text-outline', tone: 'teal', text: 'consent.p1' },
@@ -17,6 +20,8 @@ const POINTS: { icon: 'document-text-outline' | 'lock-closed-outline' | 'refresh
 
 /** Consent (design P2b): three short cards, I agree, Not now. */
 export default function Consent() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const giveConsent = useSettings((s) => s.giveConsent);
   return (
@@ -38,7 +43,7 @@ export default function Consent() {
       <View style={styles.head}>
         <IconTile icon="shield-checkmark-outline" tone="safe" size={56} />
         <View style={styles.col}>
-          <AppText variant="h1" color={colors.navy}>
+          <AppText variant="h1" color={colors.text}>
             {t('consent.title')}
           </AppText>
           <AppText variant="secondary" color={colors.muted}>
@@ -58,7 +63,7 @@ export default function Consent() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   col: { flex: 1 },
 });

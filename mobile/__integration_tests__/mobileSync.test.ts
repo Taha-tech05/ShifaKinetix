@@ -8,6 +8,7 @@ import { useSession } from '../src/store/session';
 import { ApiClient } from '../src/storage/apiClient';
 import * as SafetyCoordinator from '../src/gate/safetySession';
 import { submitMovementDurable, goBackDurable } from '../src/flow/live';
+import { loadCases } from '../src/server/cases';
 
 // Run through scripts/check_mobile_sync.py: no mocked HTTP, gate, store or database.
 const url = process.env.SHIFA_TEST_API_URL!;
@@ -126,4 +127,40 @@ test('live movement/back history and narrowing snapshots survive restart and rea
   expect(latest.clientGate).toEqual(before.gateOutput);
   expect(audit.answerHistory).toHaveLength(questions.filter((q) => q.required).length);
   expect(audit.gateRuns.length).toBeGreaterThan(0);
+}, 30000);
+
+test('the server screens\' API calls work against the real server: sign-in, patient report without differential, doctor audit', async () => {
+  await ApiClient.health(url, fetch, true);
+  const login = await ApiClient.devLogin(url, 'fictional-patient', 'patient', fetch, true);
+  expect(login.identity).toEqual({ id: 'fictional-patient', role: 'patient' });
+  // asking for the other role does not change the account's role: the server refuses
+  await expect(ApiClient.devLogin(url, 'fictional-patient', 'doctor', fetch, true)).rejects.toThrow('different role');
+  await upload();
+  const ready = await patient.patientReport(intakeId);
+  expect(ready.status).toBe('READY');
+  expect(JSON.stringify(ready)).not.toMatch(/differential|condition|score|firedRules/);
+  await session.save({ ...negative('numb'), value: true }); await upload();
+  const refer = await patient.patientReport(intakeId);
+  expect(refer.status).toBe('REFER');
+  expect(refer.musclesThatMayBeInvolved).toBeUndefined();
+  await expect(otherPatient.patientReport(intakeId)).rejects.toThrow('not allowed');
+  const audit = await doctor.audit(intakeId);
+  expect(audit.intakeId).toBe(intakeId);
+  expect(audit.gateRuns.length).toBeGreaterThan(0);
+  await expect(patient.audit(intakeId)).rejects.toThrow('Doctor access');
+  const direct = await fetch(`${url}/intakes/${intakeId}/audit`, { headers: { Authorization: `Bearer ${login.token}` } });
+  expect(direct.status).toBe(403);
+}, 30000);
+
+test('the doctors latest cases come from the seeded demo cases, judged by the real server gate, urgent first', async () => {
+  const rows = await loadCases(doctor, []);
+  expect(rows.map((r) => [r.id, r.verdict])).toEqual([
+    ['demo-case-danger', 'RED_FLAG'], ['demo-case-unsure', 'CLARIFY'], ['demo-case-safe', 'SAFE'],
+  ]);
+  const report = await doctor.doctorReport('demo-case-danger');
+  expect(report.gate.verdict).toBe('RED_FLAG');
+  expect(report.differential).toEqual([]);
+  const safeReport = await doctor.patientReport('demo-case-safe').catch((e: Error) => e.message);
+  expect(safeReport).toMatchObject({ status: 'READY' });
+  expect(JSON.stringify(safeReport)).not.toMatch(/differential|condition|score|firedRules/);
 }, 30000);

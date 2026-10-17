@@ -11,6 +11,7 @@ import { applyLayer, resolveRay } from '../../regions/select';
 import type { BodyLayer, BodySelection, Point3D } from '../../regions/types';
 import { disposeOutline, highlightMesh, makeOutline, restoreMesh } from '../../screens/model3d/loadPack';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
+import { applyFraming, newFraming } from './framing';
 import { StudioLights } from './StudioLights';
 import { VIEWER_FOV as FOV } from './viewerSetup';
 
@@ -28,7 +29,21 @@ type Control = {
 /** What a tap did: a shoulder selection, a tap on another body area (full project), or nothing. */
 export type PickResult = { type: 'selection'; selection: BodySelection } | { type: 'outOfScope'; packRegion: string } | { type: 'none' };
 
+/** Screen position of a model-space point, for a label that follows it. `facing` is 1 when the point faces the camera and 0 when it has turned away. */
+export interface ProjectedPoint {
+  x: number;
+  y: number;
+  facing: number;
+}
+
 export interface Body3DProps {
+  /** Pixels at the bottom of the canvas that something (the chat sheet) covers: the whole body is framed in the rest, see framing.ts. */
+  frameInset?: number;
+  /** A model-space point to follow on screen (the tapped point). With onProject, called about 30 times a second, never through React state. */
+  anchor?: Point3D | null;
+  onProject?: (p: ProjectedPoint | null) => void;
+  /** Screen-reader label of the touch area (the tap target). */
+  accessibilityLabel?: string;
   pack: LoadedPack;
   layer: BodyLayer;
   /** Mesh names to show highlighted (cyan fill and outline). */
@@ -42,7 +57,9 @@ export interface Body3DProps {
 
 type Highlighted = { part: LoadedPack['parts'][number]; index: number; outline: THREE.Mesh | null };
 
-function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anchor, onProject, frameInset = 0 }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+  const framing = useMemo(() => newFraming(), []);
+  const projectTmp = useMemo(() => ({ p: new THREE.Vector3(), cam: new THREE.Vector3() }), []);
   const pivot = useRef<THREE.Group>(null);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const highlighted = useRef<Highlighted[]>([]);
@@ -105,7 +122,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
   useEffect(() => clearHighlight, []);
 
   // eslint-disable-next-line react-hooks/immutability -- imperative three.js highlight bookkeeping kept in a ref
-  useFrame(({ camera, size }) => {
+  useFrame(({ camera, size }, dt) => {
     const c = control.current;
     if (pivot.current) {
       pivot.current.rotation.y = c.yaw;
@@ -113,9 +130,31 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control }: B
     }
     camera.position.set(0, 0, c.distance);
     camera.lookAt(0, 0, 0);
+    applyFraming(camera as THREE.PerspectiveCamera, size, frameInset, framing, dt);
 
     frames.current++;
     if (frames.current === 2) onFirstFrame();
+
+    // follow the anchor on screen: project it with the camera, throttled to every second frame (no React state involved)
+    if (anchor && onProject && frames.current % 2 === 0 && pivot.current) {
+      const { p, cam } = projectTmp;
+      pivot.current.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      // model space -> the fitted group (scale and centre) -> world
+      p.set(anchor.x, anchor.y, anchor.z).sub(fitted.center).multiplyScalar(fitted.scale);
+      const local = p.clone();
+      pivot.current.localToWorld(p);
+      p.project(camera);
+      // facing: the point is hidden only when it lies clearly behind the body's centre plane as seen from the camera
+      // (a point on the side of a shoulder is still visible). 1 = in view, 0 = turned away.
+      cam.copy(camera.position);
+      pivot.current.worldToLocal(cam);
+      const pl = Math.hypot(local.x, local.z);
+      const cl = Math.hypot(cam.x, cam.z) || 1;
+      const d = pl < 1e-4 ? 1 : (cam.x * local.x + cam.z * local.z) / (cl * pl);
+      const facing = Math.min(1, Math.max(0, (d + 0.35) / 0.35));
+      onProject({ x: ((p.x + 1) / 2) * size.width, y: ((1 - p.y) / 2) * size.height, facing });
+    }
 
     if (c.tap) {
       const { x, y } = c.tap;
@@ -197,7 +236,7 @@ export function Body3D(props: Body3DProps) {
   );
 
   return (
-    <View style={styles.fill} {...responder.panHandlers}>
+    <View style={styles.fill} accessible={props.accessibilityLabel !== undefined} accessibilityLabel={props.accessibilityLabel} {...responder.panHandlers}>
       <Canvas camera={{ position: [0, 0, 5], fov: FOV, near: 0.05, far: 100 }}>
         <StudioLights />
         <Scene {...props} control={control} />

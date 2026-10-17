@@ -8,10 +8,15 @@ import { Card } from '../components/Card';
 import { IconTile } from '../components/IconTile';
 import { Screen } from '../components/Screen';
 import { useSettings, useT } from '../store/settings';
-import { colors } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
+
 
 /** Fake login for the demo: nothing is checked or sent anywhere (design P2). */
 export default function Login() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const signIn = useSettings((s) => s.signIn);
   const [phone, setPhone] = useState('demo.patient@example.com');
@@ -34,7 +39,7 @@ export default function Login() {
     >
       <IconTile icon="lock-closed-outline" tone="teal" />
       <View style={styles.head}>
-        <AppText variant="h1" color={colors.navy}>
+        <AppText variant="h1" color={colors.text}>
           {t('login.title')}
         </AppText>
         <AppText variant="body" color={colors.muted}>
@@ -43,7 +48,7 @@ export default function Login() {
       </View>
       <Card style={styles.form}>
         <View style={styles.field}>
-          <AppText variant="bodyStrong" color={colors.navy}>
+          <AppText variant="bodyStrong" color={colors.text}>
             {t('login.phone')}
           </AppText>
           <View style={styles.input}>
@@ -59,7 +64,7 @@ export default function Login() {
           </View>
         </View>
         <View style={styles.field}>
-          <AppText variant="bodyStrong" color={colors.navy}>
+          <AppText variant="bodyStrong" color={colors.text}>
             {t('login.password')}
           </AppText>
           <View style={styles.input}>
@@ -75,12 +80,12 @@ export default function Login() {
         </View>
       </Card>
       <View style={styles.agree}>
-        <Ionicons name="shield-checkmark-outline" size={24} color={colors.teal} />
-        <AppText variant="body" color={colors.navy} style={styles.agreeText}>
+        <Ionicons name="shield-checkmark-outline" size={24} color={colors.accent} />
+        <AppText variant="body" color={colors.text} style={styles.agreeText}>
           {t('login.agreePrefix')}
           <AppText
             variant="bodyStrong"
-            color={colors.navy}
+            color={colors.text}
             style={styles.link}
             onPress={() => router.push('/consent')}
             accessibilityRole="link"
@@ -94,7 +99,7 @@ export default function Login() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   head: { gap: 4 },
   form: { gap: 16 },
   field: { gap: 6 },
@@ -106,15 +111,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: colors.fieldBorder,
-    backgroundColor: colors.white,
+    borderColor: colors.lineStrong,
+    backgroundColor: colors.surface,
   },
-  text: { flex: 1, minHeight: 48, fontSize: 16, color: colors.ink, textAlign: 'auto' },
+  text: { flex: 1, minHeight: 48, fontSize: 16, color: colors.text, textAlign: 'auto' },
   agree: {
     flexDirection: 'row',
     gap: 10,
     alignItems: 'flex-start',
-    backgroundColor: colors.tealTint,
+    backgroundColor: colors.accentTint,
     borderRadius: 14,
     padding: 12,
   },

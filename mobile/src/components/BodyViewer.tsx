@@ -4,14 +4,19 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BodyLayer, BodySelection } from '../regions/types';
 import { useT } from '../store/settings';
-import { colors, gradients, MIN_TAP, shadows, spacing } from '../theme';
+import { gradients, MIN_TAP, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { Body3D } from './body3d/Body3D';
+import type { ProjectedPoint } from './body3d/Body3D';
 import { usePack } from './body3d/usePack';
 import { useScreenFocused } from './body3d/useScreenFocused';
 import { BodyPicker } from './BodyPicker';
 import { Button } from './Button';
 import { Card } from './Card';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import { lightPalette } from '../ui/theme';
+import type { Palette } from '../ui/theme';
 
 export type { BodyLayer, BodySelection } from '../regions/types';
 
@@ -25,6 +30,19 @@ export interface BodyViewerProps {
   onLayerChange?: (layer: BodyLayer) => void;
   /** Always returns a layer. hitStructure is a hint only, see regions/types.ts. */
   onSelect: (selection: BodySelection) => void;
+  /** Scene mode: no studio card, no own layer menu, hint or list link. The layer comes from the `layer` prop and the host draws the chrome. */
+  bare?: boolean;
+  /** Taps do nothing (the body stays visible and turnable). */
+  readOnly?: boolean;
+  /** A model-space point to follow on screen, and the callback that receives its screen position (see Body3D). */
+  anchor?: BodySelection['point'] | null;
+  onProject?: (p: ProjectedPoint | null) => void;
+  /** Reports what the last tap did, so the host can show a hint. */
+  onMessage?: (m: 'none' | 'miss' | 'outOfScope') => void;
+  /** Reports that the 3D body is drawing, or that it is unavailable and the plain picker is shown. */
+  onStatus?: (s: 'loading' | 'ready' | 'plain') => void;
+  /** Pixels at the bottom covered by the chat sheet: the whole body is framed in the rest. */
+  frameInset?: number;
 }
 
 const LOAD_TIMEOUT_MS = 25000;
@@ -47,6 +65,8 @@ class Boundary extends Component<{ onError: () => void; children: ReactNode }, {
 
 /** Two-option layer menu: Muscle (default) and Bone. No skin layer. */
 function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLayer) => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const options: { value: BodyLayer; label: string }[] = [
     { value: 'muscle', label: t('layers.muscle') },
@@ -65,7 +85,7 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
             onPress={() => onChange(o.value)}
             style={[styles.menuBtn, on && styles.menuOn]}
           >
-            <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+            <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.bold}>
               {o.label}
             </AppText>
           </Pressable>
@@ -81,9 +101,12 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
  * A tap on another body area (neck, chest, upper arm, ...) shows a "Full project" message and selects nothing.
  * Nothing else in the app depends on this component working.
  */
-export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect }: BodyViewerProps) {
+export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect, bare = false, readOnly = false, anchor, onProject, onMessage, onStatus, frameInset }: BodyViewerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
-  const [layer, setLayer] = useState<BodyLayer>(initialLayer);
+  const [ownLayer, setLayer] = useState<BodyLayer>(initialLayer);
+  const layer = bare ? initialLayer : ownLayer;
   const focused = useScreenFocused();
   const packState = usePack(!FORCE_PLAIN && focused);
   const [timedOut, setTimedOut] = useState(false);
@@ -100,6 +123,9 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
 
   const failed = FORCE_PLAIN || packState.status === 'failed' || boundaryFailed || (timedOut && packState.status === 'loading');
   const ready = !failed && packState.status === 'ready' && packState.pack !== null && focused;
+  useEffect(() => {
+    onStatus?.(failed || usePlain ? 'plain' : ready && firstFrame ? 'ready' : 'loading');
+  }, [failed, usePlain, ready, firstFrame]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changeLayer = (l: BodyLayer) => {
     setLayer(l);
@@ -107,13 +133,17 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
     onLayerChange?.(l);
   };
 
+  const report = (m: 'none' | 'miss' | 'outOfScope') => {
+    setMessage(m);
+    onMessage?.(m);
+  };
   const plain = <BodyPicker highlightedIds={highlightedIds} layer={layer} onSelect={onSelect} />;
 
   if (failed) {
     return (
       <View style={styles.fill}>
         <Card tone="gray">
-          <AppText variant="body" color={colors.navy}>
+          <AppText variant="body" color={colors.text}>
             {t('body.unavailable')}
           </AppText>
         </Card>
@@ -131,36 +161,52 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
     );
   }
 
+  const canvas = (
+    <>
+      {ready ? (
+        <Boundary onError={() => setBoundaryFailed(true)}>
+          <Body3D
+            pack={packState.pack!}
+            layer={layer}
+            highlightNames={highlightNames}
+            anchor={anchor}
+            onProject={onProject}
+            frameInset={frameInset}
+            accessibilityLabel={t('body.tapHint')}
+            onFirstFrame={() => setFirstFrame(true)}
+            onPick={
+              readOnly
+                ? undefined
+                : (r) => {
+                    if (r.type === 'selection') {
+                      report('none');
+                      onSelect(r.selection);
+                    } else report(r.type === 'outOfScope' ? 'outOfScope' : 'miss');
+                  }
+            }
+          />
+        </Boundary>
+      ) : null}
+      {!ready || !firstFrame ? (
+        <View style={styles.loading} pointerEvents="none">
+          <ActivityIndicator size="large" color={colors.accent} />
+          <AppText variant="body" color={lightPalette.muted}>
+            {t('body.loading3d')}
+          </AppText>
+        </View>
+      ) : null}
+      {ready && !bare ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
+    </>
+  );
+
+  // In scene mode the page gradient behind is the studio, so the canvas is transparent and has no card.
+  if (bare) return <View style={styles.fill}>{canvas}</View>;
   return (
     <View style={styles.fill}>
       <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={styles.canvas}>
-        {ready ? (
-          <Boundary onError={() => setBoundaryFailed(true)}>
-            <Body3D
-              pack={packState.pack!}
-              layer={layer}
-              highlightNames={highlightNames}
-              onFirstFrame={() => setFirstFrame(true)}
-              onPick={(r) => {
-                if (r.type === 'selection') {
-                  setMessage('none');
-                  onSelect(r.selection);
-                } else setMessage(r.type === 'outOfScope' ? 'outOfScope' : 'miss');
-              }}
-            />
-          </Boundary>
-        ) : null}
-        {!ready || !firstFrame ? (
-          <View style={styles.loading} pointerEvents="none">
-            <ActivityIndicator size="large" color={colors.teal} />
-            <AppText variant="body" color={colors.muted}>
-              {t('body.loading3d')}
-            </AppText>
-          </View>
-        ) : null}
-        {ready ? <LayerMenu layer={layer} onChange={changeLayer} /> : null}
+        {canvas}
       </LinearGradient>
-      <AppText variant="secondary" color={message === 'none' ? colors.muted : colors.navy} style={styles.hint}>
+      <AppText variant="secondary" color={message === 'none' ? colors.muted : colors.text} style={styles.hint}>
         {message === 'outOfScope' ? t('body.outOfScope') : message === 'miss' ? t('body.tapShoulder') : t('body.tapHint')}
       </AppText>
       <Button variant="text" label={t('body.useList')} onPress={() => setUsePlain(true)} />
@@ -168,7 +214,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   fill: { flex: 1, gap: spacing.xs },
   canvas: { flex: 1, borderRadius: 24, overflow: 'hidden' },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: spacing.md },
@@ -181,10 +227,10 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 4,
     borderRadius: 24,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     ...shadows.card,
   },
   menuBtn: { minHeight: MIN_TAP, minWidth: MIN_TAP + 16, paddingHorizontal: 12, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  menuOn: { backgroundColor: colors.navy },
+  menuOn: { backgroundColor: colors.chrome },
   bold: { fontWeight: '700' },
 });

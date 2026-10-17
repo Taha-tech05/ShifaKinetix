@@ -1,6 +1,9 @@
 import { StyleSheet, View } from 'react-native';
-import { colors } from '../../theme';
+
 import { AppText } from '../AppText';
+import { useMemo } from 'react';
+import { lightPalette } from '../../ui/theme';
+import type { Palette } from '../../ui/theme';
 
 export interface LabelAnchor {
   id: string;
@@ -30,6 +33,9 @@ export function spreadLabels(ys: number[], min = ROW): number[] {
  * muscle by a thin horizontal line and a dot. Labels alternate sides so they do not crowd.
  */
 export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width: number }) {
+  // the labels sit on the 3D body, whose background is the light studio in light AND dark app mode: always dark ink on a white pill
+  const colors = lightPalette;
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   if (anchors.length === 0 || width <= 0) return null;
   const ys = spreadLabels(anchors.map((a) => a.y));
   return (
@@ -45,7 +51,7 @@ export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width
             <View style={[styles.line, { left: from, width: Math.max(0, to - from), top: ys[i] }]} />
             <View style={[styles.dot, { left: a.x - 4, top: a.y - 4 }]} />
             <View style={[styles.label, { left: left ? 6 : width - 6 - labelW, width: labelW, top: ys[i] - 13 }]}>
-              <AppText variant="secondary" color={colors.navy} style={styles.text} numberOfLines={2}>
+              <AppText variant="secondary" color={colors.text} style={styles.text} numberOfLines={2}>
                 {a.name}
               </AppText>
             </View>
@@ -56,9 +62,9 @@ export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width
   );
 }
 
-const styles = StyleSheet.create({
-  line: { position: 'absolute', height: 1.5, backgroundColor: colors.navy },
-  dot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: colors.navy, borderWidth: 1.5, borderColor: colors.white },
-  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1, borderColor: colors.lineStrong },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  line: { position: 'absolute', height: 1.5, backgroundColor: colors.chrome },
+  dot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: colors.chrome, borderWidth: 1.5, borderColor: '#FFFFFF' },
+  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: colors.lineStrong },
   text: { fontWeight: '700', fontSize: 13, lineHeight: 16 },
 });

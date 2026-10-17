@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useT } from '../../store/settings';
-import { colors, gradients } from '../../theme';
+import { scenePalette } from '../../ui/theme';
 import { AppText } from '../AppText';
 import { BodyFigure } from '../BodyFigure';
 import { Body3D } from './Body3D';
@@ -22,12 +22,12 @@ export function ResultBody({ highlightNames, initialYaw = 0, height = 260 }: { h
   const [firstFrame, setFirstFrame] = useState(false);
   if (FORCE_PLAIN || state.status === 'failed') return <BodyFigure height={height} />;
   return (
-    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, { height }]}>
+    <LinearGradient colors={[scenePalette.gradient[1], scenePalette.gradient[0]]} start={{ x: 0.5, y: 0.2 }} end={{ x: 0.5, y: 1 }} style={[styles.box, { height }]}>
       {state.pack && focused ? <Body3D pack={state.pack} layer="muscle" highlightNames={highlightNames} initialYaw={initialYaw} onFirstFrame={() => setFirstFrame(true)} /> : null}
       {!state.pack || !firstFrame ? (
         <View style={styles.loading} pointerEvents="none">
-          <ActivityIndicator color={colors.teal} />
-          <AppText variant="secondary" color={colors.muted}>
+          <ActivityIndicator color={scenePalette.accent} />
+          <AppText variant="secondary" color={scenePalette.muted}>
             {t('body.loading3d')}
           </AppText>
         </View>

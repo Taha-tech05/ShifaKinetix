@@ -5,17 +5,22 @@ import { AppText } from '../AppText';
 import { answered } from '../../questions/answer';
 import type { TemplateProps } from '../../questions/types';
 import { useT } from '../../store/settings';
-import { colors, MIN_TAP, radius, spacing } from '../../theme';
+import { MIN_TAP, radius, spacing } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 const STEPS = Array.from({ length: 11 }, (_, i) => i);
 
 export function Scale0to10({ question, onAnswer }: TemplateProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [picked, setPicked] = useState<number | null>(null);
   const [notSure, setNotSure] = useState(false);
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {question.text}
       </AppText>
       <View style={styles.grid}>
@@ -34,7 +39,7 @@ export function Scale0to10({ question, onAnswer }: TemplateProps) {
               }}
               style={[styles.step, selected && styles.selected]}
             >
-              <AppText variant="button" color={selected ? colors.white : colors.navy}>
+              <AppText variant="button" color={selected ? colors.onAccent : colors.text}>
                 {n}
               </AppText>
             </Pressable>
@@ -65,7 +70,7 @@ export function Scale0to10({ question, onAnswer }: TemplateProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   step: {
     width: MIN_TAP + 4,
@@ -73,10 +78,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 2,
     borderColor: colors.lineStrong,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  selected: { backgroundColor: colors.teal, borderColor: colors.teal },
+  selected: { backgroundColor: colors.accentFill, borderColor: colors.accentFill },
   ends: { flexDirection: 'row', justifyContent: 'space-between' },
 });

@@ -7,22 +7,21 @@ import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from 'react-nat
 import { localized, mannequinKeyframes } from '../../movement/movements';
 import type { MannequinKeyframe, Movement } from '../../movement/movements';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
+
 import { AppText } from '../AppText';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 const STAGE = { w: 300, h: 270 };
 const UPPER = 62;
 const FORE = 52;
-const BODY_FILL = '#E4ECF2';
-const BODY_LINE = '#9FB3C4';
-const ARM_FILL = '#CBE7E7';
-const ARM_LINE = colors.teal;
 
 /** A capsule: rounded rectangle with a thin outline. */
-function Capsule({ x, y, w, h, fill = BODY_FILL, line = BODY_LINE }: { x: number; y: number; w: number; h: number; fill?: string; line?: string }) {
+function Capsule({ x, y, w, h, fill, line }: { x: number; y: number; w: number; h: number; fill?: string; line?: string }) {
+  const { colors } = useTheme();
   return (
     <View
-      style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: Math.min(w, h) / 2, backgroundColor: fill, borderWidth: 2, borderColor: line }}
+      style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: Math.min(w, h) / 2, backgroundColor: fill ?? colors.neutral, borderWidth: 2, borderColor: line ?? colors.lineStrong }}
     />
   );
 }
@@ -43,6 +42,9 @@ function Pivot({ x, y, rotate, children }: { x: number; y: number; rotate: Anima
 }
 
 function Mannequin({ movement, value }: { movement: Movement; value: Animated.Value }) {
+  const { colors } = useTheme();
+  const ARM_LINE = colors.accent;
+  const ARM_FILL = colors.accentTint;
   const front = movement.view === 'front';
   const kf = mannequinKeyframes(movement);
   // Front view: the right arm is drawn on the left of the picture and rises outward (clockwise).
@@ -78,7 +80,7 @@ function Mannequin({ movement, value }: { movement: Movement; value: Animated.Va
       )}
       {/* shoulder blade: a small plate that turns with the arm (schematic) */}
       <Pivot x={front ? pivotX + 16 : pivotX - 14} y={pivotY + 10} rotate={scapula}>
-        <View style={{ position: 'absolute', left: -7, top: -20, width: 14, height: 40, borderRadius: 7, backgroundColor: 'rgba(47,127,127,0.55)' }} />
+        <View style={{ position: 'absolute', left: -7, top: -20, width: 14, height: 40, borderRadius: 7, backgroundColor: colors.accentTint }} />
       </Pivot>
       {/* arm: upper arm turns about the shoulder, forearm about the elbow */}
       <Pivot x={pivotX} y={pivotY} rotate={arm}>
@@ -95,6 +97,8 @@ function Mannequin({ movement, value }: { movement: Movement; value: Animated.Va
 
 /** Loops the movement slowly. With reduced motion switched on it shows the peak pose and does not move. */
 export function MovementPlayer({ movement }: { movement: Movement }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [value] = useState(() => new Animated.Value(0));
   const [reduce, setReduce] = useState(false);
@@ -122,14 +126,14 @@ export function MovementPlayer({ movement }: { movement: Movement }) {
   return (
     <View style={styles.stage} accessible accessibilityLabel={label}>
       <View style={styles.badge}>
-        <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+        <AppText variant="secondary" color={colors.text} style={styles.bold}>
           {t('movement.demo')}
         </AppText>
       </View>
       <Mannequin movement={movement} value={value} />
       <View style={styles.legend}>
         <View style={styles.swatch} />
-        <AppText variant="secondary" color={colors.navy}>
+        <AppText variant="secondary" color={colors.text}>
           {t('movement.shoulderBlade')}
         </AppText>
       </View>
@@ -137,17 +141,17 @@ export function MovementPlayer({ movement }: { movement: Movement }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   stage: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
     borderRadius: 24,
-    backgroundColor: '#EEF6F7',
+    backgroundColor: colors.neutral,
     overflow: 'hidden',
   },
-  badge: { position: 'absolute', top: 12, start: 12, backgroundColor: colors.white, borderRadius: 14, paddingHorizontal: 12, height: 28, justifyContent: 'center', zIndex: 2 },
+  badge: { position: 'absolute', top: 12, start: 12, backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 12, height: 28, justifyContent: 'center', zIndex: 2 },
   bold: { fontWeight: '700' },
-  legend: { position: 'absolute', bottom: 10, start: 12, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.white, borderRadius: 14, paddingHorizontal: 10, height: 28 },
-  swatch: { width: 12, height: 12, borderRadius: 6, backgroundColor: 'rgba(47,127,127,0.75)' },
+  legend: { position: 'absolute', bottom: 10, start: 12, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 10, height: 28 },
+  swatch: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
 });

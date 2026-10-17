@@ -30,3 +30,7 @@ export const BackHandler = { addEventListener: (_name: string, _cb: () => boolea
 export const Alert = { alert: (_title: string, _message?: string, _buttons?: { text: string; onPress?: () => void }[]) => undefined };
 export const AccessibilityInfo = { isReduceMotionEnabled: async () => false };
 export const LogBox = { ignoreLogs: (_l: string[]) => undefined };
+
+// used by the UI layer (ui/): platform check for the blur fallback and the system colour scheme
+export const Platform = { OS: 'android' as const, select: <T,>(o: { android?: T; default?: T }) => o.android ?? o.default };
+export const useColorScheme = () => 'light' as const;

@@ -4,8 +4,11 @@ import { t } from '../i18n';
 import type { TKey } from '../i18n';
 import { answered, unknown } from '../questions/answer';
 import type { Question, QuestionResult } from '../questions/types';
-import { colors, MIN_TAP, radius, shadows } from '../theme';
+import { MIN_TAP, radius, shadows } from '../theme';
 import { AppText } from './AppText';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export type AnswerKind = 'yes' | 'no' | 'notSure' | 'can' | 'cant';
 
@@ -49,8 +52,10 @@ interface Props {
 
 /** Yes, No and Not sure share one style, so none looks more important than another. */
 export function AnswerButton({ question, kind, onAnswer, selected = false, layout = 'tile' }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const label = t(LABELS[kind]);
-  const fg = selected ? colors.white : colors.navy;
+  const fg = selected ? colors.onAccent : colors.text;
   return (
     <Pressable
       accessibilityRole="button"
@@ -67,18 +72,18 @@ export function AnswerButton({ question, kind, onAnswer, selected = false, layou
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   button: {
     minWidth: MIN_TAP,
     borderRadius: radius.button,
     borderWidth: 2,
-    borderColor: colors.fieldBorder,
-    backgroundColor: colors.white,
+    borderColor: colors.lineStrong,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.card,
   },
   tile: { flex: 1, height: 88, flexDirection: 'column', gap: 4, paddingHorizontal: 4 },
   row: { alignSelf: 'stretch', height: 64, flexDirection: 'row', gap: 6 },
-  selected: { backgroundColor: colors.navy, borderColor: colors.navy },
+  selected: { backgroundColor: colors.chrome, borderColor: colors.chrome },
 });

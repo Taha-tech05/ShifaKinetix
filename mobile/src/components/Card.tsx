@@ -1,39 +1,24 @@
-import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { colors, radius, shadows } from '../theme';
+import { GlassCard } from '../ui/GlassCard';
+import { useTheme } from '../ui/ThemeProvider';
 
 interface Props {
   children: React.ReactNode;
   onPress?: () => void;
   tone?: 'white' | 'mint' | 'gray';
-  /** Row layout with icon first, as most design cards (.card). */
+  /** Row layout with icon first. */
   row?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-/** White card, radius 22, soft shadow, no border (design .card, v3). */
+/** Flat frosted card (translucent fill, 1px border, soft shadow). Tone tints it; the blur is kept for floating layers only. */
 export function Card({ children, onPress, tone = 'white', row = false, accessibilityLabel, style }: Props) {
-  const toneStyle = tone === 'mint' ? styles.mint : tone === 'gray' ? styles.gray : styles.white;
-  const layout = row ? styles.row : null;
-  if (!onPress) return <View style={[styles.base, toneStyle, layout, style]}>{children}</View>;
+  const { colors } = useTheme();
+  const tint = tone === 'mint' ? { backgroundColor: colors.accentTint } : tone === 'gray' ? { backgroundColor: colors.neutral } : null;
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      onPress={onPress}
-      style={({ pressed }) => [styles.base, toneStyle, layout, pressed && styles.pressed, style]}
-    >
+    <GlassCard row={row} onPress={onPress} accessibilityLabel={accessibilityLabel} style={[tint, style]}>
       {children}
-    </Pressable>
+    </GlassCard>
   );
 }
-
-const styles = StyleSheet.create({
-  base: { borderRadius: radius.card, padding: 16, minHeight: 48 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  white: { backgroundColor: colors.white, ...shadows.card },
-  mint: { backgroundColor: colors.tealTint },
-  gray: { backgroundColor: colors.neutralTint },
-  pressed: { opacity: 0.85 },
-});

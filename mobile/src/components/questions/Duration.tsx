@@ -7,8 +7,11 @@ import { Chip } from '../Chip';
 import { answered } from '../../questions/answer';
 import type { DurationUnit, DurationValue, TemplateProps } from '../../questions/types';
 import { useT } from '../../store/settings';
-import { colors, MIN_TAP, radius, spacing } from '../../theme';
+import { MIN_TAP, radius, spacing } from '../../theme';
 import type { TKey } from '../../i18n';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 const UNITS: { unit: DurationUnit; label: TKey }[] = [
   { unit: 'days', label: 'answer.unitDays' },
@@ -17,6 +20,8 @@ const UNITS: { unit: DurationUnit; label: TKey }[] = [
 ];
 
 export function Duration({ question, onAnswer }: TemplateProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [amount, setAmount] = useState(1);
   const [unit, setUnit] = useState<DurationUnit>('days');
@@ -24,7 +29,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
 
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {question.text}
       </AppText>
       <View style={styles.stepper}>
@@ -37,11 +42,11 @@ export function Duration({ question, onAnswer }: TemplateProps) {
           }}
           style={styles.stepBtn}
         >
-          <AppText variant="h1" color={colors.navy}>
+          <AppText variant="h1" color={colors.text}>
             -
           </AppText>
         </Pressable>
-        <AppText variant="display" color={colors.navy} accessibilityLabel={t('answer.durationValue')}>
+        <AppText variant="display" color={colors.text} accessibilityLabel={t('answer.durationValue')}>
           {amount}
         </AppText>
         <Pressable
@@ -53,7 +58,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
           }}
           style={styles.stepBtn}
         >
-          <AppText variant="h1" color={colors.navy}>
+          <AppText variant="h1" color={colors.text}>
             +
           </AppText>
         </Pressable>
@@ -90,7 +95,7 @@ export function Duration({ question, onAnswer }: TemplateProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   stepper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xl },
   stepBtn: {
     width: MIN_TAP + 8,

@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Action, Page, styles } from '../components/SafetyUI';
+import { Action, Page, useSafetyStyles } from '../components/SafetyUI';
 import { SafetyAnswer as Answer, isRequiredQuestion, isValidAnswer, Question } from '../gate/evaluate';
 import { openIntakeStore } from '../storage/nativeStore';
 
 function QuestionInput({ question, busy, save }: { question: Question; busy: boolean; save: (value: Answer['value']) => void }) {
+  const styles = useSafetyStyles();
   const [input, setInput] = useState('');
   const numeric = input.trim() !== '' && /^\d+(\.\d+)?$/.test(input.trim()) ? Number(input) : NaN;
   const valid = isValidAnswer({ questionId: question.questionId, type: question.type, value: numeric, state: 'answered' });
@@ -25,6 +26,7 @@ function QuestionInput({ question, busy, save }: { question: Question; busy: boo
 }
 
 export default function QuestionScreen() {
+  const styles = useSafetyStyles();
   const params = useLocalSearchParams<{ intakeId?: string | string[] }>();
   const id = typeof params.intakeId === 'string' ? params.intakeId : '';
   const [question, setQuestion] = useState<Question | null>(null);

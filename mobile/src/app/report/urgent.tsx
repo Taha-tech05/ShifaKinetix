@@ -2,49 +2,45 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Linking, StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
-import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { useT } from '../../store/settings';
-import { colors } from '../../theme';
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
+import { AutoUploadNotice } from '../../server/autoUpload';
+import { BotBubble } from '../../ui/chat';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
+import { useTheme } from '../../ui/ThemeProvider';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
 /**
- * RED_FLAG (design P8). The flow stops here: no movements, no narrowing, no result. The patient is told to see a
- * doctor now and can call 1122. There is no advice text.
+ * RED_FLAG (design P8). The flow stops here: no movements, no narrowing, no result, no questions, no exercises, no AI suggestions.
+ * The sheet takes over in a calm red state (no animation) and the body behind it dims. The patient is told to see a doctor now and
+ * can call 1122. There is no advice text. The chat history stays above and goes with the patient into the doctor thread.
  */
 export default function Urgent() {
   const t = useT();
+  const { colors } = useTheme();
+  useSceneStep({ stepKey: 'urgent', mode: 'redflag', progress: { label: t('urgent.title'), value: 1 } });
   return (
-    <Screen
-      scroll={true}
-      footer={
-        <>
-          <Button label={t('urgent.doctor')} onPress={() => router.push('/report/doctor')} style={{ backgroundColor: colors.danger }} />
-          <Button label={t('sos.call')} variant="outline" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} />
-          <Button label={t('sos.hospital')} variant="text" onPress={() => Linking.openURL(HOSPITAL_SEARCH_URL)} />
-        </>
-      }
-    >
+    <SceneSheetContent contentKey="urgent">
       <SafetyStopNotice />
-      <View style={styles.center}>
-        <View style={styles.halo}>
-          <View style={styles.disc}>
-            <Ionicons name="warning-outline" size={56} color={colors.danger} />
-          </View>
+      <AutoUploadNotice />
+      <BotBubble tone="alert" label={t('urgent.title')}>
+        <View style={styles.row}>
+          <Ionicons name="warning-outline" size={28} color={colors.danger} />
+          <AppText variant="h2" color={colors.danger} style={styles.title} accessibilityRole="header">
+            {t('urgent.title')}
+          </AppText>
         </View>
-        <AppText variant="h1" color={colors.navy} style={styles.title}>
-          {t('urgent.title')}
-        </AppText>
-      </View>
-    </Screen>
+      </BotBubble>
+      <Button label={t('scene.connectDoctor')} onPress={() => router.push('/report/doctor')} style={{ backgroundColor: colors.danger }} />
+      <Button label={`${t('scene.callHelp')} · ${t('scene.callHelpSub')}`} variant="outline" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} />
+      <Button label={t('sos.hospital')} variant="text" onPress={() => Linking.openURL(HOSPITAL_SEARCH_URL)} />
+    </SceneSheetContent>
   );
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 },
-  halo: { width: 160, height: 160, borderRadius: 80, backgroundColor: colors.dangerTint, alignItems: 'center', justifyContent: 'center' },
-  disc: { width: 108, height: 108, borderRadius: 54, backgroundColor: '#F7D4CF', alignItems: 'center', justifyContent: 'center' },
-  title: { textAlign: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  title: { flex: 1 },
 });

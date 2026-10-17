@@ -3,9 +3,12 @@ import { StyleSheet, View } from 'react-native';
 import type { LiveCategory, LiveState } from '../../narrowing/live';
 import { REGION_MAP } from '../../regions/regionMap';
 import { useT } from '../../store/settings';
-import { colors, radius } from '../../theme';
+import { radius } from '../../theme';
 import { AppText } from '../AppText';
 import { MatchBar } from './MatchBar';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 /** The name of a structure category in the current language. */
 export function useCategoryName() {
@@ -15,6 +18,8 @@ export function useCategoryName() {
 
 /** The categories with a band and a match bar (no numbers, no ranks). */
 export function CategoryRows({ categories }: { categories: LiveCategory[] }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const name = useCategoryName();
   return (
@@ -22,11 +27,11 @@ export function CategoryRows({ categories }: { categories: LiveCategory[] }) {
       {categories.map((c) => (
         <View key={c.category} style={styles.row}>
           <View style={styles.rowTop}>
-            <AppText variant="bodyStrong" color={colors.navy} style={styles.name} numberOfLines={2}>
+            <AppText variant="bodyStrong" color={colors.text} style={styles.name} numberOfLines={2}>
               {name(c.category)}
             </AppText>
             <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t(`live.band.${c.band}` as const)}
               </AppText>
             </View>
@@ -42,6 +47,8 @@ export const muscleName = (id: string) => REGION_MAP.structures[id]?.name ?? id;
 
 /** "Not a diagnosis" and "Estimate": on every place that shows narrowing output. */
 export function NarrowingChips() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   return (
     <View style={styles.chips}>
@@ -51,9 +58,9 @@ export function NarrowingChips() {
           {t('result.notDiagnosis')}
         </AppText>
       </View>
-      <View style={[styles.chip, { backgroundColor: colors.tealTint }]}>
-        <Ionicons name="analytics-outline" size={14} color={colors.tealDark} />
-        <AppText variant="secondary" color={colors.tealDark} style={styles.bold}>
+      <View style={[styles.chip, { backgroundColor: colors.accentTint }]}>
+        <Ionicons name="analytics-outline" size={14} color={colors.accentText} />
+        <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
           {t('result.estimate')}
         </AppText>
       </View>
@@ -68,6 +75,8 @@ export function NarrowingChips() {
  *  - from then on each candidate carries a band (Low / Moderate / Higher), with "match strength, not a probability".
  */
 export function CandidateStrip({ state, maxShown = 3 }: { state: LiveState | null; maxShown?: number }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const list = (state?.candidates ?? []).slice(0, maxShown);
   const bands = state?.bandsVisible === true;
@@ -76,24 +85,24 @@ export function CandidateStrip({ state, maxShown = 3 }: { state: LiveState | nul
   return (
     <View style={styles.strip} accessibilityLiveRegion="polite">
       <View style={styles.head}>
-        <AppText variant="secondary" color={early ? colors.safe : colors.navy} style={[styles.bold, styles.headline]}>
+        <AppText variant="secondary" color={early ? colors.safe : colors.text} style={[styles.bold, styles.headline]}>
           {headline}
         </AppText>
         <NarrowingChips />
       </View>
       {list.length > 0 ? (
-        <AppText variant="secondary" color={colors.muted} style={styles.bold}>
+        <AppText variant="secondary" color={colors.text} style={styles.bold}>
           {bands ? `${t('live.possibleSoFar')} - ${t('live.matchCaption')}` : t('live.possibleSoFar')}
         </AppText>
       ) : null}
       {list.map((c) => (
         <View key={c.muscleId} style={styles.nameRow}>
-          <AppText variant="secondary" color={colors.navy} style={[styles.name, styles.bold]}>
+          <AppText variant="secondary" color={colors.text} style={[styles.name, styles.bold]}>
             {muscleName(c.muscleId)}
           </AppText>
           {bands ? (
             <View style={[styles.band, c.band === 'higher' ? styles.bandHigher : c.band === 'moderate' ? styles.bandModerate : styles.bandLow]}>
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t(`live.band.${c.band}` as const)}
               </AppText>
             </View>
@@ -104,8 +113,8 @@ export function CandidateStrip({ state, maxShown = 3 }: { state: LiveState | nul
   );
 }
 
-const styles = StyleSheet.create({
-  strip: { gap: 2, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.lg, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  strip: { gap: 2, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   headline: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
@@ -116,8 +125,8 @@ const styles = StyleSheet.create({
   row: { gap: 4 },
   rowTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   name: { flex: 1 },
-  band: { paddingHorizontal: 10, minHeight: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  bandLow: { backgroundColor: colors.neutralTint },
+  band: { paddingHorizontal: 10, minHeight: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.lineStrong },
+  bandLow: { backgroundColor: colors.track },
   bandModerate: { backgroundColor: colors.cautionTint },
-  bandHigher: { backgroundColor: colors.tealTint },
+  bandHigher: { backgroundColor: colors.accentTint },
 });

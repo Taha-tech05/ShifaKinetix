@@ -1,10 +1,13 @@
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme';
+
 import { AppText } from './AppText';
 import { Card } from './Card';
 import { IconTile } from './IconTile';
 import type { Tone } from './IconTile';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 interface Props {
   title: string;
@@ -17,6 +20,8 @@ interface Props {
 
 /** Choice card with an icon, a title, a short line and a radio dot (design P29 and P25a). */
 export function RadioCard({ title, sub, icon, tone = 'teal', selected, onPress }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <Card
       row
@@ -26,7 +31,7 @@ export function RadioCard({ title, sub, icon, tone = 'teal', selected, onPress }
     >
       <IconTile icon={icon} tone={tone} />
       <View style={styles.col}>
-        <AppText variant="bodyStrong" color={colors.navy}>
+        <AppText variant="bodyStrong" color={colors.text}>
           {title}
         </AppText>
         {sub ? (
@@ -40,11 +45,11 @@ export function RadioCard({ title, sub, icon, tone = 'teal', selected, onPress }
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   card: { minHeight: 72, borderWidth: 2, borderColor: 'transparent' },
-  on: { borderColor: colors.teal, backgroundColor: '#F3FAFA' },
+  on: { borderColor: colors.accentFill, backgroundColor: colors.accentTint },
   col: { flex: 1 },
-  radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: '#A9B6C2', alignItems: 'center', justifyContent: 'center' },
-  radioOn: { borderColor: colors.teal, backgroundColor: colors.teal },
-  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.white },
+  radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center' },
+  radioOn: { borderColor: colors.accentFill, backgroundColor: colors.accentFill },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.surface },
 });

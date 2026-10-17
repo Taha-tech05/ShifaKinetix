@@ -1,74 +1,43 @@
-import { Pressable } from 'react-native';
-import type { ColorValue, PressableProps } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { router, Tabs } from 'expo-router';
+import type { BottomTabBarProps } from 'expo-router/build/react-navigation/bottom-tabs';
 import { useT } from '../../store/settings';
-import { colors, shadows } from '../../theme';
+import { GlassNav } from '../../ui/GlassNav';
+import type { NavItem } from '../../ui/GlassNav';
 
-type IconName = keyof typeof Ionicons.glyphMap;
+const ICONS: Record<string, { icon: NavItem['icon']; active: NavItem['icon']; label: 'tabs.home' | 'tabs.myCare' | 'tabs.exercises' | 'tabs.profile' }> = {
+  home: { icon: 'home-outline', active: 'home', label: 'tabs.home' },
+  'my-care': { icon: 'heart-outline', active: 'heart', label: 'tabs.myCare' },
+  exercises: { icon: 'barbell-outline', active: 'barbell', label: 'tabs.exercises' },
+  profile: { icon: 'person-outline', active: 'person', label: 'tabs.profile' },
+};
 
-const icon = (name: IconName, focusedName: IconName) =>
-  function TabIcon({ color, focused }: { color: ColorValue; focused: boolean }) {
-    return <Ionicons name={focused ? focusedName : name} size={24} color={color} />;
-  };
-
-/** Tab button with a fully rounded filled pill when selected (the default item cannot round its background). */
-function TabButton({ children, onPress, onLongPress, style, accessibilityState, accessibilityLabel, testID, ...rest }: PressableProps) {
-  // Native passes accessibilityState; web passes aria-selected.
-  const selected = !!(accessibilityState?.selected ?? rest['aria-selected']);
-  return (
-    <Pressable
-      accessibilityRole="tab"
-      aria-selected={selected}
-      accessibilityState={accessibilityState}
-      accessibilityLabel={accessibilityLabel}
-      testID={testID}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      style={[style as object, { borderRadius: 30, backgroundColor: selected ? colors.teal : 'transparent' }]}
-    >
-      {children}
-    </Pressable>
-  );
+/** Floating glass bottom bar (shared component) with a raised centre "+" that starts symptom reporting. */
+function TabBar({ state, navigation }: BottomTabBarProps) {
+  const t = useT();
+  const items: NavItem[] = state.routes.map((route, i) => {
+    const meta = ICONS[route.name];
+    return {
+      key: route.key,
+      label: t(meta.label),
+      icon: meta.icon,
+      activeIcon: meta.active,
+      active: state.index === i,
+      onPress: () => {
+        const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+        if (state.index !== i && !event.defaultPrevented) navigation.navigate(route.name, route.params);
+      },
+    };
+  });
+  return <GlassNav items={items} centerLabel={t('home.tileReport')} onCenter={() => router.push('/report/intro')} />;
 }
 
-/** Floating pill bar: white, radius 36, active tab filled teal with white icon and label (design .nav). */
 export default function TabsLayout() {
-  const t = useT();
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.white,
-        tabBarInactiveTintColor: '#4A5B6B',
-        tabBarButton: (props) => <TabButton {...props} />,
-        tabBarLabelStyle: { fontSize: 14, fontWeight: '600' },
-        tabBarItemStyle: { height: 60, marginVertical: 6, marginHorizontal: 2, borderRadius: 30 },
-        tabBarStyle: {
-          height: 72,
-          marginHorizontal: 16,
-          marginBottom: 14,
-          paddingHorizontal: 8,
-          borderRadius: 36,
-          borderTopWidth: 0,
-          backgroundColor: colors.white,
-          ...shadows.nav,
-        },
-      }}
-    >
-      <Tabs.Screen name="home" options={{ title: t('tabs.home'), tabBarIcon: icon('home-outline', 'home') }} />
-      <Tabs.Screen
-        name="my-care"
-        options={{ title: t('tabs.myCare'), tabBarIcon: icon('heart-outline', 'heart') }}
-      />
-      <Tabs.Screen
-        name="exercises"
-        options={{ title: t('tabs.exercises'), tabBarIcon: icon('barbell-outline', 'barbell') }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{ title: t('tabs.profile'), tabBarIcon: icon('person-outline', 'person') }}
-      />
+    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }} tabBar={(props) => <TabBar {...props} />}>
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="my-care" />
+      <Tabs.Screen name="exercises" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
 }

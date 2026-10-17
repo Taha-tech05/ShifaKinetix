@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { AccessibilityInfo, ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
@@ -10,7 +10,7 @@ import type { Movement } from '../../movement/movements';
 import type { Side } from '../../movement/rig';
 import type { BodyLayer } from '../../regions/types';
 import { useT } from '../../store/settings';
-import { colors, gradients } from '../../theme';
+import { gradients } from '../../theme';
 import { AppText } from '../AppText';
 import { Boundary } from '../body3d/Boundary';
 import { boxFocusView, createCameraRig, FOCUS_SECONDS, presetForSide, refocus, resetView, setPreset, startFocus } from '../body3d/cameraRig';
@@ -27,11 +27,16 @@ import { SegmentedBody } from '../body3d/SegmentedBody';
 import { usePack } from '../body3d/usePack';
 import { useScreenFocused } from '../body3d/useScreenFocused';
 import { MovementPlayer } from './MovementPlayer';
+import { useTheme } from '../../ui/ThemeProvider';
+import { lightPalette } from '../../ui/theme';
+import type { Palette } from '../../ui/theme';
 
 // EXPO_PUBLIC_SIMPLE_ANIM=1 shows the simple diagram instead of the 3D body (also used when 3D is switched off).
 const FORCE_SIMPLE = process.env.EXPO_PUBLIC_SIMPLE_ANIM === '1' || process.env.EXPO_PUBLIC_DISABLE_3D === '1';
 const LOAD_TIMEOUT_MS = 25000;
 const HINT_MS = 5000;
+/** How strongly a muscle is tinted for each likelihood level (1 = the full highlight, as before). */
+const LEVEL_TINT = { higher: 1, moderate: 0.6, low: 0.3 } as const;
 
 interface Props {
   movement: Movement;
@@ -57,8 +62,28 @@ interface Props {
   approx?: boolean;
   /** Frame the highlighted muscles with an eased camera move when they change (question phase). A touch cancels it. */
   autoFocus?: boolean;
+  /** Scene mode: transparent (the page gradient is the studio) and no buttons of its own; the host draws them and uses the handle. */
+  bare?: boolean;
+  /** Called when the layer (muscle or bone) changes by itself, e.g. because the highlighted structures are bones. */
+  onLayerChange?: (layer: BodyLayer) => void;
+  /** Called once each time the movement animation has played through once (after a start or a replay). */
+  onPlayedOnce?: () => void;
+  /** Pixels at the bottom covered by the chat sheet: the body is framed in the rest (the canvas itself keeps its size). */
+  frameInset?: number;
+  /** How likely each highlighted muscle is: the tint is strong for "higher", weaker for "moderate" and dull for "low". */
+  levels?: Record<string, 'low' | 'moderate' | 'higher'>;
+  /** The words shown on the labels for each level. */
+  levelText?: Record<'low' | 'moderate' | 'higher', string>;
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
+}
+
+/** What a host can do to the stage from outside (floating controls). */
+export interface MovementStageHandle {
+  replay: () => void;
+  resetView: () => void;
+  refocus: () => void;
+  setLayer: (layer: BodyLayer) => void;
 }
 
 /**
@@ -68,7 +93,9 @@ interface Props {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady }: Props) {
+export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, levels, levelText, frameInset, bare = false, onLayerChange, onPlayedOnce }, ref) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const preset = cameraPreset ?? movement.camera;
   const t = useT();
   const focused = useScreenFocused();
@@ -90,6 +117,30 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   const control = useRef<AnimControl>({ playing: true, speed: 1, seek: null, t: 0 });
   const rig = useRef<CameraRig | null>(null);
   if (rig.current === null) rig.current = createCameraRig(presetForSide(preset, side));
+
+  const lastT = useRef(0);
+  useImperativeHandle(ref, () => ({
+    replay: () => {
+      lastT.current = 0; // the jump back to the start is not a finished play
+      replay(control.current);
+    },
+    resetView: () => resetView(rig.current!),
+    refocus: () => refocus(rig.current!, FOCUS_SECONDS, reduceMotion),
+    setLayer: (l) => setLayer(l),
+  }));
+  useEffect(() => onLayerChange?.(layer), [layer]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // "played once": the loop clock wraps from near 1 back to near 0. Read-only watch of the clock, it never changes the animation.
+  useEffect(() => {
+    if (!onPlayedOnce || paused) return;
+    lastT.current = 0;
+    const timer = setInterval(() => {
+      const t = control.current.t;
+      if (t < lastT.current - 0.5) onPlayedOnce();
+      lastT.current = t;
+    }, 100);
+    return () => clearInterval(timer);
+  }, [onPlayedOnce, paused, movement.id]);
 
   useEffect(() => {
     if (FORCE_SIMPLE || pack.status !== 'loading') return;
@@ -139,8 +190,10 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
     if (emphasis) return emphasis;
     if (!loaded || !highlightIds) return undefined;
     const deep = deepStructureIds(loaded);
-    return planEmphasis(highlightIds, (id) => deep.has(id));
-  }, [emphasis, loaded, highlightIds]);
+    const plan = planEmphasis(highlightIds, (id) => deep.has(id));
+    if (levels) for (const id of Object.keys(plan.tint)) plan.tint[id] = LEVEL_TINT[levels[id] ?? 'moderate'];
+    return plan;
+  }, [emphasis, loaded, highlightIds, levels]);
   // auto-focus: when the candidates change, frame them (not when they did not change); the OS reduce-motion setting jumps instead
   useEffect(() => {
     if (!autoFocus || !loaded || !highlightIds || highlightIds.length === 0 || boxWidth === 0) return;
@@ -152,6 +205,11 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
     startFocus(rig.current!, boxFocusView(box, side, 45, boxWidth / Math.max(1, boxHeight)), FOCUS_SECONDS, reduceMotion);
   }, [autoFocus, loaded, hintKey, side, boxWidth > 0, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const labelName = (id: string) => {
+    const base = approx ? `${muscleName(id)} (${t('live.approxArea')})` : muscleName(id);
+    const lv = levels?.[id];
+    return lv && levelText ? `${base}: ${levelText[lv]}` : base;
+  };
   const anchorKey = (labelIds ?? []).join('|');
   const anchors = useMemo(() => {
     if (!loaded || !labelIds || labelIds.length === 0) return undefined;
@@ -178,7 +236,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
   }
 
   return (
-    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={[styles.box, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => {
+    <Studio bare={bare} style={[styles.box, bare && styles.bare, height !== undefined ? { height } : styles.flex, style]} onLayout={(e: LayoutChangeEvent) => {
         setBoxWidth(e.nativeEvent.layout.width);
         setBoxHeight(e.nativeEvent.layout.height);
       }}>
@@ -194,6 +252,7 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
             tracked={trackedIds}
             emphasis={emph}
             anchors={anchors}
+            frameInset={frameInset}
             onProject={setScreenPts}
             armTint={!paused}
             endGhost={!paused}
@@ -207,20 +266,22 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
       ) : null}
       {!ready || !firstFrame ? (
         <View style={styles.loading} pointerEvents="none">
-          <ActivityIndicator color={colors.teal} />
-          <AppText variant="secondary" color={colors.muted}>
+          <ActivityIndicator color={colors.accent} />
+          <AppText variant="secondary" color={lightPalette.muted}>
             {t('body.loading3d')}
           </AppText>
         </View>
+      ) : bare ? (
+        anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: labelName(p.id) }))} /> : null
       ) : (
         <>
-          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null}
+          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: labelName(p.id) }))} /> : null}
           <View style={styles.layers} accessibilityLabel={t('movement.layerLabel')}>
             {layers.map((l) => {
               const on = l.value === layer;
               return (
                 <Pressable key={l.value} accessibilityRole="button" accessibilityLabel={l.label} accessibilityState={{ selected: on }} onPress={() => setLayer(l.value)} style={[styles.pill, on && styles.pillOn]}>
-                  <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+                  <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.bold}>
                     {l.label}
                   </AppText>
                 </Pressable>
@@ -230,23 +291,23 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
           <View style={styles.buttons}>
             {paused ? null : (
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.replay')} onPress={() => replay(control.current)} style={styles.pill}>
-              <Ionicons name="refresh" size={18} color={colors.navy} />
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <Ionicons name="refresh" size={18} color={colors.text} />
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t('movement.replay')}
               </AppText>
             </Pressable>
             )}
             {autoFocus && highlightIds && highlightIds.length > 0 ? (
               <Pressable accessibilityRole="button" accessibilityLabel={t('movement.refocus')} onPress={() => refocus(rig.current!, FOCUS_SECONDS, reduceMotion)} style={styles.pill}>
-                <Ionicons name="scan" size={18} color={colors.navy} />
-                <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+                <Ionicons name="scan" size={18} color={colors.text} />
+                <AppText variant="secondary" color={colors.text} style={styles.bold}>
                   {t('movement.refocus')}
                 </AppText>
               </Pressable>
             ) : null}
             <Pressable accessibilityRole="button" accessibilityLabel={t('movement.resetView')} onPress={() => resetView(rig.current!)} style={styles.pill}>
-              <Ionicons name="locate" size={18} color={colors.navy} />
-              <AppText variant="secondary" color={colors.navy} style={styles.bold}>
+              <Ionicons name="locate" size={18} color={colors.text} />
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t('movement.resetView')}
               </AppText>
             </Pressable>
@@ -260,12 +321,23 @@ export function MovementStage({ movement, side = 'right', height, style, tracked
           )}
         </>
       )}
+    </Studio>
+  );
+});
+
+/** The studio card (gradient) or, in scene mode, a transparent box. */
+function Studio({ bare, style, onLayout, children }: { bare: boolean; style: StyleProp<ViewStyle>; onLayout: (e: LayoutChangeEvent) => void; children: React.ReactNode }) {
+  if (bare) return <View style={style} onLayout={onLayout}>{children}</View>;
+  return (
+    <LinearGradient colors={[...gradients.studio]} start={{ x: 0.5, y: 0.1 }} end={{ x: 0.5, y: 1 }} style={style} onLayout={onLayout}>
+      {children}
     </LinearGradient>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   box: { borderRadius: 24, overflow: 'hidden' },
+  bare: { borderRadius: 0 },
   flex: { flex: 1 },
   loading: { ...(StyleSheet.absoluteFill as object), alignItems: 'center', justifyContent: 'center', gap: 8 },
   simple: { gap: 6 },
@@ -274,6 +346,6 @@ const styles = StyleSheet.create({
   buttons: { position: 'absolute', bottom: 10, end: 10, flexDirection: 'row', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '100%' },
   hint: { position: 'absolute', top: 14, end: 12, maxWidth: '45%' },
   pill: { minHeight: 44, minWidth: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 12, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: colors.line },
-  pillOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  pillOn: { backgroundColor: colors.chrome, borderColor: colors.chrome },
   bold: { fontWeight: '700' },
 });
