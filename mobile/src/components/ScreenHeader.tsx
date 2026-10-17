@@ -5,8 +5,8 @@ import { useT } from '../store/settings';
 import { useTheme } from '../ui/ThemeProvider';
 import type { Palette } from '../ui/theme';
 import { FloatingControl } from '../ui/FloatingControl';
+import { LanguageMenu } from '../ui/LanguageMenu';
 import { AppText } from './AppText';
-import { LanguageToggle } from './LanguageToggle';
 import { SosButton } from './SosButton';
 
 interface Props {
@@ -14,12 +14,14 @@ interface Props {
   /** Kept for old call sites: the bar is transparent over the gradient on every screen now. */
   hero?: boolean;
   compact?: boolean;
-  /** Text of the role chip. The patient screens use the default; the doctor screens say Doctor. */
+  /** Title in the middle of the bar (as "Find Doctors" or "Medical Records" in the reference). */
+  title?: string;
+  /** Text of the role chip under the title. The patient screens use the default; the doctor screens say Doctor. */
   roleLabel?: string;
 }
 
-/** Top bar over the gradient: glass back button (or logo), role chip, EN / Urdu / Roman toggle, SOS. */
-export function ScreenHeader({ onBack, compact = false, roleLabel }: Props) {
+/** Top bar as in the light reference: round back button on the left, the title in the middle, language and SOS on the right. */
+export function ScreenHeader({ onBack, compact = false, title, roleLabel }: Props) {
   const t = useT();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -32,14 +34,17 @@ export function ScreenHeader({ onBack, compact = false, roleLabel }: Props) {
           <Ionicons name="pulse" size={22} color={colors.onAccent} />
         </View>
       )}
-      <View style={styles.chip}>
-        <View style={styles.dot} />
-        <AppText variant="secondary" color={colors.text} style={styles.chipText}>
+      <View style={styles.center}>
+        {title ? (
+          <AppText variant="bodyStrong" style={styles.title} numberOfLines={1} accessibilityRole="header">
+            {title}
+          </AppText>
+        ) : null}
+        <AppText variant="secondary" color={colors.muted} style={styles.role} numberOfLines={1}>
           {roleLabel ?? t('common.patient')}
         </AppText>
       </View>
-      <View style={styles.spacer} />
-      <LanguageToggle />
+      <LanguageMenu />
       <SosButton />
     </View>
   );
@@ -47,11 +52,10 @@ export function ScreenHeader({ onBack, compact = false, roleLabel }: Props) {
 
 const makeStyles = (colors: Palette) =>
   StyleSheet.create({
-    bar: { height: 64, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
+    bar: { height: 64, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, zIndex: 20, elevation: 20 },
     barCompact: { height: 56, paddingHorizontal: 8 },
-    logo: { width: 40, height: 40, borderRadius: 14, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
-    chip: { height: 32, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, borderRadius: 16, backgroundColor: colors.glassFill, borderWidth: 1, borderColor: colors.glassBorder },
-    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.accent },
-    chipText: { fontWeight: '700' },
-    spacer: { flex: 1 },
+    logo: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    title: { fontWeight: '800', textAlign: 'center' },
+    role: { fontSize: 12, lineHeight: 16, textAlign: 'center' },
   });

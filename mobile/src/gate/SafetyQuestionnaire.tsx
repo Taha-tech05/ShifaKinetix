@@ -103,7 +103,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     ownIds={question ? [question.questionId] : []} onBack={() => router.back()}>
     <AssessmentSync />
     <AppText variant="secondary" color={colors.caution}>draft, awaiting clinician review</AppText>
-    {error ? <View><AppText accessibilityRole="alert" color={colors.danger}>{error}</AppText>
+    {error ? <View><AppText accessibilityRole="alert" color={colors.caution}>{'⚠ '}{error}</AppText>
       <Button label="Retry" disabled={busy} onPress={() => { void perform(load); }} /></View> : null}
     {entry && <>
       <BotBubble><AppText variant="h3">Shoulder safety check</AppText>

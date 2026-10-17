@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { describeBasics } from '../app/report/basics';
 import type { TKey } from '../i18n';
 import type { Answer } from '../gate/evaluate';
@@ -25,7 +26,7 @@ function answerText(a: Answer, t: T): string {
   return String(a.value);
 }
 
-interface Pair {
+export interface Pair {
   key: string;
   question: string;
   answer: string;
@@ -34,13 +35,15 @@ interface Pair {
 /**
  * The conversation so far, built only from answers that are already saved (read-only): the confirmed spot, the basics, the safety
  * answers, the follow-up questions and the movements. The question being asked now (and the ones its route draws itself) are left out.
+ * Every pair has a stable key, so the list below can append without rebuilding.
  */
-export function ChatHistory({ exclude, afterConfirm }: { exclude: string[]; afterConfirm: boolean }) {
+export function useChatPairs(exclude: string[], afterConfirm: boolean): Pair[] {
   const t = useT();
   const selection = useSession((s) => s.selection);
   const answers = useSession((s) => s.answers);
   const history = useSession((s) => s.history);
-  const pairs = useMemo<Pair[]>(() => {
+  const excludeKey = exclude.join('|');
+  return useMemo<Pair[]>(() => {
     const out: Pair[] = [];
     const label = selection ? regionLabel(selection.regionId, selection.subRegionId) : null;
     if (afterConfirm && label) out.push({ key: 'spot', question: t('scene.youSelected', { label }), answer: t('confirm.yes') });
@@ -62,28 +65,24 @@ export function ChatHistory({ exclude, afterConfirm }: { exclude: string[]; afte
       if (h.kind === 'movement') {
         const m = MOVEMENTS.find((x) => x.id === h.id);
         const words = h.label.split('+').map((k) => (MOVEMENT_LABELS[k] ? t(MOVEMENT_LABELS[k]) : k));
-        out.push({ key: `m-${h.seq}`, question: m ? localized(m.name) : h.id, answer: words.join(' + ') });
+        out.push({ key: `m-${h.id}`, question: m ? localized(m.name) : h.id, answer: words.join(' + ') });
       } else if (h.answer) {
         const q = narrowing.find((x) => x.questionId === h.id);
-        if (q) out.push({ key: `q-${h.seq}`, question: q.text, answer: answerText(h.answer, t) });
+        if (q) out.push({ key: `q-${h.id}`, question: q.text, answer: answerText(h.answer, t) });
       }
     }
     return out;
-  }, [selection, answers, history, exclude, afterConfirm, t]);
+  }, [selection, answers, history, excludeKey, afterConfirm, t]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+/** One answered question: the bot bubble, then the patient's answer. */
+export function PairView({ pair }: { pair: Pair }) {
   return (
-    <>
-      {pairs.map((p) => (
-        <PairView key={p.key} pair={p} />
-      ))}
-    </>
+    <View style={styles.pair}>
+      <BotBubble>{pair.question}</BotBubble>
+      <UserBubble text={pair.answer} />
+    </View>
   );
 }
 
-function PairView({ pair }: { pair: Pair }) {
-  return (
-    <>
-      <BotBubble>{pair.question}</BotBubble>
-      <UserBubble text={pair.answer} />
-    </>
-  );
-}
+const styles = StyleSheet.create({ pair: { gap: 8 } });

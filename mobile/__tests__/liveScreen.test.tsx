@@ -263,7 +263,8 @@ describe('result screen = the last live state', () => {
       expect(all).toContain({ low: 'Low', moderate: 'Moderate', higher: 'Higher' }[c.band]);
     }
     expect(all).toContain('Matched: Raise your arm sideways');
-    const stage = mockStage.mock.calls[mockStage.mock.calls.length - 1][0] as { highlightIds: string[]; labelIds: string[]; paused: boolean };
+    // the result tells the shared full-screen body (report/_layout) what to show
+    const stage = useScene.getState().stage as unknown as { highlightIds: string[]; labelIds: string[]; paused: boolean };
     expect(stage.highlightIds).toEqual(live.candidates.map((c) => c.muscleId));
     expect(stage.labelIds).toEqual(stage.highlightIds);
     expect(stage.paused).toBe(true);

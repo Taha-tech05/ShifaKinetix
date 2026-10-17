@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -77,7 +78,10 @@ export function AutoUploadNotice() {
         <AppText variant="secondary" color={colors.text}>Sending your answers to the server…</AppText>
       ) : (
         <>
-          <AppText variant="bodyStrong" color={colors.danger}>Not sent to the server</AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Ionicons name="warning-outline" size={20} color={colors.caution} />
+            <AppText variant="bodyStrong" color={colors.caution}>Not sent to the server</AppText>
+          </View>
           <AppText variant="secondary" color={colors.text}>{state.message}</AppText>
           <Button label="Try again" variant="outline" onPress={() => void run()} />
         </>
@@ -88,5 +92,5 @@ export function AutoUploadNotice() {
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
   box: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.card, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  failed: { borderColor: colors.danger, borderWidth: 2 },
+  failed: { borderColor: colors.cautionBase, borderWidth: 2 },
 });

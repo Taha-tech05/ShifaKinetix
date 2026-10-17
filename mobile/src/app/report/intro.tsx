@@ -1,79 +1,37 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
-import { BodyFigure } from '../../components/BodyFigure';
 import { Button } from '../../components/Button';
-import { Screen } from '../../components/Screen';
-import { StepProgress } from '../../components/StepProgress';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { shadows } from '../../theme';
-import { useMemo } from 'react';
+import { BotBubble } from '../../ui/chat';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
 import { useTheme } from '../../ui/ThemeProvider';
-import type { Palette } from '../../ui/theme';
 
-/** P4 (design): step 1 of 5, "Tap where it hurts", body preview, Start, emergency line. */
+/** P4 (design): "Tap where it hurts" over the full-screen body, with the time estimate, Start and the emergency line. */
 export default function Intro() {
-  const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
+  const { colors } = useTheme();
   const reset = useSession((s) => s.reset);
+  useSceneStep({ stepKey: 'intro', mode: 'questions', progress: { label: t('scene.phasePoint'), value: 0.05 } });
   return (
-    <Screen
-      scroll={false}
-      onBack={() => router.back()}
-      footer={
-        <>
-          <Button
-            label={t('intro.start')}
-            onPress={() => {
-              reset();
-              router.push('/report/fork');
-            }}
-          />
-          <AppText variant="secondary" color={colors.muted} style={styles.emergency}>
-            {t('notEmergency')}
-          </AppText>
-        </>
-      }
-    >
-      <StepProgress step={1} total={5} />
-      <View style={styles.head}>
-        <AppText variant="h1" color={colors.text}>
-          {t('intro.title')}
-        </AppText>
+    <SceneSheetContent contentKey="intro" onBack={() => router.back()}>
+      <BotBubble>
+        <AppText variant="h2">{t('intro.title')}</AppText>
         <AppText variant="secondary" color={colors.muted}>
           {t('intro.time')}
         </AppText>
-      </View>
-      <BodyFigure height="fill">
-        <View style={styles.pill}>
-          <Ionicons name="time-outline" size={18} color={colors.text} />
-          <AppText variant="secondary" color={colors.text} style={styles.bold}>
-            {t('intro.timeChip')}
-          </AppText>
-        </View>
-      </BodyFigure>
-    </Screen>
+      </BotBubble>
+      <Button
+        label={t('intro.start')}
+        icon="arrow-forward"
+        onPress={() => {
+          reset();
+          router.push('/report/fork');
+        }}
+      />
+      <AppText variant="secondary" color={colors.muted} style={{ textAlign: 'center' }}>
+        {t('notEmergency')}
+      </AppText>
+    </SceneSheetContent>
   );
 }
-
-const makeStyles = (colors: Palette) => StyleSheet.create({
-  head: { gap: 4 },
-  emergency: { textAlign: 'center', paddingVertical: 4 },
-  pill: {
-    position: 'absolute',
-    top: 12,
-    start: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.surface,
-    ...shadows.card,
-  },
-  bold: { fontWeight: '600' },
-});

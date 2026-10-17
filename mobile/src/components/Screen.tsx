@@ -30,7 +30,7 @@ interface Props {
 }
 
 /** Standard screen: gradient background, transparent top bar with SOS, padded body, optional fixed footer. */
-export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = false, footer, bareFooter = false, banner, roleLabel, navSpace = false, children }: Props) {
+export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = false, footer, bareFooter = false, banner, roleLabel, title, navSpace = false, children }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -38,7 +38,7 @@ export function Screen({ onBack, scroll = true, scrollEnabled = true, compact = 
   return (
     <View style={styles.root}>
       <GradientBackground />
-      <ScreenHeader onBack={onBack} compact={compact} roleLabel={roleLabel} />
+      <ScreenHeader onBack={onBack} compact={compact} title={title} roleLabel={roleLabel} />
       {banner}
       {scroll ? (
         <ScrollView contentContainerStyle={[styles.body, { paddingBottom: bottomPad }]} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>

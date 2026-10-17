@@ -1,8 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { useBlurAllowed } from './blur';
 import { useTheme } from './ThemeProvider';
 import { MIN_TOUCH, font } from './theme';
 
@@ -22,7 +20,6 @@ interface Props {
 /** Round or pill glass button that floats over the screen (back, replay, re-focus, reset view, SOS...). */
 export function FloatingControl({ icon, label, onPress, showLabel = false, tone = 'normal', mirror = false, selected = false, style }: Props) {
   const { colors } = useTheme();
-  const blurOk = useBlurAllowed();
   const fg = selected ? colors.onAccent : tone === 'danger' ? colors.danger : colors.text;
   return (
     <Pressable
@@ -32,12 +29,11 @@ export function FloatingControl({ icon, label, onPress, showLabel = false, tone 
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        { minWidth: MIN_TOUCH, height: MIN_TOUCH, borderColor: colors.glassBorder, backgroundColor: selected ? colors.accentFill : blurOk ? colors.glassFill : colors.surface },
+        { minWidth: MIN_TOUCH, height: MIN_TOUCH, borderColor: colors.glassBorder, backgroundColor: selected ? colors.accentFill : colors.controlFill },
         pressed && { opacity: 0.8 },
         style,
       ]}
     >
-      {blurOk ? <BlurView intensity={35} tint={colors.blurTint} style={StyleSheet.absoluteFill} /> : null}
       <View style={styles.row}>
         <Ionicons name={icon} size={22} color={fg} style={mirror && I18nManager.isRTL ? { transform: [{ scaleX: -1 }] } : undefined} />
         {showLabel ? <Text style={[font.caption, { color: fg, fontWeight: '700' }]}>{label}</Text> : null}

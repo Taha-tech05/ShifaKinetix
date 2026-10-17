@@ -218,7 +218,7 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
     }
     // the scrolling lives in the shared sheet, not in this route
     expect(tree.root.findAll((n: ReactTestInstance) => (n.type as unknown) === 'ScrollView').length).toBe(0);
-    expect(src('ui/GlassSheet.tsx')).toContain('BottomSheetScrollView');
+    expect(src('ui/SceneHost.tsx')).toContain('FlatList');
   });
 
   it('Yes, No, Not sure and Skip share one row, each at least 48 dp', () => {

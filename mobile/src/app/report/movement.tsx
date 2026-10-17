@@ -314,8 +314,9 @@ function InvolvedBubble({ names }: { names: string[] }) {
         <AppText variant="bodyStrong">{t('scene.involved')}</AppText>
       </BotBubble>
       <ChipRow>
+        <Chip tone="involved" icon="eye-outline" label={t('scene.mayBeInvolved')} />
         {names.map((nm) => (
-          <Chip key={nm} label={nm} />
+          <Chip key={nm} tone="involved" label={nm} />
         ))}
       </ChipRow>
     </>

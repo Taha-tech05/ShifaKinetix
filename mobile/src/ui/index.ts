@@ -10,5 +10,5 @@ export { GlassNav } from './GlassNav';
 export type { NavItem } from './GlassNav';
 export { Callout } from './Callout';
 export { GlassSheet, SNAPS } from './GlassSheet';
-export type { GlassSheetHandle, SnapIndex } from './GlassSheet';
+export type { GlassSheetHandle, SnapName } from './GlassSheet';
 export { useBlurAllowed, useFpsGuard, useBlurGuard } from './blur';

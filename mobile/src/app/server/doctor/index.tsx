@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '../../../components/AppText';
 import { Button } from '../../../components/Button';
@@ -18,8 +19,11 @@ const chips = (colors: Palette) => ({
   RED_FLAG: { text: 'Urgent', color: colors.danger },
   CLARIFY: { text: 'Not sure', color: colors.caution },
   SAFE: { text: 'Safe', color: colors.safe },
-  NONE: { text: 'Could not load', color: colors.danger },
+  NONE: { text: 'Could not load', color: colors.caution },
 } as const);
+
+/** Two letters for the round avatar of a case. */
+const initials = (label: string) => label.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join('') || '?';
 
 /** Latest cases, urgent first, each judged by the server's gate. Tap one to open its doctor report. */
 export default function DoctorCases() {
@@ -57,13 +61,21 @@ export default function DoctorCases() {
       {rows?.map((c) => {
         const chip = chips(colors)[c.verdict ?? 'NONE'];
         return (
-          <Card key={c.id} accessibilityLabel={`${chip.text}: ${c.label}`} onPress={() => { setLookupId(c.id); router.push('/server/doctor/report' as never); }}>
-            <View style={styles.row}>
-              <AppText variant="bodyStrong" color={chip.color}>{chip.text}</AppText>
-              <AppText variant="secondary" color={colors.muted}>Open report</AppText>
+          <Card row key={c.id} accessibilityLabel={`${chip.text}: ${c.label}`} onPress={() => { setLookupId(c.id); router.push('/server/doctor/report' as never); }}>
+            <View style={[styles.avatar, { backgroundColor: colors.accentFill }]}>
+              <AppText variant="bodyStrong" color={colors.onAccent}>{initials(c.label)}</AppText>
             </View>
-            <AppText variant="bodyStrong" color={colors.text}>{c.label}</AppText>
-            <AppText variant="secondary" color={colors.muted}>{c.id}</AppText>
+            <View style={styles.col}>
+              <AppText variant="bodyStrong" color={colors.text}>{c.label}</AppText>
+              <AppText variant="secondary" color={colors.muted}>{c.id}</AppText>
+              <View style={styles.row}>
+                <AppText variant="bodyStrong" color={chip.color}>{chip.text}</AppText>
+                <AppText variant="secondary" color={colors.muted}>Open report</AppText>
+              </View>
+            </View>
+            <View style={[styles.go, { backgroundColor: colors.accentFill }]}>
+              <Ionicons name="arrow-forward" size={18} color={colors.onAccent} />
+            </View>
           </Card>
         );
       })}
@@ -76,5 +88,8 @@ export default function DoctorCases() {
 }
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 0, borderRadius: radius.card, gap: spacing.sm },
+  row: { flexDirection: 'row', alignItems: 'center', padding: 0, borderRadius: radius.card, gap: spacing.md },
+  col: { flex: 1, gap: 2 },
+  avatar: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center' },
+  go: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
 });

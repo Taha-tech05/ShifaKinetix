@@ -2,6 +2,7 @@
 // wants shown in the shared sheet and stage, so the 3D body and the sheet can stay mounted while the route changes.
 import { createContext } from 'react';
 import { create } from 'zustand';
+import type { CameraPreset } from '../components/body3d/cameraRig';
 import type { Movement } from '../movement/movements';
 import type { Side } from '../movement/rig';
 
@@ -21,6 +22,10 @@ export interface StageProps {
   paused: boolean;
   highlightIds: string[];
   autoFocus: boolean;
+  /** Result screen: labels with leader lines, the "approximate area" note and the upper-body camera. */
+  labelIds?: string[];
+  approx?: boolean;
+  cameraPreset?: CameraPreset;
 }
 
 /**

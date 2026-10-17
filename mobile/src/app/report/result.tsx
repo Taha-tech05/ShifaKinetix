@@ -1,16 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { CautionStrip } from '../../components/CautionStrip';
-import { MovementStage } from '../../components/movement/MovementStage';
 import { MatchBar } from '../../components/narrowing/MatchBar';
 import { CategoryRows, muscleName, NarrowingChips, useCategoryName } from '../../components/narrowing/CandidateStrip';
-import { Screen } from '../../components/Screen';
-import { StepProgress } from '../../components/StepProgress';
 import { ASSISTANT_ENABLED } from '../../config';
 import { SafeGuard } from '../../flow/SafeGuard';
 import { AutoUploadNotice } from '../../server/autoUpload';
@@ -28,6 +25,7 @@ import type { HistoryEntry } from '../../store/session';
 import { useT } from '../../store/settings';
 import { radius, shadows } from '../../theme';
 import type { CameraPreset } from '../../components/body3d/cameraRig';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
 import { useTheme } from '../../ui/ThemeProvider';
 import type { Palette } from '../../ui/theme';
 
@@ -139,7 +137,6 @@ function ResultBody() {
   const saved = useSession((s) => s.liveState);
   const history = useSession((s) => s.history);
   const sel = useSession((s) => s.selection);
-  const [touching, setTouching] = useState(false);
   // Only if the screen is opened without a live run (a direct link): evaluate once, from the stored answers.
   const fallback = useMemo<LiveState | null>(() => {
     if (saved) return null;
@@ -161,27 +158,23 @@ function ResultBody() {
   const side = sideOfRegion(sel?.regionId);
   const behind = sel?.subRegionId === 'back' || sel?.subRegionId === 'scapular';
   const doctor = suggestDoctorLive(state);
+  // the same full-screen body as every other step of the flow (report/_layout draws it); this screen only says what to show on it
+  useSceneStep({
+    stepKey: 'result',
+    mode: 'questions',
+    progress: { label: t('result.title'), value: 1 },
+    stage: { movement: MOVEMENTS[0], side, paused: true, autoFocus: false, highlightIds: ids, labelIds: approxCategory ? ids.slice(0, 1) : ids, approx: approxCategory !== null, cameraPreset: behind ? BACK : FRONT },
+  });
 
   return (
     <>
-      <Screen
-        scrollEnabled={!touching}
-        onBack={() => router.back()}
-        banner={<CautionStrip text={t('moveSafely')} />}
-        footer={
-          <>
-            <Button label={t('result.seeAdvice')} onPress={() => router.push('/report/choice')} />
-            <Button variant="text" label={categoryResult ? t('live.talkPhysio') : t('result.talkDoctor')} onPress={() => router.push('/report/doctor')} />
-          </>
-        }
-      >
+      <SceneSheetContent contentKey="result" onBack={() => router.back()}>
+        <CautionStrip text={t('moveSafely')} />
         <AutoUploadNotice />
-        <StepProgress step={5} total={5} />
         <AppText variant="h1" color={colors.text} style={styles.title}>
           {t('result.title')}
         </AppText>
         <NarrowingChips />
-        <MovementStage movement={MOVEMENTS[0]} side={side} height={320} paused cameraPreset={behind ? BACK : FRONT} highlightIds={ids} labelIds={approxCategory ? ids.slice(0, 1) : ids} approx={approxCategory !== null} onInteract={setTouching} />
         {state?.stop ? (
           <AppText variant="secondary" color={colors.safe} style={styles.bold}>
             {t('live.enough')}
@@ -265,7 +258,9 @@ function ResultBody() {
         must stay false in this phase: no button, no placeholder. A later phase may add its entry point below, behind the flag.
       */}
       {ASSISTANT_ENABLED ? null : null}
-      </Screen>
+        <Button label={t('result.seeAdvice')} onPress={() => router.push('/report/choice')} />
+        <Button variant="text" label={categoryResult ? t('live.talkPhysio') : t('result.talkDoctor')} onPress={() => router.push('/report/doctor')} />
+      </SceneSheetContent>
     </>
   );
 }

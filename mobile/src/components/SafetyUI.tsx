@@ -42,7 +42,7 @@ const makeStyles = (colors: Palette) => StyleSheet.create({
   heading: { fontSize: 24, lineHeight: 32, fontWeight: '800', color: colors.text },
   body: { fontSize: 16, lineHeight: 24, color: colors.text },
   caption: { fontSize: 14, color: colors.muted, lineHeight: 20 },
-  error: { fontSize: 16, color: colors.danger, lineHeight: 24 },
+  error: { fontSize: 16, color: colors.caution, lineHeight: 24, fontWeight: '700' },
   card: { backgroundColor: colors.cardFill, padding: 20, borderRadius: 24, gap: 12, borderWidth: 1, borderColor: colors.glassBorder, ...softShadow(colors) },
   button: { backgroundColor: colors.accentFill, padding: 18, minHeight: 56, borderRadius: 24, justifyContent: 'center' },
   secondary: { backgroundColor: colors.glassFill, borderWidth: 1.5, borderColor: colors.lineStrong },

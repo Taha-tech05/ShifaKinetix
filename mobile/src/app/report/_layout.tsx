@@ -5,7 +5,7 @@ import { SceneHostContext } from '../../ui/scene';
 import { ThemeScope, useTheme } from '../../ui/ThemeProvider';
 
 /** Routes of the symptom flow that live on the dark 3D screen: one persistent body and one glass sheet. */
-const SCENE_ROUTES = new Set(['body', 'confirm', 'basics', 'danger', 'reask', 'safe', 'movement', 'urgent', 'unclear']);
+const SCENE_ROUTES = new Set(['intro', 'fork', 'body', 'confirm', 'basics', 'danger', 'reask', 'safe', 'movement', 'result', 'urgent', 'unclear']);
 
 /**
  * Report a Symptom flow: its own full-screen stack, so no bottom tab bar.
