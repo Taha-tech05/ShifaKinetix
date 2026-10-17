@@ -18,7 +18,7 @@ import { corner } from './theme';
  *  - expanded: up to just below the top controls (the body is covered)
  * SNAPS holds the fixed sizes.
  */
-export const SNAPS = { min: 40, peek: 0.18, fitMin: 0.4, fitMax: 0.7 } as const;
+export const SNAPS = { min: 40, peek: 0.18, fitMin: 0.4, fitMax: 0.5 } as const;
 export type SnapName = 'min' | 'peek' | 'compressed' | 'expanded' | 'free';
 
 export interface GlassSheetHandle {
@@ -68,7 +68,7 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
   const canBlur = !forceSolid && (Platform.OS === 'ios' || (Platform.OS === 'android' && Number(Platform.Version) >= 31 && !!blurTarget));
   const [headerH, setHeaderH] = useState(0);
   const expanded = Math.max(0, screenHeight - topInset);
-  // "fit": the handle, the header and the current question with its options, never lower than 40% or higher than 70% of the screen
+  // "fit": the handle, the header and the current question with its options, never lower than 40% or higher than 50% of the screen
   const fit = useMemo(() => {
     const want = HANDLE + headerH + fitContent + 24;
     const lo = Math.round(screenHeight * SNAPS.fitMin);

@@ -111,3 +111,8 @@ backend file was changed (`git diff --stat 2b51683..HEAD` over those paths is em
   a lighter teal gradient on buttons, Home restructured (card with a header row, round-icon quick-action cards with the label inside). White text on the lighter teal is
   about 3.6 to 4.7:1, below AA at the lightest end; the darker end sits under the label.
 - Not verified on a device this round (the phone was not connected). 601 tests pass, tsc and eslint clean.
+
+## Round 5
+- **Language list** is now a solid popover in its own layer (a Modal): it was a small absolutely-placed menu that was clipped by the sheet and hard to read in the header.
+- **Body size and position**: the body is no longer shrunk to fit above the sheet. It is drawn at a minimum of 55% of its full-screen size, centred in the free area, with the
+  sheet at 40-50% of the screen (it was up to 70%). With a tall sheet the whole body is still in view; compressing the sheet shows it full size.

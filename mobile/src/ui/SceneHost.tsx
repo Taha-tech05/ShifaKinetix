@@ -354,7 +354,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
         )}
 
         {bodyVisible && screenH > 0 ? (
-          <View style={[styles.stage, { top: topH, bottom: 0 }]}>
+          <View style={[styles.stage, { top: insets.top + 8 + TOP_ROW + 4, bottom: 0 }]}>
             {movementStage && stage ? (
               <MovementStage
                 ref={stageRef}
@@ -390,7 +390,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
               />
             )}
             {/* the tap callout lives in the body's own coordinate space: the projected point is relative to the 3D view */}
-            {showCallout && label ? <Callout label={label} x={px} y={py} facing={facing} width={box.w} height={Math.max(0, screenH - topH)} topInset={8} bottomInset={stageBottom + 8} reduceMotion={reduceMotion} /> : null}
+            {showCallout && label ? <Callout label={label} x={px} y={py} facing={facing} width={box.w} height={Math.max(0, screenH - (insets.top + 8 + TOP_ROW + 4))} topInset={8} bottomInset={stageBottom + 8} reduceMotion={reduceMotion} /> : null}
           </View>
         ) : null}
       </BlurTargetView>
