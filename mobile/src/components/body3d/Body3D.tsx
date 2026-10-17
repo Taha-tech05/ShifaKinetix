@@ -11,6 +11,7 @@ import { applyLayer, resolveRay } from '../../regions/select';
 import type { BodyLayer, BodySelection, Point3D } from '../../regions/types';
 import { disposeOutline, highlightMesh, makeOutline, restoreMesh } from '../../screens/model3d/loadPack';
 import type { LoadedPack } from '../../screens/model3d/loadPack';
+import { applyFraming, newFraming } from './framing';
 import { StudioLights } from './StudioLights';
 import { VIEWER_FOV as FOV } from './viewerSetup';
 
@@ -36,6 +37,8 @@ export interface ProjectedPoint {
 }
 
 export interface Body3DProps {
+  /** Pixels at the bottom of the canvas that something (the chat sheet) covers: the whole body is framed in the rest, see framing.ts. */
+  frameInset?: number;
   /** A model-space point to follow on screen (the tapped point). With onProject, called about 30 times a second, never through React state. */
   anchor?: Point3D | null;
   onProject?: (p: ProjectedPoint | null) => void;
@@ -54,7 +57,8 @@ export interface Body3DProps {
 
 type Highlighted = { part: LoadedPack['parts'][number]; index: number; outline: THREE.Mesh | null };
 
-function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anchor, onProject }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anchor, onProject, frameInset = 0 }: Body3DProps & { control: React.MutableRefObject<Control> }) {
+  const framing = useMemo(() => newFraming(), []);
   const projectTmp = useMemo(() => ({ p: new THREE.Vector3(), cam: new THREE.Vector3() }), []);
   const pivot = useRef<THREE.Group>(null);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
@@ -118,7 +122,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anc
   useEffect(() => clearHighlight, []);
 
   // eslint-disable-next-line react-hooks/immutability -- imperative three.js highlight bookkeeping kept in a ref
-  useFrame(({ camera, size }) => {
+  useFrame(({ camera, size }, dt) => {
     const c = control.current;
     if (pivot.current) {
       pivot.current.rotation.y = c.yaw;
@@ -126,6 +130,7 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anc
     }
     camera.position.set(0, 0, c.distance);
     camera.lookAt(0, 0, 0);
+    applyFraming(camera as THREE.PerspectiveCamera, size, frameInset, framing, dt);
 
     frames.current++;
     if (frames.current === 2) onFirstFrame();

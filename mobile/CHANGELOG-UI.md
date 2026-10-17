@@ -98,3 +98,16 @@ backend file was changed (`git diff --stat 2b51683..HEAD` over those paths is em
   labelled with their name and High / Medium / Low, once the narrowing has enough answers. The list of muscles was removed from the chat. This replaces round 1's "no bands
   or ranking" rule for the 3D screen, as requested. No numbers are shown.
 - Tests that expected the muscle list in the chat now check what is handed to the body (highlight ids, levels, labels).
+
+## Round 4
+- **Transition between movements**: after every answer the safety guard unmounts the live screen for a moment while it re-checks the saved answers, which also tore down
+  and rebuilt the 3D canvas (the stutter). The scene host now keeps the 3D stage and the last chat content mounted through that gap.
+- **Centring / feet cut off**: the canvas no longer resizes with the sheet (that was slow and made the body pop). The camera draws the picture into the part of the canvas
+  above the sheet (`body3d/framing.ts`, three.js `setViewOffset`), centred sideways, and eases there as the sheet moves, for the picking body and the movement stage.
+- **Labels over the body** use dark ink on a white pill in both app modes (the studio background is always light; in dark mode the text was white on white).
+- **Highlight lost after Muscle -> Bone -> Muscle**: the fade state was remembered for the old, discarded materials, so the new ones were never tinted. It is reset on rebuild.
+- **Result cards and text**: solid card fills, stronger borders, full-contrast text instead of the muted tone.
+- **Light palette** moved closer to `docs/design/image.png` and `image2.jpg`: greyer teal to cream to faint peach background, tinted translucent glass cards (no heavy shadow),
+  a lighter teal gradient on buttons, Home restructured (card with a header row, round-icon quick-action cards with the label inside). White text on the lighter teal is
+  about 3.6 to 4.7:1, below AA at the lightest end; the darker end sits under the label.
+- Not verified on a device this round (the phone was not connected). 601 tests pass, tsc and eslint clean.

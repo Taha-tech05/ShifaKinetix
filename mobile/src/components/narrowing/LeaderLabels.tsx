@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '../AppText';
 import { useMemo } from 'react';
-import { useTheme } from '../../ui/ThemeProvider';
+import { lightPalette } from '../../ui/theme';
 import type { Palette } from '../../ui/theme';
 
 export interface LabelAnchor {
@@ -33,7 +33,8 @@ export function spreadLabels(ys: number[], min = ROW): number[] {
  * muscle by a thin horizontal line and a dot. Labels alternate sides so they do not crowd.
  */
 export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width: number }) {
-  const { colors } = useTheme();
+  // the labels sit on the 3D body, whose background is the light studio in light AND dark app mode: always dark ink on a white pill
+  const colors = lightPalette;
   const styles = useMemo(() => makeStyles(colors), [colors]);
   if (anchors.length === 0 || width <= 0) return null;
   const ys = spreadLabels(anchors.map((a) => a.y));
@@ -63,7 +64,7 @@ export function LeaderLabels({ anchors, width }: { anchors: LabelAnchor[]; width
 
 const makeStyles = (colors: Palette) => StyleSheet.create({
   line: { position: 'absolute', height: 1.5, backgroundColor: colors.chrome },
-  dot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: colors.chrome, borderWidth: 1.5, borderColor: colors.surface },
-  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.lineStrong },
+  dot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: colors.chrome, borderWidth: 1.5, borderColor: '#FFFFFF' },
+  label: { position: 'absolute', minHeight: 26, justifyContent: 'center', paddingHorizontal: 6, borderRadius: 8, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: colors.lineStrong },
   text: { fontWeight: '700', fontSize: 13, lineHeight: 16 },
 });

@@ -15,6 +15,7 @@ import { Button } from './Button';
 import { Card } from './Card';
 import { useMemo } from 'react';
 import { useTheme } from '../ui/ThemeProvider';
+import { lightPalette } from '../ui/theme';
 import type { Palette } from '../ui/theme';
 
 export type { BodyLayer, BodySelection } from '../regions/types';
@@ -40,6 +41,8 @@ export interface BodyViewerProps {
   onMessage?: (m: 'none' | 'miss' | 'outOfScope') => void;
   /** Reports that the 3D body is drawing, or that it is unavailable and the plain picker is shown. */
   onStatus?: (s: 'loading' | 'ready' | 'plain') => void;
+  /** Pixels at the bottom covered by the chat sheet: the whole body is framed in the rest. */
+  frameInset?: number;
 }
 
 const LOAD_TIMEOUT_MS = 25000;
@@ -98,7 +101,7 @@ function LayerMenu({ layer, onChange }: { layer: BodyLayer; onChange: (l: BodyLa
  * A tap on another body area (neck, chest, upper arm, ...) shows a "Full project" message and selects nothing.
  * Nothing else in the app depends on this component working.
  */
-export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect, bare = false, readOnly = false, anchor, onProject, onMessage, onStatus }: BodyViewerProps) {
+export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: initialLayer = 'muscle', onLayerChange, onSelect, bare = false, readOnly = false, anchor, onProject, onMessage, onStatus, frameInset }: BodyViewerProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
@@ -168,6 +171,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
             highlightNames={highlightNames}
             anchor={anchor}
             onProject={onProject}
+            frameInset={frameInset}
             accessibilityLabel={t('body.tapHint')}
             onFirstFrame={() => setFirstFrame(true)}
             onPick={
@@ -186,7 +190,7 @@ export function BodyViewer({ highlightedIds = [], highlightNames = [], layer: in
       {!ready || !firstFrame ? (
         <View style={styles.loading} pointerEvents="none">
           <ActivityIndicator size="large" color={colors.accent} />
-          <AppText variant="body" color={colors.muted}>
+          <AppText variant="body" color={lightPalette.muted}>
             {t('body.loading3d')}
           </AppText>
         </View>

@@ -91,7 +91,7 @@ export function CandidateStrip({ state, maxShown = 3 }: { state: LiveState | nul
         <NarrowingChips />
       </View>
       {list.length > 0 ? (
-        <AppText variant="secondary" color={colors.muted} style={styles.bold}>
+        <AppText variant="secondary" color={colors.text} style={styles.bold}>
           {bands ? `${t('live.possibleSoFar')} - ${t('live.matchCaption')}` : t('live.possibleSoFar')}
         </AppText>
       ) : null}
@@ -125,8 +125,8 @@ const makeStyles = (colors: Palette) => StyleSheet.create({
   row: { gap: 4 },
   rowTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   name: { flex: 1 },
-  band: { paddingHorizontal: 10, minHeight: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  bandLow: { backgroundColor: colors.neutral },
+  band: { paddingHorizontal: 10, minHeight: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.lineStrong },
+  bandLow: { backgroundColor: colors.track },
   bandModerate: { backgroundColor: colors.cautionTint },
   bandHigher: { backgroundColor: colors.accentTint },
 });

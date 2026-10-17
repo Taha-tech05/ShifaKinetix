@@ -69,9 +69,11 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
   const [last, setLast] = useState<typeof sheet>(null);
   const typing = useTypingDelay(sheet?.contentKey ?? '', reduceMotion);
   if (sheet && !typing && last !== sheet) setLast(sheet);
-  // while the dots show, the previous message stays where it was
-  const shown = typing ? last : sheet;
-  const pairs = useChatPairs(sheet?.ownIds ?? [], afterConfirm);
+  // while the dots show, the previous message stays where it was. The same when the screen is briefly gone: after every answer the safety
+  // guard unmounts it for a moment while it re-checks the saved answers, and the chat must not blink or jump.
+  const shown = typing ? last : (sheet ?? last);
+  const live = sheet !== null && !typing;
+  const pairs = useChatPairs((typing ? last : (sheet ?? last))?.ownIds ?? [], afterConfirm);
   const demoDismissed = useScene((st) => st.demoDismissed);
   const rows = useMemo<Row[]>(
     () => [...(demoDismissed ? [] : [{ key: 'demo' as const }]), ...pairs.map((p) => ({ key: `p-${p.key}`, pair: p })), { key: 'current' as const }, ...(typing ? [{ key: 'typing' as const }] : [])],
@@ -157,7 +159,7 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
             <TypingDots label={t('scene.typing')} still={reduceMotion} />
           ) : (
             <View
-              pointerEvents={typing ? 'none' : 'auto'}
+              pointerEvents={live ? 'auto' : 'none'}
               style={styles.current}
               onLayout={(e: LayoutChangeEvent) => {
                 currentH.current = e.nativeEvent.layout.height;
@@ -316,7 +318,12 @@ export function SceneHost({ leaf }: { leaf: string }) {
   };
 
   const redFlag = scene.mode === 'redflag';
-  const stage = scene.stage;
+  // the movement stage stays mounted through the brief gaps between steps (the route unmounts and mounts again): a new 3D canvas for every
+  // answer is what made the transition between movements stutter
+  const [lastStage, setLastStage] = useState(scene.stage);
+  if (scene.stage && scene.stage !== lastStage) setLastStage(scene.stage);
+  if (!movementStage && lastStage !== null) setLastStage(null);
+  const stage = scene.stage ?? (movementStage ? lastStage : null);
   const moving = scene.mode === 'moving';
   const fullChat = !bodyVisible;
   const screenH = box.h;
@@ -347,7 +354,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
         )}
 
         {bodyVisible && screenH > 0 ? (
-          <View style={[styles.stage, { top: topH, bottom: movementStage ? stageBottom : 0 }]}>
+          <View style={[styles.stage, { top: topH, bottom: 0 }]}>
             {movementStage && stage ? (
               <MovementStage
                 ref={stageRef}
@@ -361,6 +368,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
                 approx={stage.approx}
                 cameraPreset={stage.cameraPreset}
                 levels={stage.levels}
+                frameInset={stageBottom}
                 levelText={{ higher: t('scene.levelHigh'), moderate: t('scene.levelMedium'), low: t('scene.levelLow') }}
                 onPlayedOnce={onPlayedOnce}
                 onLayerChange={setLayer}
@@ -370,6 +378,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
               <BodyViewer
                 bare
                 layer={layer}
+                frameInset={stageBottom}
                 readOnly={!TAPPABLE.has(leaf)}
                 highlightedIds={selection ? [selectionKey(selection.regionId, selection.subRegionId)] : []}
                 highlightNames={highlightNames}

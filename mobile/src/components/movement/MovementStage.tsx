@@ -28,6 +28,7 @@ import { usePack } from '../body3d/usePack';
 import { useScreenFocused } from '../body3d/useScreenFocused';
 import { MovementPlayer } from './MovementPlayer';
 import { useTheme } from '../../ui/ThemeProvider';
+import { lightPalette } from '../../ui/theme';
 import type { Palette } from '../../ui/theme';
 
 // EXPO_PUBLIC_SIMPLE_ANIM=1 shows the simple diagram instead of the 3D body (also used when 3D is switched off).
@@ -67,6 +68,8 @@ interface Props {
   onLayerChange?: (layer: BodyLayer) => void;
   /** Called once each time the movement animation has played through once (after a start or a replay). */
   onPlayedOnce?: () => void;
+  /** Pixels at the bottom covered by the chat sheet: the body is framed in the rest (the canvas itself keeps its size). */
+  frameInset?: number;
   /** How likely each highlighted muscle is: the tint is strong for "higher", weaker for "moderate" and dull for "low". */
   levels?: Record<string, 'low' | 'moderate' | 'higher'>;
   /** The words shown on the labels for each level. */
@@ -90,7 +93,7 @@ export interface MovementStageHandle {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, levels, levelText, bare = false, onLayerChange, onPlayedOnce }, ref) {
+export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, levels, levelText, frameInset, bare = false, onLayerChange, onPlayedOnce }, ref) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const preset = cameraPreset ?? movement.camera;
@@ -249,6 +252,7 @@ export const MovementStage = forwardRef<MovementStageHandle, Props>(function Mov
             tracked={trackedIds}
             emphasis={emph}
             anchors={anchors}
+            frameInset={frameInset}
             onProject={setScreenPts}
             armTint={!paused}
             endGhost={!paused}
@@ -263,7 +267,7 @@ export const MovementStage = forwardRef<MovementStageHandle, Props>(function Mov
       {!ready || !firstFrame ? (
         <View style={styles.loading} pointerEvents="none">
           <ActivityIndicator color={colors.accent} />
-          <AppText variant="secondary" color={colors.muted}>
+          <AppText variant="secondary" color={lightPalette.muted}>
             {t('body.loading3d')}
           </AppText>
         </View>

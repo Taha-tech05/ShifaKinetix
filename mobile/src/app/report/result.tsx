@@ -23,7 +23,7 @@ import { sideOfRegion } from '../../regions/shoulder';
 import { narrowingInputFrom, useSession } from '../../store/session';
 import type { HistoryEntry } from '../../store/session';
 import { useT } from '../../store/settings';
-import { radius, shadows } from '../../theme';
+import { radius } from '../../theme';
 import type { CameraPreset } from '../../components/body3d/cameraRig';
 import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
 import { useTheme } from '../../ui/ThemeProvider';
@@ -58,7 +58,7 @@ function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
       <AppText variant="h3" color={colors.text}>
         {t('live.reviewAnswers')}
       </AppText>
-      <AppText variant="secondary" color={colors.muted}>
+      <AppText variant="secondary" color={colors.text}>
         {t('live.reviewHint')}
       </AppText>
       {entries.map((e) => (
@@ -67,7 +67,7 @@ function ReviewAnswers({ entries }: { entries: HistoryEntry[] }) {
             <AppText variant="secondary" color={colors.text} style={styles.bold}>
               {evidenceName(e.id)}
             </AppText>
-            <AppText variant="secondary" color={colors.muted}>
+            <AppText variant="secondary" color={colors.text}>
               {answerWords(e, t)}
             </AppText>
           </View>
@@ -97,11 +97,11 @@ function CandidateRow({ c }: { c: LiveCandidate }) {
         </View>
       </View>
       <MatchBar strength={c.strength} band={c.band} />
-      <AppText variant="secondary" color={colors.muted}>
+      <AppText variant="secondary" color={colors.text}>
         {c.matched.length > 0 ? t('live.matched', { items: c.matched.map(evidenceName).join(', ') }) : t('live.noWhy')}
       </AppText>
       {c.unmatched.length > 0 ? (
-        <AppText variant="secondary" color={colors.muted}>
+        <AppText variant="secondary" color={colors.text}>
           {t('live.unmatched', { items: c.unmatched.map(evidenceName).join(', ') })}
         </AppText>
       ) : null}
@@ -193,7 +193,7 @@ function ResultBody() {
             <AppText variant="h2" color={colors.text}>
               {categoryResult === 'UNCLEAR' ? categoryName('UNCLEAR') : t('live.notMuscleTitle')}
             </AppText>
-            <AppText variant="body" color={colors.muted}>
+            <AppText variant="body" color={colors.text}>
               {categoryResult === 'UNCLEAR' ? t('live.unclearBody') : t('live.notMuscleBody')}
             </AppText>
             {leadCategories.length > 0 ? (
@@ -201,53 +201,53 @@ function ResultBody() {
                 {leadCategories.map((c) => (
                   <View key={c.category} style={styles.item}>
                     <CategoryRows categories={[c]} />
-                    <AppText variant="secondary" color={colors.muted}>
+                    <AppText variant="secondary" color={colors.text}>
                       {c.matched.length > 0 ? t('live.matched', { items: c.matched.map(evidenceName).join(', ') }) : t('live.noWhy')}
                     </AppText>
                     {c.unmatched.length > 0 ? (
-                      <AppText variant="secondary" color={colors.muted}>
+                      <AppText variant="secondary" color={colors.text}>
                         {t('live.unmatched', { items: c.unmatched.map(evidenceName).join(', ') })}
                       </AppText>
                     ) : null}
                   </View>
                 ))}
                 {approxCategory ? (
-                  <AppText variant="secondary" color={colors.muted}>
+                  <AppText variant="secondary" color={colors.text}>
                     {t('live.approxNote')}
                   </AppText>
                 ) : null}
-                <AppText variant="secondary" color={colors.muted} style={styles.italic}>
+                <AppText variant="secondary" color={colors.text} style={styles.italic}>
                   {t('live.matchCaption')}
                 </AppText>
               </>
             ) : null}
           </>
         ) : candidates.length === 0 ? (
-          <AppText variant="body" color={colors.muted}>
+          <AppText variant="body" color={colors.text}>
             {t('result.none')}
           </AppText>
         ) : (
           <>
             {state?.provisional ? (
-              <AppText variant="secondary" color={colors.muted} style={styles.bold}>
+              <AppText variant="secondary" color={colors.text} style={styles.bold}>
                 {t('live.possibleSoFar')}
               </AppText>
             ) : null}
             {state?.structure.leader && !state.provisional ? <CategoryRows categories={(state.structure.categories ?? []).filter((c) => c.category === state.structure.leader)} /> : null}
             {state?.cluster ? (
-              <AppText variant="secondary" color={colors.muted}>
+              <AppText variant="secondary" color={colors.text}>
                 {t('live.clusterNote')}
               </AppText>
             ) : null}
             {where ? (
-              <AppText variant="secondary" color={colors.muted}>
+              <AppText variant="secondary" color={colors.text}>
                 {where}
               </AppText>
             ) : null}
             {candidates.map((c) => (
               <CandidateRow key={c.muscleId} c={c} />
             ))}
-            <AppText variant="secondary" color={colors.muted} style={styles.italic}>
+            <AppText variant="secondary" color={colors.text} style={styles.italic}>
               {t('live.matchCaption')}
             </AppText>
           </>
@@ -271,11 +271,11 @@ const makeStyles = (colors: Palette) => StyleSheet.create({
   italic: { fontStyle: 'italic' },
   col: { flex: 1 },
   review: { gap: 8, paddingTop: 4 },
-  reviewRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.card, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  item: { gap: 6, padding: 12, borderRadius: radius.card, backgroundColor: colors.surface, ...shadows.card },
+  reviewRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: radius.card, backgroundColor: colors.bubble, borderWidth: 1.5, borderColor: colors.lineStrong },
+  item: { gap: 6, padding: 14, borderRadius: radius.card, backgroundColor: colors.bubble, borderWidth: 1.5, borderColor: colors.lineStrong },
   itemTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  band: { paddingHorizontal: 10, minHeight: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  bandLow: { backgroundColor: colors.neutral },
+  band: { paddingHorizontal: 10, minHeight: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.lineStrong },
+  bandLow: { backgroundColor: colors.track },
   bandModerate: { backgroundColor: colors.cautionTint },
   bandHigher: { backgroundColor: colors.accentTint },
 });

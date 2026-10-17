@@ -59,32 +59,40 @@ export default function Home() {
           <Ionicons name="search" size={22} color={colors.muted} style={styles.searchIcon} />
         </GlassCard>
 
-        <GlassCard onPress={() => router.push('/report/intro')} accessibilityLabel={t('home.tileReport')} style={styles.overview}>
-          <View style={styles.overviewTop}>
+        <GlassCard onPress={() => router.push('/report/intro')} accessibilityLabel={t('home.tileReport')} padding={0} style={styles.overview}>
+          <View style={[styles.cardHead, { borderBottomColor: colors.line }]}>
+            <AppText variant="bodyStrong">{t('home.tileReport')}</AppText>
+            <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
+              {t('intro.start')}
+            </AppText>
+          </View>
+          <View style={styles.overviewBody}>
             <View style={styles.big}>
-              <Ionicons name="alert-circle-outline" size={34} color={colors.onAccent} />
+              <Ionicons name="body-outline" size={40} color={colors.onAccent} />
             </View>
             <View style={styles.grow}>
-              <AppText variant="h3">{t('home.tileReport')}</AppText>
               <AppText variant="secondary" color={colors.muted}>
-                {t('intro.time')}
+                {t('intro.title')}
               </AppText>
+              <AppText variant="h3">{t('intro.time')}</AppText>
             </View>
             <View style={styles.go}>
               <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={20} color={colors.onAccent} />
             </View>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.line }]} />
-          <View style={styles.overviewTop}>
+        </GlassCard>
+
+        <GlassCard row>
+          <View style={styles.disc}>
             <Ionicons name="pulse" size={22} color={colors.accentText} />
-            <View style={styles.grow}>
-              <AppText variant="bodyStrong">{t('home.todaysCare')}</AppText>
-              <AppText variant="secondary" color={colors.muted}>
-                {t('home.todaysCareBody')}
-              </AppText>
-            </View>
-            <StatusChip status="unknown" label={t('home.inReview')} />
           </View>
+          <View style={styles.grow}>
+            <AppText variant="bodyStrong">{t('home.todaysCare')}</AppText>
+            <AppText variant="secondary" color={colors.muted}>
+              {t('home.todaysCareBody')}
+            </AppText>
+          </View>
+          <StatusChip status="unknown" label={t('home.inReview')} />
         </GlassCard>
 
         <SectionHeader title={t('home.upcoming')} actionLabel={t('home.seeAll')} onAction={() => router.push('/my-care')} />
@@ -114,7 +122,7 @@ export default function Home() {
           {TILES.map((tile) => (
             <Pressable key={tile.label} accessibilityRole="button" accessibilityLabel={t(tile.label)} onPress={() => router.push(tile.href as never)} style={styles.tile}>
               <View style={styles.tileIcon}>
-                <Ionicons name={tile.icon} size={26} color={colors.accentText} />
+                <Ionicons name={tile.icon} size={24} color={colors.accentText} />
               </View>
               <AppText variant="secondary" style={styles.tileLabel} numberOfLines={1}>
                 {t(tile.label)}
@@ -136,16 +144,17 @@ const makeStyles = (colors: Palette) =>
     search: { height: 56, borderRadius: 28 },
     searchText: { marginStart: 20 },
     searchIcon: { marginEnd: 20 },
-    overview: { gap: 14, padding: 18 },
-    overviewTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-    divider: { height: 1 },
+    overview: { overflow: 'hidden' },
+    cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 12, borderBottomWidth: 1, backgroundColor: colors.accentTint },
+    overviewBody: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 18 },
+    disc: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
     big: { width: 60, height: 60, borderRadius: 22, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
     go: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
     avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
     when: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
     bold: { fontWeight: '700' },
     tiles: { flexDirection: 'row', gap: 10 },
-    tile: { flex: 1, alignItems: 'center', gap: 8, minHeight: 96 },
-    tileIcon: { width: 64, height: 64, borderRadius: 22, backgroundColor: colors.cardFill, borderWidth: 1, borderColor: colors.glassBorder, alignItems: 'center', justifyContent: 'center' },
+    tile: { flex: 1, alignItems: 'center', gap: 8, minHeight: 96, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 22, backgroundColor: colors.cardFill, borderWidth: 1, borderColor: colors.glassBorder },
+    tileIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
     tileLabel: { fontWeight: '600', textAlign: 'center' },
   });

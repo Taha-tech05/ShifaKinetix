@@ -25,6 +25,7 @@ import { positionOf, stepFocus, stepFraming } from './cameraRig';
 import type { CameraRig } from './cameraRig';
 import { NO_EMPHASIS } from './highlightPlan';
 import type { Emphasis } from './highlightPlan';
+import { applyFraming, newFraming } from './framing';
 import { useViewerGestures } from './useViewerGestures';
 import { buildSegments, fadeMaterial, ghostOpacityFor, isArmKey, structureOfKey } from './segmentBuild';
 import { AMBIENT_INTENSITY, KEY_LIGHT, VIEWER_FOV } from './viewerSetup';
@@ -41,6 +42,8 @@ export interface FrameInfo {
 }
 
 export interface SegmentedBodyProps {
+  /** Pixels at the bottom of the canvas that something (the chat sheet) covers: the body is framed in the rest, see framing.ts. */
+  frameInset?: number;
   pack: LoadedPack;
   movement: Movement;
   layer: BodyLayer;
@@ -76,8 +79,9 @@ function setMatrix(g: THREE.Group, m: Mat4) {
 }
 
 /** Applies the camera state to the three.js camera and keeps the key light on the camera side, as in the picker. */
-function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRefObject<CameraRig>; light: THREE.DirectionalLight; anchors?: { id: string; point: Vec3 }[]; onProject?: (points: { id: string; x: number; y: number }[]) => void }) {
+function CameraDriver({ rig, light, anchors, onProject, frameInset = 0 }: { rig: React.MutableRefObject<CameraRig>; light: THREE.DirectionalLight; anchors?: { id: string; point: Vec3 }[]; onProject?: (points: { id: string; x: number; y: number }[]) => void; frameInset?: number }) {
   const { camera } = useThree();
+  const framing = useMemo(() => newFraming(), []);
   const tmp = useMemo(() => new THREE.Vector3(), []);
   const last = useRef({ at: 0, key: '' });
   // eslint-disable-next-line react-hooks/immutability -- the frame loop writes the camera and light imperatively
@@ -96,6 +100,7 @@ function CameraDriver({ rig, light, anchors, onProject }: { rig: React.MutableRe
       cam.zoom = v.zoom;
       cam.updateProjectionMatrix();
     }
+    applyFraming(cam, state.size, frameInset, framing, dt);
     camera.updateMatrixWorld();
     light.target.position.set(v.target[0], v.target[1], v.target[2]);
     tmp.set(KEY_LIGHT.position[0], KEY_LIGHT.position[1], KEY_LIGHT.position[2]).applyQuaternion(camera.quaternion);
@@ -140,7 +145,7 @@ function buildTrail(movement: Movement, side: Side): { line: THREE.Line; dispose
   return { line, dispose: () => { g.dispose(); m.dispose(); } };
 }
 
-function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost = true, control, cameraRig, tracked, emphasis = NO_EMPHASIS, anchors, onProject, onFrame, onFirstFrame }: SegmentedBodyProps) {
+function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost = true, control, cameraRig, tracked, emphasis = NO_EMPHASIS, anchors, onProject, onFrame, onFirstFrame, frameInset }: SegmentedBodyProps) {
   const rig = rigFor(side);
   const arrow = useRef<THREE.ArrowHelper | null>(null);
   const frames = useRef(0);
@@ -172,6 +177,11 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
     target.current = emphasis;
   }, [emphasis]);
   const current = useRef(new Map<string, { tint: number; ghost: number }>());
+  // a rebuilt body (a switch between Muscle and Bone and back) has fresh, untinted materials: the fade must start from nothing again, or the
+  // highlight would be thought to be there already and never be drawn
+  useEffect(() => {
+    current.current.clear();
+  }, [built]);
 
   // resist arrow
   useEffect(() => {
@@ -255,7 +265,7 @@ function Scene({ pack, movement, layer, side = 'right', armTint = true, endGhost
 
   return (
     <>
-      <CameraDriver rig={cameraRig} light={light} anchors={anchors} onProject={onProject} />
+      <CameraDriver rig={cameraRig} light={light} anchors={anchors} onProject={onProject} frameInset={frameInset} />
       <ambientLight intensity={AMBIENT_INTENSITY} />
       <primitive object={light} />
       <primitive object={light.target} />
