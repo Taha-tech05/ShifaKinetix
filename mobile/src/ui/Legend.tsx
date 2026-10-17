@@ -22,7 +22,7 @@ export function Legend({ visible, onClose }: { visible: boolean; onClose: () => 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable accessibilityRole="button" accessibilityLabel={t('scene.legendClose')} style={[styles.backdrop, { backgroundColor: colors.scrim }]} onPress={onClose} />
-      <View style={[styles.card, { backgroundColor: colors.sheet, borderColor: colors.glassBorder }]}>
+      <View style={[styles.card, { backgroundColor: colors.menuFill, borderColor: colors.glassBorder }]}>
         <Text style={[font.title, { color: colors.text, fontSize: 20, lineHeight: 28 }]} accessibilityRole="header">
           {t('scene.legend')}
         </Text>

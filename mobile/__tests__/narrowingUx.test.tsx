@@ -241,7 +241,10 @@ describe('fix 4: everything on one screen, no scrolling to answer', () => {
     expect(host).toContain("t('demoBanner')");
     expect(host).toContain('dismissDemo');
     expect(host).toContain("t('moveSafely')");
-    expect(src('app/_layout.tsx')).toContain('compact ? null : <Banner kind="demo" />');
+    // the app-wide demo strip is switched off on this screen (compact), and drawn on every other screen
+    const layout = src('app/_layout.tsx');
+    expect(layout).toContain('compact ? null : (');
+    expect(layout).toContain('<Banner kind="demo" />');
   });
 
   it.each([

@@ -1,16 +1,20 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { Platform, StyleSheet, View } from 'react-native';
+import type { RefObject } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useBlurGuard } from './blur';
 import { useTheme } from './ThemeProvider';
 import { corner } from './theme';
 
 /**
- * Snap heights of the chat sheet, as a fraction of the screen: "compressed" leaves the body clearly visible above, "peek" is only used
- * for movement steps, "expanded" goes up to just below the top bar (the body is covered). SNAPS is the list of fractions that are fixed.
+ * Snap heights of the chat sheet: "min" is only the drag handle (the model alone is visible), "peek" (a fraction of the screen) is used for
+ * movement steps, "compressed" leaves the body clearly visible above, "expanded" goes up to just below the top controls (the body is
+ * covered). SNAPS holds the fixed sizes.
  */
-export const SNAPS = { peek: 0.18, compressed: 0.35 } as const;
-export type SnapName = 'peek' | 'compressed' | 'expanded';
+export const SNAPS = { min: 40, peek: 0.18, compressed: 0.35 } as const;
+export type SnapName = 'min' | 'peek' | 'compressed' | 'expanded';
 
 export interface GlassSheetHandle {
   /** Move the sheet from code (automation). The change is not reported as the user's. */
@@ -23,7 +27,7 @@ interface Props {
   topInset: number;
   /** The snap to start on. */
   initial: SnapName;
-  /** Peek is only allowed for movement steps. */
+  /** Peek is only allowed for movement steps. The handle-only "min" is always allowed. */
   allowPeek?: boolean;
   /** No handle, no dragging: the sheet is simply as tall as it may be (the red-flag questions and the red-flag state). */
   fullScreen?: boolean;
@@ -32,6 +36,8 @@ interface Props {
   /** The user touched the handle: automation stops for this step. */
   onUserInteract?: () => void;
   reduceMotion?: boolean;
+  /** The view that holds what is behind the sheet (the body). On Android the blur needs it; without it the sheet is nearly solid. */
+  blurTarget?: RefObject<View | null>;
   /** Red-flag state: a red border. Nothing animates. */
   alert?: boolean;
   /** Pinned under the handle. */
@@ -44,16 +50,18 @@ interface Props {
  * move sideways or leave a gap. It is nearly solid, because it no longer has to show the body through it.
  */
 export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassSheet(
-  { screenHeight, topInset, initial, allowPeek = false, fullScreen = false, onSettle, onUserInteract, reduceMotion = false, alert = false, header, children },
+  { screenHeight, topInset, initial, allowPeek = false, fullScreen = false, onSettle, onUserInteract, reduceMotion = false, blurTarget, alert = false, header, children },
   ref,
 ) {
   const { colors } = useTheme();
+  // frosted glass over the body: iOS always, Android 12+ through the blur target. If the frame rate drops, blur is switched off.
+  const forceSolid = useBlurGuard((s) => s.forceSolid);
+  const canBlur = !forceSolid && (Platform.OS === 'ios' || (Platform.OS === 'android' && Number(Platform.Version) >= 31 && !!blurTarget));
   const expanded = Math.max(0, screenHeight - topInset);
   const heights = useMemo(
-    () => ({ peek: Math.round(screenHeight * SNAPS.peek), compressed: Math.round(screenHeight * SNAPS.compressed), expanded }),
+    () => ({ min: SNAPS.min, peek: Math.round(screenHeight * SNAPS.peek), compressed: Math.round(screenHeight * SNAPS.compressed), expanded }),
     [screenHeight, expanded],
   );
-  const min = allowPeek ? heights.peek : heights.compressed;
   const startHeight = fullScreen ? expanded : heights[initial === 'peek' && !allowPeek ? 'compressed' : initial];
   const h = useSharedValue(startHeight);
   const dragStart = useSharedValue(startHeight);
@@ -78,7 +86,9 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
   const nearest = useCallback(
     (value: number, velocity: number): SnapName => {
       // a quick flick goes to the next snap in that direction, a slow release to the nearest one
-      const list: [SnapName, number][] = (allowPeek ? [['peek', heights.peek]] : []).concat([['compressed', heights.compressed], ['expanded', heights.expanded]] as [SnapName, number][]) as [SnapName, number][];
+      const list: [SnapName, number][] = [['min', heights.min]];
+      if (allowPeek) list.push(['peek', heights.peek]);
+      list.push(['compressed', heights.compressed], ['expanded', heights.expanded]);
       const projected = value - velocity * 0.12;
       let best = list[0];
       for (const item of list) if (Math.abs(item[1] - projected) < Math.abs(best[1] - projected)) best = item;
@@ -88,7 +98,8 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
   );
   const toggle = useCallback(() => {
     onUserInteract?.();
-    goTo(Math.abs(h.value - heights.expanded) < 4 ? 'compressed' : 'expanded', true);
+    // a tap opens a collapsed sheet to the compressed height, and a compressed one to full; a full one goes back to compressed
+    goTo(Math.abs(h.value - heights.compressed) < 24 ? 'expanded' : 'compressed', true);
   }, [goTo, h, heights.expanded, onUserInteract]);
   const release = useCallback((value: number, velocity: number) => goTo(nearest(value, velocity), true), [goTo, nearest]);
 
@@ -102,19 +113,20 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
         })
         .onUpdate((e) => {
           // only the height changes, and never beyond the lowest or the highest snap (no overshoot)
-          h.value = Math.min(heights.expanded, Math.max(min, dragStart.value - e.translationY));
+          h.value = Math.min(heights.expanded, Math.max(heights.min, dragStart.value - e.translationY));
         })
         .onEnd((e) => {
           runOnJS(release)(h.value, -e.velocityY);
         }),
-    [dragStart, fullScreen, h, heights.expanded, min, onUserInteract, release],
+    [dragStart, fullScreen, h, heights.expanded, heights.min, onUserInteract, release],
   );
   const tap = useMemo(() => Gesture.Tap().enabled(!fullScreen).onEnd(() => runOnJS(toggle)()), [fullScreen, toggle]);
   const gesture = useMemo(() => Gesture.Exclusive(pan, tap), [pan, tap]);
 
   const style = useAnimatedStyle(() => ({ height: h.value }));
   return (
-    <Animated.View style={[styles.sheet, { backgroundColor: colors.sheet, borderColor: alert ? colors.danger : colors.glassBorder }, style]}>
+    <Animated.View style={[styles.sheet, { backgroundColor: canBlur ? colors.sheet : colors.sheetFallback, borderColor: alert ? colors.danger : colors.glassBorder }, style]}>
+      {canBlur ? <BlurView intensity={55} tint={colors.blurTint} blurTarget={blurTarget} blurMethod="dimezisBlurViewSdk31Plus" style={StyleSheet.absoluteFill} /> : null}
       {fullScreen ? (
         <View style={styles.noHandle} />
       ) : (

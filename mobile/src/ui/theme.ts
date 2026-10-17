@@ -8,8 +8,10 @@ import type { ViewStyle } from 'react-native';
 
 export interface Palette {
   /** gradient behind every screen: top-left -> bottom-right */
-  gradient: readonly [string, string];
-  bubbles: readonly [string, string, string];
+  /** gradient behind every screen, left to right (light) or top to bottom (dark) */
+  gradient: readonly [string, string, string];
+  /** true when the cards are (nearly) opaque, so a drop shadow can be drawn without showing through them */
+  opaqueCards: boolean;
   text: string;
   muted: string;
   /** brand colour for icons and decoration */
@@ -28,8 +30,12 @@ export interface Palette {
   /** flat card fill (no blur): used for everything that is not a floating layer */
   cardFill: string;
   surface: string;
-  /** nearly solid fill of the chat sheet */
+  /** frosted fill of the chat sheet: translucent, drawn over a blur (as the glass cards of the dark reference) */
   sheet: string;
+  /** the same sheet when no blur can be drawn: nearly solid, so the text stays clear */
+  sheetFallback: string;
+  /** solid fill of small popovers (language menu, colour guide) and of the banner on the body */
+  menuFill: string;
   /** fill of a bot message bubble (neutral) */
   bubble: string;
   /** fill of the floating controls that sit over the 3D body */
@@ -65,8 +71,9 @@ export interface Palette {
 }
 
 export const lightPalette: Palette = {
-  gradient: ['#A9DBD8', '#FFD3C3'],
-  bubbles: ['rgba(255,255,255,0.45)', 'rgba(10,171,167,0.14)', 'rgba(255,255,255,0.35)'],
+  // the reference's phone screens are frosted near-white: a faint teal at the left edge, a faint peach at the right
+  gradient: ['#D6EEEA', '#F8F3EF', '#FBDDD0'],
+  opaqueCards: true,
   text: '#0A2A2E',
   muted: '#456569',
   accent: '#0AABA7',
@@ -76,14 +83,16 @@ export const lightPalette: Palette = {
   accentTint: 'rgba(10,171,167,0.16)',
   onAccent: '#FFFFFF',
   pin: '#0D817E',
-  glassFill: 'rgba(255,255,255,0.55)',
-  glassBorder: 'rgba(255,255,255,0.85)',
-  cardFill: 'rgba(255,255,255,0.6)',
-  surface: 'rgba(255,255,255,0.82)',
-  sheet: '#F4FAF9',
-  bubble: 'rgba(255,255,255,0.92)',
+  glassFill: 'rgba(255,255,255,0.7)',
+  glassBorder: 'rgba(255,255,255,0.95)',
+  cardFill: '#FCFAF8',
+  surface: '#FFFFFF',
+  sheet: 'rgba(250,247,244,0.62)',
+  sheetFallback: 'rgba(250,247,244,0.95)',
+  menuFill: '#FFFFFF',
+  bubble: 'rgba(255,255,255,0.9)',
   controlFill: 'rgba(255,255,255,0.86)',
-  page: '#CFE9E5',
+  page: '#F8F3EF',
   chrome: '#0A2A2E',
   line: 'rgba(10,42,46,0.12)',
   lineStrong: 'rgba(10,42,46,0.3)',
@@ -104,13 +113,13 @@ export const lightPalette: Palette = {
   disabled: 'rgba(10,42,46,0.14)',
   disabledText: '#3D5A5B',
   scrim: 'rgba(10,26,40,0.45)',
-  shadow: '#0A2A2E',
+  shadow: '#4C6F6C',
   blurTint: 'light',
 };
 
 export const darkPalette: Palette = {
-  gradient: ['#27527A', '#34597A'],
-  bubbles: ['rgba(201,242,122,0.10)', 'rgba(255,255,255,0.07)', 'rgba(201,242,122,0.06)'],
+  gradient: ['#27527A', '#2D577B', '#34597A'],
+  opaqueCards: false,
   text: '#FFFFFF',
   muted: '#E0EAF3',
   accent: '#C9F27A',
@@ -124,8 +133,10 @@ export const darkPalette: Palette = {
   glassBorder: 'rgba(255,255,255,0.22)',
   cardFill: 'rgba(255,255,255,0.12)',
   surface: 'rgba(255,255,255,0.16)',
-  sheet: '#2E5478',
-  bubble: '#42688B',
+  sheet: 'rgba(46,84,120,0.58)',
+  sheetFallback: 'rgba(46,84,120,0.96)',
+  menuFill: '#2E5478',
+  bubble: 'rgba(66,104,139,0.92)',
   controlFill: 'rgba(31,68,104,0.9)',
   page: '#2A5578',
   chrome: '#C9F27A',
@@ -152,7 +163,7 @@ export const darkPalette: Palette = {
   blurTint: 'dark',
 };
 
-/** Sheet, bubbles and floating controls of the symptom flow: the dark reference in both app modes. */
+/** Kept for the unused result card; the symptom flow itself follows the app's light or dark palette. */
 export const scenePalette: Palette = { ...darkPalette };
 
 /** The 3D body's own background: unchanged from the original app (it is the same in light and dark mode). */
@@ -173,6 +184,7 @@ export const font = {
   caption: { fontSize: 14, lineHeight: 20, fontWeight: '500' },
 } as const;
 
+/** Soft drop shadow. Android draws its elevation shadow through translucent fills as an ugly inner rectangle, so it is only used with opaque cards. */
 export function softShadow(p: Palette, strength = 1): ViewStyle {
-  return { shadowColor: p.shadow, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12 * strength, shadowRadius: 22, elevation: 4 };
+  return { shadowColor: p.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.1 * strength, shadowRadius: 18, elevation: p.opaqueCards ? Math.round(3 * strength) : 0 };
 }

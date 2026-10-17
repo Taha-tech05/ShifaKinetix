@@ -18,7 +18,7 @@ export default function ReportLayout() {
   const inScene = SCENE_ROUTES.has(leaf);
   const app = useTheme();
   return (
-    <ThemeScope scheme={inScene ? 'scene' : app.scheme}>
+    <ThemeScope scheme={app.scheme}>
       <SceneHostContext.Provider value={true}>
         <View style={styles.fill}>
           <Stack

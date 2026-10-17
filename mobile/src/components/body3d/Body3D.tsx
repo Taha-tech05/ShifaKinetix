@@ -140,17 +140,14 @@ function Scene({ pack, layer, highlightNames, onPick, onFirstFrame, control, anc
       const local = p.clone();
       pivot.current.localToWorld(p);
       p.project(camera);
-      // facing: compare the outward direction of the point (from the body axis) with the direction to the camera, in pivot space
+      // facing: the point is hidden only when it lies clearly behind the body's centre plane as seen from the camera
+      // (a point on the side of a shoulder is still visible). 1 = in view, 0 = turned away.
       cam.copy(camera.position);
       pivot.current.worldToLocal(cam);
-      const nx = local.x;
-      const nz = local.z;
-      const nl = Math.hypot(nx, nz) || 1;
-      const vx = cam.x - local.x;
-      const vz = cam.z - local.z;
-      const vl = Math.hypot(vx, vz) || 1;
-      const dot = (nx / nl) * (vx / vl) + (nz / nl) * (vz / vl);
-      const facing = Math.min(1, Math.max(0, (dot + 0.1) / 0.35));
+      const pl = Math.hypot(local.x, local.z);
+      const cl = Math.hypot(cam.x, cam.z) || 1;
+      const d = pl < 1e-4 ? 1 : (cam.x * local.x + cam.z * local.z) / (cl * pl);
+      const facing = Math.min(1, Math.max(0, (d + 0.35) / 0.35));
       onProject({ x: ((p.x + 1) / 2) * size.width, y: ((1 - p.y) / 2) * size.height, facing });
     }
 

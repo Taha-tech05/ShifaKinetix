@@ -20,10 +20,13 @@ function Shell() {
   return (
     <View style={[styles.root, { backgroundColor: colors.page }]}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      {/* The demo strip sits above the navigator, so it shows on every screen. */}
-      <View style={{ paddingTop: insets.top, backgroundColor: colors.cautionTint }}>
-        {compact ? null : <Banner kind="demo" />}
-      </View>
+      {/* The demo strip sits above the navigator, so it shows on every screen. The symptom screen is full screen: it has no strip
+          (its demo notice is the first message of its chat) and draws under the status bar itself. */}
+      {compact ? null : (
+        <View style={{ paddingTop: insets.top, backgroundColor: colors.cautionTint }}>
+          <Banner kind="demo" />
+        </View>
+      )}
       {offline ? <Banner kind="offline" /> : null}
       <View style={styles.fill}>
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.page } }} />

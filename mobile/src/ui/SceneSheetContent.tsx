@@ -47,7 +47,10 @@ export function SceneSheetContent({ contentKey, ownIds = [], onBack, children }:
   useEffect(() => {
     if (!hosted) return;
     useScene.getState().setOnBack(hasBack ? stableBack : null);
-    return () => useScene.getState().setOnBack(null);
+    // a route further back in the stack cleans up after the new one has registered: only remove what is still ours
+    return () => {
+      if (useScene.getState().onBack === stableBack) useScene.getState().setOnBack(null);
+    };
   }, [hosted, hasBack, stableBack]);
   useEffect(
     () => () => {
@@ -84,6 +87,8 @@ export function useSceneStep(step: { stepKey: string; mode: SceneMode; instructi
   useEffect(() => {
     if (!hosted) return;
     useScene.getState().setStage(stage);
-    return () => useScene.getState().setStage(null);
+    return () => {
+      if (useScene.getState().stage === stage) useScene.getState().setStage(null);
+    };
   }, [hosted, stageKey]); // eslint-disable-line react-hooks/exhaustive-deps
 }

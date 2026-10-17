@@ -58,3 +58,32 @@ backend file was changed (`git diff --stat 2b51683..HEAD` over those paths is em
 - **Contrast**: `muted` is `#486A6B` (slightly darker than `#5B7B7C`) and filled buttons use `#0E7C76` so text meets WCAG AA. Not measured with a tool.
 - `theme/colors.ts` still exists for the static shadows and the 3D loader; screens no longer read it.
 - Not built: Doctor report layout changes beyond theming; wallet/payment; consultation thread list.
+
+## Round 2 (after testing on a Pixel 7a)
+
+**Look and feel**
+- Light palette now follows `docs/design/download.jpg` (frosted near-white screens with a faint teal edge on the left and a faint peach edge on the right, white
+  cards, teal accent, white nav pill with a raised teal "+"). Dark palette follows `994f54f2...webp` (steel blue, translucent cards, lime accent). Every colour is a
+  token in `src/ui/theme.ts`. The saturated gradient of round 1 turned grey in the middle and is gone; Android's elevation shadow no longer shows through the cards.
+- Layout follows the light reference: Home is a dashboard (title row, search, overview card, "Upcoming" with a View All link, Quick Actions), Profile uses record-style
+  rows, the doctor cases list uses provider-style cards, every screen header has a round back button, a centred title and the language and SOS controls.
+- New `ui/` pieces: `SectionHeader`, `ListRow`, `Legend`, `chat` (bubbles with a ShifaKinetix label, typing dots), `SceneHost` (see below).
+
+**Symptom flow**
+- The 3D body is full screen, directly on its original studio background (no card, border or rounded frame, no new glow or gradient). The result screen
+  is now a scene route too, so it shows the same body, with the result in the sheet (it used to draw its own boxed body).
+- No header bar on this screen: only Back, Muscle/Bone, the region chip and SOS float over the body. The progress line, language menu, colour guide and "Talk to a
+  doctor instead" are in the sheet header. The demo notice is the first message of the chat (dismissible). The app-wide strip is off here.
+- The sheet is a frosted-glass layer over the body (real blur on iOS and on Android 12+ through `BlurTargetView`, a nearly solid fill if blur is unavailable or
+  the frame rate drops). It is always anchored to the bottom and only changes height: handle-only (model alone), peek (movement steps), compressed, expanded.
+- The flow follows the app's light or dark palette (it no longer forces the dark blue-green in light mode).
+- No red outside emergencies (errors, upload failures, the body marker now use the warning colour with an icon). Colour roles: bot, patient, selected region,
+  "May be involved", warning, AI, red-flag; the colour guide (info icon in the sheet) explains them.
+- The red-flag questions use the full-screen chat (no 3D canvas mounted); the region chip stays on top.
+- One persistent chat list: a new question is appended, the list follows it when the patient is at the newest message and otherwise keeps its position and offers a
+  "Current question" pill.
+
+**Tests**: still 601 pass. Assertions that read the old UI source were updated again where the code moved (list in the commit).
+
+**Not verified on the phone**: the movement step (collapse/expand, instruction chip) and the new result screen. The unit tests cover their logic. Needs a manual pass.
+**Known gaps**: the "after an injury" chip text wraps and clips in one render of the basics chat; the model can be rotated into a flat pose by a vertical drag (original viewer behaviour).

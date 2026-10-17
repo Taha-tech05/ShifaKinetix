@@ -20,7 +20,7 @@ export function LanguageMenu() {
     <View style={styles.wrap}>
       <FloatingControl icon="globe-outline" label={t('scene.language')} onPress={() => setOpen((o) => !o)} selected={open} />
       {open ? (
-        <View style={[styles.menu, { backgroundColor: colors.sheet, borderColor: colors.glassBorder }]}>
+        <View style={[styles.menu, { backgroundColor: colors.menuFill, borderColor: colors.glassBorder }]}>
           {LANGUAGES.map((lang) => (
             <Chip
               key={lang}

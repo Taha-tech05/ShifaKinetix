@@ -92,16 +92,16 @@ export function Callout({ label, x, y, facing, width, height, topInset, bottomIn
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none" accessibilityElementsHidden={false}>
-      <Animated.View style={[styles.line, { backgroundColor: colors.pin }, lineStyle]} />
+      <Animated.View style={[styles.line, { backgroundColor: colors.controlFill }, lineStyle]} />
       <Animated.View style={[styles.halo, { backgroundColor: colors.pin }, haloStyle]} />
-      <Animated.View style={[styles.dot, { backgroundColor: colors.pin, shadowColor: colors.pin }, dotStyle]} />
+      <Animated.View style={[styles.dot, { backgroundColor: colors.pin, borderColor: colors.controlFill, shadowColor: colors.pin }, dotStyle]} />
       <Animated.View
         accessible
         accessibilityLabel={label}
         onLayout={(e) => {
           pw.value = e.nativeEvent.layout.width;
         }}
-        style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.glassBorder }, pillStyle]}
+        style={[styles.pill, { backgroundColor: colors.controlFill, borderColor: colors.pin }, pillStyle]}
       >
         <Text style={[font.caption, { color: colors.text, fontWeight: '700' }]} numberOfLines={1}>
           {label}
@@ -112,8 +112,8 @@ export function Callout({ label, x, y, facing, width, height, topInset, bottomIn
 }
 
 const styles = StyleSheet.create({
-  line: { position: 'absolute', top: 0, left: 0, height: 1.5, transformOrigin: 'left center' },
+  line: { position: 'absolute', top: 0, left: 0, height: 2, transformOrigin: 'left center' },
   halo: { position: 'absolute', top: 0, left: 0, width: 36, height: 36, borderRadius: 18 },
-  dot: { position: 'absolute', top: 0, left: 0, width: 16, height: 16, borderRadius: 8, shadowOpacity: 0.9, shadowRadius: 8, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
+  dot: { position: 'absolute', top: 0, left: 0, width: 16, height: 16, borderRadius: 8, borderWidth: 2.5, shadowOpacity: 0.9, shadowRadius: 8, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
   pill: { position: 'absolute', top: 0, left: 0, height: PILL_H, paddingHorizontal: 16, borderRadius: PILL_H / 2, borderWidth: 1, justifyContent: 'center' },
 });
