@@ -1,7 +1,8 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
 import { BlurView } from 'expo-blur';
-import { Platform, StyleSheet, View } from 'react-native';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import type { RefObject } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useBlurGuard } from './blur';
@@ -9,30 +10,36 @@ import { useTheme } from './ThemeProvider';
 import { corner } from './theme';
 
 /**
- * Snap heights of the chat sheet: "min" is only the drag handle (the model alone is visible), "peek" (a fraction of the screen) is used for
- * movement steps, "compressed" leaves the body clearly visible above, "expanded" goes up to just below the top controls (the body is
- * covered). SNAPS holds the fixed sizes.
+ * Sizes of the chat sheet. The sheet can be left at ANY height between "min" and "expanded": drag the handle and it stays where it is let go.
+ * Named heights, used by the automation and by a tap on the handle:
+ *  - min: only the drag handle (the model alone is visible)
+ *  - peek: low, used for movement steps (a fraction of the screen)
+ *  - compressed ("fit"): just tall enough to show the current question and its answer options at one glance
+ *  - expanded: up to just below the top controls (the body is covered)
+ * SNAPS holds the fixed sizes.
  */
-export const SNAPS = { min: 40, peek: 0.18, compressed: 0.35 } as const;
-export type SnapName = 'min' | 'peek' | 'compressed' | 'expanded';
+export const SNAPS = { min: 40, peek: 0.18, fitMin: 0.4, fitMax: 0.7 } as const;
+export type SnapName = 'min' | 'peek' | 'compressed' | 'expanded' | 'free';
 
 export interface GlassSheetHandle {
   /** Move the sheet from code (automation). The change is not reported as the user's. */
-  snapTo: (snap: SnapName) => void;
+  snapTo: (snap: Exclude<SnapName, 'free'>) => void;
 }
 
 interface Props {
-  /** Height of the area the sheet may use (the whole screen) and the space the top bar keeps above the expanded sheet. */
+  /** Height of the area the sheet may use (the whole screen) and the space the top controls keep above the expanded sheet. */
   screenHeight: number;
   topInset: number;
-  /** The snap to start on. */
-  initial: SnapName;
+  /** Height of the current question with its answer options, so the "fit" height can show it at one glance. */
+  fitContent?: number;
   /** Peek is only allowed for movement steps. The handle-only "min" is always allowed. */
   allowPeek?: boolean;
   /** No handle, no dragging: the sheet is simply as tall as it may be (the red-flag questions and the red-flag state). */
   fullScreen?: boolean;
-  /** Called when the sheet settles on a snap. `byUser` is false for moves made through snapTo. */
-  onSettle?: (snap: SnapName, byUser: boolean) => void;
+  /** Called when the sheet settles. `byUser` is false for moves made through snapTo. `height` is in px. */
+  onSettle?: (snap: SnapName, byUser: boolean, height: number) => void;
+  /** Called when the "fit" height changes (a new question): the automation can move the sheet to it. */
+  onFitChange?: (fit: number) => void;
   /** The user touched the handle: automation stops for this step. */
   onUserInteract?: () => void;
   reduceMotion?: boolean;
@@ -45,63 +52,72 @@ interface Props {
   children: React.ReactNode;
 }
 
+const HANDLE = 36;
+
 /**
- * The chat sheet. It is always anchored to the bottom edge: only its HEIGHT changes (drag the handle or tap it), so it can never float,
- * move sideways or leave a gap. It is nearly solid, because it no longer has to show the body through it.
+ * The chat sheet. It is always anchored to the bottom edge: only its HEIGHT changes, so it can never float, move sideways or leave a gap.
+ * It is frosted glass over the body: translucent, blurred, and still clear enough to read.
  */
 export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassSheet(
-  { screenHeight, topInset, initial, allowPeek = false, fullScreen = false, onSettle, onUserInteract, reduceMotion = false, blurTarget, alert = false, header, children },
+  { screenHeight, topInset, fitContent = 0, allowPeek = false, fullScreen = false, onSettle, onFitChange, onUserInteract, reduceMotion = false, blurTarget, alert = false, header, children },
   ref,
 ) {
   const { colors } = useTheme();
   // frosted glass over the body: iOS always, Android 12+ through the blur target. If the frame rate drops, blur is switched off.
   const forceSolid = useBlurGuard((s) => s.forceSolid);
   const canBlur = !forceSolid && (Platform.OS === 'ios' || (Platform.OS === 'android' && Number(Platform.Version) >= 31 && !!blurTarget));
+  const [headerH, setHeaderH] = useState(0);
   const expanded = Math.max(0, screenHeight - topInset);
-  const heights = useMemo(
-    () => ({ min: SNAPS.min, peek: Math.round(screenHeight * SNAPS.peek), compressed: Math.round(screenHeight * SNAPS.compressed), expanded }),
-    [screenHeight, expanded],
-  );
-  const startHeight = fullScreen ? expanded : heights[initial === 'peek' && !allowPeek ? 'compressed' : initial];
-  const h = useSharedValue(startHeight);
-  const dragStart = useSharedValue(startHeight);
+  // "fit": the handle, the header and the current question with its options, never lower than 40% or higher than 70% of the screen
+  const fit = useMemo(() => {
+    const want = HANDLE + headerH + fitContent + 24;
+    const lo = Math.round(screenHeight * SNAPS.fitMin);
+    const hi = Math.round(screenHeight * SNAPS.fitMax);
+    return fitContent > 0 ? Math.round(Math.min(hi, Math.max(lo, want))) : lo;
+  }, [screenHeight, headerH, fitContent]);
+  const heights = useMemo(() => ({ min: SNAPS.min, peek: Math.round(screenHeight * SNAPS.peek), compressed: fit, expanded }), [screenHeight, fit, expanded]);
+  const h = useSharedValue(fullScreen ? expanded : fit);
+  const dragStart = useSharedValue(0);
   const duration = reduceMotion ? 0 : 240;
+
+  useEffect(() => {
+    onFitChange?.(fit);
+  }, [fit]); // eslint-disable-line react-hooks/exhaustive-deps
   // entering or leaving the full-screen (no body) state, or a new screen size: follow at once
   useEffect(() => {
     if (fullScreen) h.value = expanded; // eslint-disable-line react-hooks/immutability
   }, [fullScreen, expanded, h]);
 
   const goTo = useCallback(
-    (snap: SnapName, byUser: boolean) => {
-      const target = fullScreen ? expanded : heights[snap === 'peek' && !allowPeek ? 'compressed' : snap];
+    (snap: Exclude<SnapName, 'free'>, byUser: boolean) => {
+      const name = snap === 'peek' && !allowPeek ? 'compressed' : snap;
+      const target = fullScreen ? expanded : heights[name];
       // eslint-disable-next-line react-hooks/immutability -- shared value: animated on the UI thread
       h.value = withTiming(target, { duration }, (done) => {
-        if (done && onSettle) runOnJS(onSettle)(snap === 'peek' && !allowPeek ? 'compressed' : snap, byUser);
+        if (done && onSettle) runOnJS(onSettle)(name, byUser, target);
       });
     },
     [allowPeek, duration, expanded, fullScreen, h, heights, onSettle],
   );
   useImperativeHandle(ref, () => ({ snapTo: (snap) => goTo(snap, false) }), [goTo]);
 
-  const nearest = useCallback(
-    (value: number, velocity: number): SnapName => {
-      // a quick flick goes to the next snap in that direction, a slow release to the nearest one
-      const list: [SnapName, number][] = [['min', heights.min]];
-      if (allowPeek) list.push(['peek', heights.peek]);
-      list.push(['compressed', heights.compressed], ['expanded', heights.expanded]);
-      const projected = value - velocity * 0.12;
-      let best = list[0];
-      for (const item of list) if (Math.abs(item[1] - projected) < Math.abs(best[1] - projected)) best = item;
-      return best[0];
-    },
-    [allowPeek, heights],
-  );
   const toggle = useCallback(() => {
     onUserInteract?.();
-    // a tap opens a collapsed sheet to the compressed height, and a compressed one to full; a full one goes back to compressed
-    goTo(Math.abs(h.value - heights.compressed) < 24 ? 'expanded' : 'compressed', true);
-  }, [goTo, h, heights.expanded, onUserInteract]);
-  const release = useCallback((value: number, velocity: number) => goTo(nearest(value, velocity), true), [goTo, nearest]);
+    // a tap opens a collapsed sheet to the fit height, and collapses an open one to the handle
+    goTo(h.value <= heights.min + 8 ? 'compressed' : 'min', true);
+  }, [goTo, h, heights.min, onUserInteract]);
+
+  /** Let go at any height. Close to the lowest or the highest, or after a hard flick, the sheet goes the rest of the way. */
+  const release = useCallback(
+    (value: number, velocity: number) => {
+      if (velocity > 1400) return goTo(value < heights.compressed - 8 ? 'compressed' : 'expanded', true);
+      if (velocity < -1400) return goTo(value > heights.compressed + 8 ? 'compressed' : 'min', true);
+      if (value < heights.min + 56) return goTo('min', true);
+      if (value > heights.expanded - 56) return goTo('expanded', true);
+      if (onSettle) onSettle('free', true, value);
+    },
+    [goTo, heights, onSettle],
+  );
 
   const pan = useMemo(
     () =>
@@ -112,7 +128,7 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
           if (onUserInteract) runOnJS(onUserInteract)();
         })
         .onUpdate((e) => {
-          // only the height changes, and never beyond the lowest or the highest snap (no overshoot)
+          // only the height changes, and never beyond the lowest or the highest height (no overshoot)
           h.value = Math.min(heights.expanded, Math.max(heights.min, dragStart.value - e.translationY));
         })
         .onEnd((e) => {
@@ -136,7 +152,11 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
           </View>
         </GestureDetector>
       )}
-      {header ? <View style={styles.header}>{header}</View> : null}
+      {header ? (
+        <View style={styles.header} onLayout={(e: LayoutChangeEvent) => setHeaderH(Math.round(e.nativeEvent.layout.height))}>
+          {header}
+        </View>
+      ) : null}
       <View style={styles.body}>{children}</View>
     </Animated.View>
   );
@@ -144,7 +164,7 @@ export const GlassSheet = forwardRef<GlassSheetHandle, Props>(function GlassShee
 
 const styles = StyleSheet.create({
   sheet: { position: 'absolute', start: 0, end: 0, bottom: 0, borderTopStartRadius: corner.sheet, borderTopEndRadius: corner.sheet, borderWidth: 1, borderBottomWidth: 0, overflow: 'hidden' },
-  handleZone: { height: 36, alignItems: 'center', justifyContent: 'center' },
+  handleZone: { height: HANDLE, alignItems: 'center', justifyContent: 'center' },
   handle: { width: 48, height: 5, borderRadius: 3 },
   noHandle: { height: 12 },
   header: { paddingHorizontal: 16, paddingBottom: 8 },

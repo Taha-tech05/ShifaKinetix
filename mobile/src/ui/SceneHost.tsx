@@ -26,7 +26,7 @@ import { BotBubble, TypingDots, useTypingDelay } from './chat';
 import { Chip } from './Chip';
 import { FloatingControl } from './FloatingControl';
 import { GlassCard } from './GlassCard';
-import { GlassSheet, SNAPS } from './GlassSheet';
+import { GlassSheet } from './GlassSheet';
 import { GradientBackground } from './GradientBackground';
 import type { GlassSheetHandle, SnapName } from './GlassSheet';
 import { LanguageMenu } from './LanguageMenu';
@@ -62,7 +62,7 @@ type Row = { key: string; pair: Pair } | { key: 'demo' } | { key: 'current' } | 
  * and a new question is APPENDED (after the typing dots): nothing above it is rebuilt. Near the bottom the list follows the new
  * question; if the patient has scrolled up it stays exactly where it is and a small "Current question" pill offers the way down.
  */
-function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { afterConfirm: boolean; reduceMotion: boolean; bottomPad: number; onScrollUser: () => void }) {
+function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurrentHeight }: { afterConfirm: boolean; reduceMotion: boolean; bottomPad: number; onScrollUser: () => void; onCurrentHeight: (h: number) => void }) {
   const { colors } = useTheme();
   const t = useT();
   const sheet = useScene((s) => s.sheet);
@@ -85,8 +85,7 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { aft
   const currentH = useRef(0);
   const prevKey = useRef('');
   const sameRoute = useRef(false);
-  // "following": the patient is at the newest question, so a new one is scrolled into view. Scrolling up turns it off until they come back.
-  const following = useRef(true);
+  const lastDragAt = useRef(0);
   const [pill, setPill] = useState(false);
   const currentIndex = rows.findIndex((r) => r.key === 'current');
   const toEnd = useCallback(() => list.current?.scrollToEnd({ animated: !reduceMotion }), [reduceMotion]);
@@ -95,34 +94,45 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { aft
     if (currentIndex < 0) return toEnd();
     list.current?.scrollToIndex({ index: currentIndex, viewPosition: 0, animated: !reduceMotion });
   }, [currentIndex, reduceMotion, toEnd]);
-  // only a finger drag decides whether the patient has scrolled away; our own scroll to a new question does not
-  const dragged = useRef(false);
-  const settle = (e: NativeSyntheticEvent<NativeScrollEvent>, final = true) => {
-    if (!dragged.current) return;
-    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    following.current = contentOffset.y + layoutMeasurement.height >= contentSize.height - 80;
-    if (following.current) setPill(false);
-    if (final) dragged.current = false;
-  };
-  // a new question: follow it when the patient was near the end of what was there (they answered, they did not scroll away)
+  const nearEnd = () => offsetY.current + viewH.current >= contentH.current - 120;
+  /**
+   * Show the newest question and its options. The list follows unless the patient scrolled it by hand a moment ago and is not at the end:
+   * then it stays exactly where it is and the "Current question" pill offers the way down.
+   */
+  const follow = useCallback(() => {
+    const away = Date.now() - lastDragAt.current < 6000 && !nearEnd();
+    if (away) {
+      setPill(true);
+      return;
+    }
+    setPill(false);
+    // a question added inside the same screen (the basics) is at the end of the block; a short one fits, a new tall screen is read from its start
+    if (currentH.current <= viewH.current - 8 || sameRoute.current) toEnd();
+    else toCurrent();
+  }, [toCurrent, toEnd]);
+  // the content and the sheet change size in steps (a new question, the sheet settling on its fit height): follow once, after the last change
+  const followRef = useRef(follow);
+  followRef.current = follow; // eslint-disable-line react-hooks/refs
+  const followTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleFollow = useCallback(() => {
+    if (followTimer.current) clearTimeout(followTimer.current);
+    followTimer.current = setTimeout(() => followRef.current(), 90);
+  }, []);
+  useEffect(
+    () => () => {
+      if (followTimer.current) clearTimeout(followTimer.current);
+    },
+    [],
+  );
   const key = sheet?.contentKey ?? '';
   useEffect(() => {
-    if (offsetY.current + viewH.current >= contentH.current - 160) following.current = true;
-    // a question added inside the same screen (the basics) is at the end of the block; a new screen is read from its start
     sameRoute.current = prevKey.current.split('-')[0] === key.split('-')[0];
     prevKey.current = key;
-  }, [key]);
+    scheduleFollow();
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   const onSize = (_w: number, h: number) => {
     contentH.current = h;
-    // the patient is already looking at the end (or everything fits): nothing to follow or offer
-    if (h <= viewH.current + 4 || offsetY.current + viewH.current >= h - 80) {
-      following.current = true;
-      setPill(false);
-    }
-    if (following.current) {
-      if (currentH.current <= viewH.current - 8 || sameRoute.current) toEnd();
-      else toCurrent();
-    } else setPill(true); // the scroll position stays exactly where the patient left it
+    scheduleFollow();
   };
 
   return (
@@ -151,6 +161,7 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { aft
               style={styles.current}
               onLayout={(e: LayoutChangeEvent) => {
                 currentH.current = e.nativeEvent.layout.height;
+                onCurrentHeight(e.nativeEvent.layout.height);
               }}
             >
               {shown?.node}
@@ -162,20 +173,23 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { aft
         keyboardShouldPersistTaps="handled"
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
         onLayout={(e: LayoutChangeEvent) => {
+          // the sheet changed height: the question and its options are brought into view again
           viewH.current = e.nativeEvent.layout.height;
+          scheduleFollow();
         }}
         onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
           offsetY.current = e.nativeEvent.contentOffset.y;
+          if (nearEnd()) setPill(false);
         }}
         scrollEventThrottle={100}
-        onMomentumScrollEnd={(e) => settle(e, true)}
-        onScrollEndDrag={(e) => settle(e, Math.abs(e.nativeEvent.velocity?.y ?? 0) < 0.05)}
         onScrollToIndexFailed={() => toEnd()}
         onContentSizeChange={onSize}
         onScrollBeginDrag={() => {
-          dragged.current = true;
-          following.current = false;
+          lastDragAt.current = Date.now();
           onScrollUser();
+        }}
+        onScrollEndDrag={() => {
+          lastDragAt.current = Date.now();
         }}
         showsVerticalScrollIndicator={false}
       />
@@ -184,7 +198,7 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser }: { aft
           accessibilityRole="button"
           accessibilityLabel={t('scene.currentQuestion')}
           onPress={() => {
-            following.current = true;
+            lastDragAt.current = 0;
             setPill(false);
             toCurrent();
           }}
@@ -223,6 +237,9 @@ export function SceneHost({ leaf }: { leaf: string }) {
   const scene = useScene(useShallow((s) => ({ onBack: s.onBack, progress: s.progress, mode: s.mode, stepKey: s.stepKey, instruction: s.instruction, stage: s.stage, demoDismissed: s.demoDismissed })));
   const [layer, setLayer] = useState<BodyLayer>('muscle');
   const [snap, setSnap] = useState<SnapName>('compressed');
+  // the sheet's real height in px (the body is framed above it) and the height of the current question with its options (for the fit height)
+  const [sheetH, setSheetH] = useState(0);
+  const [fitContent, setFitContent] = useState(0);
   const [status, setStatus] = useState<'loading' | 'ready' | 'plain'>('loading');
   const [message, setMessage] = useState<'none' | 'miss' | 'outOfScope'>('none');
   const [legend, setLegend] = useState(false);
@@ -273,7 +290,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
     userOverride.current = true;
     dragging.current = true;
   }, []);
-  const move = useCallback((s: SnapName) => {
+  const move = useCallback((s: Exclude<SnapName, 'free'>) => {
     if (userOverride.current || dragging.current) return;
     sheetRef.current?.snapTo(s);
   }, []);
@@ -303,10 +320,8 @@ export function SceneHost({ leaf }: { leaf: string }) {
   const moving = scene.mode === 'moving';
   const fullChat = !bodyVisible;
   const screenH = box.h;
-  const compressedPx = Math.round(screenH * SNAPS.compressed);
-  const peekPx = Math.round(screenH * SNAPS.peek);
-  // what the sheet covers at the bottom: the callout, the instruction chip and the movement buttons stay clear of it
-  const stageBottom = snap === 'min' ? SNAPS.min : snap === 'peek' && moving ? peekPx : compressedPx;
+  // what the sheet covers at the bottom: the movement stage is framed above it, and the callout, the instruction chip and the buttons stay clear of it
+  const stageBottom = sheetH > 0 ? sheetH : Math.round(screenH * 0.4);
   // the layer toggle and the region chip sit behind the expanded sheet: they are not drawn then (no edge peeking out)
   const showTools = bodyVisible && snap !== 'expanded';
   const showCallout = bodyVisible && !movementStage && !!label && !!selection && TAPPABLE.has(leaf) && status === 'ready';
@@ -332,7 +347,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
         )}
 
         {bodyVisible && screenH > 0 ? (
-          <View style={[styles.stage, { top: topH, bottom: 0 }]}>
+          <View style={[styles.stage, { top: topH, bottom: movementStage ? stageBottom : 0 }]}>
             {movementStage && stage ? (
               <MovementStage
                 ref={stageRef}
@@ -345,6 +360,8 @@ export function SceneHost({ leaf }: { leaf: string }) {
                 labelIds={stage.labelIds}
                 approx={stage.approx}
                 cameraPreset={stage.cameraPreset}
+                levels={stage.levels}
+                levelText={{ higher: t('scene.levelHigh'), moderate: t('scene.levelMedium'), low: t('scene.levelLow') }}
                 onPlayedOnce={onPlayedOnce}
                 onLayerChange={setLayer}
                 style={styles.fill}
@@ -424,15 +441,20 @@ export function SceneHost({ leaf }: { leaf: string }) {
           ref={sheetRef}
           screenHeight={screenH}
           topInset={topPad + TOP_ROW + (fullChat && label ? 60 : 8)}
-          initial="compressed"
+          fitContent={fitContent}
           allowPeek={moving}
           fullScreen={fullChat}
           alert={redFlag}
           reduceMotion={reduceMotion}
           blurTarget={blurTarget}
           onUserInteract={mark}
-          onSettle={(s, byUser) => {
+          onFitChange={() => {
+            // a new question changes how tall the sheet must be to show it and its options at one glance
+            if (bodyVisible) move(scene.mode === 'moving' ? 'peek' : 'compressed');
+          }}
+          onSettle={(s, byUser, height) => {
             setSnap(s);
+            setSheetH(height);
             if (byUser) userOverride.current = true;
             dragging.current = false;
           }}
@@ -460,7 +482,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
             </View>
           }
         >
-          <ChatList afterConfirm={!TAPPABLE.has(leaf) && leaf !== 'intro' && leaf !== 'fork'} reduceMotion={reduceMotion} bottomPad={Math.max(insets.bottom, 24) + 40} onScrollUser={mark} />
+          <ChatList afterConfirm={!TAPPABLE.has(leaf) && leaf !== 'intro' && leaf !== 'fork'} reduceMotion={reduceMotion} bottomPad={Math.max(insets.bottom, 24) + 40} onScrollUser={mark} onCurrentHeight={setFitContent} />
         </GlassSheet>
       ) : null}
       <Legend visible={legend} onClose={() => setLegend(false)} />

@@ -26,6 +26,8 @@ export interface StageProps {
   labelIds?: string[];
   approx?: boolean;
   cameraPreset?: CameraPreset;
+  /** How likely each highlighted muscle is (from the narrowing so far): a strong highlight and a label for "higher", a dull one for "low". Undefined until there are enough answers. */
+  levels?: Record<string, 'low' | 'moderate' | 'higher'>;
 }
 
 /**

@@ -34,6 +34,8 @@ import type { Palette } from '../../ui/theme';
 const FORCE_SIMPLE = process.env.EXPO_PUBLIC_SIMPLE_ANIM === '1' || process.env.EXPO_PUBLIC_DISABLE_3D === '1';
 const LOAD_TIMEOUT_MS = 25000;
 const HINT_MS = 5000;
+/** How strongly a muscle is tinted for each likelihood level (1 = the full highlight, as before). */
+const LEVEL_TINT = { higher: 1, moderate: 0.6, low: 0.3 } as const;
 
 interface Props {
   movement: Movement;
@@ -65,6 +67,10 @@ interface Props {
   onLayerChange?: (layer: BodyLayer) => void;
   /** Called once each time the movement animation has played through once (after a start or a replay). */
   onPlayedOnce?: () => void;
+  /** How likely each highlighted muscle is: the tint is strong for "higher", weaker for "moderate" and dull for "low". */
+  levels?: Record<string, 'low' | 'moderate' | 'higher'>;
+  /** The words shown on the labels for each level. */
+  levelText?: Record<'low' | 'moderate' | 'higher', string>;
   /** Called once the first 3D frame is drawn (or the fallback is shown), so a screen can wait for it. */
   onReady?: () => void;
 }
@@ -84,7 +90,7 @@ export interface MovementStageHandle {
  * falls back to the simple capsule diagram with the note "Simplified diagram". The instruction and buttons on the screen
  * never depend on it.
  */
-export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, bare = false, onLayerChange, onPlayedOnce }, ref) {
+export const MovementStage = forwardRef<MovementStageHandle, Props>(function MovementStage({ movement, side = 'right', height, style, tracked, emphasis, onInteract, paused = false, cameraPreset, highlightIds, labelIds, approx = false, autoFocus = false, onReady, levels, levelText, bare = false, onLayerChange, onPlayedOnce }, ref) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const preset = cameraPreset ?? movement.camera;
@@ -181,8 +187,10 @@ export const MovementStage = forwardRef<MovementStageHandle, Props>(function Mov
     if (emphasis) return emphasis;
     if (!loaded || !highlightIds) return undefined;
     const deep = deepStructureIds(loaded);
-    return planEmphasis(highlightIds, (id) => deep.has(id));
-  }, [emphasis, loaded, highlightIds]);
+    const plan = planEmphasis(highlightIds, (id) => deep.has(id));
+    if (levels) for (const id of Object.keys(plan.tint)) plan.tint[id] = LEVEL_TINT[levels[id] ?? 'moderate'];
+    return plan;
+  }, [emphasis, loaded, highlightIds, levels]);
   // auto-focus: when the candidates change, frame them (not when they did not change); the OS reduce-motion setting jumps instead
   useEffect(() => {
     if (!autoFocus || !loaded || !highlightIds || highlightIds.length === 0 || boxWidth === 0) return;
@@ -194,6 +202,11 @@ export const MovementStage = forwardRef<MovementStageHandle, Props>(function Mov
     startFocus(rig.current!, boxFocusView(box, side, 45, boxWidth / Math.max(1, boxHeight)), FOCUS_SECONDS, reduceMotion);
   }, [autoFocus, loaded, hintKey, side, boxWidth > 0, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const labelName = (id: string) => {
+    const base = approx ? `${muscleName(id)} (${t('live.approxArea')})` : muscleName(id);
+    const lv = levels?.[id];
+    return lv && levelText ? `${base}: ${levelText[lv]}` : base;
+  };
   const anchorKey = (labelIds ?? []).join('|');
   const anchors = useMemo(() => {
     if (!loaded || !labelIds || labelIds.length === 0) return undefined;
@@ -255,10 +268,10 @@ export const MovementStage = forwardRef<MovementStageHandle, Props>(function Mov
           </AppText>
         </View>
       ) : bare ? (
-        anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null
+        anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: labelName(p.id) }))} /> : null
       ) : (
         <>
-          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: approx ? `${muscleName(p.id)} (${t('live.approxArea')})` : muscleName(p.id) }))} /> : null}
+          {anchors ? <LeaderLabels width={boxWidth} anchors={screenPts.map((p) => ({ ...p, name: labelName(p.id) }))} /> : null}
           <View style={styles.layers} accessibilityLabel={t('movement.layerLabel')}>
             {layers.map((l) => {
               const on = l.value === layer;

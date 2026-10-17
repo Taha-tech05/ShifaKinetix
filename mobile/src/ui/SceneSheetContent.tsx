@@ -83,7 +83,7 @@ export function useSceneStep(step: { stepKey: string; mode: SceneMode; instructi
     if (!hosted) return;
     useScene.getState().setProgress(progress);
   }, [hosted, progressKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  const stageKey = stage ? `${stage.movement.id}|${stage.side}|${stage.paused}|${stage.autoFocus}|${stage.highlightIds.join(',')}` : '';
+  const stageKey = stage ? `${stage.movement.id}|${stage.side}|${stage.paused}|${stage.autoFocus}|${stage.highlightIds.join(',')}|${JSON.stringify(stage.levels ?? {})}` : '';
   useEffect(() => {
     if (!hosted) return;
     useScene.getState().setStage(stage);

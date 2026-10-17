@@ -25,6 +25,7 @@ import { structureIds } from '../src/narrowing/structureBank';
 import { categoryScores } from '../src/narrowing/structureType';
 import { narrowingInputFrom, useSession } from '../src/store/session';
 import type { BodySelection } from '../src/regions/types';
+import { useScene } from '../src/ui/scene';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -120,18 +121,23 @@ describe('fix 1: candidates are highlighted from the first screen and follow eve
     expect(state().stop).toBe(false);
   });
 
-  it('the screen shows them from the first render, names without bands first, then with bands', async () => {
+  it('the likelihood is shown on the body (highlight strength and a label), not as a list in the chat; no levels before enough answers', async () => {
     const tree = render(createElement(LiveScreen));
     let all = textOf(tree.root);
-    // the patient sees the muscles that may be involved by name only: no bands, no strength, no score, no order
-    expect(all).toContain('Muscles that may be involved');
-    expect(all).not.toMatch(/Low|Moderate|Higher/);
+    // no list of muscles in the chat, from the first render on
+    expect(all).not.toContain('Muscles that may be involved');
+    // the body is told which muscles to highlight and label from the first render, but there is nothing to rank yet
+    expect(useScene.getState().stage?.highlightIds.length).toBeGreaterThan(0);
+    expect(useScene.getState().stage?.levels).toBeUndefined();
     await press(tree, 'Yes');
     await press(tree, 'No');
+    const stage = useScene.getState().stage!;
+    // two answers that are not "not sure": every highlighted muscle now has a level (strong for high, dull for low) and a label
+    expect(stage.levels).toBeDefined();
+    expect(Object.keys(stage.levels!).sort()).toEqual([...stage.highlightIds].sort());
+    expect(stage.labelIds).toEqual(stage.highlightIds);
     all = textOf(tree.root);
-    expect(all).toContain('Muscles that may be involved');
-    expect(all).not.toMatch(/Low|Moderate|Higher/);
-    expect(all).not.toContain('match strength');
+    expect(all).not.toMatch(/Low|Moderate|Higher/); // the words are on the body labels, not in the chat
     expect(all).not.toMatch(/%|\d/);
   });
 });
@@ -434,18 +440,17 @@ describe('the options and the muscle names are shown in full', () => {
     }
   });
 
-  it('the possible muscles are listed by their full names, one per line, none cut to one line', () => {
-    const tree = render(createElement(LiveScreen));
-    const strip = textOf(tree.root);
+  it('every possible muscle is handed to the body to highlight and label by its full name (the labels wrap, they are not cut to one line)', () => {
+    render(createElement(LiveScreen));
     const list = state === undefined ? [] : (seedLiveState()?.candidates ?? []);
     expect(list.length).toBeGreaterThan(0);
+    const stage = useScene.getState().stage!;
     for (const c of list) {
-      const name = require('../src/regions/regionMap').REGION_MAP.structures[c.muscleId].name as string;
-      expect(strip).toContain(name);
-      const node = texts(tree.root).find((n) => textOf(n) === name);
-      expect(node).toBeDefined();
-      expect(node!.props.numberOfLines === undefined || node!.props.numberOfLines >= 2).toBe(true); // wraps, never one cut line
+      expect(stage.highlightIds).toContain(c.muscleId);
+      expect(stage.labelIds).toContain(c.muscleId);
+      expect(require('../src/regions/regionMap').REGION_MAP.structures[c.muscleId].name as string).toBeTruthy();
     }
+    expect(src('components/narrowing/LeaderLabels.tsx')).toContain('numberOfLines={2}');
     expect(src('components/narrowing/CandidateStrip.tsx')).not.toContain('numberOfLines={1}');
   });
 

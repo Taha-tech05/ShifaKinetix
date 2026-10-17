@@ -185,7 +185,8 @@ describe('live screen: one idea at a time, tap to answer', () => {
     const state = useSession.getState().liveState!;
     expect(state.status).toBe('enough');
     expect(textOf(tree.root)).toContain("Thanks, that's enough to go on");
-    expect(textOf(tree.root)).toContain('Supraspinatus');
+    // the muscles are on the body (highlighted and labelled), not listed in the chat
+    expect(useScene.getState().stage?.highlightIds.some((id) => /supraspinatus/i.test(id))).toBe(true);
     expect(button(tree, 'See result')).toBeDefined();
     expect(button(tree, 'I tried it')).toBeUndefined();
   });

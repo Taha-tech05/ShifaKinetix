@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, BackHandler } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
-import { muscleName } from '../../components/narrowing/CandidateStrip';
 import type { TKey } from '../../i18n';
 import { activeHistory, firstOpenStep, goBackDurable, seedLiveState, LIVE_RESULT_ROUTE, liveSteps, nextStepIndex, stepIndexOf, submitMovementDurable, submitQuestionDurable, totalSteps } from '../../flow/live';
 import type { LiveOutcome } from '../../flow/live';
@@ -223,13 +222,15 @@ function LiveScreenBody() {
   const lieDown = onMovement && needsLieDown(current.id) && lieDownOk !== current.id;
   const sceneMode = finished || step.kind !== 'movement' ? 'questions' : phase === 'try' ? 'moving' : 'feel';
   const stepKey = `${finished ? 'done' : step.kind}-${step.id}${reviewing ? '-review' : ''}`;
-  const involved = useMemo(() => [...new Set((liveState?.candidates ?? []).map((c) => muscleName(c.muscleId)))].sort(), [liveState]);
+  // how likely each muscle is, shown on the body itself: a strong highlight and a High label, down to a dull one with a Low label.
+  // Only once there are enough answers for the narrowing to say anything (the same rule the strip used for its bands).
+  const levels = useMemo(() => (liveState?.bandsVisible ? Object.fromEntries(liveState.candidates.map((c) => [c.muscleId, c.band])) : undefined), [liveState]);
   useSceneStep({
     stepKey,
     mode: lieDown ? 'questions' : sceneMode,
     instruction: onMovement && phase === 'try' && !lieDown ? localized(current.instruction) : null,
     progress: { label: t('scene.phaseMove', { n, total }), value: n / total },
-    stage: { movement: current, side, paused: !onMovement || lieDown, highlightIds, autoFocus: !onMovement },
+    stage: { movement: current, side, paused: !onMovement || lieDown, highlightIds, autoFocus: !onMovement, levels, labelIds: !onMovement ? highlightIds : undefined },
   });
   // the animation has played once: show the answers (the sheet opens by itself unless the patient has moved it)
   const played = useScene((st) => st.playedNonce);
@@ -248,7 +249,6 @@ function LiveScreenBody() {
       {finished ? (
         <>
           <BotBubble>{t('live.enough')}</BotBubble>
-          {involved.length > 0 ? <InvolvedBubble names={involved} /> : null}
           <Button label={t('live.seeResult')} onPress={() => router.replace(LIVE_RESULT_ROUTE as never)} />
         </>
       ) : step.kind === 'movement' && lieDown ? (
@@ -298,28 +298,9 @@ function LiveScreenBody() {
             <Chip large label={t('answer.notSure')} selected={selected('unsure')} onPress={() => answerQuestion('unsure')} />
             <Chip large label={t('movement.skip')} onPress={() => answerQuestion('unsure')} />
           </ChipRow>
-          {involved.length > 0 ? <InvolvedBubble names={involved} /> : null}
         </>
       ) : null}
     </SceneSheetContent>
-  );
-}
-
-/** The model highlights these. Names only, in alphabetical order: no scores, no ranking, no confidence. */
-function InvolvedBubble({ names }: { names: string[] }) {
-  const t = useT();
-  return (
-    <>
-      <BotBubble>
-        <AppText variant="bodyStrong">{t('scene.involved')}</AppText>
-      </BotBubble>
-      <ChipRow>
-        <Chip tone="involved" icon="eye-outline" label={t('scene.mayBeInvolved')} />
-        {names.map((nm) => (
-          <Chip key={nm} tone="involved" label={nm} />
-        ))}
-      </ChipRow>
-    </>
   );
 }
 

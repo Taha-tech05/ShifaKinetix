@@ -87,3 +87,14 @@ backend file was changed (`git diff --stat 2b51683..HEAD` over those paths is em
 
 **Not verified on the phone**: the movement step (collapse/expand, instruction chip) and the new result screen. The unit tests cover their logic. Needs a manual pass.
 **Known gaps**: the "after an injury" chip text wraps and clips in one render of the basics chat; the model can be rotated into a flat pose by a vertical drag (original viewer behaviour).
+
+## Round 3 (manual test feedback)
+- **Sheet height**: the sheet can now be left at any height (drag the handle and let go). Tap the handle: collapsed <-> fit. By default it is 40% of the screen
+  or taller (up to 70%), sized so the current question and its options show at one glance. A new question re-fits it unless the patient has set a height.
+- **Auto-scroll**: after an answer the list scrolls to the new question and its options. It only holds back when the patient has scrolled by hand a moment ago and
+  is not at the end (then a "Current question" pill appears). Android's "scroll ended" event after our own scroll was being counted as the patient's drag; fixed.
+- **Body framing**: in movement steps the body is framed in the area above the sheet (centred there); with the sheet collapsed it is centred on the whole screen.
+- **Muscle likelihood on the body, not in the chat**: the highlighted muscles are tinted by how likely they are (strong for high, weaker for medium, dull for low) and
+  labelled with their name and High / Medium / Low, once the narrowing has enough answers. The list of muscles was removed from the chat. This replaces round 1's "no bands
+  or ranking" rule for the 3D screen, as requested. No numbers are shown.
+- Tests that expected the muscle list in the chat now check what is handed to the body (highlight ids, levels, labels).
