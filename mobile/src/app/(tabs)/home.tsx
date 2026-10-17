@@ -52,14 +52,14 @@ export default function Home() {
           <SosButton />
         </View>
 
-        <GlassCard row padding={0} style={styles.search} accessibilityLabel={t('home.searchPlaceholder')}>
+        <GlassCard airy row padding={0} style={styles.search} accessibilityLabel={t('home.searchPlaceholder')}>
           <AppText variant="body" color={colors.muted} style={[styles.grow, styles.searchText]} numberOfLines={1}>
             {t('home.searchPlaceholder')}
           </AppText>
           <Ionicons name="search" size={22} color={colors.muted} style={styles.searchIcon} />
         </GlassCard>
 
-        <GlassCard onPress={() => router.push('/report/intro')} accessibilityLabel={t('home.tileReport')} padding={0} style={styles.overview}>
+        <GlassCard airy onPress={() => router.push('/report/intro')} accessibilityLabel={t('home.tileReport')} padding={0} style={styles.overview}>
           <View style={[styles.cardHead, { borderBottomColor: colors.line }]}>
             <AppText variant="bodyStrong">{t('home.tileReport')}</AppText>
             <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
@@ -82,7 +82,7 @@ export default function Home() {
           </View>
         </GlassCard>
 
-        <GlassCard row>
+        <GlassCard airy row>
           <View style={styles.disc}>
             <Ionicons name="pulse" size={22} color={colors.accentText} />
           </View>
@@ -96,7 +96,7 @@ export default function Home() {
         </GlassCard>
 
         <SectionHeader title={t('home.upcoming')} actionLabel={t('home.seeAll')} onAction={() => router.push('/my-care')} />
-        <GlassCard row onPress={() => router.push('/my-care')} accessibilityLabel={`${t('home.upcomingDoctor')}, ${t('home.upcomingWhen')}`}>
+        <GlassCard airy row onPress={() => router.push('/my-care')} accessibilityLabel={`${t('home.upcomingDoctor')}, ${t('home.upcomingWhen')}`}>
           <View style={styles.avatar}>
             <AppText variant="bodyStrong" color={colors.onAccent}>
               DA
@@ -154,7 +154,7 @@ const makeStyles = (colors: Palette) =>
     when: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
     bold: { fontWeight: '700' },
     tiles: { flexDirection: 'row', gap: 10 },
-    tile: { flex: 1, alignItems: 'center', gap: 8, minHeight: 96, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 22, backgroundColor: colors.cardFill, borderWidth: 1, borderColor: colors.glassBorder },
+    tile: { flex: 1, alignItems: 'center', gap: 8, minHeight: 96, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 22, backgroundColor: colors.dashFill, borderWidth: 1, borderColor: colors.glassBorder },
     tileIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
     tileLabel: { fontWeight: '600', textAlign: 'center' },
   });

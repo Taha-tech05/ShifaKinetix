@@ -96,7 +96,13 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
     if (currentIndex < 0) return toEnd();
     list.current?.scrollToIndex({ index: currentIndex, viewPosition: 0, animated: !reduceMotion });
   }, [currentIndex, reduceMotion, toEnd]);
-  const nearEnd = () => offsetY.current + viewH.current >= contentH.current - 120;
+  // "at the current question": the end of the list, or anywhere inside the current question (a tall one is read by scrolling inside it, and
+  // answering from the middle of it must still bring the next question into view)
+  const nearEnd = () => {
+    const bottom = offsetY.current + viewH.current;
+    const currentTop = contentH.current - bottomPad - currentH.current;
+    return bottom >= contentH.current - 120 || bottom >= currentTop + 48;
+  };
   /**
    * Show the newest question and its options. The list follows unless the patient scrolled it by hand a moment ago and is not at the end:
    * then it stays exactly where it is and the "Current question" pill offers the way down.

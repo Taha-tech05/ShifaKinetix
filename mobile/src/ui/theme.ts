@@ -29,6 +29,8 @@ export interface Palette {
   glassBorder: string;
   /** flat card fill (no blur): used for everything that is not a floating layer */
   cardFill: string;
+  /** more transparent card fill of the dashboard: the colours of the background show through */
+  dashFill: string;
   surface: string;
   /** frosted fill of the chat sheet: translucent, drawn over a blur (as the glass cards of the dark reference) */
   sheet: string;
@@ -87,6 +89,7 @@ export const lightPalette: Palette = {
   glassBorder: 'rgba(255,255,255,0.9)',
   // tinted frosted glass: close to the screen's own tone, set apart by a light edge (as the cards of the references)
   cardFill: 'rgba(240,246,244,0.62)',
+  dashFill: 'rgba(255,255,255,0.28)',
   surface: 'rgba(250,252,251,0.9)',
   sheet: 'rgba(250,247,244,0.62)',
   sheetFallback: 'rgba(250,247,244,0.95)',
@@ -133,6 +136,7 @@ export const darkPalette: Palette = {
   glassFill: 'rgba(255,255,255,0.12)',
   glassBorder: 'rgba(255,255,255,0.22)',
   cardFill: 'rgba(255,255,255,0.12)',
+  dashFill: 'rgba(255,255,255,0.08)',
   surface: 'rgba(255,255,255,0.16)',
   sheet: 'rgba(46,84,120,0.58)',
   sheetFallback: 'rgba(46,84,120,0.96)',

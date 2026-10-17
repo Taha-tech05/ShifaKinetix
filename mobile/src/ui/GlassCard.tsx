@@ -11,6 +11,8 @@ interface Props {
   accessibilityLabel?: string;
   /** Draw a real blur. Only for floating layers; ordinary cards stay flat (translucent fill, border, soft shadow). */
   blur?: boolean;
+  /** More transparent fill (the dashboard): the background shade shows through. */
+  airy?: boolean;
   row?: boolean;
   padding?: number;
   radius?: number;
@@ -18,14 +20,14 @@ interface Props {
 }
 
 /** Frosted card: translucent white (or dark glass), 1px border, large radius, soft shadow. */
-export function GlassCard({ children, onPress, accessibilityLabel, blur = false, row = false, padding = 16, radius = corner.card, style }: Props) {
+export function GlassCard({ children, onPress, accessibilityLabel, blur = false, airy = false, row = false, padding = 16, radius = corner.card, style }: Props) {
   const { colors } = useTheme();
   const blurOk = useBlurAllowed() && blur;
   const base: ViewStyle = {
     borderRadius: radius,
     borderWidth: 1,
     borderColor: colors.glassBorder,
-    backgroundColor: blurOk ? colors.glassFill : colors.cardFill,
+    backgroundColor: blurOk ? colors.glassFill : airy ? colors.dashFill : colors.cardFill,
     overflow: blurOk ? 'hidden' : 'visible',
     padding,
     ...softShadow(colors),
