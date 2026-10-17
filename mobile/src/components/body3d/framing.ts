@@ -17,7 +17,7 @@ export const freeFraction = (height: number, inset: number): number => (inset > 
  * The body is never drawn smaller than this fraction of its full size: it is CENTRED in the free area instead, so it stays big. With a tall
  * sheet a little of the head and feet can then be hidden behind the top controls and the sheet; compress the sheet to see all of it.
  */
-export const MIN_BODY_SCALE = 0.55;
+export const MIN_BODY_SCALE = 0.85;
 
 /** Call every frame. Eases toward the target and updates the camera only while it changes. */
 export function applyFraming(camera: THREE.PerspectiveCamera, size: { width: number; height: number }, inset: number, st: FramingState, dt: number): void {
@@ -35,7 +35,7 @@ export function applyFraming(camera: THREE.PerspectiveCamera, size: { width: num
     const k = Math.max(next, MIN_BODY_SCALE);
     const fw = size.width * k;
     const fh = size.height * k;
-    const y = ((k - next) * size.height) / 2;
+    const y = ((k - next) * size.height) / 10;
     camera.setViewOffset(fw, fh, -(size.width - fw) / 2, y, size.width, size.height);
   }
   camera.updateProjectionMatrix();
