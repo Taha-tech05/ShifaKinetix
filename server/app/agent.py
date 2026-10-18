@@ -60,11 +60,20 @@ Picker = Callable[[AgentState, tuple[str, ...]], str]
 
 
 def _optional_questions_left(state: AgentState) -> list[str]:
+    """Optional context questions. Linked safety questions are asked by the gate when an answer opens them (contract v2)."""
     answered = {a["questionId"] for a in state["answers"]}
-    return [q["questionId"] for q in QUESTIONS if not q["required"] and q["questionId"] not in answered]
+    return [q["questionId"] for q in QUESTIONS if q["tier"] == "context" and q["questionId"] not in answered]
+
+
+def _movements_blocked(state: AgentState) -> bool:
+    """The SOON care level (see a doctor in the next few days): questions continue, physical movements are skipped."""
+    gate = state.get("gate") or {}
+    return gate.get("verdict") == "SAFE" and gate.get("level") == "SOON"
 
 
 def _movements_left(state: AgentState) -> list[str]:
+    if _movements_blocked(state):
+        return []
     done = {m["movementId"] for m in state["movements"]}
     return [m for m in MOVEMENTS if m not in done]
 
@@ -78,7 +87,7 @@ def allowed_tools(state: AgentState) -> tuple[str, ...]:
             allowed.append("ask_question")
         if _movements_left(state):
             allowed.append("ask_movement")
-    if state["movements"]:
+    if state["movements"] or _movements_blocked(state):
         if not narrowed:
             allowed.append("narrow")
         if not ranked:
@@ -142,9 +151,10 @@ def build_agent(audit: AuditLog, pick_next: Picker | None = None, writer: LLM | 
 
     def safety_question(state: AgentState) -> dict[str, Any]:
         cleared = {"narrowing": None, "ranking": None, "report": None}
-        rules = state["gate"]["firedRules"]  # only M_<id> and U_<id> rules exist under CLARIFY
-        # Ask what can still be answered. Uncertainty that persists after its clarification is not asked a
-        # third time: the patient is told it is unclear, and movements stay blocked (contract v1.1).
+        # Under CLARIFY: M_ (missing), U_ (uncertain hard-stop answer) and F_ (a contradiction to confirm) can be
+        # asked; P_ and W_ entries are points, never questions. Uncertainty that persists after its clarification is
+        # not asked a third time: the patient is told it is unclear, and movements stay blocked (contract v2).
+        rules = [r for r in state["gate"]["firedRules"] if r["ruleId"][:2] in ("M_", "U_", "F_")]
         askable = [r for r in rules if not r["reason"].startswith("Uncertainty persists")]
         if not askable:
             unclear = [r["matchedAnswers"][0] for r in rules]

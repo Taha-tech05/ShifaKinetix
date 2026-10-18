@@ -52,8 +52,8 @@ def _check_feature(condition_id: str, feature: Any) -> None:
             raise ConditionTableError(f"{where}: expect must be one of the question's options")
         if question["type"] not in ("yesno", "choice"):
             raise ConditionTableError(f"{where}: only yes/no and choice questions can be features")
-        if feature.get("defining") and not question["required"]:
-            raise ConditionTableError(f"{where}: a defining feature must be a required safety question")
+        if feature.get("defining") and question.get("tier") == "context":
+            raise ConditionTableError(f"{where}: a defining feature must be a safety question the check can ask")
     else:
         if target not in (MOVEMENTS if kind == "movement" else REGIONS):
             raise ConditionTableError(f"{where}: unknown {kind}")

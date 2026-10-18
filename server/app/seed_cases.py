@@ -29,7 +29,9 @@ def _answer(question_id: str, how: str) -> dict:
         return {"questionId": question_id, "type": q["type"], "value": None, "state": "unknown"}
     if how == "yes":
         return {"questionId": question_id, "type": q["type"], "value": True, "state": "answered"}
-    return {"questionId": question_id, "type": q["type"], "value": False if q["type"] == "yesno" else "normal", "state": "answered"}
+    # the low-risk answer to each always-asked question (contract v2)
+    value = {"onset": "gradual", "pain_score": 3}.get(question_id, False)
+    return {"questionId": question_id, "type": q["type"], "value": value, "state": "answered"}
 
 
 def _movement(movement_id: str) -> dict:
