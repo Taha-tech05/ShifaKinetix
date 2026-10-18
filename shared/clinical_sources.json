@@ -5,8 +5,8 @@
     {
       "url": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "title": "NHS: Shoulder pain",
-      "use": "Shoulder warning symptoms; context wording adapted.",
-      "limitation": "Not a validated questionnaire. Numeric input bounds are software choices."
+      "use": "Shoulder warning symptoms and its two urgency levels (see a GP; urgent GP appointment or NHS 111), rechecked 2026-10-18; context wording adapted.",
+      "limitation": "Not a validated questionnaire. The page lists each urgent sign on its own; the points, thresholds and SOON level are software policy awaiting clinician review. Numeric input bounds are software choices."
     },
     {
       "url": "https://www.nhs.uk/conditions/heart-attack/",
