@@ -1,40 +1,35 @@
-"""Live app-signal gate under the focused follow-up policy. Synthetic cases only."""
+"""Live app answers under contract v2: each thing is asked once, follow-ups only for contradictions. Synthetic cases only."""
 
 import json
 
 import pytest
+from safety_answers import answers as canon
 
-from app.gate import QUESTIONS, SHARED_DIR, evaluate
+from app.gate import SHARED_DIR, evaluate
 from app.session_gate import (
-    ALIASES,
-    assemble,
+    MOVEMENT_SET_SIZE,
+    conflicts,
     evaluate_session_gate,
     followup_evidence,
     pending_followups,
-    structured_gate_inputs,
 )
 
 DOCUMENT = json.loads((SHARED_DIR / "app_signal_test_cases.json").read_text(encoding="utf-8"))
 CASES = DOCUMENT["cases"]
-REQUIRED = [q for q in QUESTIONS if q["required"]]
 LABEL = "draft, awaiting clinician review"
-SENSORY = ["U_unable", "U_tingling", "U_numb"]
+MOVES = ["sideways_raise", "forward_raise", "can_position_hold", "outward_push_elbow_at_side", "belly_press", "hand_behind_back"]
 
 
-def canon(**changed):
-    return [
-        {"questionId": q["questionId"], "type": q["type"], "state": "answered",
-         "value": changed.get(q["questionId"], False if q["type"] == "yesno" else "normal")}
-        for q in REQUIRED
-    ]
-
-
-def app(question_id, value):
-    return {"questionId": question_id, "type": "yesno", "value": value, "state": "unknown" if value is None else "answered"}
+def app(question_id, value, kind="yesno"):
+    return {"questionId": question_id, "type": kind, "value": value, "state": "unknown" if value is None else "answered"}
 
 
 def how(value):
-    return {"questionId": "Q_BASICS_HOW", "type": "chooseone", "value": value, "state": "unknown" if value is None else "answered"}
+    return app("Q_BASICS_HOW", value, "chooseone")
+
+
+def pain_now(value):
+    return app("Q_BASICS_PAIN_NOW", value, "scale0to10")
 
 
 def move(movement_id="sideways_raise", state="answered", **flags):
@@ -42,12 +37,16 @@ def move(movement_id="sideways_raise", state="answered", **flags):
             "measuredAngle": None, "state": state, **flags}
 
 
+def full_set(**special):
+    return [move(m, **special.get(m, {})) for m in MOVES]
+
+
 def rule_ids(gate):
     return [rule["ruleId"] for rule in gate["firedRules"]]
 
 
-def derived(answers, movements):
-    return {a["questionId"]: a["value"] for a in structured_gate_inputs(answers, movements)}
+SAFE_ROUTINE = {"verdict": "SAFE", "level": "ROUTINE", "score": 0, "firedRules": []}
+UNABLE_ONE = {"sideways_raise": {"unableToDo": True}}
 
 
 # ---------------------------------------------------------------- shared fixtures
@@ -68,151 +67,97 @@ def test_fixture_file_is_draft_sourced_and_danger_first():
     assert verdicts == sorted(verdicts, key=["RED_FLAG", "CLARIFY", "SAFE"].index)
     for case in CASES:
         assert case["source"].strip() and case["label"] == LABEL
-    assert "validated" not in json.dumps(DOCUMENT).lower().replace("clinical validation", "")
-
-
-def test_no_app_review_stop_rules_remain():
     assert "APP_REVIEW" not in json.dumps(DOCUMENT)
-    for case in CASES:
-        assert not any(r.startswith("APP_REVIEW") for r in rule_ids(evaluate_session_gate(case["answers"], case["movements"])))
 
 
-# ---------------------------------------------------------------- the server derives signals from raw movements
+# ---------------------------------------------------------------- nothing is asked twice
 
 
-def test_raw_unable_or_weak_movement_with_canonical_negatives_is_not_safe():
-    """Zaid's review case: no derived app answers are sent, only raw movement results."""
-    assert evaluate_session_gate(canon(), [move(unableToDo=True)])["verdict"] == "CLARIFY"
-    assert evaluate_session_gate(canon(), [move(weak=True)])["verdict"] == "CLARIFY"
-    assert rule_ids(evaluate_session_gate(canon(), [move(unableToDo=True)])) == ["U_unable"]
-    assert rule_ids(evaluate_session_gate(canon(), [move(weak=True)])) == SENSORY
+def test_movement_set_size_matches_the_app():
+    assert MOVEMENT_SET_SIZE == len(MOVES)
 
 
-def test_derivation_matches_the_mobile_rules():
-    assert derived([], []) == {}
-    assert derived([], [move()]) == {"Q_UNABLE_TO_MOVE_ARM": False}
-    assert derived([], [move(unableToDo=True)]) == {"Q_UNABLE_TO_MOVE_ARM": True}
-    assert derived([], [move(state="unknown")]) == {"Q_UNABLE_TO_MOVE_ARM": None}
-    assert derived([], [move(state="unknown", unableToDo=True)]) == {"Q_UNABLE_TO_MOVE_ARM": None}, "unknown is not read"
-    assert derived([], [move(weak=True)]) == {"Q_UNABLE_TO_MOVE_ARM": False, "Q_NUMB_OR_WEAK": True}
-    assert derived([how("after_injury")], []) == {"Q_ONSET_SUDDEN_TRAUMA": True}
-    assert derived([how("slowly")], []) == {"Q_ONSET_SUDDEN_TRAUMA": False}
-    assert derived([how(None)], []) == {"Q_ONSET_SUDDEN_TRAUMA": None}
-    assert derived([app("Q_ST_NUMB", False), app("Q_ST_TINGLE", False)], []) == {"Q_NUMB_OR_WEAK": False}
-    assert derived([app("Q_ST_NUMB", False)], []) == {"Q_NUMB_OR_WEAK": False}
-    assert derived([app("Q_ST_NUMB", False), app("Q_ST_TINGLE", None)], []) == {"Q_NUMB_OR_WEAK": None}
-    assert derived([app("Q_ST_NUMB", True), app("Q_ST_TINGLE", False)], []) == {"Q_NUMB_OR_WEAK": True}
-    assert derived([app("Q_ST_BONE_POINT", True), how("suddenly")], [])["Q_BONE_TENDER_AFTER_TRAUMA"] is True
-    assert derived([app("Q_ST_BONE_POINT", True), how("slowly")], [])["Q_BONE_TENDER_AFTER_TRAUMA"] is False
-    assert derived([app("Q_ST_BONE_POINT", False)], [])["Q_BONE_TENDER_AFTER_TRAUMA"] is False
-    assert derived([app("Q_ST_BONE_POINT", True)], [])["Q_BONE_TENDER_AFTER_TRAUMA"] is None
-    assert derived([app("Q_ST_BONE_POINT", None), how("after_injury")], [])["Q_BONE_TENDER_AFTER_TRAUMA"] is None
+@pytest.mark.parametrize("flags", [{"weak": True}, {"painful": True}, {"weak": True, "painful": True}, {"state": "unknown"},
+                                   {"state": "skipped"}, {"state": "unknown", "unableToDo": True}])
+def test_weak_painful_or_skipped_movements_are_not_safety_signals(flags):
+    assert evaluate_session_gate(canon(), full_set(belly_press=flags)) == SAFE_ROUTINE
 
 
-def test_painful_movement_alone_is_not_a_safety_signal():
-    assert evaluate_session_gate(canon(), [move(painful=True)]) == {"verdict": "SAFE", "firedRules": []}
+def test_a_failed_movement_waits_for_the_whole_set():
+    partial = [move(m, unableToDo=m == "sideways_raise") for m in MOVES[:MOVEMENT_SET_SIZE - 1]]
+    assert evaluate_session_gate(canon(), partial) == SAFE_ROUTINE
+    result = evaluate_session_gate(canon(), full_set(**UNABLE_ONE))
+    assert (result["verdict"], rule_ids(result)) == ("CLARIFY", ["F_unable"])
 
 
-@pytest.mark.parametrize("state", ["unknown", "skipped", "", None, "pending"])
-def test_any_unfinished_movement_asks_the_followups(state):
-    result = evaluate_session_gate(canon(), [move(), move("belly_press", state=state)])
-    assert result["verdict"] == "CLARIFY" and rule_ids(result) == SENSORY
-
-
-# ---------------------------------------------------------------- focused follow-ups
-
-
-def test_followup_is_asked_as_a_fresh_question_not_a_repeat():
-    rule = evaluate_session_gate(canon(), [move(unableToDo=True)])["firedRules"][0]
-    assert rule == {
-        "ruleId": "U_unable",
-        "matchedAnswers": ["unable"],
-        "source": "docs/gate-contract.md",
-        "reason": "Safety answer is uncertain; ask the fixed clarification.",
+def test_the_check_names_its_reason_and_keeps_the_score():
+    result = evaluate_session_gate(canon(onset="injury", shape=False), full_set(**UNABLE_ONE))
+    assert result["firedRules"][-1] == {
+        "ruleId": "F_unable", "matchedAnswers": ["unable"], "source": "docs/safety-integration.md",
+        "reason": "A later answer differs from this earlier answer; please confirm it.",
     }
+    assert (result["verdict"], result["level"], result["score"]) == ("CLARIFY", None, 2)
 
 
-def test_an_old_no_cannot_clear_new_evidence_but_a_reviewed_no_can():
-    answers, movements = canon(unable=False), [move(unableToDo=True)]
-    assert evaluate_session_gate(answers, movements)["verdict"] == "CLARIFY"
-    assert evaluate_session_gate(answers, movements, ["unable"]) == {"verdict": "SAFE", "firedRules": []}
+def test_a_reviewed_check_clears_but_a_new_failed_movement_is_new_evidence():
+    assert evaluate_session_gate(canon(), full_set(**UNABLE_ONE), ["unable"]) == SAFE_ROUTINE
+    first = followup_evidence(canon(), full_set(**UNABLE_ONE))["unable"]
+    second = followup_evidence(canon(), full_set(sideways_raise={"unableToDo": True}, belly_press={"unableToDo": True}))["unable"]
+    assert first != second
 
 
-def test_reviewing_one_question_does_not_resolve_another():
-    result = evaluate_session_gate(canon(), [move(weak=True)], ["numb"])
-    assert rule_ids(result) == ["U_unable", "U_tingling"]
-
-
-def test_reviewed_cannot_clear_a_question_with_no_canonical_answer():
-    answers = [a for a in canon() if a["questionId"] != "unable"]
-    result = evaluate_session_gate(answers, [move(unableToDo=True)], ["unable"])
-    assert result["verdict"] == "CLARIFY" and rule_ids(result) == ["M_unable"]
-
-
-def test_reviewed_cannot_hide_a_confirmed_yes():
+def test_a_confirmed_cannot_move_needs_no_check():
     for reviewed in ([], ["unable"]):
-        result = evaluate_session_gate(canon(unable=True), [move(unableToDo=True)], reviewed)
-        assert result["verdict"] == "RED_FLAG" and rule_ids(result) == ["R_unable"]
+        result = evaluate_session_gate(canon(unable=True), full_set(**UNABLE_ONE), reviewed)
+        assert (result["verdict"], rule_ids(result)) == ("RED_FLAG", ["H_unable"])
 
 
-@pytest.mark.parametrize("signal", sorted(ALIASES))
-def test_not_sure_on_any_app_signal_is_never_safe(signal):
-    result = evaluate_session_gate(canon() + [app(signal, None)])
-    assert result["verdict"] == "CLARIFY"
-    assert {r[2:] for r in rule_ids(result)} >= set(ALIASES[signal])
+def test_no_check_without_a_given_answer_to_contradict():
+    given = canon(missing=["unable"])
+    result = evaluate_session_gate(given, full_set(**UNABLE_ONE))
+    assert rule_ids(result) == ["M_unable"]
+    assert conflicts(given, full_set(**UNABLE_ONE)) == []
+    assert evaluate_session_gate(canon(unknown=["unable"]), full_set(**UNABLE_ONE))["verdict"] == "CLARIFY"
 
 
-@pytest.mark.parametrize("signal", sorted(ALIASES))
-def test_positive_app_signal_asks_its_followups_and_reviewing_them_clears(signal):
-    answers = canon() + [app(signal, True)]
-    asked = {r[2:] for r in rule_ids(evaluate_session_gate(answers))}
-    assert asked >= set(ALIASES[signal])
-    assert evaluate_session_gate(answers, None, asked)["verdict"] == "SAFE"
+def test_basics_that_match_the_saved_answers_are_never_asked_again():
+    assert evaluate_session_gate(canon() + [how("slowly"), pain_now(3)]) == SAFE_ROUTINE
+    assert evaluate_session_gate(canon() + [how(None), pain_now(None)]) == SAFE_ROUTINE
 
 
-def test_negative_app_signals_change_nothing():
-    negatives = [app(signal, False) for signal in sorted(ALIASES)]
-    assert evaluate_session_gate(canon() + negatives) == evaluate(canon())
-    assert evaluate_session_gate(canon(fever=True) + negatives) == evaluate(canon(fever=True))
+@pytest.mark.parametrize("basics,question", [(how("after_injury"), "onset"), (how("suddenly"), "onset"), (pain_now(7), "pain_score")])
+def test_changed_basics_ask_one_check_that_reviewing_clears(basics, question):
+    result = evaluate_session_gate(canon() + [basics])
+    assert (result["verdict"], rule_ids(result)) == ("CLARIFY", [f"F_{question}"])
+    assert evaluate_session_gate(canon() + [basics], None, [question]) == SAFE_ROUTINE
+
+
+def test_narrowing_questions_about_numbness_and_tingling_are_not_safety_signals():
+    for value in (True, False, None):
+        extra = [app("Q_ST_NUMB", value), app("Q_ST_TINGLE", value), app("Q_ST_BONE_POINT", value)]
+        assert evaluate_session_gate(canon() + extra) == SAFE_ROUTINE
+
+
+def test_a_pending_check_never_hides_danger():
+    result = evaluate_session_gate(canon(chest=True) + [how("after_injury")])
+    assert (result["verdict"], result["level"], rule_ids(result)) == ("RED_FLAG", "EMERGENCY", ["E_chest", "F_onset"])
+
+
+def test_pending_followups_are_in_question_order_and_respect_reviews():
+    given = canon() + [how("after_injury"), pain_now(8)]
+    assert pending_followups(given, full_set(**UNABLE_ONE)) == ["onset", "unable", "pain_score"]
+    assert pending_followups(given, full_set(**UNABLE_ONE), {"onset", "pain_score"}) == ["unable"]
 
 
 def test_without_app_answers_it_is_exactly_the_canonical_gate():
-    for answers in (canon(), canon(chest=True), canon()[:5], [], canon() + canon(), canon(redness=True)):
-        assert evaluate_session_gate(answers) == evaluate(answers)
+    for given in (canon(), canon(chest=True), canon()[:5], [], canon() + canon(), canon(inflammation=True, redness=True)):
+        assert evaluate_session_gate(given) == evaluate(given)
 
 
 def test_client_review_records_are_ignored():
     record = {"questionId": "Q_SAFETY_REVIEW_unable", "type": "safety-review", "state": "answered", "value": "anything"}
-    assert evaluate_session_gate(canon() + [record], [move(unableToDo=True)])["verdict"] == "CLARIFY"
-    assert evaluate_session_gate(canon() + [record]) == {"verdict": "SAFE", "firedRules": []}
-
-
-# ---------------------------------------------------------------- evidence fingerprints (used by the server's history)
-
-
-def test_evidence_exists_only_for_questions_with_signals():
-    assert followup_evidence([], []) == {}
-    assert followup_evidence([], [move(painful=True)]) == {}
-    assert set(followup_evidence([], [move(unableToDo=True)])) == {"unable"}
-    assert set(followup_evidence([], [move(weak=True)])) == {"unable", "numb", "tingling"}
-    assert set(followup_evidence([how("after_injury")], [])) == {"injury"}
-    assert set(followup_evidence([how(None)], [])) == {"injury", "sudden"}
-
-
-def test_evidence_changes_when_the_signal_or_the_movements_change():
-    weak = followup_evidence([], [move(weak=True)])
-    assert weak == followup_evidence([], [move(weak=True)])
-    assert weak["numb"] != followup_evidence([], [move(weak=True), move("belly_press")])["numb"], "a new movement is new evidence"
-    assert weak["numb"] != followup_evidence([], [move(weak=True, painful=True)])["numb"]
-    onset = followup_evidence([how("after_injury")], [])["injury"]
-    assert onset == followup_evidence([how("after_injury")], [move(painful=True)])["injury"], "onset does not depend on movements"
-    assert onset != followup_evidence([how(None)], [])["injury"]
-
-
-def test_pending_followups_are_in_question_order():
-    combined = assemble(canon() + [how(None)], [move(weak=True)])
-    assert pending_followups(combined) == ["injury", "unable", "tingling", "numb", "sudden"]
-    assert pending_followups(combined, {"numb", "injury"}) == ["unable", "tingling", "sudden"]
+    assert evaluate_session_gate(canon() + [record], full_set(**UNABLE_ONE))["verdict"] == "CLARIFY"
+    assert evaluate_session_gate(canon() + [record]) == SAFE_ROUTINE
 
 
 # ---------------------------------------------------------------- malformed input
@@ -233,9 +178,14 @@ def test_malformed_input_fails_closed_and_never_crashes(answers, movements):
     assert followup_evidence(answers, movements) == {}
 
 
+@pytest.mark.parametrize("extra", [how("yesterday"), app("Q_DANGER_NEW", False), {**app("Q_OTHER", True), "flagged": True}])
+def test_unrecognised_safety_inputs_fail_closed(extra):
+    assert rule_ids(evaluate_session_gate(canon() + [extra])) == ["INPUT_INVALID"]
+
+
 def test_input_is_not_changed():
-    answers, movements = canon() + [how(None)], [move(weak=True)]
-    before = json.dumps([answers, movements])
-    evaluate_session_gate(answers, movements, ["numb"])
-    followup_evidence(answers, movements)
-    assert json.dumps([answers, movements]) == before
+    given, movements = canon() + [how("after_injury")], full_set(**UNABLE_ONE)
+    before = json.dumps([given, movements])
+    evaluate_session_gate(given, movements, ["unable"])
+    followup_evidence(given, movements)
+    assert json.dumps([given, movements]) == before

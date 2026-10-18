@@ -319,7 +319,7 @@ describe('the live driver: narrowing and the gate run after every answer', () =>
     const stub = require('../src/gate/stub') as typeof import('../src/gate/stub');
     const spy = jest.spyOn(stub, 'evaluateStub').mockImplementation((answers) => {
       seen.push(...answers.map((a) => a.questionId));
-      return { verdict: 'SAFE', firedRules: [] };
+      return { verdict: 'SAFE', level: 'ROUTINE', score: 0, firedRules: [] };
     });
     submitMovement(buildMovementResult('sideways_raise', { kind: 'felt', pain: true, weak: false, couldNot: true }), 'couldNot');
     spy.mockRestore();

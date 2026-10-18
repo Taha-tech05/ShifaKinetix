@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from safety_answers import answers
 
 from app.conditions import CONDITIONS
 from app.gate import QUESTIONS
@@ -12,19 +13,6 @@ from app.ranking import DANGER_BOOST, rank
 REQUIRED = [q for q in QUESTIONS if q["required"]]
 DANGER_IDS = {c["id"] for c in CONDITIONS if c["danger"]}
 CUFF_OR_IMPINGEMENT = {"rotator_cuff_related_pain", "subacromial_impingement"}
-
-
-def answers(unknown=(), **changed):
-    """Every required safety question answered 'no'; override some, or mark some not sure."""
-    out = []
-    for q in REQUIRED:
-        qid = q["questionId"]
-        if qid in unknown:
-            out.append({"questionId": qid, "type": q["type"], "value": None, "state": "unknown"})
-        else:
-            value = changed.get(qid, False if q["type"] == "yesno" else "normal")
-            out.append({"questionId": qid, "type": q["type"], "value": value, "state": "answered"})
-    return out
 
 
 def movements(*positive, unknown=()):
@@ -50,13 +38,13 @@ def item(ranking, condition_id):
 
 
 def test_fall_with_deformed_swollen_shoulder_ranks_fracture_in_top_3_and_flags_it():
-    ranking = rank(answers(injury=True, shape=True, swelling=True, unable=True, sudden=True))
+    ranking = rank(answers(onset="injury", shape=True, swelling="mild", unable=True))
     assert "fracture_or_dislocation" in ids(ranking)[:3]
     assert item(ranking, "fracture_or_dislocation")["flagged"] is True
 
 
 def test_fever_with_hot_swollen_joint_flags_joint_infection_near_the_top():
-    ranking = rank(answers(fever=True, redness=True, temperature="hot", swelling=True))
+    ranking = rank(answers(fever=True, redness=True, temperature="hot", swelling="mild"))
     assert ids(ranking)[0] == "septic_arthritis"
     assert ranking[0]["flagged"] is True
 
@@ -80,7 +68,7 @@ def test_gradual_stiffness_in_all_directions_ranks_frozen_shoulder_high():
 
 
 def test_tingling_and_numbness_bring_up_neck_nerve_referral():
-    ranking = rank(answers(tingling=True, numb=True), movements())
+    ranking = rank(answers(tingling="comes_goes", numb=True), movements())
     assert ids(ranking)[0] == "neck_nerve_referral"
 
 
@@ -115,7 +103,7 @@ def test_not_sure_never_counts_as_no():
 
 
 def test_one_defining_danger_sign_is_placed_first_despite_a_low_score():
-    ranking = rank(answers(injury=True), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
+    ranking = rank(answers(onset="injury"), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
     fracture = item(ranking, "fracture_or_dislocation")
     assert fracture["baseScore"] < 0
     assert fracture["pinned"] is True
@@ -124,7 +112,7 @@ def test_one_defining_danger_sign_is_placed_first_despite_a_low_score():
 
 
 def test_pinned_conditions_come_first_then_everything_is_in_score_order():
-    ranking = rank(answers(injury=True, fever=True), movements("sideways_raise", "can_position_hold"))
+    ranking = rank(answers(onset="injury", fever=True), movements("sideways_raise", "can_position_hold"))
     pinned = [i for i in ranking if i["pinned"]]
     assert {i["conditionId"] for i in pinned} == {"fracture_or_dislocation", "septic_arthritis"}
     assert ranking[: len(pinned)] == pinned
@@ -133,8 +121,8 @@ def test_pinned_conditions_come_first_then_everything_is_in_score_order():
 
 
 def test_danger_sign_outranks_a_benign_condition_that_has_almost_no_evidence():
-    """Fall and cannot move, no movements done: fracture must not sit below a guess."""
-    ranking = rank(answers(injury=True, unable=True))
+    """Fall and cannot move: fracture comes first even when a benign pattern scores higher."""
+    ranking = rank(answers(onset="injury", shape=False, unable=True), movements("sideways_raise", "can_position_hold"), "shoulder_right_front")
     assert ids(ranking)[0] == "fracture_or_dislocation"
     assert ranking[0]["score"] < ranking[1]["score"]
     assert "rule out dangerous conditions first" in ranking[0]["rankRationale"]

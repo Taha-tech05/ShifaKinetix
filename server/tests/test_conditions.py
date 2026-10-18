@@ -15,7 +15,7 @@ from app.conditions import (
 from app.gate import QUESTIONS
 
 BY_ID = {c["id"]: c for c in CONDITIONS}
-REQUIRED = {q["questionId"] for q in QUESTIONS if q["required"]}
+ASKABLE = {q["questionId"] for q in QUESTIONS if q["tier"] != "context"}
 
 
 def broken(change):
@@ -59,10 +59,10 @@ def test_every_row_has_source_danger_flag_and_draft_label(condition):
 
 
 @pytest.mark.parametrize("condition", [c for c in CONDITIONS if c["danger"]], ids=lambda c: c["id"])
-def test_danger_condition_has_a_defining_feature_on_a_required_question(condition):
+def test_danger_condition_has_a_defining_feature_on_a_safety_question(condition):
     defining = [f for f in condition["features"] if f.get("defining")]
     assert defining
-    assert all(feature_kind(f) == "q" and f["q"] in REQUIRED for f in defining)
+    assert all(feature_kind(f) == "q" and f["q"] in ASKABLE for f in defining)
 
 
 def test_never_claims_validation():
@@ -89,7 +89,7 @@ def test_never_claims_validation():
         lambda c: c[0]["features"].append({"movement": "handstand", "expect": True, "w": 1}),
         lambda c: c[0]["features"].append({"region": "elbow", "expect": True, "w": 1}),
         lambda c: c[0]["features"].append({"q": "pain_score", "expect": 7, "w": 1}),
-        lambda c: c[0]["features"].append({"q": "infection_risk", "expect": True, "w": 1, "defining": True}),
+        lambda c: c[0]["features"].append({"q": "side", "expect": "left", "w": 1, "defining": True}),
         lambda c: c.append(dict(c[0])),
         lambda c: c.clear(),
     ],
@@ -97,7 +97,7 @@ def test_never_claims_validation():
         "no-source", "blank-source", "wrong-label", "no-danger-flag", "danger-not-boolean", "no-features",
         "danger-without-defining", "unknown-question", "bad-expect", "zero-weight", "two-kinds",
         "duplicate-feature", "unknown-movement", "unknown-region", "number-question",
-        "defining-on-optional-question", "duplicate-id", "empty-table",
+        "defining-on-context-question", "duplicate-id", "empty-table",
     ],
 )
 def test_a_broken_table_is_rejected(change):

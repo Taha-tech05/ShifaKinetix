@@ -3,22 +3,12 @@
 import json
 
 import pytest
+from safety_answers import answers
 
 from app import llm as groq_llm
-from app.gate import QUESTIONS
 from app.narrowing import MOVEMENTS, narrow
 from app.ranking import rank
 from app.writeup import LABEL, template_explanation, write_doctor_summary
-
-REQUIRED = [q for q in QUESTIONS if q["required"]]
-
-
-def answers(**changed):
-    return [
-        {"questionId": q["questionId"], "type": q["type"], "state": "answered",
-         "value": changed.get(q["questionId"], False if q["type"] == "yesno" else "normal")}
-        for q in REQUIRED
-    ]
 
 
 def movements(*positive):
@@ -26,7 +16,7 @@ def movements(*positive):
              "measuredAngle": None, "state": "answered"} for m in MOVEMENTS]
 
 
-RANKING = rank(answers(injury=True), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
+RANKING = rank(answers(onset="injury"), movements("sideways_raise", "can_position_hold"), "shoulder_right_top")
 ORDER = [item["conditionId"] for item in RANKING]
 NARROWING = narrow(movements("sideways_raise", "can_position_hold"))
 CLUSTER = narrow(movements("outward_push_elbow_at_side"))

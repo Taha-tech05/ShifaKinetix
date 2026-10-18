@@ -6,10 +6,10 @@ import { OrderedSyncEvent } from '../src/storage/intakeStore';
 import { SavedContext } from '../src/storage/syncContext';
 import { SafetyAnswer } from '../src/gate/evaluate';
 
-const answer: SafetyAnswer = { questionId: 'injury', type: 'yesno', value: false, state: 'answered' };
+const answer: SafetyAnswer = { questionId: 'unable', type: 'yesno', value: false, state: 'answered' };
 const context: SavedContext = { mode: 'region', reaskDone: false, movementResults: [],
   selection: { regionId: 'shoulder_right', subRegionId: 'front', point: { x: 0, y: 1, z: 0 }, layer: 'muscle', hitStructure: null },
-  answers: [answer, { questionId: 'Q_SAFETY_REVIEW_injury', type: 'safety-review', value: 'local-token', state: 'answered' },
+  answers: [answer, { questionId: 'Q_SAFETY_REVIEW_unable', type: 'safety-review', value: 'local-token', state: 'answered' },
     { questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' }] };
 let directory: string;
 let opened: ReturnType<typeof openDatabase>;

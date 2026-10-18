@@ -9,16 +9,15 @@ import json
 import random
 
 import pytest
+from safety_answers import REQUIRED, REQUIRED_IDS, answers
 
 from app.conditions import CONDITIONS
-from app.gate import QUESTIONS, RULES, evaluate
+from app.gate import QUESTIONS, RULES, THRESHOLDS, evaluate, is_asked_question
 from app.narrowing import MOVEMENTS, MUSCLES, narrow
 from app.ranking import DANGER_BOOST, rank
 
-REQUIRED = [q for q in QUESTIONS if q["required"]]
-REQUIRED_IDS = [q["questionId"] for q in REQUIRED]
-# Questions where one answer alone is a red flag. "redness" is required but only fires in combination.
-SOLO_DANGER = [q for q in REQUIRED if q["dangerAnswers"]]
+# Questions where one answer alone is a hard stop (contract v2): its dangerAnswers.
+SOLO_DANGER = [q for q in QUESTIONS if q["dangerAnswers"]]
 SOLO_DANGER_IDS = [q["questionId"] for q in SOLO_DANGER]
 MOVEMENT_IDS = list(MOVEMENTS)
 DANGER_IDS = {c["id"] for c in CONDITIONS if c["danger"]}
@@ -27,23 +26,6 @@ BENIGN_IDS = {c["id"] for c in CONDITIONS if not c["danger"]}
 # Defining question -> the dangerous condition it belongs to.
 DEFINING = {f["q"]: c["id"] for c in CONDITIONS for f in c["features"] if f.get("defining")}
 DEFINING_VALUE = {f["q"]: f["expect"] for c in CONDITIONS for f in c["features"] if f.get("defining")}
-
-
-def answers(unknown=(), clarified=(), missing=(), **changed):
-    out = []
-    for q in REQUIRED:
-        qid = q["questionId"]
-        if qid in missing:
-            continue
-        if qid in unknown or qid in clarified:
-            record = {"questionId": qid, "type": q["type"], "value": None, "state": "unknown"}
-            if qid in clarified:
-                record["clarificationAttempted"] = True
-        else:
-            value = changed.get(qid, False if q["type"] == "yesno" else "normal")
-            record = {"questionId": qid, "type": q["type"], "value": value, "state": "answered"}
-        out.append(record)
-    return out
 
 
 def movement(movement_id, painful=False, weak=False, unable=False, state="answered"):
@@ -81,14 +63,14 @@ def position(ranking, condition_id):
 
 
 def test_two_dangers_at_once_are_both_flagged_in_the_top_3():
-    ranking = rank(answers(injury=True, shape=True, fever=True, redness=True, temperature="hot"))
+    ranking = rank(answers(onset="injury", shape=True, fever=True, redness=True, temperature="hot"))
     assert {"fracture_or_dislocation", "septic_arthritis"} <= set(ids(ranking)[:3])
     assert item(ranking, "fracture_or_dislocation")["flagged"]
     assert item(ranking, "septic_arthritis")["flagged"]
 
 
 def test_three_dangers_at_once_fill_the_top_3():
-    ranking = rank(answers(chest=True, injury=True, fever=True), movements("sideways_raise", "can_position_hold"))
+    ranking = rank(answers(chest=True, onset="injury", fever=True), movements("sideways_raise", "can_position_hold"))
     assert set(ids(ranking)[:3]) == DANGER_IDS
     assert all(i["pinned"] for i in ranking[:3])
 
@@ -102,7 +84,7 @@ def test_danger_sign_is_not_buried_under_a_perfect_benign_pattern():
 
 
 def test_fracture_and_ac_joint_overlap_after_a_fall_onto_the_shoulder():
-    ranking = rank(answers(injury=True, shape=True, sudden=True), movements("sideways_raise"), "shoulder_left_top")
+    ranking = rank(answers(onset="injury", shape=True), movements("sideways_raise"), "shoulder_left_top")
     assert position(ranking, "fracture_or_dislocation") < PIN_TOP
     assert position(ranking, "ac_joint") < PIN_TOP
     assert item(ranking, "ac_joint")["flagged"] is False
@@ -141,11 +123,17 @@ def test_not_sure_after_clarification_is_still_unknown_not_no():
 
 
 def test_missing_answer_is_treated_like_not_sure():
-    assert rank(answers(missing=["fever"])) == rank(answers(unknown=["fever"]))
+    assert rank(answers(missing=["chest"])) == rank(answers(unknown=["chest"]))
+
+
+def test_a_topic_denied_by_its_opening_question_counts_as_no_not_unknown():
+    denied = item(rank(answers()), "septic_arthritis")
+    assert "fever=false" in denied["contradictedFacts"] and not denied["flagged"]
+    assert rank(answers()) == rank(answers(fever=False, redness=False, temperature="normal", swelling="none", infection_risk=False))
 
 
 def test_one_danger_confirmed_and_another_not_sure():
-    ranking = rank(answers(unknown=["chest", "breathing"], injury=True, shape=True))
+    ranking = rank(answers(unknown=["chest", "breathing"], onset="injury", shape=True))
     fracture, cardiac = item(ranking, "fracture_or_dislocation"), item(ranking, "cardiac_referral")
     assert fracture["pinned"] and position(ranking, "fracture_or_dislocation") < PIN_TOP
     assert cardiac["flagged"] and not cardiac["pinned"]
@@ -219,18 +207,17 @@ def test_tapped_region_moves_ac_joint_up_and_down():
 
 
 def test_neck_nerve_signs_with_a_painful_shoulder_pattern_show_both():
-    ranking = rank(answers(tingling=True, numb=True), movements("sideways_raise", "can_position_hold"))
+    ranking = rank(answers(tingling="comes_goes", numb=True), movements("sideways_raise", "can_position_hold"))
     assert position(ranking, "neck_nerve_referral") < 4
     assert ids(ranking)[0] in {"rotator_cuff_related_pain", "subacromial_impingement"}
 
 
 def test_context_answers_that_are_not_features_do_not_change_the_ranking():
     extra = [
-        {"questionId": "pain_score", "type": "number", "value": 9, "state": "answered"},
         {"questionId": "duration", "type": "duration", "value": 400, "state": "answered"},
         {"questionId": "side", "type": "choice", "value": "both", "state": "answered"},
     ]
-    assert rank(answers() + extra, movements("hand_behind_back")) == rank(answers(), movements("hand_behind_back"))
+    assert rank(answers(pain_score=9) + extra, movements("hand_behind_back")) == rank(answers(), movements("hand_behind_back"))
 
 
 # ---------------------------------------------------------------- ranking: properties over every combination
@@ -281,7 +268,7 @@ def test_turning_a_movement_to_not_sure_never_pushes_a_score_past_its_extremes(s
 
 def test_order_of_the_input_lists_does_not_matter():
     rng = random.Random(7)
-    given_answers = answers(unknown=["chest"], injury=True, temperature="hot")
+    given_answers = answers(unknown=["chest"], onset="injury", temperature="hot")
     given_movements = movements("sideways_raise", "hand_behind_back", unknown=["can_position_hold"])
     expected = (evaluate(given_answers), narrow(given_movements), rank(given_answers, given_movements))
     for _ in range(20):
@@ -294,86 +281,107 @@ def test_order_of_the_input_lists_does_not_matter():
 # ---------------------------------------------------------------- gate: combinations checked against a second, simpler statement of the contract
 
 
+# Points restated by hand from docs/gate-contract.md (draft weighting), independent of the rule file's layout.
+POINTS = {("onset", "injury"): 2, ("onset", "sudden"): 2, ("temperature", "hot"): 2, ("fever", True): 2,
+          ("bilateral", True): 2, ("systemic", True): 2, ("cancer", True): 2, ("redness", True): 1,
+          ("tingling", "comes_goes"): 1, ("swelling", "mild"): 1}
+EMERGENCY = {("chest", True), ("breathing", True)}
+URGENT = {("unable", True), ("shape", True), ("numb", True), ("tingling", "persistent"), ("temperature", "cold"), ("swelling", "severe")}
+WEIGHTED_HALF = {"onset": 1, "pain_score": 1, "fever": 1, "bilateral": 1, "systemic": 1, "cancer": 1, "redness": 0.5}
+
+
 def oracle(given):
-    """The contract restated without rules: used to cross-check evaluate()."""
+    """The contract restated without the rule file: (verdict, level, score), used to cross-check evaluate()."""
     by_id = {a["questionId"]: a for a in given}
-    danger = any(
-        by_id[q["questionId"]]["state"] == "answered" and by_id[q["questionId"]]["value"] in q["dangerAnswers"]
-        for q in REQUIRED
-        if q["questionId"] in by_id
-    )
-    incomplete = any(q["questionId"] not in by_id or by_id[q["questionId"]]["state"] == "unknown" for q in REQUIRED)
-    # v1.2: redness = yes makes infection_risk required, and these intakes never contain it.
-    needs_risk = "redness" in by_id and by_id["redness"]["state"] == "answered" and by_id["redness"]["value"] is True
-    # v1.1: uncertainty, even after clarification, is CLARIFY and never a red flag by itself.
-    return "RED_FLAG" if danger else "CLARIFY" if incomplete or needs_risk else "SAFE"
+    said = {qid: a["value"] for qid, a in by_id.items() if a["state"] == "answered"}
+    pairs = {(qid, value) for qid, value in said.items() if isinstance(value, (str, bool))}
+    score = sum(points for key, points in POINTS.items() if key in pairs)
+    pain = said.get("pain_score")
+    score += 2 if pain is not None and pain >= 8 else 1 if pain is not None and pain >= 6 else 0
+    score += sum(half for qid, half in WEIGHTED_HALF.items() if qid in by_id and by_id[qid]["state"] == "unknown")
+    emergency = bool(pairs & EMERGENCY)
+    urgent = bool(pairs & URGENT) or (said.get("redness") is True and (said.get("fever") is True or said.get("infection_risk") is True))
+    asked = [q for q in QUESTIONS if is_asked_question(q, given)]
+    incomplete = any(q["questionId"] not in by_id or (by_id[q["questionId"]]["state"] == "unknown" and q["tier"] == "hardStop") for q in asked)
+    if emergency:
+        return "RED_FLAG", "EMERGENCY", score
+    if urgent or score >= THRESHOLDS["URGENT"]:
+        return "RED_FLAG", "URGENT", score
+    if incomplete:
+        return "CLARIFY", None, score
+    return "SAFE", "SOON" if score >= THRESHOLDS["SOON"] else "ROUTINE", score
 
 
 def random_intake(rng):
     out = []
-    for q in REQUIRED:
+    for q in QUESTIONS:
         roll = rng.random()
         qid = q["questionId"]
-        if roll < 0.04:
+        if roll < 0.12:
             continue
-        if roll < 0.10:
+        if roll < 0.20:
             record = {"questionId": qid, "type": q["type"], "value": None, "state": "unknown"}
             if rng.random() < 0.4:
                 record["clarificationAttempted"] = rng.random() < 0.7
         else:
-            options = [True, False] if q["type"] == "yesno" else [o["value"] for o in q["options"]]
-            weights = [1 if v in q["dangerAnswers"] else 12 for v in options]
+            if q["type"] == "yesno":
+                options = [True, False]
+            elif q["type"] == "choice":
+                options = [o["value"] for o in q["options"]]
+            else:
+                options = [0, 3, 6, 8, 10] if q["type"] == "number" else [1, 30]
+            weights = [1 if v in q["dangerAnswers"] or v is True else 8 for v in options]
             record = {"questionId": qid, "type": q["type"], "value": rng.choices(options, weights)[0], "state": "answered"}
         out.append(record)
     rng.shuffle(out)
     return out
 
 
-def test_2000_random_intakes_match_the_restated_contract():
+def test_3000_random_intakes_match_the_restated_contract():
     rng = random.Random(2026)
     seen = {"RED_FLAG": 0, "CLARIFY": 0, "SAFE": 0}
-    for _ in range(2000):
+    for _ in range(3000):
         given = random_intake(rng)
         result = evaluate(given)
-        assert result["verdict"] == oracle(given), json.dumps(given)
-        assert (result["verdict"] == "SAFE") == (result["firedRules"] == [])
+        assert (result["verdict"], result["level"], result["score"]) == oracle(given), json.dumps(given)
+        if result["verdict"] == "SAFE":
+            assert all("points" in r for r in result["firedRules"])
         seen[result["verdict"]] += 1
     assert seen["RED_FLAG"] > 100 and seen["CLARIFY"] > 100 and seen["SAFE"] > 30, seen
 
 
 @pytest.mark.parametrize("pair", list(itertools.combinations(SOLO_DANGER_IDS, 2)), ids="+".join)
-def test_every_pair_of_danger_answers_is_red_flag_and_names_every_matching_rule(pair):
-    changed = {q["questionId"]: q["dangerAnswers"][0] for q in REQUIRED if q["questionId"] in pair}
-    given = answers(**changed)
-    by_id = {a["questionId"]: a["value"] for a in given}
-    expected = [r["ruleId"] for r in RULES if all(by_id.get(c["questionId"]) == c["equals"] and
-                                                 type(by_id.get(c["questionId"])) is type(c["equals"]) for c in r["all"])]
-    result = evaluate(given)
+def test_every_pair_of_hard_stop_answers_is_red_flag_and_names_every_matching_hard_stop(pair):
+    changed = {q["questionId"]: q["dangerAnswers"][0] for q in SOLO_DANGER if q["questionId"] in pair}
+    result = evaluate(answers(**changed))
     assert result["verdict"] == "RED_FLAG"
-    assert [r["ruleId"] for r in result["firedRules"]] == expected
-    assert len(expected) >= 2
+    assert result["level"] == ("EMERGENCY" if {"chest", "breathing"} & set(pair) else "URGENT")
+    hard = [r["ruleId"] for r in result["firedRules"] if "level" in r]
+    expected = [r["ruleId"] for r in RULES if "level" in r and len(r["all"]) == 1 and r["all"][0]["questionId"] in pair]
+    assert hard == expected and len(expected) == 2
 
 
 @pytest.mark.parametrize("pair", list(itertools.combinations(REQUIRED_IDS, 2)), ids="+".join)
 def test_every_pair_of_not_sure_answers_is_never_safe(pair):
-    first = evaluate(answers(unknown=pair))
-    assert first["verdict"] == "CLARIFY"
-    assert [r["ruleId"] for r in first["firedRules"]] == [f"U_{q}" for q in REQUIRED_IDS if q in pair]
-    assert evaluate(answers(unknown=pair[:1], clarified=pair[1:]))["verdict"] == "CLARIFY", "contract v1.1"
+    for given in (answers(unknown=pair), answers(unknown=pair[:1], clarified=pair[1:])):
+        result = evaluate(given)
+        assert result["verdict"] == "CLARIFY"
+        hard_stops = [q["questionId"] for q in REQUIRED if q["questionId"] in pair and q["tier"] == "hardStop"]
+        assert [r["ruleId"] for r in result["firedRules"] if r["ruleId"].startswith("U_")] == [f"U_{q}" for q in hard_stops]
 
 
 def test_danger_answer_wins_over_missing_and_not_sure_together():
-    result = evaluate(answers(unknown=["shape"], missing=["cancer", "redness"], fever=True))
-    assert result["verdict"] == "RED_FLAG"
-    assert [r["ruleId"] for r in result["firedRules"]] == ["R_fever", "U_shape", "M_cancer", "M_redness"]
+    result = evaluate(answers(unknown=["unable"], missing=["illness", "sensation"], onset="injury", shape=False, pain_score=9, bilateral=False))
+    assert (result["verdict"], result["level"]) == ("RED_FLAG", "URGENT")
+    assert [r["ruleId"] for r in result["firedRules"]] == ["P_onset_injury", "P_pain_very_bad", "U_unable", "M_sensation", "M_illness"]
 
 
-def test_only_redness_has_no_danger_answer_of_its_own():
-    assert [q["questionId"] for q in REQUIRED if not q["dangerAnswers"]] == ["redness"]
+def test_only_opening_and_weighted_questions_have_no_danger_answer_of_their_own():
+    assert [q["questionId"] for q in REQUIRED if not q["dangerAnswers"]] == ["onset", "sensation", "inflammation", "illness", "pain_score"]
 
 
-def test_red_or_warm_shoulder_is_a_red_flag_only_in_combination_and_never_clears_alone():
-    """Contract v1.2: redness needs fever or an infection risk to fire, and makes infection risk a required answer."""
+def test_red_shoulder_is_urgent_only_in_combination_and_never_clears_without_infection_risk():
+    """Contract v2: redness adds a point, asks infection risk, and is urgent with fever or an infection risk."""
 
     def risk(value):
         return {"questionId": "infection_risk", "type": "yesno", "value": value, "state": "unknown" if value is None else "answered"}
@@ -382,17 +390,18 @@ def test_red_or_warm_shoulder_is_a_red_flag_only_in_combination_and_never_clears
         result = evaluate(given)
         return result["verdict"], [r["ruleId"] for r in result["firedRules"]]
 
-    assert ids(answers(redness=True)) == ("CLARIFY", ["M_infection_risk"])
-    assert ids(answers(redness=True) + [risk(None)]) == ("CLARIFY", ["U_infection_risk"])
-    assert ids(answers(redness=True) + [risk(False)]) == ("SAFE", [])
-    assert ids(answers(redness=True) + [risk(True)]) == ("RED_FLAG", ["R_local_infection_risk"])
-    assert ids(answers(redness=True, fever=True)) == ("RED_FLAG", ["R_fever", "R_fever_joint", "M_infection_risk"])
-    assert ids(answers(unknown=["redness"])) == ("CLARIFY", ["U_redness"])
+    base = {"inflammation": True, "temperature": "normal", "swelling": "none", "fever": False}
+    assert ids(answers(redness=True, **base)) == ("CLARIFY", ["P_redness", "M_infection_risk"])
+    assert ids(answers(redness=True, **base) + [risk(None)]) == ("CLARIFY", ["P_redness", "U_infection_risk"])
+    assert ids(answers(redness=True, **base) + [risk(False)]) == ("SAFE", ["P_redness"])
+    assert ids(answers(redness=True, **base) + [risk(True)]) == ("RED_FLAG", ["H_infection_risk_redness", "P_redness"])
+    assert ids(answers(redness=True, **{**base, "fever": True})) == ("RED_FLAG", ["H_fever_redness", "P_fever", "P_redness", "M_infection_risk"])
+    assert ids(answers(unknown=["redness"], **base)) == ("CLARIFY", ["W_redness", "M_infection_risk"])
 
 
-def test_red_or_warm_shoulder_alone_is_still_flagged_for_the_doctor():
+def test_red_shoulder_alone_is_still_flagged_for_the_doctor():
     """The gate lets it through, but the doctor-only ranking keeps joint infection in the top 3."""
-    ranking = rank(answers(redness=True), movements("sideways_raise", "can_position_hold"))
+    ranking = rank(answers(inflammation=True, redness=True, infection_risk=False), movements("sideways_raise", "can_position_hold"))
     infection = item(ranking, "septic_arthritis")
     assert infection["flagged"] and infection["pinned"]
     assert position(ranking, "septic_arthritis") < PIN_TOP
@@ -400,7 +409,7 @@ def test_red_or_warm_shoulder_alone_is_still_flagged_for_the_doctor():
 
 def test_one_bad_record_among_good_ones_invalidates_the_whole_intake():
     given = answers(chest=True)
-    given[5]["value"] = "false"
+    given[3]["value"] = "false"
     assert [r["ruleId"] for r in evaluate(given)["firedRules"]] == ["INPUT_INVALID"]
 
 
@@ -439,15 +448,15 @@ def flow(given_answers, given_movements, region):
 
 def test_flow_safe_patient_reaches_narrowing_and_a_benign_ranking():
     gate, narrowed, ranking = flow(answers(), movements("sideways_raise", "can_position_hold"), "shoulder_right_front")
-    assert gate == {"verdict": "SAFE", "firedRules": []}
+    assert gate == {"verdict": "SAFE", "level": "ROUTINE", "score": 0, "firedRules": []}
     assert narrowed["candidates"][0]["muscleId"] == "supraspinatus"
     assert ids(ranking)[0] in BENIGN_IDS and not any(i["flagged"] for i in ranking)
 
 
 def test_flow_danger_patient_stops_at_the_gate_and_the_doctor_still_sees_it_ranked():
-    gate, narrowed, ranking = flow(answers(injury=True, unable=True), movements("sideways_raise"), "shoulder_right_top")
+    gate, narrowed, ranking = flow(answers(onset="injury", unable=True), movements("sideways_raise"), "shoulder_right_top")
     assert gate["verdict"] == "RED_FLAG"
-    assert {"R_injury", "R_unable", "R_injury_unable"} <= {r["ruleId"] for r in gate["firedRules"]}
+    assert {"H_unable", "P_onset_injury"} <= {r["ruleId"] for r in gate["firedRules"]}
     assert narrowed is None
     assert position(ranking, "fracture_or_dislocation") < PIN_TOP
 
@@ -462,6 +471,6 @@ def test_flow_not_sure_patient_is_held_at_the_gate_and_the_danger_stays_flagged(
 
 @pytest.mark.parametrize("qid", SOLO_DANGER_IDS)
 def test_flow_no_single_danger_answer_ever_reaches_narrowing(qid):
-    question = next(q for q in REQUIRED if q["questionId"] == qid)
+    question = next(q for q in SOLO_DANGER if q["questionId"] == qid)
     gate, narrowed, _ = flow(answers(**{qid: question["dangerAnswers"][0]}), movements("sideways_raise"), None)
     assert gate["verdict"] == "RED_FLAG" and narrowed is None

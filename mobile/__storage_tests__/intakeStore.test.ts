@@ -6,6 +6,7 @@ import { IntakeStore, SqlDatabase, SyncEvent } from '../src/storage/intakeStore'
 import { SafetyAnswer as Answer, questions } from '../src/gate/evaluate';
 import { SafetySession } from '../src/gate/safetySession';
 import { useSession } from '../src/store/session';
+import { lowRiskAnswers } from '../__tests__/support/safetyAnswers';
 
 // A real SQLite engine; Node 22 test job only. The phone uses expo-sqlite.
 const { DatabaseSync } = createRequire(__filename)('node:sqlite') as typeof import('node:sqlite');
@@ -13,7 +14,8 @@ let directory: string;
 let db: InstanceType<typeof DatabaseSync>;
 let store: IntakeStore;
 let adapter: SqlDatabase;
-const no: Answer = { questionId: 'injury', type: 'yesno', state: 'answered', value: false };
+const no: Answer = { questionId: 'unable', type: 'yesno', state: 'answered', value: false };
+const gradual: Answer = { questionId: 'onset', type: 'choice', state: 'answered', value: 'gradual' };
 function open() {
   db = new DatabaseSync(join(directory, 'intake.db'));
   adapter = {
@@ -58,16 +60,15 @@ test('integrated intake resumes from SQLite after restart and retains repeated u
 
 test('conditional infection uncertainty survives restart and requires an explicit resolution', async () => {
   const session = selectedSession(); await session.start('conditional');
-  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
-    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  for (const a of lowRiskAnswers()) await session.save(a);
   expect((await session.checkpoint()).verdict).toBe('SAFE');
   await session.save({ questionId: 'redness', type: 'yesno', state: 'answered', value: true });
-  expect((await session.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['M_infection_risk']);
+  expect((await session.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['P_redness', 'M_infection_risk']);
   await session.save({ questionId: 'infection_risk', type: 'yesno', state: 'unknown', value: null, clarificationAttempted: true });
   session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
   expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
-  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['U_infection_risk']);
+  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['P_redness', 'U_infection_risk']);
   await resumed.save({ questionId: 'infection_risk', type: 'yesno', state: 'answered', value: false, clarificationAttempted: true });
   expect((await resumed.checkpoint()).verdict).toBe('SAFE');
   resumed.dispose();
@@ -75,8 +76,7 @@ test('conditional infection uncertainty survives restart and requires an explici
 
 test('integrated SAFE requires saved answers and reset cannot reuse the prior intake', async () => {
   const session = selectedSession(); await session.start('integrated');
-  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
-    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  for (const a of lowRiskAnswers()) await session.save(a);
   expect((await session.checkpoint()).verdict).toBe('SAFE');
   useSession.getState().recordAnswer({ ...no, value: true });
   await expect(session.checkpoint()).rejects.toThrow('do not match');
@@ -90,13 +90,12 @@ test('focused follow-ups survive SQLite restart but changed evidence invalidates
   const session = selectedSession();
   useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
   await session.start('followup');
-  for (const q of questions.filter((q) => q.required)) await session.save({ questionId: q.questionId,
-    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  for (const a of lowRiskAnswers()) await session.save(a);
   expect((await session.checkpoint()).verdict).toBe('SAFE');
   session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
   expect((await resumed.resumeLatest()).verdict).toBe('SAFE');
-  expect(useSession.getState().answers.some((a) => a.questionId === 'Q_SAFETY_REVIEW_injury')).toBe(true);
+  expect(useSession.getState().answers.some((a) => a.questionId === 'Q_SAFETY_REVIEW_onset')).toBe(true);
   // Changing away and back must not revive the earlier confirmation.
   useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'slowly', state: 'answered' });
   useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
@@ -108,10 +107,9 @@ test('failed context write cannot persist a follow-up clearance on restart', asy
   const session = selectedSession();
   useSession.getState().recordAnswer({ questionId: 'Q_BASICS_HOW', type: 'chooseone', value: 'after_injury', state: 'answered' });
   await session.start('failed-followup');
-  for (const q of questions.filter((q) => q.required && q.questionId !== 'injury')) await session.save({ questionId: q.questionId,
-    type: q.type as Answer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' });
+  for (const a of lowRiskAnswers({}, ['onset'])) await session.save(a);
   jest.spyOn(store, 'saveContext').mockRejectedValueOnce(new Error('disk full'));
-  await expect(session.save(no)).rejects.toThrow('disk full');
+  await expect(session.save(gradual)).rejects.toThrow('disk full');
   expect(useSession.getState().gateVerdict).toBeNull();
   session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
@@ -139,10 +137,7 @@ test('typed unknowns and pending uploads survive a database close and reopen', a
 });
 
 test('offline complete negatives clear; danger persisted later overrides clearance', async () => {
-  for (const q of questions.filter((q) => q.required)) {
-    await store.saveAnswer('test-intake', { questionId: q.questionId, type: q.type as Answer['type'],
-      state: 'answered', value: q.type === 'choice' ? 'normal' : false });
-  }
+  for (const a of lowRiskAnswers()) await store.saveAnswer('test-intake', a);
   expect((await store.savedGate('test-intake')).verdict).toBe('SAFE');
   await store.saveAnswer('test-intake', { ...no, value: true });
   expect((await store.savedGate('test-intake')).verdict).toBe('RED_FLAG');
@@ -180,7 +175,7 @@ test('tampered cache blocks evaluation and bundled content restores it on restar
   db.exec("UPDATE intake_content SET rules_json = '{}'");
   await expect(store.savedGate('test-intake')).rejects.toThrow('Safety content');
   await store.initialize();
-  expect(await store.cachedQuestions()).toHaveLength(20);
+  expect(await store.cachedQuestions()).toHaveLength(questions.length);
 });
 
 test('older content cannot resume or sync silently and its queued answers are preserved', async () => {

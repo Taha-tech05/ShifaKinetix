@@ -3,7 +3,7 @@
 import { act, create } from 'react-test-renderer';
 import { createElement } from 'react';
 import type { ComponentType } from 'react';
-import { evaluate, questions, SafetyAnswer } from '../src/gate/evaluate';
+import { evaluate, SafetyAnswer } from '../src/gate/evaluate';
 import { openSafetySession } from '../src/gate/safetySession';
 import { goBackDurable, PERSIST_FAILED_ROUTE, submitMovementDurable, submitQuestionDurable } from '../src/flow/live';
 import { setLanguage } from '../src/i18n';
@@ -12,6 +12,7 @@ import { useSession } from '../src/store/session';
 import LiveScreen from '../src/app/report/movement';
 import Result from '../src/app/report/result';
 import { router } from 'expo-router';
+import { lowRiskAnswers } from './support/safetyAnswers';
 
 jest.mock('../src/gate/safetySession', () => ({ ...jest.requireActual('../src/gate/safetySession'), openSafetySession: jest.fn() }));
 jest.mock('../src/components/movement/MovementStage', () => ({ MovementStage: () => null }));
@@ -26,10 +27,7 @@ jest.mock('../src/dev/narrowingStub', () => {
 
 const narrowSpy = narrow as unknown as jest.Mock;
 const open = jest.mocked(openSafetySession);
-const negatives = (): SafetyAnswer[] =>
-  questions
-    .filter((q) => q.required)
-    .map((q) => ({ questionId: q.questionId, type: q.type as SafetyAnswer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' }));
+const negatives = (): SafetyAnswer[] => lowRiskAnswers();
 const selection = { regionId: 'shoulder_right', subRegionId: 'front' as const, point: { x: 0, y: 1, z: 0 }, layer: 'muscle' as const, hitStructure: null };
 const no = (id: string) => ({ questionId: id, type: 'yesno', value: false, state: 'answered' as const });
 
@@ -84,7 +82,7 @@ describe('answers are saved before the gate and the narrowing run', () => {
     expect(useSession.getState().narrowingTrail).toHaveLength(1);
   });
 
-  it('a movement: a new inability still stops the flow, after the save', async () => {
+  it('a movement: one failed movement does not interrupt the movement set (contract v2), after the save', async () => {
     seed();
     const cp = pendingCheckpoint();
     const promise = submitMovementDurable({ movementId: 'sideways_raise', painful: false, weak: false, unableToDo: true, measuredAngle: null, state: 'done' }, 'unable');
@@ -92,10 +90,25 @@ describe('answers are saved before the gate and the narrowing run', () => {
     expect(narrowSpy).not.toHaveBeenCalled();
     cp.finish();
     const out = await promise;
+    expect(out.verdict).toBe('SAFE');
+    expect(out.route).toBeNull();
+  });
+
+  it('a movement: after the whole set, a failed movement asks one check about moving the arm, after the save', async () => {
+    seed();
+    const ids = ['sideways_raise', 'forward_raise', 'can_position_hold', 'outward_push_elbow_at_side', 'belly_press'];
+    for (const [i, id] of ids.entries()) {
+      useSession.getState().recordMovement({ movementId: id, painful: i === 0, weak: i === 1, unableToDo: i === 0, measuredAngle: null, state: 'done' });
+    }
+    const cp = pendingCheckpoint();
+    const promise = submitMovementDurable({ movementId: 'hand_behind_back', painful: false, weak: false, unableToDo: false, measuredAngle: null, state: 'done' }, 'no pain');
+    await flush();
+    cp.finish();
+    const out = await promise;
     expect(out.verdict).toBe('CLARIFY');
+    expect(useSession.getState().gateOutput?.firedRules.map((r) => r.ruleId)).toEqual(['F_unable']);
     expect(out.route).toBe('/report/reask');
     expect(out.state).toBeNull();
-    expect(useSession.getState().narrowingTrail).toEqual([]);
   });
 
   it('back: the rewound answers are saved before the narrowing is recomputed', async () => {
@@ -221,14 +234,15 @@ describe('real screen and guard during a delayed live save', () => {
     expect(useSession.getState().narrowingTrail).toHaveLength(1);
     act(() => cp.tree.unmount());
   });
-  it('a delayed uncertain movement still routes to clarification, never the next movement', async () => {
+  it('a delayed skipped movement waits for the save, then continues without re-asking safety questions (contract v2)', async () => {
     const cp = await mountedScreen(); const replace = jest.spyOn(router, 'replace'); cp.hold();
     await press(cp.tree, 'Skip');
     expect(JSON.stringify(cp.tree.toJSON())).toContain('Saving and verifying');
-    await act(async () => { cp.finish(); });
-    expect(useSession.getState().gateVerdict).toBe('CLARIFY');
-    expect(replace).toHaveBeenCalledWith('/report/reask');
     expect(narrowSpy).not.toHaveBeenCalled();
+    await act(async () => { cp.finish(); });
+    expect(useSession.getState().gateVerdict).toBe('SAFE');
+    expect(replace).not.toHaveBeenCalledWith('/report/reask');
+    expect(JSON.stringify(cp.tree.toJSON())).toContain('Raise your arm forward');
     act(() => cp.tree.unmount()); replace.mockRestore();
   });
   it('a failed live save redirects without narrowing', async () => {
