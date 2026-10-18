@@ -1,215 +1,160 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useMemo } from 'react';
+import { I18nManager, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '../../components/AppText';
-import { Chip } from '../../components/Chip';
-import { IconTile } from '../../components/IconTile';
-import type { Tone } from '../../components/IconTile';
-import { ScreenHeader } from '../../components/ScreenHeader';
+import { SosButton } from '../../components/SosButton';
 import { StatusChip } from '../../components/StatusChip';
 import type { TKey } from '../../i18n';
 import { useT } from '../../store/settings';
-import { colors, gradients, shadows } from '../../theme';
+import { FloatingControl } from '../../ui/FloatingControl';
+import { GlassCard } from '../../ui/GlassCard';
+import { GradientBackground } from '../../ui/GradientBackground';
+import { LanguageMenu } from '../../ui/LanguageMenu';
+import { SectionHeader } from '../../ui/SectionHeader';
+import { useTheme, useThemePref } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
-const TILES: { icon: keyof typeof Ionicons.glyphMap; tone: Tone; label: TKey; href: string }[] = [
-  { icon: 'alert-circle-outline', tone: 'danger', label: 'home.tileReport', href: '/report/intro' },
-  { icon: 'calendar-outline', tone: 'navy', label: 'home.tileBook', href: '/book' },
-  { icon: 'body-outline', tone: 'safe', label: 'home.tileExercises', href: '/exercises' },
-  { icon: 'heart-outline', tone: 'teal', label: 'home.tileMyCare', href: '/my-care' },
-];
-
-const CHIPS: { icon: keyof typeof Ionicons.glyphMap; label: TKey; href: string }[] = [
+const TILES: { icon: keyof typeof Ionicons.glyphMap; label: TKey; href: string }[] = [
   { icon: 'people-outline', label: 'home.chipDoctors', href: '/book' },
-  { icon: 'pulse', label: 'home.chipExercises', href: '/exercises' },
   { icon: 'heart-outline', label: 'home.chipPhysio', href: '/book' },
   { icon: 'document-text-outline', label: 'home.chipRecords', href: '/my-care' },
+  { icon: 'barbell-outline', label: 'home.chipExercises', href: '/exercises' },
 ];
 
-/** Home (design P3): gradient header with greeting, search and Today's care, then service tiles. */
+/**
+ * Home, laid out like the "Dashboard" of the light reference: title row with the round control and the bell-sized actions,
+ * search pill, a big overview card, an upcoming appointment row with "View All", and the Quick Actions tiles.
+ */
 export default function Home() {
+  const { colors, scheme } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const setPref = useThemePref((s) => s.setPref);
+  const insets = useSafeAreaInsets();
   const t = useT();
+  const chevron = I18nManager.isRTL ? 'chevron-back' : 'chevron-forward';
   return (
     <View style={styles.root}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={[...gradients.hero]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-          <ScreenHeader hero />
-          <View style={styles.pad}>
-            <View style={styles.greet}>
-              <LinearGradient colors={[...gradients.avatar]} style={styles.avatar}>
-                <AppText variant="h2" color={colors.white}>
-                  PA
-                </AppText>
-              </LinearGradient>
-              <View style={styles.col}>
-                <AppText variant="secondary" color="rgba(255,255,255,0.75)">
-                  {t('home.goodMorning')}
-                </AppText>
-                <AppText variant="h1" color={colors.white} style={styles.hello}>
-                  {t('home.hello', { name: t('home.demoName') })}
-                </AppText>
-              </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('home.notifications')} style={styles.bell}>
-                <Ionicons name="notifications-outline" size={24} color={colors.white} />
-              </Pressable>
-            </View>
+      <GradientBackground />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.body, { paddingBottom: 130 + insets.bottom }]}>
+        <View style={styles.top}>
+          <FloatingControl icon={scheme === 'dark' ? 'sunny-outline' : 'moon-outline'} label={t('profile.theme')} onPress={() => setPref(scheme === 'dark' ? 'light' : 'dark')} />
+          <View style={styles.grow}>
+            <AppText variant="h2" numberOfLines={1} accessibilityRole="header">
+              {t('home.demoName')}
+            </AppText>
+            <AppText variant="secondary" color={colors.muted} numberOfLines={1}>
+              {t('home.hello', { name: t('home.demoName') })}
+            </AppText>
+          </View>
+          <LanguageMenu />
+          <SosButton />
+        </View>
 
-            <View style={styles.search}>
-              <Ionicons name="search" size={22} color={colors.muted} />
-              <AppText variant="body" color={colors.muted} style={styles.col} numberOfLines={1}>
-                {t('home.searchPlaceholder')}
+        <GlassCard airy row padding={0} style={styles.search} accessibilityLabel={t('home.searchPlaceholder')}>
+          <AppText variant="body" color={colors.muted} style={[styles.grow, styles.searchText]} numberOfLines={1}>
+            {t('home.searchPlaceholder')}
+          </AppText>
+          <Ionicons name="search" size={22} color={colors.muted} style={styles.searchIcon} />
+        </GlassCard>
+
+        <GlassCard airy onPress={() => router.push('/report/intro')} accessibilityLabel={t('home.tileReport')} padding={0} style={styles.overview}>
+          <View style={[styles.cardHead, { borderBottomColor: colors.line }]}>
+            <AppText variant="bodyStrong">{t('home.tileReport')}</AppText>
+            <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
+              {t('intro.start')}
+            </AppText>
+          </View>
+          <View style={styles.overviewBody}>
+            <View style={styles.big}>
+              <Ionicons name="body-outline" size={40} color={colors.onAccent} />
+            </View>
+            <View style={styles.grow}>
+              <AppText variant="secondary" color={colors.muted}>
+                {t('intro.title')}
               </AppText>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('home.filter')} style={styles.filter}>
-                <Ionicons name="options-outline" size={24} color={colors.teal} />
-              </Pressable>
+              <AppText variant="h3">{t('intro.time')}</AppText>
             </View>
-
-            <View style={styles.care}>
-              <IconTile icon="pulse" tone="teal" style={styles.careIcon} />
-              <View style={styles.col}>
-                <AppText variant="h3" color={colors.white}>
-                  {t('home.todaysCare')}
-                </AppText>
-                <AppText variant="secondary" color="rgba(255,255,255,0.75)">
-                  {t('home.todaysCareBody')}
-                </AppText>
-              </View>
-              <StatusChip status="unknown" label={t('home.inReview')} />
+            <View style={styles.go}>
+              <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={20} color={colors.onAccent} />
             </View>
           </View>
-        </LinearGradient>
+        </GlassCard>
 
-        <View style={styles.body}>
-          <View style={styles.tiles}>
-            {TILES.map((tile) => (
-              <Pressable
-                key={tile.label}
-                accessibilityRole="button"
-                accessibilityLabel={t(tile.label)}
-                onPress={() => router.push(tile.href as never)}
-                style={styles.tile}
-              >
-                <IconTile icon={tile.icon} tone={tile.tone} />
-                <AppText variant="secondary" color={colors.navy} style={styles.tileLabel}>
-                  {t(tile.label)}
-                </AppText>
-              </Pressable>
-            ))}
+        <GlassCard airy row>
+          <View style={styles.disc}>
+            <Ionicons name="pulse" size={22} color={colors.accentText} />
           </View>
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-            {CHIPS.map((c, i) => (
-              <Chip key={c.label} icon={c.icon} label={t(c.label)} selected={i === 1} onPress={() => router.push(c.href as never)} />
-            ))}
-          </ScrollView>
-
-          <View style={styles.sectionHead}>
-            <View style={styles.label}>
-              <AppText variant="secondary" color={colors.tealDark} style={styles.labelText}>
-                {t('home.upcoming').toUpperCase()}
-              </AppText>
-            </View>
-            <Pressable accessibilityRole="button" onPress={() => router.push('/my-care')} style={styles.see}>
-              <AppText variant="secondary" color={colors.linkTeal} style={styles.bold}>
-                {t('home.seeAll')}
-              </AppText>
-            </Pressable>
+          <View style={styles.grow}>
+            <AppText variant="bodyStrong">{t('home.todaysCare')}</AppText>
+            <AppText variant="secondary" color={colors.muted}>
+              {t('home.todaysCareBody')}
+            </AppText>
           </View>
+          <StatusChip status="unknown" label={t('home.inReview')} />
+        </GlassCard>
 
-          <LinearGradient colors={[...gradients.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.upcoming}>
+        <SectionHeader title={t('home.upcoming')} actionLabel={t('home.seeAll')} onAction={() => router.push('/my-care')} />
+        <GlassCard airy row onPress={() => router.push('/my-care')} accessibilityLabel={`${t('home.upcomingDoctor')}, ${t('home.upcomingWhen')}`}>
+          <View style={styles.avatar}>
+            <AppText variant="bodyStrong" color={colors.onAccent}>
+              DA
+            </AppText>
+          </View>
+          <View style={styles.grow}>
+            <AppText variant="bodyStrong">{t('home.upcomingDoctor')}</AppText>
+            <AppText variant="secondary" color={colors.muted}>
+              {t('home.upcomingKind')}
+            </AppText>
             <View style={styles.when}>
-              <Ionicons name="calendar-outline" size={22} color={colors.white} />
-              <AppText variant="bodyStrong" color={colors.white}>
+              <Ionicons name="calendar-outline" size={16} color={colors.accentText} />
+              <AppText variant="secondary" color={colors.accentText} style={styles.bold}>
                 {t('home.upcomingWhen')}
               </AppText>
             </View>
-            <View style={styles.who}>
-              <LinearGradient colors={[...gradients.avatar]} style={styles.avatarSmall}>
-                <AppText variant="bodyStrong" color={colors.white}>
-                  DA
-                </AppText>
-              </LinearGradient>
-              <View style={styles.col}>
-                <AppText variant="h3" color={colors.white}>
-                  {t('home.upcomingDoctor')}
-                </AppText>
-                <AppText variant="secondary" color={colors.white}>
-                  {t('home.upcomingKind')}
-                </AppText>
+          </View>
+          <Ionicons name={chevron} size={20} color={colors.muted} />
+        </GlassCard>
+
+        <SectionHeader title={t('home.quickActions')} />
+        <View style={styles.tiles}>
+          {TILES.map((tile) => (
+            <Pressable key={tile.label} accessibilityRole="button" accessibilityLabel={t(tile.label)} onPress={() => router.push(tile.href as never)} style={styles.tile}>
+              <View style={styles.tileIcon}>
+                <Ionicons name={tile.icon} size={24} color={colors.accentText} />
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('home.message')} style={styles.round}>
-                <Ionicons name="chatbubble-outline" size={22} color={colors.white} />
-              </Pressable>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('home.call')} style={styles.round}>
-                <Ionicons name="call-outline" size={22} color={colors.white} />
-              </Pressable>
-            </View>
-          </LinearGradient>
+              <AppText variant="secondary" style={styles.tileLabel} numberOfLines={1}>
+                {t(tile.label)}
+              </AppText>
+            </Pressable>
+          ))}
         </View>
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.page },
-  hero: { borderBottomStartRadius: 34, borderBottomEndRadius: 34, paddingBottom: 24 },
-  pad: { paddingHorizontal: 20, gap: 12 },
-  col: { flex: 1 },
-  greet: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  hello: { fontSize: 22, lineHeight: 28 },
-  bell: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  search: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingStart: 14,
-    paddingEnd: 4,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    ...shadows.card,
-  },
-  filter: { width: 48, height: 48, borderRadius: 14, backgroundColor: colors.tealTint, alignItems: 'center', justifyContent: 'center' },
-  care: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
-  },
-  careIcon: { backgroundColor: 'rgba(255,255,255,0.16)' },
-  body: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 110, gap: 16 },
-  tiles: { flexDirection: 'row', gap: 8 },
-  tile: { flex: 1, alignItems: 'center', gap: 6, minHeight: 96 },
-  tileLabel: { fontWeight: '600', textAlign: 'center' },
-  chips: { gap: 8, paddingEnd: 20 },
-  sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  label: { height: 30, paddingHorizontal: 10, borderRadius: 8, backgroundColor: colors.tealTint, justifyContent: 'center' },
-  labelText: { fontWeight: '700', letterSpacing: 0.3 },
-  see: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 4 },
-  bold: { fontWeight: '700' },
-  upcoming: { borderRadius: 24, padding: 18, gap: 12, ...shadows.button },
-  when: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  who: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatarSmall: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  round: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.22)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const makeStyles = (colors: Palette) =>
+  StyleSheet.create({
+    root: { flex: 1, backgroundColor: colors.page },
+    body: { paddingHorizontal: 20, paddingTop: 8, gap: 14 },
+    grow: { flex: 1 },
+    top: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    search: { height: 56, borderRadius: 28 },
+    searchText: { marginStart: 20 },
+    searchIcon: { marginEnd: 20 },
+    overview: { overflow: 'hidden' },
+    cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 12, borderBottomWidth: 1, backgroundColor: colors.accentTint },
+    overviewBody: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 18 },
+    disc: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
+    big: { width: 60, height: 60, borderRadius: 22, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    go: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    when: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+    bold: { fontWeight: '700' },
+    tiles: { flexDirection: 'row', gap: 10 },
+    tile: { flex: 1, alignItems: 'center', gap: 8, minHeight: 96, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 22, backgroundColor: colors.dashFill, borderWidth: 1, borderColor: colors.glassBorder },
+    tileIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
+    tileLabel: { fontWeight: '600', textAlign: 'center' },
+  });

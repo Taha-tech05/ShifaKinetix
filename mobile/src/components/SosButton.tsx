@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useT } from '../store/settings';
-import { colors, shadows, spacing } from '../theme';
+import { shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { BottomSheet } from './BottomSheet';
 import { IconTile } from './IconTile';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hospital';
 
 /** Red SOS pill in the top bar. Opens a sheet with two big actions and no advice text. */
 export function SosButton() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [open, setOpen] = useState(false);
   return (
@@ -21,14 +26,14 @@ export function SosButton() {
         onPress={() => setOpen(true)}
         style={styles.button}
       >
-        <AppText variant="secondary" color={colors.white} style={styles.text}>
+        <AppText variant="secondary" color={colors.onAccent} style={styles.text}>
           {t('sos.label')}
         </AppText>
       </Pressable>
       <BottomSheet visible={open} onClose={() => setOpen(false)} closeLabel={t('common.close')}>
         <View style={styles.head}>
           <IconTile icon="alert-circle-outline" tone="danger" />
-          <AppText variant="h2" color={colors.navy} style={styles.title}>
+          <AppText variant="h2" color={colors.text} style={styles.title}>
             {t('sos.title')}
           </AppText>
         </View>
@@ -38,8 +43,8 @@ export function SosButton() {
           onPress={() => Linking.openURL('tel:1122')}
           style={[styles.big, styles.red]}
         >
-          <Ionicons name="call" size={24} color={colors.white} />
-          <AppText variant="h2" color={colors.white} style={styles.bigText}>
+          <Ionicons name="call" size={24} color={colors.onAccent} />
+          <AppText variant="h2" color={colors.onAccent} style={styles.bigText}>
             {t('sos.call')}
           </AppText>
         </Pressable>
@@ -49,8 +54,8 @@ export function SosButton() {
           onPress={() => Linking.openURL(HOSPITAL_SEARCH_URL)}
           style={[styles.big, styles.line]}
         >
-          <Ionicons name="location" size={24} color={colors.navy} />
-          <AppText variant="h2" color={colors.navy} style={styles.bigText}>
+          <Ionicons name="location" size={24} color={colors.text} />
+          <AppText variant="h2" color={colors.text} style={styles.bigText}>
             {t('sos.hospital')}
           </AppText>
         </Pressable>
@@ -59,7 +64,7 @@ export function SosButton() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   button: {
     height: 48,
     minWidth: 48,
@@ -83,5 +88,5 @@ const styles = StyleSheet.create({
   },
   bigText: { fontSize: 20 },
   red: { backgroundColor: colors.danger },
-  line: { backgroundColor: colors.white, borderWidth: 2, borderColor: colors.navy },
+  line: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.chrome },
 });

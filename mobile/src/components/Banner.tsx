@@ -1,19 +1,24 @@
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useT } from '../store/settings';
-import { colors, spacing } from '../theme';
+import { spacing } from '../theme';
 import { AppText } from './AppText';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export type BannerKind = 'demo' | 'offline';
 
 /** Demo: slim grey strip with a small amber dot (design .demo). Offline: amber banner (design .ban). */
 export function Banner({ kind }: { kind: BannerKind }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   if (kind === 'demo') {
     return (
       <View accessibilityRole="alert" style={styles.demo}>
         <View style={styles.dot} />
-        <AppText variant="secondary" color={colors.navy} style={styles.demoText}>
+        <AppText variant="secondary" color={colors.caution} style={styles.demoText}>
           {t('demoBanner')}
         </AppText>
       </View>
@@ -29,14 +34,14 @@ export function Banner({ kind }: { kind: BannerKind }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   demo: {
     minHeight: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: colors.neutralTint,
+    backgroundColor: colors.cautionTint,
     paddingHorizontal: spacing.lg,
   },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.cautionBase },

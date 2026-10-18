@@ -17,15 +17,19 @@ import { useScreenFocused } from '../../components/body3d/useScreenFocused';
 import { Screen } from '../../components/Screen';
 import { MOVEMENTS, VALUES_LABEL, localized } from '../../movement/movements';
 import type { BodyLayer } from '../../regions/types';
-import { colors, radius, spacing } from '../../theme';
+import { radius, spacing } from '../../theme';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 const ENABLED = process.env.EXPO_PUBLIC_DEV_ANIM === '1';
 const SPEEDS = [0.25, 0.5, 1];
 
 function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: on }} onPress={onPress} style={[styles.chip, on && styles.chipOn]}>
-      <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.bold}>
+      <AppText variant="secondary" color={on ? colors.onAccent : colors.text} style={styles.bold}>
         {label}
       </AppText>
     </Pressable>
@@ -34,6 +38,8 @@ function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () 
 
 /** Drag or tap along the bar to jump to a time in the loop. */
 function Scrubber({ value, onScrub }: { value: number; onScrub: (t: number) => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const width = useRef(1);
   const responder = useMemo(
     () =>
@@ -57,6 +63,8 @@ function Scrubber({ value, onScrub }: { value: number; onScrub: (t: number) => v
 }
 
 export default function DevAnim() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const params = useLocalSearchParams<{ m?: string; layer?: string; view?: string; t?: string; paused?: string; speed?: string }>();
   const focused = useScreenFocused();
   const pack = usePack(ENABLED && focused);
@@ -155,13 +163,13 @@ export default function DevAnim() {
       </View>
 
       <View style={styles.readout}>
-        <AppText variant="secondary" color={colors.navy} style={styles.mono}>
+        <AppText variant="secondary" color={colors.text} style={styles.mono}>
           {`t ${f(info ? info.t * 100 : undefined)}%  loop ${movement.loopSeconds}s  fps ${info?.fps ?? '-'}  gap ${f(info?.gapMm)} mm`}
         </AppText>
-        <AppText variant="secondary" color={colors.navy} style={styles.mono}>
+        <AppText variant="secondary" color={colors.text} style={styles.mono}>
           {`elevation ${f(p?.elevation)}  plane ${f(p?.plane)}  rotation ${f(p?.rotation)}`}
         </AppText>
-        <AppText variant="secondary" color={colors.navy} style={styles.mono}>
+        <AppText variant="secondary" color={colors.text} style={styles.mono}>
           {`elbow ${f(p?.elbow)}  scapula ${f(p?.scapula)}  (degrees)`}
         </AppText>
       </View>
@@ -184,11 +192,11 @@ export default function DevAnim() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   banner: { backgroundColor: colors.cautionTint, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start' },
   chips: { flexGrow: 0 },
-  chip: { minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.line, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chip: { minHeight: 44, paddingHorizontal: 12, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.line, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  chipOn: { backgroundColor: colors.chrome, borderColor: colors.chrome },
   bold: { fontWeight: '700' },
   stage: { flex: 1, minHeight: 260, borderRadius: 20, overflow: 'hidden', backgroundColor: '#EEF6F7' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
@@ -197,6 +205,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
   scrub: { height: 40, justifyContent: 'center' },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.track, overflow: 'hidden' },
-  fill: { height: 8, backgroundColor: colors.teal },
-  knob: { position: 'absolute', width: 24, height: 24, borderRadius: 12, marginStart: -12, top: 8, backgroundColor: colors.white, borderWidth: 3, borderColor: colors.teal },
+  fill: { height: 8, backgroundColor: colors.accentFill },
+  knob: { position: 'absolute', width: 24, height: 24, borderRadius: 12, marginStart: -12, top: 8, backgroundColor: colors.surface, borderWidth: 3, borderColor: colors.accentFill },
 });

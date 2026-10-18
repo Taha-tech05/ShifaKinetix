@@ -5,10 +5,13 @@ import { approximatePoint } from '../regions/subregion';
 import { SHOULDER_REGIONS, regionLabel, selectionKey } from '../regions/shoulder';
 import type { BodyLayer, BodySelection, Side, SubRegionId } from '../regions/types';
 import { useT } from '../store/settings';
-import { colors, MIN_TAP, radius, shadows, spacing } from '../theme';
+import { MIN_TAP, radius, shadows, spacing } from '../theme';
 import { AppText } from './AppText';
 import { BodyFigure } from './BodyFigure';
 import { Button } from './Button';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export interface BodyPickerProps {
   highlightedIds?: string[];
@@ -30,6 +33,8 @@ export function fallbackSelection(side: Side, subRegionId: SubRegionId, layer: B
 }
 
 function RegionList({ highlightedIds, layer, onSelect }: Required<Pick<BodyPickerProps, 'highlightedIds' | 'layer' | 'onSelect'>>) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <ScrollView contentContainerStyle={styles.list}>
       {SHOULDER_REGIONS.map((r) => {
@@ -44,7 +49,7 @@ function RegionList({ highlightedIds, layer, onSelect }: Required<Pick<BodyPicke
             onPress={() => onSelect(fallbackSelection(r.side, r.subRegionId, layer))}
             style={[styles.row, highlighted && styles.highlighted]}
           >
-            <AppText variant="bodyStrong" color={colors.navy} style={styles.label}>
+            <AppText variant="bodyStrong" color={colors.text} style={styles.label}>
               {label}
             </AppText>
             <Ionicons name="chevron-forward" size={20} color={colors.muted} />
@@ -60,6 +65,8 @@ function RegionList({ highlightedIds, layer, onSelect }: Required<Pick<BodyPicke
  * Used when the 3D body is not available. Returns the same selection shape as the 3D body, without a hit structure.
  */
 export function BodyPicker({ highlightedIds = [], layer = 'muscle', onSelect }: BodyPickerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [view, setView] = useState<View3>('front');
   const [asList, setAsList] = useState(false);
@@ -101,7 +108,7 @@ export function BodyPicker({ highlightedIds = [], layer = 'muscle', onSelect }: 
               onPress={() => setView(v)}
               style={styles.pillBtn}
             >
-              <AppText variant="secondary" color={colors.navy} style={view === v ? styles.bold : undefined}>
+              <AppText variant="secondary" color={colors.text} style={view === v ? styles.bold : undefined}>
                 {i === 1 ? '| ' : ''}
                 {t(v === 'front' ? 'body.front' : 'body.back')}
               </AppText>
@@ -114,7 +121,7 @@ export function BodyPicker({ highlightedIds = [], layer = 'muscle', onSelect }: 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   fill: { flex: 1, gap: spacing.xs },
   list: { gap: spacing.sm, paddingBottom: spacing.md },
   row: {
@@ -123,19 +130,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     borderRadius: radius.card,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: colors.surface,
     ...shadows.card,
   },
-  highlighted: { borderColor: colors.teal, backgroundColor: colors.tealTint },
+  highlighted: { borderColor: colors.accentFill, backgroundColor: colors.accentTint },
   label: { flex: 1 },
   pill: {
     position: 'absolute',
     top: 12,
     start: 12,
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 24,
     paddingHorizontal: 4,
     ...shadows.card,

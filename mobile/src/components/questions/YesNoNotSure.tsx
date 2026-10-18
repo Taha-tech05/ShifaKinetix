@@ -3,16 +3,18 @@ import { View } from 'react-native';
 import { AnswerButton } from '../AnswerButton';
 import type { AnswerKind } from '../AnswerButton';
 import { AppText } from '../AppText';
-import { colors, spacing } from '../../theme';
+import { spacing } from '../../theme';
 import type { TemplateProps } from '../../questions/types';
+import { useTheme } from '../../ui/ThemeProvider';
 
 const KINDS: AnswerKind[] = ['yes', 'no', 'notSure'];
 
 export function YesNoNotSure({ question, onAnswer }: TemplateProps) {
+  const { colors } = useTheme();
   const [picked, setPicked] = useState<AnswerKind | null>(null);
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {question.text}
       </AppText>
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>

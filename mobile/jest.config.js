@@ -4,6 +4,8 @@ const SEP = '[\\\\/]'; // regex class that matches / and \ (Windows paths use \)
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  // the screens that end the safety flow upload on their own; the older screen tests must not call a server
+  setupFiles: ['<rootDir>/__tests__/support/autoUploadOff.ts'],
   testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
   // component tests use a tiny react-native stand-in instead of the native runtime
   moduleNameMapper: {
@@ -13,6 +15,8 @@ module.exports = {
     '^react-native-safe-area-context$': '<rootDir>/__tests__/support/safe-area.tsx',
     '^@expo/vector-icons$': '<rootDir>/__tests__/support/vector-icons.tsx',
     '^expo-linear-gradient$': '<rootDir>/__tests__/support/linear-gradient.tsx',
+    '^expo-blur$': '<rootDir>/__tests__/support/expo-blur.tsx',
+    '^react-native-reanimated$': '<rootDir>/__tests__/support/reanimated.tsx',
     '^expo-router$': '<rootDir>/__tests__/support/expo-router.tsx',
   },
   // node_modules stay untouched, except three

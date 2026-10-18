@@ -4,9 +4,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
-import { Screen } from '../components/Screen';
-import { StepProgress } from '../components/StepProgress';
-import { colors } from '../theme';
+import { useT } from '../store/settings';
+import { BotBubble, ChipRow } from '../ui/chat';
+import { Chip } from '../ui/Chip';
+import { SceneSheetContent, useSceneStep } from '../ui/SceneSheetContent';
+import { useTheme } from '../ui/ThemeProvider';
 import { useSession } from '../store/session';
 import { structuredGateInputs } from '../flow/gateInputs';
 import { isRequiredQuestion, isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
@@ -17,6 +19,8 @@ import { withMovementUncertainty } from './sessionEvaluator';
 import { AssessmentSync } from './AssessmentSync';
 
 export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) {
+  const { colors } = useTheme();
+  const t = useT();
   const { review } = useLocalSearchParams<{ review?: string }>();
   const reviewed = useRef<string | undefined>(undefined);
   const [followingUp, setFollowingUp] = useState(false);
@@ -84,15 +88,27 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
   }
   const numeric = input.trim() && /^\d+(\.\d+)?$/.test(input.trim()) ? Number(input) : NaN;
   const validNumber = question && isValidAnswer({ questionId: question.questionId, type: question.type, value: numeric, state: 'answered' });
-  return <Screen>
+  useSceneStep({ stepKey: `safety-${clarify ? 'clarify-' : ''}${question?.questionId ?? (entry ? 'entry' : 'wait')}`, mode: 'questions',
+    progress: question ? { label: t('scene.phaseSafety', { n: questions.indexOf(question) + 1, total: questions.length }), value: (questions.indexOf(question) + 1) / questions.length }
+      : { label: t('scene.phaseSafety', { n: 1, total: questions.length }), value: 0.05 } });
+  // the stepper nudges the same text the field shows; it never saves by itself
+  const nudge = (delta: number) => {
+    if (!question) return;
+    const base = Number.isFinite(numeric) ? numeric : (question.min ?? 0);
+    const next = Math.min(question.max ?? Number.MAX_SAFE_INTEGER, Math.max(question.min ?? 0, base + delta));
+    setInput(String(next));
+  };
+  const off = busy || !!error;
+  return <SceneSheetContent contentKey={`safety-${clarify ? 'clarify-' : ''}${question?.questionId ?? (entry ? 'entry' : 'wait')}`}
+    ownIds={question ? [question.questionId] : []} onBack={() => router.back()}>
     <AssessmentSync />
     <AppText variant="secondary" color={colors.caution}>draft, awaiting clinician review</AppText>
-    {error ? <View><AppText accessibilityRole="alert" color={colors.danger}>{error}</AppText>
+    {error ? <View><AppText accessibilityRole="alert" color={colors.caution}>{'⚠ '}{error}</AppText>
       <Button label="Retry" disabled={busy} onPress={() => { void perform(load); }} /></View> : null}
     {entry && <>
-      <AppText variant="h1">Shoulder safety check</AppText>
-      <AppText>Start a new assessment for new symptoms. Resume only to continue the same saved assessment.</AppText>
-      <AppText>We will clarify your earlier symptom answers. Confirmed warning symptoms pause movement checks; other answers can continue to the assessment.</AppText>
+      <BotBubble><AppText variant="h3">Shoulder safety check</AppText>
+        <AppText>Start a new assessment for new symptoms. Resume only to continue the same saved assessment.</AppText>
+        <AppText>We will clarify your earlier symptom answers. Confirmed warning symptoms pause movement checks; other answers can continue to the assessment.</AppText></BotBubble>
       <Button label="Start new safety check" disabled={busy || !useSession.getState().selection}
         onPress={() => { void perform(async () => { await (await openSafetySession()).start(randomUUID()); await load(); }); }} />
       <Button label="Resume saved assessment" variant="outline" disabled={busy}
@@ -100,27 +116,33 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       {!useSession.getState().selection && <Button label="Choose shoulder location" onPress={() => router.replace('/report/intro')} />}
     </>}
     {question && !entry && <>
-      <StepProgress step={questions.indexOf(question) + 1} total={questions.length} label={clarify ? 'Please clarify once' : 'Safety questions'} />
-      <AppText variant="h1">{question.wording}</AppText>
-      {followingUp && <AppText>An earlier answer needs a more specific safety check. Your answer here will clarify or correct it; the earlier response stays in this assessment.</AppText>}
-      {questionHelp[question.questionId] && <AppText>{questionHelp[question.questionId]}</AppText>}
-      <AppText>Yes means this symptom applies. No means it does not. Not sure lets us clarify; there is no preferred answer.</AppText>
-      {clarify && <AppText>{question.clarification}</AppText>}
-      {question.type === 'yesno' && <>
-        <Button label="Yes" disabled={busy || !!error} onPress={() => { void save(true); }} />
-        <Button label="No" variant="outline" disabled={busy || !!error} onPress={() => { void save(false); }} />
-      </>}
-      {question.type === 'choice' && question.options?.map((o) => <Button key={o.value} label={o.label}
-        disabled={busy || !!error} onPress={() => { void save(o.value); }} />)}
+      <BotBubble>
+        <AppText variant="bodyStrong">{question.wording}</AppText>
+        {followingUp && <AppText variant="secondary" color={colors.muted}>An earlier answer needs a more specific safety check. Your answer here will clarify or correct it; the earlier response stays in this assessment.</AppText>}
+        {questionHelp[question.questionId] && <AppText variant="secondary" color={colors.muted}>{questionHelp[question.questionId]}</AppText>}
+        <AppText variant="secondary" color={colors.muted}>Yes means this symptom applies. No means it does not. Not sure lets us clarify; there is no preferred answer.</AppText>
+        {clarify && <AppText variant="secondary" color={colors.muted}>{question.clarification}</AppText>}
+      </BotBubble>
+      {question.type === 'yesno' && <ChipRow>
+        <Chip large label="Yes" disabled={off} onPress={() => { void save(true); }} />
+        <Chip large label="No" disabled={off} onPress={() => { void save(false); }} />
+      </ChipRow>}
+      {question.type === 'choice' && <ChipRow>{question.options?.map((o) => <Chip large key={o.value} label={o.label}
+        disabled={off} onPress={() => { void save(o.value); }} />)}</ChipRow>}
       {(question.type === 'number' || question.type === 'duration') && <>
         <AppText>{question.unit} ({question.min}–{question.max})</AppText>
-        <TextInput accessibilityLabel={question.wording} keyboardType="decimal-pad" value={input} onChangeText={setInput}
-          editable={!busy} style={{ borderWidth: 1, borderColor: colors.muted, borderRadius: 12, padding: 16, fontSize: 20 }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Chip label="−" disabled={off} onPress={() => nudge(-1)} style={{ minWidth: 52, paddingHorizontal: 0 }} />
+          <TextInput accessibilityLabel={question.wording} keyboardType="decimal-pad" value={input} onChangeText={setInput}
+            editable={!busy} placeholderTextColor={colors.muted}
+            style={{ flex: 1, borderWidth: 1.5, borderColor: colors.lineStrong, borderRadius: 20, padding: 14, fontSize: 20, color: colors.text, backgroundColor: colors.surface }} />
+          <Chip label="+" disabled={off} onPress={() => nudge(1)} style={{ minWidth: 52, paddingHorizontal: 0 }} />
+        </View>
         <Button label="Save answer" disabled={busy || !!error || !validNumber} onPress={() => { void save(numeric); }} />
       </>}
-      <Button label="Not sure" variant="outline" disabled={busy || !!error} onPress={() => { void save(null); }} />
-      <AppText variant="secondary">Source: {question.source}</AppText>
+      <ChipRow><Chip large label="Not sure" disabled={off} onPress={() => { void save(null); }} /></ChipRow>
+      <AppText variant="secondary" color={colors.muted}>Source: {question.source}</AppText>
     </>}
-    {busy && <AppText>Checking saved answers…</AppText>}
-  </Screen>;
+    {busy && <AppText color={colors.muted}>Checking saved answers…</AppText>}
+  </SceneSheetContent>;
 }

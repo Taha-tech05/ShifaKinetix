@@ -6,9 +6,14 @@ import { Button } from '../Button';
 import { answered } from '../../questions/answer';
 import type { TemplateProps } from '../../questions/types';
 import { useT } from '../../store/settings';
-import { colors, MIN_TAP, radius, spacing } from '../../theme';
+import { MIN_TAP, radius, spacing } from '../../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../../ui/ThemeProvider';
+import type { Palette } from '../../ui/theme';
 
 export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const t = useT();
   const [picked, setPicked] = useState<string[]>([]);
   const [notSure, setNotSure] = useState(false);
@@ -20,7 +25,7 @@ export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
 
   return (
     <View style={{ gap: spacing.md }}>
-      <AppText variant="h1" color={colors.navy}>
+      <AppText variant="h1" color={colors.text}>
         {question.text}
       </AppText>
       <AppText variant="secondary" color={colors.muted}>
@@ -37,7 +42,7 @@ export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
             onPress={() => toggle(o.id)}
             style={[styles.option, selected && styles.selected]}
           >
-            <AppText variant="button" color={selected ? colors.white : colors.navy}>
+            <AppText variant="button" color={selected ? colors.onAccent : colors.text}>
               {o.label}
             </AppText>
           </Pressable>
@@ -63,7 +68,7 @@ export function ChooseSeveral({ question, onAnswer }: TemplateProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   option: {
     minHeight: 56,
     minWidth: MIN_TAP,
@@ -71,8 +76,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 2,
     borderColor: colors.lineStrong,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
   },
-  selected: { backgroundColor: colors.teal, borderColor: colors.teal },
+  selected: { backgroundColor: colors.accentFill, borderColor: colors.accentFill },
 });

@@ -1,15 +1,17 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
-import { Screen } from '../../components/Screen';
-import { StepProgress } from '../../components/StepProgress';
 import type { TKey } from '../../i18n';
 import { answered, unknown } from '../../questions/answer';
 import type { Question, QuestionType } from '../../questions/types';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, radius, shadows } from '../../theme';
+import type { Answer } from '../../gate/evaluate';
+import { BotBubble, ChipRow } from '../../ui/chat';
+import { Chip } from '../../ui/Chip';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
+import { useTheme } from '../../ui/ThemeProvider';
 
 // Symptom basics (design P27). Content is draft, awaiting clinician review. "Not sure" is stored as unknown.
 const q = (id: string, type: QuestionType, text: string): Question => ({ questionId: id, type, text, source: 'PLACEHOLDER, Person C replaces', label: 'draft, awaiting clinician review' });
@@ -34,6 +36,18 @@ const ALWAYS: { id: string; label: TKey }[] = [
   { id: 'comes_goes', label: 'basics.comesGoes' },
 ];
 
+const TITLES: Record<string, TKey> = { Q_BASICS_WHEN: 'basics.when', Q_BASICS_HOW: 'basics.how', Q_BASICS_PAIN_NOW: 'basics.now', Q_BASICS_ALWAYS: 'basics.always' };
+const OPTION_LISTS: Record<string, { id: string; label: TKey }[]> = { Q_BASICS_WHEN: WHEN, Q_BASICS_HOW: HOW, Q_BASICS_ALWAYS: ALWAYS };
+
+/** How a saved basics answer reads in the chat history above (read-only). Null when the answer is not a basics answer. */
+export function describeBasics(a: Answer, t: (key: TKey) => string): { question: string; answer: string } | null {
+  const title = TITLES[a.questionId];
+  if (!title) return null;
+  if (a.state === 'unknown') return { question: t(title), answer: t('answer.notSure') };
+  const opt = OPTION_LISTS[a.questionId]?.find((o) => o.id === a.value);
+  return { question: t(title), answer: opt ? t(opt.label) : String(a.value) };
+}
+
 function ChoiceRow({ question, title, options }: { question: Question; title: string; options: { id: string; label: string }[] }) {
   const t = useT();
   const answers = useSession((s) => s.answers);
@@ -41,31 +55,16 @@ function ChoiceRow({ question, title, options }: { question: Question; title: st
   const current = answers.find((a) => a.questionId === question.questionId);
   const all = [...options, { id: '__unsure', label: t('answer.notSure') }];
   return (
-    <View style={styles.group}>
-      <AppText variant="bodyStrong" color={colors.navy}>
-        {title}
-      </AppText>
-      <View style={styles.row}>
+    <>
+      <BotBubble>{title}</BotBubble>
+      <ChipRow>
         {all.map((o) => {
           const unsure = o.id === '__unsure';
           const on = unsure ? current?.state === 'unknown' : current?.state === 'answered' && current.value === o.id;
-          return (
-            <Pressable
-              key={o.id}
-              accessibilityRole="button"
-              accessibilityLabel={o.label}
-              accessibilityState={{ selected: on }}
-              onPress={() => recordAnswer(unsure ? unknown(question) : answered(question, o.id))}
-              style={[styles.chip, on && styles.chipOn]}
-            >
-              <AppText variant="secondary" color={on ? colors.white : colors.navy} style={styles.chipText} numberOfLines={2}>
-                {o.label}
-              </AppText>
-            </Pressable>
-          );
+          return <Chip key={o.id} large label={o.label} selected={on} onPress={() => recordAnswer(unsure ? unknown(question) : answered(question, o.id))} />;
         })}
-      </View>
-    </View>
+      </ChipRow>
+    </>
   );
 }
 
@@ -76,89 +75,42 @@ function PainNow({ title }: { title: string }) {
   const current = answers.find((a) => a.questionId === Q_NOW.questionId);
   const steps = Array.from({ length: 11 }, (_, i) => i);
   return (
-    <View style={styles.group}>
-      <AppText variant="bodyStrong" color={colors.navy}>
-        {title}
-      </AppText>
-      <View style={styles.row}>
-        {steps.map((n) => {
-          const on = current?.state === 'answered' && current.value === n;
-          return (
-            <Pressable
-              key={n}
-              accessibilityRole="button"
-              accessibilityLabel={String(n)}
-              accessibilityState={{ selected: on }}
-              onPress={() => recordAnswer(answered(Q_NOW, n))}
-              style={[styles.num, on && styles.chipOn]}
-            >
-              <AppText variant="bodyStrong" color={on ? colors.white : colors.navy}>
-                {n}
-              </AppText>
-            </Pressable>
-          );
-        })}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('answer.notSure')}
-          accessibilityState={{ selected: current?.state === 'unknown' }}
-          onPress={() => recordAnswer(unknown(Q_NOW))}
-          style={[styles.chip, current?.state === 'unknown' && styles.chipOn]}
-        >
-          <AppText variant="secondary" color={current?.state === 'unknown' ? colors.white : colors.navy} style={styles.chipText}>
-            {t('answer.notSure')}
-          </AppText>
-        </Pressable>
-      </View>
-    </View>
+    <>
+      <BotBubble>{title}</BotBubble>
+      <ChipRow>
+        {steps.map((n) => (
+          <Chip key={n} large label={String(n)} selected={current?.state === 'answered' && current.value === n} onPress={() => recordAnswer(answered(Q_NOW, n))} style={{ minWidth: 56, paddingHorizontal: 0 }} />
+        ))}
+        <Chip large label={t('answer.notSure')} selected={current?.state === 'unknown'} onPress={() => recordAnswer(unknown(Q_NOW))} />
+      </ChipRow>
+    </>
   );
 }
 
-/** P27: four short questions about the pain. Next is enabled when every one has an answer, "not sure" included. */
+/** P27: four short questions about the pain, one chat bubble each. They appear one after another; every one can be changed. Next is enabled when every one has an answer, "not sure" included. */
 export default function Basics() {
+  const { colors } = useTheme();
   const t = useT();
   const answers = useSession((s) => s.answers);
   const done = IDS.every((id) => answers.some((a) => a.questionId === id));
+  const firstOpen = IDS.findIndex((id) => !answers.some((a) => a.questionId === id));
+  const shown = firstOpen === -1 ? IDS.length : firstOpen + 1;
   const tr = (list: { id: string; label: TKey }[]) => list.map((o) => ({ id: o.id, label: t(o.label) }));
+  useSceneStep({ stepKey: 'basics', mode: 'questions', progress: { label: t('scene.phaseBasics', { n: shown, total: IDS.length }), value: shown / IDS.length } });
   return (
-    <Screen onBack={() => router.back()} footer={<Button label={t('common.next')} disabled={!done} onPress={() => router.push('/report/danger')} />}>
-      <StepProgress step={2} total={5} />
-      <AppText variant="h1" color={colors.navy}>
-        {t('basics.title')}
+    <SceneSheetContent contentKey={`basics-${shown}`} ownIds={IDS} onBack={() => router.back()}>
+      <AppText variant="secondary" color={colors.caution}>
+        {t('followUp.placeholderTag')}
       </AppText>
-      <View style={styles.tag}>
-        <AppText variant="secondary" color={colors.caution} style={styles.tagText}>
-          {t('followUp.placeholderTag')}
-        </AppText>
-      </View>
       <ChoiceRow question={Q_WHEN} title={t('basics.when')} options={tr(WHEN)} />
-      <ChoiceRow question={Q_HOW} title={t('basics.how')} options={tr(HOW)} />
-      <PainNow title={t('basics.now')} />
-      <ChoiceRow question={Q_ALWAYS} title={t('basics.always')} options={tr(ALWAYS)} />
-    </Screen>
+      {shown >= 2 ? <ChoiceRow question={Q_HOW} title={t('basics.how')} options={tr(HOW)} /> : null}
+      {shown >= 3 ? <PainNow title={t('basics.now')} /> : null}
+      {shown >= 4 ? <ChoiceRow question={Q_ALWAYS} title={t('basics.always')} options={tr(ALWAYS)} /> : null}
+      {done ? (
+        <View>
+          <Button label={t('common.next')} onPress={() => router.push('/report/danger')} />
+        </View>
+      ) : null}
+    </SceneSheetContent>
   );
 }
-
-const styles = StyleSheet.create({
-  group: { gap: 8 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: {
-    minHeight: 56,
-    minWidth: 80,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: colors.line,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadows.card,
-    shadowOpacity: 0.05,
-    elevation: 1,
-  },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
-  chipText: { fontWeight: '700', textAlign: 'center' },
-  num: { width: 48, height: 48, borderRadius: radius.pill, borderWidth: 2, borderColor: colors.line, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  tag: { alignSelf: 'flex-start', backgroundColor: colors.cautionTint, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
-  tagText: { fontWeight: '700' },
-});

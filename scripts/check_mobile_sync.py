@@ -30,8 +30,11 @@ def main():
         sys.path.insert(0, str(server_root))
         import uvicorn
         from app.api import create_app
+        from app.seed_cases import seed_cases
 
-        uvicorn.run(create_app(dev_login=True), host="127.0.0.1", port=args.serve, log_level="warning")
+        app = create_app(dev_login=True)
+        seed_cases(app.state.engine)  # the three fake demo cases the doctor's "Latest cases" screen lists
+        uvicorn.run(app, host="127.0.0.1", port=args.serve, log_level="warning")
         return 0
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))

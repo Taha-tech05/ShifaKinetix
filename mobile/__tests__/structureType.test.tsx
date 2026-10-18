@@ -30,6 +30,7 @@ import { buildMovementResult } from '../src/movement/result';
 import { REGION_MAP } from '../src/regions/regionMap';
 import type { BodySelection } from '../src/regions/types';
 import { useSession } from '../src/store/session';
+import { useScene } from '../src/ui/scene';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -333,7 +334,7 @@ describe('screens', () => {
     expect(all).not.toContain('may not be a muscle problem');
     expect(all).not.toContain('Talk to a doctor or physio');
     expect(all).not.toContain('See result');
-    expect(all).toContain('Possible so far');
+    expect(useScene.getState().stage?.highlightIds.length).toBeGreaterThan(0); // the muscles are on the body, not in the chat
     for (let i = 0; i < STRUCTURE.maxQuestions - 2; i++) await press(tree, 'Not sure');
     all = textOf(tree.root);
     expect(useSession.getState().liveState?.categoryResult).toBe('BONE');

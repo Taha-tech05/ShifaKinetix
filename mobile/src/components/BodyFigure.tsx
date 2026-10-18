@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 export interface Hotspot {
   id: string;
@@ -21,10 +22,10 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const SOFT = ['#F4F8FB', '#DCE6EE'] as const;
-
 function Part({ style }: { style: object }) {
-  return <LinearGradient colors={[...SOFT]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.part, style]} />;
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  return <View style={[styles.part, { backgroundColor: colors.surface }, style]} />;
 }
 
 /**
@@ -32,13 +33,10 @@ function Part({ style }: { style: object }) {
  * Stand-in until the 3D body is wired in; the figure has tappable hotspots for the shoulders.
  */
 export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onHotspot, marker = null, children }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
-    <LinearGradient
-      colors={[...gradients.studio]}
-      start={{ x: 0.5, y: 0.1 }}
-      end={{ x: 0.5, y: 1 }}
-      style={[styles.studio, height === 'fill' ? styles.fill : { height }]}
-    >
+    <View style={[styles.studio, { backgroundColor: colors.cardFill, borderColor: colors.glassBorder }, height === 'fill' ? styles.fill : { height }]}>
       <View style={styles.figure}>
         <Part style={{ left: '38%', top: '2%', width: '24%', height: '12%', borderRadius: 999 }} />
         <Part style={{ left: '30%', top: '15%', width: '40%', height: '34%', borderRadius: 28 }} />
@@ -67,12 +65,12 @@ export function BodyFigure({ height = 250, hotspots = [], selectedId = null, onH
         })}
       </View>
       {children}
-    </LinearGradient>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  studio: { borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+const makeStyles = (colors: Palette) => StyleSheet.create({
+  studio: { borderRadius: 24, borderWidth: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   fill: { flex: 1 },
   figure: { width: '70%', height: '88%' },
   part: { position: 'absolute' },
@@ -83,19 +81,19 @@ const styles = StyleSheet.create({
     marginStart: -7,
     marginTop: -7,
     borderRadius: 7,
-    backgroundColor: colors.danger,
+    backgroundColor: colors.pin,
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: colors.surface,
   },
   hit: { position: 'absolute', width: 48, height: 48, marginStart: -24, marginTop: -24, alignItems: 'center', justifyContent: 'center' },
   ring: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(192,57,43,0.18)',
+    backgroundColor: colors.accentTint,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ringOn: { backgroundColor: 'rgba(192,57,43,0.32)', transform: [{ scale: 1.2 }] },
-  dot2: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.danger, borderWidth: 2, borderColor: colors.white },
+  ringOn: { backgroundColor: colors.accentTint, transform: [{ scale: 1.2 }] },
+  dot2: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.pin, borderWidth: 2, borderColor: colors.surface },
 });

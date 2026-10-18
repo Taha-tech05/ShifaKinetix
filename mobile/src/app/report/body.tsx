@@ -1,85 +1,40 @@
 import { Redirect, router } from 'expo-router';
-import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/AppText';
-import { BodyViewer } from '../../components/BodyViewer';
 import { Button } from '../../components/Button';
-import { IconTile } from '../../components/IconTile';
-import { Screen } from '../../components/Screen';
-import { StatusChip } from '../../components/StatusChip';
-import { StepProgress } from '../../components/StepProgress';
-import { highlightNamesFor } from '../../regions/regionMap';
-import { regionLabel, selectionKey } from '../../regions/shoulder';
+import { regionLabel } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
 import { useT } from '../../store/settings';
-import { colors, radius, shadows } from '../../theme';
+import { BotBubble, ChipRow } from '../../ui/chat';
+import { Chip } from '../../ui/Chip';
+import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
+import { useTheme } from '../../ui/ThemeProvider';
 
 /**
- * P5 (design): body with tappable spots and a bottom sheet showing the selected spot and Next.
- * Exact mode highlights only the structure under the finger. Region mode highlights the whole area (every structure
- * of that side and sub-region in the active layer).
+ * P5 (design): the body fills the screen (it lives in report/_layout) and the sheet shows what was tapped and Next. Exact mode
+ * highlights only the structure under the finger. Region mode highlights the whole area. The tap callout names the region.
  */
 export default function Body() {
   const t = useT();
+  const { colors } = useTheme();
   const mode = useSession((s) => s.mode);
   const selection = useSession((s) => s.selection);
-  const setSelection = useSession((s) => s.setSelection);
   const label = selection ? regionLabel(selection.regionId, selection.subRegionId) : null;
-  const highlightNames = useMemo(() => (mode ? highlightNamesFor(selection, mode) : []), [mode, selection]);
+  useSceneStep({ stepKey: 'body', mode: 'questions', progress: { label: t('scene.phasePoint'), value: 0.1 } });
   if (!mode) return <Redirect href="/report/fork" />;
-
-  const sheet = (
-    <View style={styles.sheet}>
-      <View style={styles.handle} />
-      <View style={styles.selRow}>
-        <IconTile icon="locate-outline" tone="danger" />
-        <View style={styles.col}>
-          <AppText variant="secondary" color={colors.muted}>
-            {t('body.selectedSpot')}
-          </AppText>
-          <AppText variant="h2" color={colors.navy}>
-            {label ?? '—'}
-          </AppText>
-        </View>
-        {label ? <StatusChip status="unknown" label={t('body.selected')} /> : null}
-      </View>
-      <Button label={t('common.next')} disabled={!label} onPress={() => router.push('/report/confirm')} />
-      <AppText variant="secondary" color={colors.muted} style={styles.hint}>
+  return (
+    <SceneSheetContent contentKey={label ? 'body-picked' : 'body-empty'} onBack={() => router.back()}>
+      <BotBubble>{t('body.title')}</BotBubble>
+      <AppText variant="secondary" color={colors.muted}>
         {label ? t('body.tapToChange') : t('body.tapToChoose')}
       </AppText>
-    </View>
-  );
-
-  return (
-    <Screen scroll={false} onBack={() => router.back()} footer={sheet} bareFooter>
-      <StepProgress step={1} total={5} />
-      <AppText variant="h1" color={colors.navy}>
-        {t('body.title')}
-      </AppText>
-      <BodyViewer
-        highlightedIds={selection ? [selectionKey(selection.regionId, selection.subRegionId)] : []}
-        highlightNames={highlightNames}
-        // A selection made in one layer is cleared when the layer changes, so the sheet never shows a stale structure.
-        onLayerChange={() => setSelection(null)}
-        onSelect={setSelection}
-      />
-    </Screen>
+      {label ? (
+        <>
+          <ChipRow>
+            <Chip large selected label={label} />
+          </ChipRow>
+          <Button label={t('common.next')} onPress={() => router.push('/report/confirm')} />
+        </>
+      ) : null}
+    </SceneSheetContent>
   );
 }
-
-const styles = StyleSheet.create({
-  sheet: {
-    backgroundColor: colors.white,
-    borderTopStartRadius: radius.sheet,
-    borderTopEndRadius: radius.sheet,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
-    gap: 12,
-    ...shadows.raised,
-  },
-  handle: { alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: colors.lineStrong },
-  selRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  col: { flex: 1 },
-  hint: { textAlign: 'center' },
-});

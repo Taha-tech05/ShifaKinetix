@@ -449,7 +449,7 @@ describe('right-to-left and Roman Urdu: layout does not depend on fixed text box
       // only thin decorations may have a fixed height (a line, a dot)
       for (const h of hits) expect(h).toBeLessThanOrEqual(8);
     }
-    expect(src('app/report/movement.tsx')).toContain("flexWrap: 'wrap'");
+    expect(src('ui/chat.tsx')).toContain("flexWrap: 'wrap'");
     expect(src('components/narrowing/CandidateStrip.tsx')).toContain("flexWrap: 'wrap'");
   });
 

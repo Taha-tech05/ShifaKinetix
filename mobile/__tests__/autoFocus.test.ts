@@ -162,6 +162,8 @@ describe('auto-focus: when it triggers', () => {
     expect(stage).toContain("t('movement.resetView')");
     expect(stage).toContain('if (!autoFocus');
     const screen = src('app/report/movement.tsx');
-    expect(screen).toContain('autoFocus={');
+    // the route publishes autoFocus for the shared stage, and report/_layout's scene host passes it on
+    expect(screen).toContain('autoFocus: !onMovement');
+    expect(src('ui/SceneHost.tsx')).toContain('autoFocus={stage.autoFocus}');
   });
 });

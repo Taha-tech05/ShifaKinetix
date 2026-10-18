@@ -1,77 +1,61 @@
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
+import { useMemo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useT } from '../store/settings';
-import { colors, gradients } from '../theme';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
+import { FloatingControl } from '../ui/FloatingControl';
+import { LanguageMenu } from '../ui/LanguageMenu';
 import { AppText } from './AppText';
-import { LanguageToggle } from './LanguageToggle';
 import { SosButton } from './SosButton';
 
 interface Props {
   onBack?: () => void;
-  /** Transparent bar for use over the Home hero gradient; shows the logo instead of a back arrow. */
+  /** Kept for old call sites: the bar is transparent over the gradient on every screen now. */
   hero?: boolean;
-  /** A slimmer bar (52 instead of 56 dp). */
   compact?: boolean;
+  /** Title in the middle of the bar (as "Find Doctors" or "Medical Records" in the reference). */
+  title?: string;
+  /** Text of the role chip under the title. The patient screens use the default; the doctor screens say Doctor. */
+  roleLabel?: string;
 }
 
-/** Top bar: back arrow (or logo), role chip, EN/Urdu/Roman toggle, SOS. Every patient screen has it. */
-export function ScreenHeader({ onBack, hero = false, compact = false }: Props) {
+/** Top bar as in the light reference: round back button on the left, the title in the middle, language and SOS on the right. */
+export function ScreenHeader({ onBack, compact = false, title, roleLabel }: Props) {
   const t = useT();
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
-    <View style={[styles.bar, !hero && styles.solid, compact && styles.barCompact]}>
+    <View style={[styles.bar, compact && styles.barCompact]}>
       {onBack ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          onPress={onBack}
-          style={styles.back}
-        >
-          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={26} color={colors.white} />
-        </Pressable>
+        <FloatingControl icon={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} onPress={onBack} />
       ) : (
-        <LinearGradient colors={[...gradients.logo]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.logo}>
-          <Ionicons name="pulse" size={22} color={colors.white} />
-        </LinearGradient>
+        <View style={styles.logo}>
+          <Ionicons name="pulse" size={22} color={colors.onAccent} />
+        </View>
       )}
-      <View style={styles.chip}>
-        <View style={styles.dot} />
-        <AppText variant="secondary" color={colors.white} style={styles.chipText}>
-          {t('common.patient')}
+      <View style={styles.center}>
+        {title ? (
+          <AppText variant="bodyStrong" style={styles.title} numberOfLines={1} accessibilityRole="header">
+            {title}
+          </AppText>
+        ) : null}
+        <AppText variant="secondary" color={colors.muted} style={styles.role} numberOfLines={1}>
+          {roleLabel ?? t('common.patient')}
         </AppText>
       </View>
-      <View style={styles.spacer} />
-      <LanguageToggle />
+      <LanguageMenu />
       <SosButton />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  bar: { height: 56, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
-  solid: { backgroundColor: colors.navy },
-  barCompact: { height: 52, paddingHorizontal: 8 },
-  back: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  chip: {
-    height: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 8,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#7FD0D0' },
-  chipText: { fontWeight: '700' },
-  spacer: { flex: 1 },
-});
+const makeStyles = (colors: Palette) =>
+  StyleSheet.create({
+    bar: { height: 64, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, zIndex: 20, elevation: 20 },
+    barCompact: { height: 56, paddingHorizontal: 8 },
+    logo: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentFill, alignItems: 'center', justifyContent: 'center' },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    title: { fontWeight: '800', textAlign: 'center' },
+    role: { fontSize: 12, lineHeight: 16, textAlign: 'center' },
+  });

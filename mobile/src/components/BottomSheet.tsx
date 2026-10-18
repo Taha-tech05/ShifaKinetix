@@ -1,5 +1,8 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import { colors, radius, shadows, spacing } from '../theme';
+import { radius, shadows, spacing } from '../theme';
+import { useMemo } from 'react';
+import { useTheme } from '../ui/ThemeProvider';
+import type { Palette } from '../ui/theme';
 
 interface Props {
   visible: boolean;
@@ -10,6 +13,8 @@ interface Props {
 
 /** Modal sheet over a dark scrim (design .scrim + .sheet). */
 export function BottomSheet({ visible, onClose, closeLabel, children }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable
@@ -26,10 +31,12 @@ export function BottomSheet({ visible, onClose, closeLabel, children }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Palette) => StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: colors.scrim },
   sheet: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.page,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     borderTopStartRadius: radius.sheet,
     borderTopEndRadius: radius.sheet,
     paddingHorizontal: 20,
