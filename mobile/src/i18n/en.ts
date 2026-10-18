@@ -188,6 +188,15 @@ export const en = {
     title: 'We could not be sure. To be safe, we suggest talking to a doctor.',
     doctor: 'Talk to a doctor',
   },
+  triage: {
+    emergencyTitle: 'Call emergency help now',
+    because: 'Why: {{reasons}}',
+    soonChip: 'See a doctor soon',
+    soonTitle: 'Please see a doctor in the next few days',
+    soonBody: 'Nothing needs emergency care, but a doctor should check your shoulder soon. If it gets worse or you feel very unwell, get urgent help.',
+    soonNext: 'You can still answer a few short questions to help the doctor. We will skip the movement checks.',
+    uncertain: 'an answer you were not sure about',
+  },
   safe: {
     chip: 'Safe',
     title: 'No urgent warning signs found',
