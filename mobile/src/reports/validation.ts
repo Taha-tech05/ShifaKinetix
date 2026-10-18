@@ -3,12 +3,17 @@ import type { DoctorReport } from './doctorReport';
 
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const text = (v: unknown): v is string => typeof v === 'string';
+const LEVELS = ['EMERGENCY', 'URGENT', 'SOON', 'ROUTINE'];
+const points = (r: Record<string, unknown>) => typeof r.points === 'number' && Number.isFinite(r.points);
+/** A gate output (contract v2). SAFE may list weighted signs (with points) for its SOON level, never a stop or a missing answer. */
 export function validGate(v: unknown): v is GateOutput {
   return record(v) && ['SAFE', 'CLARIFY', 'RED_FLAG'].includes(v.verdict as string)
+    && (v.level === undefined || v.level === null || LEVELS.includes(v.level as string))
     && Array.isArray(v.firedRules) && v.firedRules.every((r: unknown) => record(r)
       && text(r.ruleId) && text(r.reason) && text(r.source)
-      && Array.isArray(r.matchedAnswers) && r.matchedAnswers.every(text))
-    && (v.verdict !== 'SAFE' || v.firedRules.length === 0);
+      && Array.isArray(r.matchedAnswers) && r.matchedAnswers.every(text)
+      && (r.points === undefined || points(r)) && (r.level === undefined || LEVELS.includes(r.level as string)))
+    && (v.verdict !== 'SAFE' || v.firedRules.every((r) => record(r) && points(r) && r.level === undefined));
 }
 export function validDoctorReport(v: unknown): v is DoctorReport {
   return record(v) && v.audience === 'doctor' && v.label === 'draft, awaiting clinician review'
