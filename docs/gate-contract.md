@@ -1,4 +1,103 @@
-# Shoulder gate contract v1.2
+# Shoulder gate contract v2
+
+Status: draft, awaiting clinician review. Demo only, not for real patients.
+
+v2 (content `shoulder-3`, 2026-10-18) answers the supervisor's review: safety questions were repeated in the
+middle of the flow, any single Yes was an emergency, and every patient got the same 20 questions. Sections
+below "History" describe v1.0 to v1.2 and are kept for the record. Their counts and rule ids are superseded.
+
+`shared/questions_shoulder.json` and `shared/gate_rules.json` are a versioned pair (schemaVersion 2). A clinical
+source supports the symptom being screened; it does not validate this software policy, the points or the
+thresholds. Both evaluators (`mobile/src/gate/evaluate.ts`, `server/app/gate.py`) implement this contract
+independently and must give the same complete output on every shared case.
+
+## Linked questions
+
+Each question has a `tier`:
+
+| Tier | Meaning | "Not sure" |
+| --- | --- | --- |
+| `hardStop` | Can stop the flow on its own (chest, breathing, unable, shape, numb, tingling, temperature, swelling, infection_risk) | Asks the fixed clarification; a second "Not sure" is CLARIFY and goes to the unclear screen |
+| `gateway` | One opening question per topic (sensation, inflammation, illness) | Opens the topic's detail questions; never blocks by itself |
+| `weighted` | Adds points (onset, redness, fever, systemic, cancer, pain_score, bilateral) | Counts half of the question's largest points; never blocks by itself |
+| `context` | duration, side | Never asked by the safety check; never changes the result |
+
+A question is **asked** when `required` is true, or when ANY clause of its `askWhen` matches an answered record
+(`equals`, `in`, or `atLeast` with an optional `below`). `orUnknown: true` also matches a "Not sure" to that
+question, so uncertainty opens details instead of skipping them. Bank order is the asking order; a linked
+question waits until a question that opens it has been answered.
+
+The eight always-asked questions are chest, breathing, onset, unable, sensation, inflammation, illness and
+pain_score. `prefillFrom` names an earlier app answer that already answers a question (onset from
+`Q_BASICS_HOW`, pain_score from `Q_BASICS_PAIN_NOW`). The questionnaire saves it from there as a normal
+canonical answer with its outbox event, and shows it as already answered. The patient can still change it.
+
+`deniedValue` is what an unasked detail question counts as when every answer that would open it was given and
+none opened it (a gateway No, or a gradual onset for "changed shape"). Only doctor-side ranking and the app's
+narrowing use it; the gate never needs it, because an unasked question fires nothing.
+
+## Rules and care levels
+
+Rules keep their `all` list of clauses, matched against any valid answered record (asked or not). Each rule has
+exactly one of:
+
+- `level`: a **hard stop**, `EMERGENCY` (chest, breathing) or `URGENT` (cannot move the arm, changed shape, no
+  feeling, pins and needles that do not go away, a cold arm, bad swelling, fever with a red joint, infection risk
+  with a red joint). Points never lower a hard stop.
+- `points`: a **weighted sign**. Single clause only. Draft values: injury start, sudden start, very bad pain
+  (8 to 10), hot to touch, fever, both shoulders, weight loss or night sweats, past cancer: 2 each. Strong pain
+  (6 or 7), redness, pins and needles that come and go, a little swelling: 1 each.
+
+`levels` in the rule file holds the thresholds: score at or above `SOON` (2) is SOON, at or above `URGENT` (4)
+is URGENT. With these values every single sign on the NHS shoulder-pain urgent list is at least SOON on its
+own, and any two of them are URGENT. The NHS page itself grades "see a GP" and "urgent GP or 111"; the
+weighting is our software policy and needs clinician sign-off. See [triage-scenarios.md](triage-scenarios.md).
+
+## Order of evaluation and output
+
+1. Malformed input, duplicate or unknown ids, wrong types or values: `RED_FLAG`, level `URGENT`, rule `INPUT_INVALID`.
+2. Rules in file order: hard stops record their level, weighted signs add points.
+3. Each uncertain weighted answer adds `W_<id>` at half points, in question order.
+4. Each asked question, in question order: missing gives `M_<id>`; "Not sure" on a hard-stop question gives
+   `U_<id>` (reason states whether the clarification was already attempted).
+5. Verdict and level: a hard stop or score >= URGENT gives `RED_FLAG` with the highest level; otherwise any
+   M_/U_ gives `CLARIFY` with level `null`; otherwise `SAFE` with level `SOON` or `ROUTINE`.
+
+Output: `{verdict, level, score, firedRules: [{ruleId, matchedAnswers, source, reason, level? | points?}]}`.
+A SAFE result may list weighted signs (each with points) and nothing else. Verdicts keep their v1 meaning for
+every consumer: only SAFE permits narrowing; RED_FLAG and CLARIFY never do.
+
+**SOON means: see a doctor in the next few days. Questions continue, the physical movement checks are skipped.**
+ROUTINE is the full flow. SAFE at either level is only "no draft stop applies"; it is not a diagnosis.
+
+## Follow-ups (session gate)
+
+The session gate (`sessionAdapter.ts`, `session_gate.py`) asks again only for a **contradiction** with an answer
+the patient gave, and adds `F_<id>`; a pending follow-up turns SAFE into CLARIFY and is listed beside danger:
+
+- a basics answer (`prefillFrom`) that now differs from the saved canonical answer;
+- unable = No, and after the whole set of six movements at least one answered movement could not be done.
+
+Weak, painful, skipped or unknown movements, and the narrowing questions, are never safety signals. A
+follow-up answered for the current evidence clears it (mobile: review token; server: answer received after the
+evidence). New evidence needs a new answer.
+
+## Safety properties (tested on both platforms)
+
+- A more worrying answer never lowers the care level (ROUTINE < SOON < CLARIFY < URGENT < EMERGENCY).
+- "Not sure" never gives a lower care level than the least worrying answer.
+- A hard stop always wins over the points total.
+- Every path the questionnaire can take to SAFE has answered or explicitly closed every hard-stop question.
+- 51 canonical and 22 app-signal fixtures give identical complete outputs in TypeScript and Python; a second
+  hand-written restatement of the contract matches 3000 random intakes.
+
+## Content version
+
+Older intakes (shoulder-2) fail closed (`INPUT_INVALID`) under shoulder-3 and need a new assessment. Their
+outbox records stay on the device, unsent and undeleted, as before. The rule change needs A and C review.
+
+## History (v1.0 to v1.2)
+
 
 Status: draft, awaiting clinician review. Demo only, not for real patients.
 

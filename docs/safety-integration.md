@@ -1,5 +1,26 @@
 # Safety integration into the team app
 
+> **Contract v2 update (2026-10-18, branch feature/A-safety-triage).** Supersedes the focused follow-up
+> table and the APP_REVIEW/alias sections below. The supervisor found three problems; each is fixed:
+>
+> 1. **Repeated safety questions.** The answer list is shared: onset is filled from "How did it start?" and
+>    pain_score from the basics pain score, then shown as already answered. Narrowing no longer asks its own
+>    tingling and numbness questions; it reads the safety answers (`narrowing/safetyFacts.ts`). Weak, painful
+>    or skipped movements are never safety signals. Only a real contradiction asks again, once, worded as a
+>    check: "During the movement checks you could not do one of the movements. Earlier you said you can move
+>    this arm. Which is closer?" It comes after the whole movement set, never in the middle.
+> 2. **Every Yes was an emergency.** Four care levels: Emergency (call 1122), Urgent (doctor today), Soon (doctor
+>    in a few days: questions continue, movements skipped via `movementsBlocked`), Routine. Hard stops plus draft
+>    weighted points; graded answers for pain, swelling and pins and needles. The safe and urgent screens show
+>    the plain reasons. See [gate-contract.md](gate-contract.md) and [triage-scenarios.md](triage-scenarios.md).
+> 3. **Questions not linked.** Two emergency questions, then one opening question per topic; details only when
+>    the answer is Yes or Not sure. Low-risk path: 8 questions (6 to 7 with the basics reused) instead of 20.
+>    A first "Not sure" on a hard-stop question shows its explanation on the same card instead of a re-ask screen.
+>
+> Verdicts keep their meaning for every consumer (only SAFE narrows). Gate output adds `level` and `score`;
+> a SAFE output may list weighted signs. Server: same contract in `gate.py`/`session_gate.py`; ranking counts a
+> denied topic as No; the condition table uses the new ids. Old shoulder-2 intakes need a new assessment.
+
 > Current update (2026-10-13): ordered mobile context/answer sync, authenticated
 > demo transport, doctor-report loading and live audit/history transport are now
 > implemented and tested locally against the PR9 server (4 real-HTTP scenarios).
