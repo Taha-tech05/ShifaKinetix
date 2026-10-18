@@ -36,7 +36,7 @@ export function Chip({ label, icon, selected = false, onPress, large = false, di
       accessibilityState={{ selected, disabled }}
       disabled={disabled || !onPress}
       onPress={onPress}
-      style={({ pressed }) => [styles.chip, { minHeight: large ? 52 : MIN_TOUCH, backgroundColor: bg, borderColor: border }, pressed && { opacity: 0.85 }, disabled && { opacity: 0.5 }, style]}
+      style={({ pressed }) => [styles.chip, { minHeight: large ? 52 : MIN_TOUCH, backgroundColor: bg, borderColor: border }, pressed && { opacity: 0.85, transform: [{ scale: 0.96 }] }, disabled && { opacity: 0.5 }, style]}
     >
       {icon ? <Ionicons name={icon} size={20} color={fg} /> : null}
       <Text style={[font.caption, styles.label, { color: fg }]} numberOfLines={3}>

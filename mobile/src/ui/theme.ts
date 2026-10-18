@@ -40,6 +40,8 @@ export interface Palette {
   menuFill: string;
   /** fill of a bot message bubble (neutral) */
   bubble: string;
+  /** fill of the pills of the bottom bar: solid grey (light) or deep blue (dark); opaque, so the coloured outline behind does not tint it */
+  navFill: string;
   /** fill of the floating controls that sit over the 3D body */
   controlFill: string;
   page: string;
@@ -95,6 +97,7 @@ export const lightPalette: Palette = {
   sheetFallback: 'rgba(250,247,244,0.95)',
   menuFill: '#FFFFFF',
   bubble: 'rgba(255,255,255,0.9)',
+  navFill: '#DCE3E3',
   controlFill: 'rgba(255,255,255,0.86)',
   page: '#E3E6E1',
   chrome: '#0A2A2E',
@@ -142,6 +145,7 @@ export const darkPalette: Palette = {
   sheetFallback: 'rgba(46,84,120,0.96)',
   menuFill: '#2E5478',
   bubble: 'rgba(66,104,139,0.92)',
+  navFill: '#2A5272',
   controlFill: 'rgba(31,68,104,0.9)',
   page: '#2A5578',
   chrome: '#C9F27A',

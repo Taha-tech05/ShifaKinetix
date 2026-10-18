@@ -65,5 +65,5 @@ const styles = StyleSheet.create({
   underline: { textDecorationLine: 'underline' },
   row: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   badge: { position: 'absolute', end: 8, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  pressed: { opacity: 0.88 },
+  pressed: { opacity: 0.88, transform: [{ scale: 0.97 }] },
 });

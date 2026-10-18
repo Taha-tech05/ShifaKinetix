@@ -6,7 +6,7 @@ import { BlurTargetView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
 import { AccessibilityInfo, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View as RNView } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { BodyViewer } from '../components/BodyViewer';
@@ -90,7 +90,13 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
   const lastDragAt = useRef(0);
   const [pill, setPill] = useState(false);
   const currentIndex = rows.findIndex((r) => r.key === 'current');
-  const toEnd = useCallback(() => list.current?.scrollToEnd({ animated: !reduceMotion }), [reduceMotion]);
+  // The native scrollToEnd stops short of the bottom padding, which leaves the options against the phone's gesture bar. Scroll to the real
+  // end (content height includes the padding) instead, and once more after the rows have settled.
+  const toEnd = useCallback(() => {
+    const go = (animated: boolean) => list.current?.scrollToOffset({ offset: Math.max(0, contentH.current - viewH.current), animated });
+    go(!reduceMotion);
+    setTimeout(() => go(false), 350);
+  }, [reduceMotion]);
   /** Bring the top of the current question into view (a tall question is read from its start). */
   const toCurrent = useCallback(() => {
     if (currentIndex < 0) return toEnd();
@@ -164,7 +170,10 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
           ) : item.key === 'typing' ? (
             <TypingDots label={t('scene.typing')} still={reduceMotion} />
           ) : (
-            <View
+            <Animated.View
+              // each new question eases in (fast), like a chat message arriving
+              key={shown?.contentKey}
+              entering={reduceMotion ? undefined : FadeInDown.duration(220)}
               pointerEvents={live ? 'auto' : 'none'}
               style={styles.current}
               onLayout={(e: LayoutChangeEvent) => {
@@ -173,7 +182,7 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
               }}
             >
               {shown?.node}
-            </View>
+            </Animated.View>
           )
         }
         ItemSeparatorComponent={Gap}
@@ -218,6 +227,16 @@ function ChatList({ afterConfirm, reduceMotion, bottomPad, onScrollUser, onCurre
       ) : null}
     </View>
   );
+}
+
+/** The progress line grows to its new length instead of jumping. */
+function ProgressFill({ value, color }: { value: number; color: string }) {
+  const w = useSharedValue(value);
+  useEffect(() => {
+    w.value = withTiming(value, { duration: 450 });
+  }, [value, w]);
+  const style = useAnimatedStyle(() => ({ width: `${w.value}%` }));
+  return <Animated.View style={[styles.lineFill, { backgroundColor: color }, style]} />;
 }
 
 const Gap = () => <View style={styles.gap} />;
@@ -481,7 +500,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
                   {scene.progress?.label ?? t('scene.phasePoint')}
                 </Text>
                 <View style={[styles.line, { backgroundColor: colors.track }]}>
-                  <View style={[styles.lineFill, { backgroundColor: colors.pin, width: `${progressValue}%` }]} />
+                  <ProgressFill value={progressValue} color={colors.pin} />
                 </View>
               </View>
               <View style={styles.sheetHeader}>
@@ -497,7 +516,7 @@ export function SceneHost({ leaf }: { leaf: string }) {
             </View>
           }
         >
-          <ChatList afterConfirm={!TAPPABLE.has(leaf) && leaf !== 'intro' && leaf !== 'fork'} reduceMotion={reduceMotion} bottomPad={Math.max(insets.bottom, 24) + 40} onScrollUser={mark} onCurrentHeight={setFitContent} />
+          <ChatList afterConfirm={!TAPPABLE.has(leaf) && leaf !== 'intro' && leaf !== 'fork'} reduceMotion={reduceMotion} bottomPad={Math.max(insets.bottom, 24) + 8} onScrollUser={mark} onCurrentHeight={setFitContent} />
         </GlassSheet>
       ) : null}
       <Legend visible={legend} onClose={() => setLegend(false)} />

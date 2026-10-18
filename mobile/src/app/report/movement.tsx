@@ -13,6 +13,7 @@ import type { Feel } from '../../movement/result';
 import { discriminatorQuestions } from '../../narrowing/bank';
 import { structureQuestions } from '../../narrowing/structureBank';
 import { answered, unknown } from '../../questions/answer';
+import { structureIdOfMesh, structuresIn } from '../../regions/regionMap';
 import { sideOfRegion } from '../../regions/shoulder';
 import { useSession } from '../../store/session';
 import type { HistoryEntry } from '../../store/session';
@@ -114,7 +115,15 @@ function LiveScreenBody() {
   if (step.kind === 'movement' && lastMovement !== current) setLastMovement(current);
   const question = step.kind !== 'movement' ? questions.find((q) => q.questionId === step.id) : undefined;
   // the possible muscles are highlighted from the first screen and follow every answer
-  const highlightIds = useMemo(() => liveState?.candidates.map((c) => c.muscleId) ?? [], [liveState]);
+  // When the patient pointed at a bone, the bone they pointed at stays highlighted (in the bone layer) until the questions end in a muscle result.
+  const tappedBones = useMemo(() => {
+    if (selection?.layer !== 'bone') return [];
+    const hit = selection.hitStructure && selection.hitStructure.kind === 'bone' ? structureIdOfMesh(selection.hitStructure.meshName) : null;
+    if (mode === 'exact') return hit ? [hit] : [];
+    return hit ? [hit] : structuresIn(selection.regionId, selection.subRegionId, 'bone').map((x) => x.id);
+  }, [selection, mode]);
+  const showBones = tappedBones.length > 0 && liveState?.outcome !== 'muscle';
+  const highlightIds = useMemo(() => (showBones ? tappedBones : liveState?.candidates.map((c) => c.muscleId) ?? []), [liveState, showBones, tappedBones]);
 
   const resetStep = (entry: HistoryEntry | null) => {
     setPrefill(entry);
@@ -224,7 +233,7 @@ function LiveScreenBody() {
   const stepKey = `${finished ? 'done' : step.kind}-${step.id}${reviewing ? '-review' : ''}`;
   // how likely each muscle is, shown on the body itself: a strong highlight and a High label, down to a dull one with a Low label.
   // Only once there are enough answers for the narrowing to say anything (the same rule the strip used for its bands).
-  const levels = useMemo(() => (liveState?.bandsVisible ? Object.fromEntries(liveState.candidates.map((c) => [c.muscleId, c.band])) : undefined), [liveState]);
+  const levels = useMemo(() => (!showBones && liveState?.bandsVisible ? Object.fromEntries(liveState.candidates.map((c) => [c.muscleId, c.band])) : undefined), [liveState, showBones]);
   useSceneStep({
     stepKey,
     mode: lieDown ? 'questions' : sceneMode,

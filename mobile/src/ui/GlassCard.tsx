@@ -41,7 +41,7 @@ export function GlassCard({ children, onPress, accessibilityLabel, blur = false,
   );
   if (!onPress) return <View style={[base, style]}>{inner}</View>;
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} style={({ pressed }) => [base, { minHeight: 48 }, pressed && { opacity: 0.85 }, style]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} style={({ pressed }) => [base, { minHeight: 48 }, pressed && { opacity: 0.88, transform: [{ scale: 0.985 }] }, style]}>
       {inner}
     </Pressable>
   );
