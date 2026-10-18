@@ -81,7 +81,7 @@ export function TypingDots({ label, still = false }: { label: string; still?: bo
 }
 
 /** True for a moment each time `key` changes, so the typing dots can show before the new message. Never delays when `skip` is set. */
-export function useTypingDelay(key: string, skip: boolean, ms = 650): boolean {
+export function useTypingDelay(key: string, skip: boolean, ms = 320): boolean {
   const [typing, setTyping] = useState(!skip);
   const [seen, setSeen] = useState(key);
   if (seen !== key) {
