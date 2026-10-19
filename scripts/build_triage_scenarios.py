@@ -55,6 +55,9 @@ SCENARIOS = [
     ("Struggling to breathe", {"breathing": True}),
     ("Not sure about chest tightness, twice", {"chest": "?!"}),
     ("Not sure how it started, no other signs", {"onset": None, "shape": False}),
+    ("Not sure whether the arm can move, even with the simpler question", {"unable": "?!"}),
+    ("Not sure about feeling and swelling, even with the simpler questions", {"sensation": True, "numb": "?!", "tingling": "none", "temperature": "normal",
+                                                                              "inflammation": True, "swelling": "?!", "redness": False, "fever": False}),
 ]
 
 
@@ -82,8 +85,9 @@ def questions_seen(given):
         if nxt is None or nxt["questionId"] not in by_id:
             return len(shown)
         shown.append(by_id[nxt["questionId"]])
-        persistent = nxt["tier"] == "hardStop" and shown[-1].get("clarificationAttempted") is True
-        if evaluate(shown)["verdict"] == "RED_FLAG" or persistent:  # the app stops here (urgent, or the unclear screen)
+        out = evaluate(shown)
+        unclear = any(r["ruleId"].startswith("U_") and r["reason"].startswith("Uncertainty persists") for r in out["firedRules"])
+        if out["verdict"] == "RED_FLAG" or unclear:  # the app stops here (urgent, or the unclear screen)
             return len(shown)
 
 
@@ -92,6 +96,8 @@ def why(output):
     for rule in output["firedRules"]:
         if "level" in rule:
             parts.append(f"{rule['reason'].split(':')[0]} (stop)")
+        elif rule["ruleId"].startswith("N_"):
+            parts.append(rule["reason"])
         elif rule["ruleId"].startswith("W_"):
             parts.append(f"not sure: {rule['matchedAnswers'][0]} (+{rule['points']:g})")
         elif "points" in rule:
@@ -124,10 +130,10 @@ or more points = Soon**, **{THRESHOLDS['URGENT']:g} or more = Urgent**. Emergenc
 | Urgent | See a doctor today; the flow stops. |
 | Soon | See a doctor in the next few days; questions continue, the movement checks are skipped. |
 | Routine | No warning signs; full assessment with movements. |
-| Unclear | A key answer is still "not sure" after its explanation; see a doctor. |
+| Unclear | Chest or breathing still "not sure", or two or more key answers still "not sure" after their simpler questions; see a doctor. |
 
 "Questions" counts the safety questions this patient sees, in the app's order, stopping at the first urgent
-or emergency result or at a second "not sure" on a key question; it includes any filled from the earlier basics screen.
+or emergency result, or where uncertainty stops the check; it includes any filled from the earlier basics screen.
 The low-risk path is 8 (7 when the basics already say how it started, 6 when they also give the pain score).
 
 | # | Fictional case | Questions | Level | Points | Why | Reviewer |

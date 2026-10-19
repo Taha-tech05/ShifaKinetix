@@ -10,7 +10,8 @@ Status: draft, awaiting clinician review. Demo only, not for real patients.
 | Pending | Saud (C) | Shared v1 rules and parity | Not yet approved | Implement Python contract, pass parity, approve PR |
 | 2026-10-18 | Faculty supervisor (relayed by teammate) | Live demo of the safety check, shoulder-2 | Three findings: safety questions repeated mid-flow; any single Yes treated as critical; no weighting or linking | Contract v2 on feature/A-safety-triage; supervisor to review docs/triage-scenarios.md |
 | Pending | Faculty supervisor / doctor | Draft points, thresholds and grouped wording (shoulder-3) | Not yet reviewed | Mark each scenario row OK or the right level; adjust shared/gate_rules.json |
-| Pending | Saud (C) | Contract v2 Python side and shared rule change | Not yet approved | Review gate.py, session_gate.py, agent, ranking, condition table |
+| 2026-10-19 | Taha (B) | Contract v2 (PR #13) | Merged into develop by Taha (3ae4600) | Saud's (C) review of the gate/server changes still to be recorded, as the shared-rule rule requires |
+| Pending | Saud (C) | Contract v2.1 unresolved answers and team-rule wording (shoulder-4) | Not yet reviewed | Approve "never Routine / never movements" wording; review gate.py change |
 
 For each review add: date, role (name optional), content version/commit,
 question/rule ID, finding, proposed change, source, disposition, owner and

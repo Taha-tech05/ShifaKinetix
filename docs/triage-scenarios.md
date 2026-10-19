@@ -14,10 +14,10 @@ or more points = Soon**, **4 or more = Urgent**. Emergency and Urgent stops igno
 | Urgent | See a doctor today; the flow stops. |
 | Soon | See a doctor in the next few days; questions continue, the movement checks are skipped. |
 | Routine | No warning signs; full assessment with movements. |
-| Unclear | A key answer is still "not sure" after its explanation; see a doctor. |
+| Unclear | Chest or breathing still "not sure", or two or more key answers still "not sure" after their simpler questions; see a doctor. |
 
 "Questions" counts the safety questions this patient sees, in the app's order, stopping at the first urgent
-or emergency result or at a second "not sure" on a key question; it includes any filled from the earlier basics screen.
+or emergency result, or where uncertainty stops the check; it includes any filled from the earlier basics screen.
 The low-risk path is 8 (7 when the basics already say how it started, 6 when they also give the pain score).
 
 | # | Fictional case | Questions | Level | Points | Why | Reviewer |
@@ -52,3 +52,5 @@ The low-risk path is 8 (7 when the basics already say how it started, 6 when the
 | 28 | Struggling to breathe | 2 | Emergency: call 1122 | 0 | Struggling to breathe (stop) | |
 | 29 | Not sure about chest tightness, twice | 1 | Unclear: more answers or a doctor | 0 | not sure about chest | |
 | 30 | Not sure how it started, no other signs | 9 | Routine: full assessment | 1 | not sure: onset (+1) | |
+| 31 | Not sure whether the arm can move, even with the simpler question | 8 | Soon: doctor in a few days | 0 | Could not check whether the arm can move in the app | |
+| 32 | Not sure about feeling and swelling, even with the simpler questions | 10 | Unclear: more answers or a doctor | 0 | not sure about numb; not sure about swelling | |

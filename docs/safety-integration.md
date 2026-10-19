@@ -1,5 +1,9 @@
 # Safety integration into the team app
 
+> **v2.1 (2026-10-19, shoulder-4):** a "Not sure" on a key question now shows a simpler, concrete question
+> instead of stopping. One answer still unsure after it lets the check finish at Soon; chest or breathing,
+> or two or more, go to the unclear screen. See [gate-contract.md](gate-contract.md).
+
 > **Contract v2 update (2026-10-18, branch feature/A-safety-triage).** Supersedes the focused follow-up
 > table and the APP_REVIEW/alias sections below. The supervisor found three problems; each is fixed:
 >

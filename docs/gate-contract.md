@@ -1,8 +1,9 @@
-# Shoulder gate contract v2
+# Shoulder gate contract v2.1
 
 Status: draft, awaiting clinician review. Demo only, not for real patients.
 
-v2 (content `shoulder-3`, 2026-10-18) answers the supervisor's review: safety questions were repeated in the
+v2.1 (content `shoulder-4`, 2026-10-19) adds simpler questions and unresolved answers (see below).
+v2 (content `shoulder-3`, 2026-10-18) answered the supervisor's review: safety questions were repeated in the
 middle of the flow, any single Yes was an emergency, and every patient got the same 20 questions. Sections
 below "History" describe v1.0 to v1.2 and are kept for the record. Their counts and rule ids are superseded.
 
@@ -17,7 +18,7 @@ Each question has a `tier`:
 
 | Tier | Meaning | "Not sure" |
 | --- | --- | --- |
-| `hardStop` | Can stop the flow on its own (chest, breathing, unable, shape, numb, tingling, temperature, swelling, infection_risk) | Asks the fixed clarification; a second "Not sure" is CLARIFY and goes to the unclear screen |
+| `hardStop` | Can stop the flow on its own (chest, breathing, unable, shape, numb, tingling, temperature, swelling, infection_risk) | Asks its simpler question (`fallback`); still "Not sure" makes it **unresolved** (see below) |
 | `gateway` | One opening question per topic (sensation, inflammation, illness) | Opens the topic's detail questions; never blocks by itself |
 | `weighted` | Adds points (onset, redness, fever, systemic, cancer, pain_score, bilateral) | Counts half of the question's largest points; never blocks by itself |
 | `context` | duration, side | Never asked by the safety check; never changes the result |
@@ -35,6 +36,21 @@ canonical answer with its outbox event, and shows it as already answered. The pa
 `deniedValue` is what an unasked detail question counts as when every answer that would open it was given and
 none opened it (a gateway No, or a gradual onset for "changed shape"). Only doctor-side ranking and the app's
 narrowing use it; the gate never needs it, because an unasked question fires nothing.
+
+## Simpler questions and unresolved answers (v2.1)
+
+Every hard-stop question has a `fallback`: a simpler, concrete question about something the patient can notice
+(for example "Can you lift your hand up to your mouth, even if it hurts?"), whose options give the canonical value.
+A first "Not sure" shows it on the same card. An answer saves the canonical value. "Not sure" again saves the
+canonical question as unknown with `clarificationAttempted: true`: it is **unresolved**.
+
+`unresolved` in the rule file sets how many may stay open (`allowed`: 1) and the lowest level they allow
+(`level`: SOON). Up to `allowed` unresolved answers, none of them chest or breathing, do not stop the check: each
+is listed as `N_<id>` ("Could not check ... in the app", 0 points) and the result is at least SOON (see a doctor in
+the next few days; no movements). Chest or breathing unresolved, or more than `allowed`, gives `U_<id>` with the
+"Uncertainty persists" reason for each: CLARIFY, the unclear screen. Unresolved answers add no points, so another
+answer can never lower a result. The team rule "Not sure on a key danger question never gives SAFE" becomes
+"never gives ROUTINE and never allows movements" (A and C to confirm).
 
 ## Rules and care levels
 
@@ -88,12 +104,13 @@ evidence). New evidence needs a new answer.
 - "Not sure" never gives a lower care level than the least worrying answer.
 - A hard stop always wins over the points total.
 - Every path the questionnaire can take to SAFE has answered or explicitly closed every hard-stop question.
-- 51 canonical and 22 app-signal fixtures give identical complete outputs in TypeScript and Python; a second
+- 55 canonical and 22 app-signal fixtures give identical complete outputs in TypeScript and Python; a second
   hand-written restatement of the contract matches 3000 random intakes.
 
 ## Content version
 
-Older intakes (shoulder-2) fail closed (`INPUT_INVALID`) under shoulder-3 and need a new assessment. Their
+Older intakes (shoulder-2, shoulder-3) need a new assessment under shoulder-4; shoulder-2 answers fail closed
+(`INPUT_INVALID`), and the server refuses events for another content version. Their
 outbox records stay on the device, unsent and undeleted, as before. The rule change needs A and C review.
 
 ## History (v1.0 to v1.2)
