@@ -65,7 +65,7 @@ export class IntakeStore {
     if (!row || row.questions_json !== JSON.stringify(bank) || row.rules_json !== JSON.stringify(rules)) {
       throw new Error('Safety content is unavailable. Please restart the app.');
     }
-    return (JSON.parse(row.questions_json) as typeof bank).questions;
+    return (JSON.parse(row.questions_json) as typeof bank).questions as unknown as Question[];
   }
 
   async createIntake(id: string) {

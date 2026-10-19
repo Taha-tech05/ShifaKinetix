@@ -20,5 +20,5 @@ export function evaluateStub(answers: FlaggableAnswer[]): GateOutput {
       verdict = 'RED_FLAG';
     }
   }
-  return { verdict, firedRules };
+  return { verdict, level: verdict === 'RED_FLAG' ? 'URGENT' : verdict === 'SAFE' ? 'ROUTINE' : null, score: 0, firedRules };
 }

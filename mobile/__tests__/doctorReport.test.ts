@@ -2,7 +2,7 @@ import { authorizedReport, DoctorReport } from '../src/reports/doctorReport';
 
 const report: DoctorReport = { audience: 'doctor', label: 'draft, awaiting clinician review',
   intakeId: 'fictional', facts: [{ label: 'Side', value: 'Right' }],
-  gate: { verdict: 'SAFE', firedRules: [] }, differential: [] };
+  gate: { verdict: 'SAFE', level: 'ROUTINE', score: 0, firedRules: [] }, differential: [] };
 
 test.each(['patient', 'anonymous'] as const)('%s cannot invoke differential loader', async (role) => {
   const load = jest.fn(async () => report);

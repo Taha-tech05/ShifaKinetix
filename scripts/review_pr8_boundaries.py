@@ -34,10 +34,11 @@ def assessment(tmp_path):
                 'answer' if kind == 'answers' else 'context': payload,
             })
 
+        low_risk = {'onset': 'gradual', 'pain_score': 3}  # contract v2; every other always-asked answer is No
         for q in QUESTIONS:
             if q['required']:
                 reply = post('answers', {'questionId': q['questionId'], 'type': q['type'],
-                                        'state': 'answered', 'value': 'normal' if q['type'] == 'choice' else False})
+                                        'state': 'answered', 'value': low_risk.get(q['questionId'], False)})
                 assert reply.status_code == 200
         assert reply.json()['gate']['verdict'] == 'SAFE'
         yield app, client, headers, post, url
@@ -71,8 +72,10 @@ def test_incomplete_movement_fields_cannot_grant_clearance(assessment, movement)
 
 def test_legacy_migration_cannot_promote_an_old_answer_to_a_followup(assessment):
     app, client, headers, post, url = assessment
-    reply = post('context', {'movements': [{'movementId': 'sideways_raise', 'state': 'done',
-                'painful': False, 'weak': False, 'unableToDo': True, 'measuredAngle': None}]})
+    # Contract v2: a failed movement is checked once the whole set of six has an answer.
+    moves = ['sideways_raise', 'forward_raise', 'can_position_hold', 'outward_push_elbow_at_side', 'belly_press', 'hand_behind_back']
+    reply = post('context', {'movements': [{'movementId': m, 'state': 'done', 'painful': False, 'weak': False,
+                'unableToDo': m == 'sideways_raise', 'measuredAngle': None} for m in moves]})
     assert reply.json()['gate']['verdict'] == 'CLARIFY'
     # Recreate the pre-update schema after an old negative and newer danger signal.
     with app.state.engine.begin() as connection:

@@ -1,5 +1,22 @@
 # Person A handoff ? 2026-10-13
 
+## Update 2026-10-18: supervisor corrections (contract v2)
+
+Branch `feature/A-safety-triage` from develop `f3a2fc2`. Implements the three fixes from the supervisor's
+review: no repeated safety questions, weighted care levels instead of yes = red flag, and linked questions.
+Details: [gate-contract.md](gate-contract.md), [safety-integration.md](safety-integration.md), and the
+review table for the supervisor: [triage-scenarios.md](triage-scenarios.md).
+
+Verified locally: 615 mobile tests, 20 real-SQLite tests, 6 real-HTTP scenarios against the real server,
+2279 server tests, PR8 boundary checks, ruff, typecheck, lint (no new warnings), Android export; 51 canonical
+and 22 app-signal fixtures match in both languages. Not verified: phone, CI, PostgreSQL, clinician review.
+
+Needs review before merge: **Saud** (gate.py, session_gate.py, agent, ranking, condition table and the server
+tests were updated to the contract; the shared rule change needs A and C approval) and **Taha** (narrowing
+skips its tingling/numbness questions, live steps skip movements at SOON, safe/urgent screens show the level,
+three-language strings need a native-speaker check). Points and thresholds are draft until the supervisor
+reviews the scenario table.
+
 Draft, awaiting clinician review. Demo only, not for real patients.
 
 ## Current PR decision

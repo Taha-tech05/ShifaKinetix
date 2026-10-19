@@ -5,6 +5,8 @@ import { AppText } from '../../components/AppText';
 import { Button } from '../../components/Button';
 import { useT } from '../../store/settings';
 import { SafetyStopNotice } from '../../gate/SafetyStopNotice';
+import { levelReasons } from '../../gate/safetyFlow';
+import { useSession } from '../../store/session';
 import { AutoUploadNotice } from '../../server/autoUpload';
 import { BotBubble } from '../../ui/chat';
 import { SceneSheetContent, useSceneStep } from '../../ui/SceneSheetContent';
@@ -20,21 +22,31 @@ const HOSPITAL_SEARCH_URL = 'https://www.google.com/maps/search/?api=1&query=hos
 export default function Urgent() {
   const t = useT();
   const { colors } = useTheme();
-  useSceneStep({ stepKey: 'urgent', mode: 'redflag', progress: { label: t('urgent.title'), value: 1 } });
+  const output = useSession((s) => s.gateOutput);
+  // EMERGENCY (chest or breathing): calling for help comes first. URGENT: see a doctor today.
+  const emergency = output?.level === 'EMERGENCY';
+  const title = emergency ? t('triage.emergencyTitle') : t('urgent.title');
+  const reasons = output?.verdict === 'RED_FLAG' ? levelReasons(output, t('triage.uncertain')) : [];
+  const call = <Button label={`${t('scene.callHelp')} · ${t('scene.callHelpSub')}`} variant={emergency ? undefined : 'outline'} icon="call-outline"
+    onPress={() => Linking.openURL('tel:1122')} style={emergency ? { backgroundColor: colors.danger } : undefined} />;
+  useSceneStep({ stepKey: 'urgent', mode: 'redflag', progress: { label: title, value: 1 } });
   return (
     <SceneSheetContent contentKey="urgent">
       <SafetyStopNotice />
       <AutoUploadNotice />
-      <BotBubble tone="alert" label={t('urgent.title')}>
+      <BotBubble tone="alert" label={title}>
         <View style={styles.row}>
           <Ionicons name="warning-outline" size={28} color={colors.danger} />
           <AppText variant="h2" color={colors.danger} style={styles.title} accessibilityRole="header">
-            {t('urgent.title')}
+            {title}
           </AppText>
         </View>
+        {reasons.length > 0 && <AppText variant="secondary" color={colors.text}>{t('triage.because', { reasons: reasons.join('; ') })}</AppText>}
       </BotBubble>
-      <Button label={t('scene.connectDoctor')} onPress={() => router.push('/report/doctor')} style={{ backgroundColor: colors.danger }} />
-      <Button label={`${t('scene.callHelp')} · ${t('scene.callHelpSub')}`} variant="outline" icon="call-outline" onPress={() => Linking.openURL('tel:1122')} />
+      {emergency && call}
+      <Button label={t('scene.connectDoctor')} onPress={() => router.push('/report/doctor')}
+        variant={emergency ? 'outline' : undefined} style={emergency ? undefined : { backgroundColor: colors.danger }} />
+      {!emergency && call}
       <Button label={t('sos.hospital')} variant="text" onPress={() => Linking.openURL(HOSPITAL_SEARCH_URL)} />
     </SceneSheetContent>
   );

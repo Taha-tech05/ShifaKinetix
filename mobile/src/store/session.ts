@@ -7,6 +7,7 @@ import { depthAnswerFrom } from '../dev/followUpQuestions';
 import type { NarrowingInput } from '../dev/narrowingStub';
 import { isDiscriminator } from '../narrowing/bank';
 import { isStructureQuestion } from '../narrowing/structureBank';
+import { safetyNarrowingFacts } from '../narrowing/safetyFacts';
 import type { IntakeMode } from '../regions/regionMap';
 import type { BodySelection } from '../regions/types';
 
@@ -72,6 +73,8 @@ export interface SessionState {
   history: HistoryEntry[];
   /** Set when the gate escalated during the live flow. */
   escalation: Escalation | null;
+  /** True when the last SAFE result was the SOON care level: questions continue, the physical movement checks are skipped. */
+  movementsBlocked: boolean;
 
   setMode: (mode: IntakeMode | null) => void;
   setReaskDone: (done: boolean) => void;
@@ -104,6 +107,7 @@ const initial = {
   narrowingTrail: [] as NarrowingSnapshot[],
   history: [] as HistoryEntry[],
   escalation: null as Escalation | null,
+  movementsBlocked: false,
 };
 
 /**
@@ -130,7 +134,8 @@ export const useSession = create<SessionState>((set, get) => ({
     // The gate sees the answers plus the structured onset and unable-to-move inputs derived from them (flow/gateInputs.ts).
     const { answers, movementResults } = get();
     const output = evaluateStub([...answers, ...structuredGateInputs(answers, movementResults)]);
-    set({ gateOutput: output, gateVerdict: output.verdict });
+    set({ gateOutput: output, gateVerdict: output.verdict,
+      ...(output.verdict === 'SAFE' ? { movementsBlocked: output.level === 'SOON' } : {}) });
     return output.verdict;
   },
 
@@ -197,6 +202,7 @@ export function narrowingInputFrom(
     hitMeshName: s.selection.hitStructure?.meshName ?? null,
     depthAnswer: depthAnswerFrom(s.answers),
     movementResults: s.movementResults,
-    answers: s.answers,
+    // the narrowing reuses the safety answers about numbness and tingling instead of asking near-copies of them
+    answers: [...s.answers, ...safetyNarrowingFacts(s.answers)],
   };
 }

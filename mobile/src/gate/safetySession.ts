@@ -69,7 +69,7 @@ export class SafetySession {
     // New intake explicitly discards prior clinical clearance.
     useSession.setState({ answers: s.answers.filter((a) => !ids.has(a.questionId) && !a.questionId.startsWith(REVIEW_PREFIX)),
       movementResults: [], history: [], narrowingTrail: [], liveState: null,
-      reaskDone: false, gateOutput: null, gateVerdict: null });
+      reaskDone: false, gateOutput: null, gateVerdict: null, movementsBlocked: false });
     this.active = { id, selection: s.selection };
     await this.checkpoint();
   }

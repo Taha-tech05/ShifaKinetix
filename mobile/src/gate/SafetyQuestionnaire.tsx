@@ -11,20 +11,36 @@ import { SceneSheetContent, useSceneStep } from '../ui/SceneSheetContent';
 import { useTheme } from '../ui/ThemeProvider';
 import { useSession } from '../store/session';
 import { structuredGateInputs } from '../flow/gateInputs';
-import { isRequiredQuestion, isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
-import { pendingSafetyFollowups, safetyAnswersFrom } from './sessionAdapter';
-import { questionHelp } from './questionHelp';
+import { Answer, isValidAnswer, Question, questions, SafetyAnswer } from './evaluate';
+import { followUpPrompt, questionHelp } from './questionHelp';
+import { nextSafetyStep, safetyProgress } from './safetyFlow';
 import { openSafetySession } from './safetySession';
 import { withMovementUncertainty } from './sessionEvaluator';
 import { AssessmentSync } from './AssessmentSync';
 
+type Reason = 'new' | 'clarify' | 'followup' | 'review';
+const MAX_PREFILLS = questions.length;
+
+function sessionInput(): Answer[] {
+  const state = useSession.getState();
+  return withMovementUncertainty([...state.answers, ...structuredGateInputs(state.answers, state.movementResults)], state.movementResults);
+}
+
+/**
+ * The linked safety check (contract v2): two emergency questions, then one opening question per topic, and detail questions
+ * only where an answer calls for them. An answer the patient already gave earlier (how it started, the pain score) is saved
+ * from there, never asked again. A first "Not sure" on a hard-stop question shows its explanation on the same card; a
+ * second one is saved. A follow-up appears only for a real contradiction and says what it is checking.
+ */
 export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) {
   const { colors } = useTheme();
   const t = useT();
   const { review } = useLocalSearchParams<{ review?: string }>();
   const reviewed = useRef<string | undefined>(undefined);
-  const [followingUp, setFollowingUp] = useState(false);
+  const [reason, setReason] = useState<Reason>('new');
   const [question, setQuestion] = useState<Question | null>(null);
+  const [unsure, setUnsure] = useState(false);
+  const [prefilled, setPrefilled] = useState<string[]>([]);
   const [entry, setEntry] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
@@ -34,33 +50,27 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     const session = await openSafetySession();
     if (!session.activeId) { setEntry(true); setQuestion(null); return; }
     setEntry(false);
-    const output = await session.checkpoint();
+    let output = await session.checkpoint();
     const requested = questions.find((q) => q.questionId === review);
     if (requested && reviewed.current !== review) {
-      setQuestion(requested); setFollowingUp(true); setInput(''); return;
+      setQuestion(requested); setReason('review'); setUnsure(false); setInput(''); return;
     }
-    if (output.verdict === 'RED_FLAG') {
-      setQuestion(null);
-      const uncertaintyOnly = output.firedRules.every((r) => /^[MU]_/.test(r.ruleId));
-      router.replace(uncertaintyOnly ? '/report/unclear' : '/report/urgent'); return;
+    const filled: string[] = [];
+    for (let i = 0; i <= MAX_PREFILLS; i += 1) {
+      const step = nextSafetyStep(sessionInput(), output);
+      if (step.kind === 'prefill') {
+        // Already answered earlier in the app: save it from there instead of asking again.
+        output = await session.save(step.answer);
+        filled.push(step.answer.questionId);
+        continue;
+      }
+      if (filled.length) setPrefilled((p) => [...new Set([...p, ...filled])]);
+      if (step.kind === 'route') { setQuestion(null); router.replace(step.to); return; }
+      setQuestion(step.question); setReason(step.reason); setUnsure(false); setInput('');
+      return;
     }
-    const state = useSession.getState();
-    const input = withMovementUncertainty(
-      [...state.answers, ...structuredGateInputs(state.answers, state.movementResults)], state.movementResults);
-    const adapted = safetyAnswersFrom(input) ?? [];
-    if (output.verdict === 'CLARIFY' && adapted.some((a) => a.state === 'unknown'
-      && a.clarificationAttempted && questions.some((q) => q.questionId === a.questionId && isRequiredQuestion(q, adapted)))) {
-      setQuestion(null); router.replace('/report/unclear'); return;
-    }
-    const uncertain = questions.find((q) => isRequiredQuestion(q, adapted) && adapted.some((a) => a.questionId === q.questionId && a.state === 'unknown'));
-    const missing = questions.find((q) => !state.answers.some((a) => a.questionId === q.questionId));
-    if (clarify && !uncertain) { router.replace(missing ? '/report/danger'
-      : output.verdict === 'CLARIFY' ? '/report/unclear' : '/report/safe'); return; }
-    if (!clarify && !missing) { router.replace(output.verdict === 'CLARIFY' ? '/report/reask' : '/report/safe'); return; }
-    const next = clarify ? uncertain! : missing!;
-    setFollowingUp(pendingSafetyFollowups(input).includes(next.questionId));
-    setQuestion(next); setInput('');
-  }, [clarify, review]);
+    throw new Error('Could not confirm your saved answers. Please retry.');
+  }, [review]);
   async function perform(work: () => Promise<unknown>) {
     if (locked.current) return;
     locked.current = true; setBusy(true); setError('');
@@ -74,23 +84,29 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       if (active) setError(e instanceof Error ? e.message : 'Could not read saved answers.');
     }).finally(() => { if (active) setBusy(false); });
     return () => { active = false; };
-  }, [load]);
+  }, [load, clarify]); // the re-ask route reuses this screen: switching to it loads again
 
   async function save(value: SafetyAnswer['value']) {
     if (!question) return;
     await perform(async () => {
       const session = await openSafetySession();
       await session.save({ questionId: question.questionId, type: question.type as SafetyAnswer['type'],
-        value, state: value === null ? 'unknown' : 'answered', clarificationAttempted: clarify });
+        value, state: value === null ? 'unknown' : 'answered', clarificationAttempted: value === null && (unsure || reason === 'clarify' || clarify) });
       reviewed.current = review;
       await load();
     });
   }
+  function notSure() {
+    // A hard-stop question explains itself once on the same card before "Not sure" is saved.
+    if (question?.tier === 'hardStop' && !unsure && reason !== 'clarify') { setUnsure(true); return; }
+    void save(null);
+  }
   const numeric = input.trim() && /^\d+(\.\d+)?$/.test(input.trim()) ? Number(input) : NaN;
   const validNumber = question && isValidAnswer({ questionId: question.questionId, type: question.type, value: numeric, state: 'answered' });
-  useSceneStep({ stepKey: `safety-${clarify ? 'clarify-' : ''}${question?.questionId ?? (entry ? 'entry' : 'wait')}`, mode: 'questions',
-    progress: question ? { label: t('scene.phaseSafety', { n: questions.indexOf(question) + 1, total: questions.length }), value: (questions.indexOf(question) + 1) / questions.length }
-      : { label: t('scene.phaseSafety', { n: 1, total: questions.length }), value: 0.05 } });
+  const progress = question ? safetyProgress(sessionInput(), question) : { n: 1, total: questions.filter((q) => q.required).length };
+  const key = `safety-${clarify ? 'clarify-' : ''}${question?.questionId ?? (entry ? 'entry' : 'wait')}`;
+  useSceneStep({ stepKey: key, mode: 'questions',
+    progress: { label: t('scene.phaseSafety', { n: progress.n, total: progress.total }), value: question ? progress.n / progress.total : 0.05 } });
   // the stepper nudges the same text the field shows; it never saves by itself
   const nudge = (delta: number) => {
     if (!question) return;
@@ -99,8 +115,9 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     setInput(String(next));
   };
   const off = busy || !!error;
-  return <SceneSheetContent contentKey={`safety-${clarify ? 'clarify-' : ''}${question?.questionId ?? (entry ? 'entry' : 'wait')}`}
-    ownIds={question ? [question.questionId] : []} onBack={() => router.back()}>
+  const prompt = question && reason === 'followup' ? followUpPrompt(question, sessionInput()) : null;
+  const prefilledNames = prefilled.map((id) => questions.find((q) => q.questionId === id)?.wording).filter(Boolean);
+  return <SceneSheetContent contentKey={key} ownIds={question ? [question.questionId] : []} onBack={() => router.back()}>
     <AssessmentSync />
     <AppText variant="secondary" color={colors.caution}>draft, awaiting clinician review</AppText>
     {error ? <View><AppText accessibilityRole="alert" color={colors.caution}>{'⚠ '}{error}</AppText>
@@ -108,7 +125,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     {entry && <>
       <BotBubble><AppText variant="h3">Shoulder safety check</AppText>
         <AppText>Start a new assessment for new symptoms. Resume only to continue the same saved assessment.</AppText>
-        <AppText>We will clarify your earlier symptom answers. Confirmed warning symptoms pause movement checks; other answers can continue to the assessment.</AppText></BotBubble>
+        <AppText>A few quick questions check for warning signs. We only ask more about a topic when your answer calls for it.</AppText></BotBubble>
       <Button label="Start new safety check" disabled={busy || !useSession.getState().selection}
         onPress={() => { void perform(async () => { await (await openSafetySession()).start(randomUUID()); await load(); }); }} />
       <Button label="Resume saved assessment" variant="outline" disabled={busy}
@@ -116,16 +133,21 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       {!useSession.getState().selection && <Button label="Choose shoulder location" onPress={() => router.replace('/report/intro')} />}
     </>}
     {question && !entry && <>
+      {prefilledNames.length > 0 && <AppText variant="secondary" color={colors.muted}>
+        Already answered earlier, so not asked again: {prefilledNames.join(' · ')}. You can change them in your answers.
+      </AppText>}
       <BotBubble>
-        <AppText variant="bodyStrong">{question.wording}</AppText>
-        {followingUp && <AppText variant="secondary" color={colors.muted}>An earlier answer needs a more specific safety check. Your answer here will clarify or correct it; the earlier response stays in this assessment.</AppText>}
-        {questionHelp[question.questionId] && <AppText variant="secondary" color={colors.muted}>{questionHelp[question.questionId]}</AppText>}
-        <AppText variant="secondary" color={colors.muted}>Yes means this symptom applies. No means it does not. Not sure lets us clarify; there is no preferred answer.</AppText>
-        {clarify && <AppText variant="secondary" color={colors.muted}>{question.clarification}</AppText>}
+        <AppText variant="bodyStrong">{prompt?.text ?? question.wording}</AppText>
+        {reason === 'review' && <AppText variant="secondary" color={colors.muted}>Change your answer if it was not right. Everything is worked out again.</AppText>}
+        {questionHelp[question.questionId] && !prompt?.choices && <AppText variant="secondary" color={colors.muted}>{questionHelp[question.questionId]}</AppText>}
+        {(unsure || reason === 'clarify') && <>
+          <AppText variant="secondary" color={colors.muted}>{question.clarification}</AppText>
+          <AppText variant="secondary" color={colors.muted}>If you still cannot tell, choose Not sure again. We will suggest that a doctor checks this with you.</AppText>
+        </>}
       </BotBubble>
       {question.type === 'yesno' && <ChipRow>
-        <Chip large label="Yes" disabled={off} onPress={() => { void save(true); }} />
-        <Chip large label="No" disabled={off} onPress={() => { void save(false); }} />
+        {(prompt?.choices ?? [{ label: 'Yes', value: true }, { label: 'No', value: false }]).map((c) =>
+          <Chip large key={c.label} label={c.label} disabled={off} onPress={() => { void save(c.value); }} />)}
       </ChipRow>}
       {question.type === 'choice' && <ChipRow>{question.options?.map((o) => <Chip large key={o.value} label={o.label}
         disabled={off} onPress={() => { void save(o.value); }} />)}</ChipRow>}
@@ -140,7 +162,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
         </View>
         <Button label="Save answer" disabled={busy || !!error || !validNumber} onPress={() => { void save(numeric); }} />
       </>}
-      <ChipRow><Chip large label="Not sure" disabled={off} onPress={() => { void save(null); }} /></ChipRow>
+      <ChipRow><Chip large label="Not sure" disabled={off} onPress={notSure} /></ChipRow>
       <AppText variant="secondary" color={colors.muted}>Source: {question.source}</AppText>
     </>}
     {busy && <AppText color={colors.muted}>Checking saved answers…</AppText>}

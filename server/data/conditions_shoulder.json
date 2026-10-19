@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "shoulder-conditions-1",
+  "contentVersion": "shoulder-conditions-2",
   "label": "draft, awaiting clinician review",
   "note": "Demo only, not for real patients. Doctor-only content: this file stays on the server and is never bundled into the phone app. Features and weights are engineering choices for a draft differential, not clinical measurements.",
   "featureKinds": {
@@ -30,9 +30,8 @@
         { "q": "fever", "expect": true, "w": 3, "defining": true },
         { "q": "redness", "expect": true, "w": 2, "defining": true },
         { "q": "temperature", "expect": "hot", "w": 2 },
-        { "q": "swelling", "expect": true, "w": 1 },
-        { "q": "infection_risk", "expect": true, "w": 1 },
-        { "q": "injury", "expect": false, "w": 1 }
+        { "q": "swelling", "expect": "mild", "w": 1 },
+        { "q": "infection_risk", "expect": true, "w": 1 }
       ],
       "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
       "label": "draft, awaiting clinician review"
@@ -42,11 +41,10 @@
       "name": "Possible fracture or dislocation",
       "danger": true,
       "features": [
-        { "q": "injury", "expect": true, "w": 3, "defining": true },
+        { "q": "onset", "expect": "injury", "w": 3, "defining": true },
         { "q": "shape", "expect": true, "w": 2, "defining": true },
         { "q": "unable", "expect": true, "w": 2 },
-        { "q": "swelling", "expect": true, "w": 2 },
-        { "q": "sudden", "expect": true, "w": 1 }
+        { "q": "swelling", "expect": "mild", "w": 2 }
       ],
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review"
@@ -73,8 +71,7 @@
         { "movement": "sideways_raise", "expect": true, "w": 3 },
         { "movement": "can_position_hold", "expect": true, "w": 1 },
         { "movement": "hand_behind_back", "expect": false, "w": 1 },
-        { "q": "sudden", "expect": false, "w": 1 },
-        { "q": "injury", "expect": false, "w": 1 }
+        { "q": "onset", "expect": "gradual", "w": 2 }
       ],
       "source": "Michener 2009, Arch Phys Med Rehabil 90(11):1898-1903",
       "label": "draft, awaiting clinician review"
@@ -88,8 +85,7 @@
         { "movement": "hand_behind_back", "expect": true, "w": 2 },
         { "movement": "sideways_raise", "expect": true, "w": 1 },
         { "movement": "can_position_hold", "expect": true, "w": 1 },
-        { "q": "sudden", "expect": false, "w": 2 },
-        { "q": "injury", "expect": false, "w": 1 }
+        { "q": "onset", "expect": "gradual", "w": 3 }
       ],
       "source": "TO VERIFY (StatPearls 'Adhesive Capsulitis' is the intended source; exact page not confirmed)",
       "label": "draft, awaiting clinician review"
@@ -112,7 +108,7 @@
       "name": "Possible referred pain from a neck nerve",
       "danger": false,
       "features": [
-        { "q": "tingling", "expect": true, "w": 3 },
+        { "q": "tingling", "expect": "comes_goes", "w": 3 },
         { "q": "numb", "expect": true, "w": 2 },
         { "movement": "sideways_raise", "expect": false, "w": 1 },
         { "movement": "can_position_hold", "expect": false, "w": 1 }

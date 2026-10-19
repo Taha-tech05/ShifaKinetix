@@ -1,24 +1,32 @@
+"""Gate contract v2 on the Python side: shared cases, linked questions and safety properties. Synthetic cases only."""
+
 import json
+import random
 
 import pytest
+from safety_answers import REQUIRED, REQUIRED_IDS, answers, record
 
-from app.gate import QUESTIONS, SHARED_DIR, evaluate
+from app.gate import (
+    QUESTIONS,
+    RULES,
+    SHARED_DIR,
+    THRESHOLDS,
+    evaluate,
+    implied_answer,
+    is_asked_question,
+)
 
 CASES = json.loads((SHARED_DIR / "gate_test_cases.json").read_text(encoding="utf-8"))["cases"]
-REQUIRED = [q for q in QUESTIONS if q["required"]]
+RANK = {"ROUTINE": 0, "SOON": 1, "URGENT": 3, "EMERGENCY": 4}
 
 
-def _all_clear():
-    """Every required safety question answered with a non-danger value."""
-    return [
-        {
-            "questionId": q["questionId"],
-            "type": q["type"],
-            "value": False if q["type"] == "yesno" else "normal",
-            "state": "answered",
-        }
-        for q in REQUIRED
-    ]
+def rank(out):
+    """ROUTINE < SOON < CLARIFY < URGENT < EMERGENCY."""
+    return 2 if out["verdict"] == "CLARIFY" else RANK[out["level"]]
+
+
+def ids(out):
+    return [r["ruleId"] for r in out["firedRules"]]
 
 
 @pytest.mark.parametrize("case", CASES, ids=[c["caseId"] for c in CASES])
@@ -36,31 +44,31 @@ def test_danger_cases_come_first():
     assert "RED_FLAG" not in verdicts[first_other:]
 
 
-def test_all_clear_baseline_is_safe():
-    assert evaluate(_all_clear()) == {"verdict": "SAFE", "firedRules": []}
+def test_low_risk_path_is_eight_questions_and_routine():
+    given = answers()
+    assert [q["questionId"] for q in QUESTIONS if is_asked_question(q, given)] == REQUIRED_IDS
+    assert len(REQUIRED_IDS) == 8
+    assert evaluate(given) == {"verdict": "SAFE", "level": "ROUTINE", "score": 0, "firedRules": []}
 
 
-@pytest.mark.parametrize("question", REQUIRED, ids=[q["questionId"] for q in REQUIRED])
-def test_not_sure_is_never_safe(question):
-    qid = question["questionId"]
-    # Contract v1.1: uncertainty that persists after the clarification stays CLARIFY. It is never SAFE.
-    for clarified, expected in ((False, "CLARIFY"), (True, "CLARIFY")):
-        answers = [a for a in _all_clear() if a["questionId"] != qid]
-        unknown = {"questionId": qid, "type": question["type"], "value": None, "state": "unknown"}
-        if clarified:
-            unknown["clarificationAttempted"] = True
-        result = evaluate(answers + [unknown])
-        assert result["verdict"] == expected
-        assert result["firedRules"][-1]["ruleId"] == f"U_{qid}"
-        assert result["firedRules"][-1]["reason"].startswith("Uncertainty persists" if clarified else "Safety answer is uncertain")
+@pytest.mark.parametrize("qid", REQUIRED_IDS)
+def test_missing_or_not_sure_on_an_always_asked_question_is_never_safe(qid):
+    assert evaluate(answers(missing=[qid]))["verdict"] == "CLARIFY"
+    assert evaluate(answers(unknown=[qid]))["verdict"] == "CLARIFY"
+    assert evaluate(answers(clarified=[qid]))["verdict"] == "CLARIFY"
 
 
-@pytest.mark.parametrize("question", REQUIRED, ids=[q["questionId"] for q in REQUIRED])
-def test_missing_required_answer_is_never_safe(question):
-    qid = question["questionId"]
-    result = evaluate([a for a in _all_clear() if a["questionId"] != qid])
-    assert result["verdict"] == "CLARIFY"
-    assert [r["ruleId"] for r in result["firedRules"]] == [f"M_{qid}"]
+@pytest.mark.parametrize("question", [q for q in QUESTIONS if q["tier"] == "hardStop"], ids=lambda q: q["questionId"])
+def test_not_sure_on_an_asked_hard_stop_question_asks_the_clarification_then_persists(question):
+    opened = {c["questionId"]: (True if c.get("equals") is True else c.get("in", [None])[0]) for c in question.get("askWhen") or []}
+    opened = {k: v for k, v in opened.items() if v is not None}
+    if "pain_score" in opened or "redness" in opened:
+        opened.setdefault("inflammation", True)
+    first = evaluate(answers(unknown=[question["questionId"]], **opened))
+    again = evaluate(answers(clarified=[question["questionId"]], **opened))
+    assert first["verdict"] == again["verdict"] == "CLARIFY"
+    assert f"U_{question['questionId']}" in ids(first)
+    assert next(r for r in again["firedRules"] if r["ruleId"] == f"U_{question['questionId']}")["reason"].startswith("Uncertainty persists")
 
 
 @pytest.mark.parametrize(
@@ -70,50 +78,145 @@ def test_missing_required_answer_is_never_safe(question):
 )
 def test_malformed_input_is_red_flag_not_a_crash(bad_input):
     result = evaluate(bad_input)
-    assert result["verdict"] == "RED_FLAG"
-    assert [r["ruleId"] for r in result["firedRules"]] == ["INPUT_INVALID"]
+    assert (result["verdict"], result["level"]) == ("RED_FLAG", "URGENT")
+    assert ids(result) == ["INPUT_INVALID"]
 
 
-def test_conditional_question_is_required_only_when_its_trigger_is_answered_yes():
-    """Contract v1.2: redness = yes makes infection_risk required."""
-
-    def with_redness(value, *extra):
-        answers = [a for a in _all_clear() if a["questionId"] != "redness"]
-        if value is None:
-            answers.append({"questionId": "redness", "type": "yesno", "value": None, "state": "unknown"})
-        else:
-            answers.append({"questionId": "redness", "type": "yesno", "value": value, "state": "answered"})
-        return answers + list(extra)
-
-    def risk(value, **more):
-        state = "unknown" if value is None else "answered"
-        return {"questionId": "infection_risk", "type": "yesno", "value": value, "state": state, **more}
-
-    def ids(result):
-        return [rule["ruleId"] for rule in result["firedRules"]]
-
-    assert evaluate(with_redness(False)) == {"verdict": "SAFE", "firedRules": []}
-    assert evaluate(with_redness(False, risk(None))) == {"verdict": "SAFE", "firedRules": []}
-    assert ids(evaluate(with_redness(None))) == ["U_redness"], "an unknown trigger does not add the requirement"
-    for answers, verdict, expected in (
-        (with_redness(True), "CLARIFY", ["M_infection_risk"]),
-        (with_redness(True, risk(None)), "CLARIFY", ["U_infection_risk"]),
-        (with_redness(True, risk(None, clarificationAttempted=True)), "CLARIFY", ["U_infection_risk"]),
-        (with_redness(True, risk(False)), "SAFE", []),
-        (with_redness(True, risk(True)), "RED_FLAG", ["R_local_infection_risk"]),
-    ):
-        result = evaluate(answers)
-        assert (result["verdict"], ids(result)) == (verdict, expected)
+def test_old_content_question_fails_closed():
+    """A shoulder-2 answer (injury yes/no) is not part of shoulder-3; old intakes need a new assessment."""
+    assert ids(evaluate(answers() + [{"questionId": "injury", "type": "yesno", "value": False, "state": "answered"}])) == ["INPUT_INVALID"]
 
 
 def test_one_is_not_true():
-    answers = _all_clear()
-    answers[0]["value"] = 1
-    assert evaluate(answers)["firedRules"][0]["ruleId"] == "INPUT_INVALID"
+    given = answers()
+    given[0]["value"] = 1
+    assert ids(evaluate(given)) == ["INPUT_INVALID"]
 
 
 def test_evaluate_does_not_change_its_input():
-    answers = _all_clear()
-    before = json.dumps(answers)
-    evaluate(answers)
-    assert json.dumps(answers) == before
+    given = answers(onset="injury", shape=False)
+    before = json.dumps(given)
+    evaluate(given)
+    assert json.dumps(given) == before
+
+
+def test_rules_are_well_formed():
+    for rule in RULES:
+        assert ("level" in rule) != ("points" in rule)
+        if "points" in rule:
+            assert len(rule["all"]) == 1 and rule["points"] > 0
+        if "level" in rule and len(rule["all"]) == 1:
+            q = next(q for q in QUESTIONS if q["questionId"] == rule["all"][0]["questionId"])
+            assert q["tier"] == "hardStop", "a single-sign hard stop must ask for clarification on Not sure"
+    assert THRESHOLDS["SOON"] < THRESHOLDS["URGENT"]
+
+
+def test_every_nhs_urgent_list_sign_alone_is_at_least_soon():
+    """NHS shoulder-pain urgent advice lists each of these on its own; none may be ROUTINE alone."""
+    singles = [
+        answers(onset="injury", shape=False), answers(onset="sudden", shape=False),
+        answers(pain_score=9, bilateral=False), answers(inflammation=True, temperature="hot", swelling="none", redness=False, fever=False),
+        answers(inflammation=True, temperature="normal", swelling="none", redness=False, fever=True),
+        answers(pain_score=6, bilateral=True), answers(unable=True), answers(onset="injury", shape=True),
+        answers(sensation=True, numb=True, tingling="none", temperature="normal"),
+        answers(sensation=True, numb=False, tingling="persistent", temperature="normal"),
+        answers(sensation=True, numb=False, tingling="none", temperature="cold"),
+        answers(inflammation=True, temperature="normal", swelling="severe", redness=False, fever=False),
+    ]
+    for given in singles:
+        assert rank(evaluate(given)) >= RANK["SOON"], ids(evaluate(given))
+
+
+# ---------------------------------------------------------------- safety properties over many generated answer sets
+
+
+def scale(question):
+    """Answer values from least to most worrying."""
+    if question["type"] == "yesno":
+        return [False, True]
+    if question["type"] == "choice":
+        return ["gradual", "sudden", "injury"] if question["questionId"] == "onset" else [o["value"] for o in question["options"]]
+    return [0, 3, 5, 6, 7, 8, 10] if question["type"] == "number" else [0, 10, 400]
+
+
+def random_answers(rng):
+    out = []
+    for q in QUESTIONS:
+        roll = rng.random()
+        if roll < 0.15:
+            continue
+        if roll < 0.25:
+            out.append(record(q["questionId"], None, clarified=rng.random() < 0.5))
+            continue
+        values = scale(q)
+        out.append(record(q["questionId"], values[0] if rng.random() < 0.6 else rng.choice(values)))
+    return out
+
+
+def replace(given, new):
+    return [a for a in given if a["questionId"] != new["questionId"]] + [new]
+
+
+def test_a_more_worrying_answer_never_lowers_the_care_level():
+    rng = random.Random(7)
+    for _ in range(800):
+        given = random_answers(rng)
+        before = rank(evaluate(given))
+        for a in [a for a in given if a["state"] == "answered"]:
+            values = scale(next(q for q in QUESTIONS if q["questionId"] == a["questionId"]))
+            for worse in values[values.index(a["value"]) + 1:]:
+                assert rank(evaluate(replace(given, {**a, "value": worse}))) >= before
+
+
+def test_not_sure_never_gives_a_lower_care_level_than_no():
+    rng = random.Random(11)
+    for _ in range(800):
+        given = random_answers(rng)
+        for q in QUESTIONS:
+            no = replace(given, record(q["questionId"], scale(q)[0]))
+            unsure = replace(given, record(q["questionId"], None))
+            assert rank(evaluate(unsure)) >= rank(evaluate(no))
+
+
+def test_a_hard_stop_always_wins_over_the_points():
+    rng = random.Random(13)
+    for _ in range(1500):
+        out = evaluate(random_answers(rng))
+        if any("level" in r for r in out["firedRules"]):
+            assert out["verdict"] == "RED_FLAG" and out["level"] in ("URGENT", "EMERGENCY")
+
+
+def covered(qid, given):
+    q = next(q for q in QUESTIONS if q["questionId"] == qid)
+    if any(a["questionId"] == qid and a["state"] == "answered" for a in given):
+        return True
+    if q["required"] or not q.get("askWhen"):
+        return False
+    return not is_asked_question(q, given) and all(covered(c["questionId"], given) for c in q["askWhen"])
+
+
+def test_every_questionnaire_path_to_safe_covers_every_hard_stop_question():
+    rng = random.Random(17)
+    safe = 0
+    for _ in range(1500):
+        given = []
+        for _ in range(len(QUESTIONS)):
+            nxt = next((q for q in QUESTIONS if is_asked_question(q, given) and all(a["questionId"] != q["questionId"] for a in given)), None)
+            if nxt is None:
+                break
+            unknown = rng.random() < 0.1
+            given.append(record(nxt["questionId"], None if unknown else (scale(nxt)[0] if rng.random() < 0.7 else rng.choice(scale(nxt))), clarified=unknown))
+        out = evaluate(given)
+        if out["verdict"] != "SAFE":
+            continue
+        safe += 1
+        for q in QUESTIONS:
+            if q["tier"] == "hardStop":
+                assert covered(q["questionId"], given), (q["questionId"], given)
+                implied = implied_answer(given, q["questionId"])
+                assert implied is not None and implied["state"] == "answered"
+    assert safe > 100
+
+
+def test_required_questions_have_no_link_conditions():
+    assert all(not q.get("askWhen") for q in REQUIRED)

@@ -1,18 +1,20 @@
 {
-  "schemaVersion": 1,
-  "contentVersion": "shoulder-2",
+  "schemaVersion": 2,
+  "contentVersion": "shoulder-3",
   "label": "draft, awaiting clinician review",
+  "note": "Linked safety questions (contract v2). tier: hardStop = a 'Not sure' needs clarification; gateway = one opening question per topic, a 'Yes' or 'Not sure' opens its detail questions; weighted = adds points, 'Not sure' counts half; context = never asked by the safety check. askWhen: the question is asked when ANY clause matches (orUnknown also matches 'Not sure'). deniedValue: what this question counts as when the answers that would open it were given and did not open it (for example a gateway No, or a gradual onset for 'changed shape'). prefillFrom: an earlier app answer that already answers this question. Bank order is the asking order; a linked question waits until a question that opens it has been answered.",
   "questions": [
     {
       "questionId": "chest",
       "type": "yesno",
+      "tier": "hardStop",
       "wording": "Do you have chest pressure or tightness now?",
       "required": true,
       "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Symptoms",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "clarification": "Chest pressure or tightness means a squeezing or heavy feeling in the chest. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
         true
       ]
@@ -20,41 +22,64 @@
     {
       "questionId": "breathing",
       "type": "yesno",
+      "tier": "hardStop",
       "wording": "Are you struggling to breathe now?",
       "required": true,
       "source": "https://www.nhs.uk/conditions/heart-attack/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Symptoms",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "clarification": "This means it is hard to catch your breath right now, even when resting. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
         true
       ]
     },
     {
-      "questionId": "injury",
-      "type": "yesno",
-      "wording": "Did this pain begin after an accident or injury?",
+      "questionId": "onset",
+      "type": "choice",
+      "tier": "weighted",
+      "wording": "How did the pain start?",
       "required": true,
+      "options": [
+        {
+          "value": "gradual",
+          "label": "Gradually"
+        },
+        {
+          "value": "sudden",
+          "label": "Suddenly, without an injury"
+        },
+        {
+          "value": "injury",
+          "label": "After an accident or injury, like a fall"
+        }
+      ],
+      "prefillFrom": {
+        "questionId": "Q_BASICS_HOW",
+        "map": {
+          "slowly": "gradual",
+          "suddenly": "sudden",
+          "after_injury": "injury"
+        }
+      },
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
-      ]
+      "adaptation": "Replaces the separate injury and sudden yes/no questions; filled from the basics answer when it was given. Draft adaptation, requires clinician review.",
+      "clarification": "Choose the option closest to how it began. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
     },
     {
       "questionId": "unable",
       "type": "yesno",
-      "wording": "Are you unable to move this arm?",
+      "tier": "hardStop",
+      "wording": "Are you completely unable to move this arm?",
       "required": true,
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "clarification": "This asks whether the arm cannot move at all, not whether moving it hurts. Do not try a painful movement to answer. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
         true
       ]
@@ -62,73 +87,121 @@
     {
       "questionId": "shape",
       "type": "yesno",
+      "tier": "hardStop",
       "wording": "Has the shoulder or arm changed shape?",
-      "required": true,
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "onset",
+          "in": [
+            "injury",
+            "sudden"
+          ],
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "adaptation": "Asked after an injury or a sudden start. Draft adaptation, requires clinician review.",
+      "clarification": "Look at both shoulders. A bump, a dip or an arm hanging differently counts. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
         true
       ]
     },
     {
-      "questionId": "swelling",
+      "questionId": "sensation",
       "type": "yesno",
-      "wording": "Is the shoulder or arm badly swollen?",
+      "tier": "gateway",
+      "wording": "Do you have any unusual feeling in this arm or hand, such as numbness, pins and needles, or the arm feeling cold?",
       "required": true,
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
+      "adaptation": "Opening question for the nerve and circulation topic. A No counts as No for its detail questions. Draft adaptation, requires clinician review.",
+      "clarification": "If you are not sure, choose Not sure and we will ask about each feeling separately.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "numb",
+      "type": "yesno",
+      "tier": "hardStop",
+      "wording": "Is there no feeling in any part of your arm or shoulder?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "sensation",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "clarification": "This is about losing feeling, for example not feeling a light touch. Weakness is not the same. Do not test yourself. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
         true
       ]
     },
     {
       "questionId": "tingling",
-      "type": "yesno",
-      "wording": "Do you have persistent pins and needles?",
-      "required": true,
+      "type": "choice",
+      "tier": "hardStop",
+      "wording": "Do you have pins and needles in this arm?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "sensation",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "No"
+        },
+        {
+          "value": "comes_goes",
+          "label": "Yes, but it comes and goes"
+        },
+        {
+          "value": "persistent",
+          "label": "Yes, and it does not go away"
+        }
+      ],
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "adaptation": "Graded answer; only pins and needles that do not go away is an urgent sign. Draft adaptation, requires clinician review.",
+      "clarification": "Pins and needles that keep going or never fully settle count as not going away. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
-        true
-      ]
-    },
-    {
-      "questionId": "numb",
-      "type": "yesno",
-      "wording": "Have you lost feeling in this arm?",
-      "required": true,
-      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
+        "persistent"
       ]
     },
     {
       "questionId": "temperature",
       "type": "choice",
-      "wording": "Does this shoulder or arm feel unusually hot or cold?",
-      "required": true,
-      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        "hot",
-        "cold"
+      "tier": "hardStop",
+      "wording": "Does your arm or shoulder feel hot or cold to touch?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "sensation",
+          "equals": true,
+          "orUnknown": true
+        },
+        {
+          "questionId": "inflammation",
+          "equals": true,
+          "orUnknown": true
+        }
       ],
+      "deniedValue": "normal",
       "options": [
         {
           "value": "normal",
@@ -136,170 +209,252 @@
         },
         {
           "value": "hot",
-          "label": "Unusually hot"
+          "label": "Hot to touch"
         },
         {
           "value": "cold",
-          "label": "Unusually cold"
+          "label": "Cold to touch"
         }
-      ]
-    },
-    {
-      "questionId": "sudden",
-      "type": "yesno",
-      "wording": "Did the shoulder pain start suddenly?",
-      "required": true,
+      ],
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "clarification": "Compare it with your other arm. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
-        true
+        "cold"
       ]
     },
     {
-      "questionId": "severe",
+      "questionId": "inflammation",
       "type": "yesno",
-      "wording": "Is the shoulder pain very severe?",
+      "tier": "gateway",
+      "wording": "Is your shoulder red, hot or swollen, or do you feel feverish or unwell?",
       "required": true,
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
-      ]
+      "adaptation": "Opening question for the swelling and infection topic. A No counts as No for its detail questions. Draft adaptation, requires clinician review.",
+      "clarification": "If you are not sure, choose Not sure and we will ask about each one separately.",
+      "dangerAnswers": []
     },
     {
-      "questionId": "bilateral",
-      "type": "yesno",
-      "wording": "Do both shoulders have severe pain?",
-      "required": true,
+      "questionId": "swelling",
+      "type": "choice",
+      "tier": "hardStop",
+      "wording": "How swollen is your shoulder or arm?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "inflammation",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Not swollen"
+        },
+        {
+          "value": "mild",
+          "label": "A little swollen"
+        },
+        {
+          "value": "severe",
+          "label": "Badly swollen"
+        }
+      ],
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "adaptation": "Graded answer; only bad swelling is an urgent sign. Draft adaptation, requires clinician review.",
+      "clarification": "Badly swollen means clearly bigger than the other side. If you cannot tell, choose Not sure again.",
       "dangerAnswers": [
-        true
-      ]
-    },
-    {
-      "questionId": "fever",
-      "type": "yesno",
-      "wording": "Do you feel feverish or generally unwell?",
-      "required": true,
-      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "When to seek medical attention",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
-      ]
-    },
-    {
-      "questionId": "systemic",
-      "type": "yesno",
-      "wording": "With this pain, have you had unexplained weight loss, night sweats, or loss of appetite?",
-      "required": true,
-      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "When to seek medical attention",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
-      ]
-    },
-    {
-      "questionId": "cancer",
-      "type": "yesno",
-      "wording": "Is this new, unexplained shoulder pain and have you had cancer?",
-      "required": true,
-      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "When to seek medical attention",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [
-        true
+        "severe"
       ]
     },
     {
       "questionId": "redness",
       "type": "yesno",
-      "wording": "Is the painful shoulder red or warm?",
-      "required": true,
+      "tier": "weighted",
+      "wording": "Is the painful shoulder red?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "inflammation",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
       "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "History and Physical / Epidemiology",
-      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
+      "adaptation": "Warmth is now asked in the temperature question. Draft adaptation, requires clinician review.",
+      "clarification": "Compare the skin with your other shoulder. If you cannot tell, choose Not sure.",
       "dangerAnswers": []
     },
     {
       "questionId": "infection_risk",
       "type": "yesno",
+      "tier": "hardStop",
       "wording": "Have you had surgery or an injection in this joint, or do you have diabetes or reduced immunity?",
       "required": false,
+      "askWhen": [
+        {
+          "questionId": "redness",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
       "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "History and Physical / Epidemiology",
-      "adaptation": "Draft screening adaptation; required when redness is reported so an unresolved combination rule cannot grant clearance. This completeness policy is not a validated diagnostic rule.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [],
-      "requiredWhen": [
+      "adaptation": "Asked when redness is reported or uncertain, so an unresolved combination rule cannot grant clearance. This completeness policy is not a validated diagnostic rule.",
+      "clarification": "Answer Yes if any one of these applies to you. If you cannot tell, choose Not sure again.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "fever",
+      "type": "yesno",
+      "tier": "weighted",
+      "wording": "Do you feel feverish or generally unwell?",
+      "required": false,
+      "askWhen": [
         {
-          "questionId": "redness",
-          "equals": true
+          "questionId": "inflammation",
+          "equals": true,
+          "orUnknown": true
         }
-      ]
+      ],
+      "deniedValue": false,
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "Urgent advice / symptom history",
+      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
+      "clarification": "Feverish means hot and shivery, or a high temperature. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "illness",
+      "type": "yesno",
+      "tier": "gateway",
+      "wording": "Have you had unexplained weight loss, night sweats or loss of appetite, or have you ever had cancer?",
+      "required": true,
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "When to seek medical attention",
+      "adaptation": "Opening question for the general health topic. A No counts as No for its detail questions. Draft adaptation, requires clinician review.",
+      "clarification": "If you are not sure, choose Not sure and we will ask about each one separately.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "systemic",
+      "type": "yesno",
+      "tier": "weighted",
+      "wording": "Have you had unexplained weight loss, night sweats or loss of appetite?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "illness",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "When to seek medical attention",
+      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
+      "clarification": "Unexplained means you do not know why it happened. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "cancer",
+      "type": "yesno",
+      "tier": "weighted",
+      "wording": "Have you ever had cancer?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "illness",
+          "equals": true,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
+      "source": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/upper-limb/shoulder/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "When to seek medical attention",
+      "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
+      "clarification": "Answer Yes if you have had cancer at any time. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
     },
     {
       "questionId": "pain_score",
       "type": "number",
+      "tier": "weighted",
       "wording": "On a scale from 0 to 10, how much does it hurt?",
-      "required": false,
+      "required": true,
+      "min": 0,
+      "max": 10,
+      "unit": "score",
+      "prefillFrom": {
+        "questionId": "Q_BASICS_PAIN_NOW"
+      },
       "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
       "label": "draft, awaiting clinician review",
       "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Context capture only; no diagnostic threshold.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [],
-      "min": 0,
-      "max": 10,
-      "unit": "out of 10"
+      "adaptation": "Replaces the yes/no 'very severe' question with a graded score; filled from the basics pain score when it was given. Thresholds are draft software weighting, not validated cutoffs.",
+      "clarification": "0 means no pain and 10 the worst pain you can imagine. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
+    },
+    {
+      "questionId": "bilateral",
+      "type": "yesno",
+      "tier": "weighted",
+      "wording": "Do you have severe pain in both shoulders?",
+      "required": false,
+      "askWhen": [
+        {
+          "questionId": "pain_score",
+          "atLeast": 6,
+          "orUnknown": true
+        }
+      ],
+      "deniedValue": false,
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "Urgent advice / symptom history",
+      "adaptation": "Asked when the pain score is 6 or more, or unknown. Draft adaptation, requires clinician review.",
+      "clarification": "Answer Yes only if both shoulders have severe pain. If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
     },
     {
       "questionId": "duration",
       "type": "duration",
+      "tier": "context",
       "wording": "For how many days have you had this pain?",
       "required": false,
-      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Context capture only; no diagnostic threshold.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [],
       "min": 0,
       "max": 36500,
       "unit": "days",
-      "boundsNote": "UI input bound only; not a clinical cutoff."
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "Urgent advice / symptom history",
+      "adaptation": "Context capture only; no diagnostic threshold. Not asked by the safety check.",
+      "clarification": "If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
     },
     {
       "questionId": "side",
       "type": "choice",
+      "tier": "context",
       "wording": "Which shoulder is affected?",
       "required": false,
-      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
-      "label": "draft, awaiting clinician review",
-      "sourceSection": "Urgent advice / symptom history",
-      "adaptation": "Context capture only; no diagnostic threshold.",
-      "clarification": "Please consider this question once more. If you cannot tell, choose Not sure again.",
-      "dangerAnswers": [],
       "options": [
         {
           "value": "left",
@@ -313,7 +468,13 @@
           "value": "both",
           "label": "Both"
         }
-      ]
+      ],
+      "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+      "label": "draft, awaiting clinician review",
+      "sourceSection": "Urgent advice / symptom history",
+      "adaptation": "Context capture only; no diagnostic threshold. Not asked by the safety check; the body selection already gives the side.",
+      "clarification": "If you cannot tell, choose Not sure.",
+      "dangerAnswers": []
     }
   ]
 }

@@ -7,13 +7,13 @@ Doctor-only output: nothing returned here is ever shown to a patient.
 
 "Not sure" is never "no": an unknown feature adds nothing to the score and is
 listed as unknown, and a dangerous condition whose defining feature is unknown
-is still flagged.
+is still flagged. A topic denied by its opening question counts as "no".
 """
 
 from typing import Any
 
 from app.conditions import CONDITIONS, REGIONS, feature_kind
-from app.gate import _same, is_valid_answer
+from app.gate import _same, implied_answers, is_valid_answer
 from app.narrowing import observed_movements
 
 DANGER_BOOST = 0.25  # added to a dangerous condition whose defining feature is present or unknown
@@ -129,7 +129,8 @@ def rank(
     ):
         raise ValueError("invalid or conflicting answers")
     facts = {
-        "answers": {a["questionId"]: a for a in answers},
+        # A No to an opening question is a real No for its detail questions (contract v2), not an unknown.
+        "answers": {a["questionId"]: a for a in implied_answers(answers)},
         "movements": observed_movements(movements or []),
         "region": _region(region_id),
     }

@@ -25,6 +25,7 @@ import { STRUCTURE } from '../src/narrowing/config';
 import { evaluateLive } from '../src/narrowing/live';
 import { categoryScores, structureState } from '../src/narrowing/structureType';
 import { CATEGORIES, structureIds, structureQuestions } from '../src/narrowing/structureBank';
+import { SAFETY_DERIVED_IDS } from '../src/narrowing/safetyFacts';
 import { looksDoubleBarrelled } from '../src/narrowing/bank';
 import { buildMovementResult } from '../src/movement/result';
 import { REGION_MAP } from '../src/regions/regionMap';
@@ -243,15 +244,19 @@ describe('the structure step decides before any muscle is shown', () => {
 
 describe('steps: structure questions first, the rest are skipped once muscle leads', () => {
   it('region mode: movements first, then the structure-type questions, then the muscle questions; exact mode has no movements', () => {
+    // the tingling and numbness questions come from the safety answers, so they are not asked again (contract v2)
+    const asked = structureIds().filter((id) => !SAFETY_DERIVED_IDS.includes(id)).length;
+    expect(asked).toBe(structureIds().length - 2);
     const kinds = liveSteps('region').map((x) => x.kind);
     expect(kinds.slice(0, 6)).toEqual(Array(6).fill('movement'));
-    expect(kinds.slice(6, 6 + structureIds().length)).toEqual(Array(structureIds().length).fill('structure'));
-    expect(kinds.slice(6 + structureIds().length).every((k) => k === 'question')).toBe(true);
-    expect(firstMuscleStep('region')).toBe(6 + structureIds().length);
+    expect(kinds.slice(6, 6 + asked)).toEqual(Array(asked).fill('structure'));
+    expect(kinds.slice(6 + asked).every((k) => k === 'question')).toBe(true);
+    expect(firstMuscleStep('region')).toBe(6 + asked);
+    expect(liveSteps('region').some((x) => SAFETY_DERIVED_IDS.includes(x.id))).toBe(false);
     const exact = liveSteps('exact').map((x) => x.kind);
     expect(exact[0]).toBe('structure');
     expect(exact.includes('movement')).toBe(false);
-    expect(firstMuscleStep('exact')).toBe(structureIds().length);
+    expect(firstMuscleStep('exact')).toBe(asked);
     expect(totalSteps('region')).toBeGreaterThan(STRUCTURE.maxQuestions);
   });
 

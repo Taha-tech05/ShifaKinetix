@@ -17,6 +17,7 @@ import type { Answer, Verdict } from '../gate/evaluate';
 import { discriminatorIds } from '../narrowing/bank';
 import { NARROWING, STRUCTURE } from '../narrowing/config';
 import { structureIds } from '../narrowing/structureBank';
+import { SAFETY_DERIVED_IDS } from '../narrowing/safetyFacts';
 import { evaluateLive, snapshotOf } from '../narrowing/live';
 import type { LiveState } from '../narrowing/live';
 import { MOVEMENTS } from '../movement/movements';
@@ -35,10 +36,13 @@ export type LiveStep = { kind: 'structure'; id: string } | { kind: 'movement'; i
  * Region mode (guided movements) starts with the six animated movements, then the structure-type questions, then the muscle
  * questions. Exact mode has no movements: structure-type questions, then the muscle questions. Muscles are shown only if
  * muscle or tendon leads after the structure-type questions.
+ * The SOON care level (see a doctor in the next few days) keeps the questions but skips the physical movements. Structure-type
+ * questions the safety check already answered (tingling, numbness) are not asked again.
  */
 export function liveSteps(mode: IntakeMode): LiveStep[] {
-  const structure: LiveStep[] = structureIds().map((id) => ({ kind: 'structure', id }));
-  const moves: LiveStep[] = mode === 'region' ? MOVEMENTS.map((m) => ({ kind: 'movement', id: m.id })) : [];
+  const structure: LiveStep[] = structureIds().filter((id) => !SAFETY_DERIVED_IDS.includes(id)).map((id) => ({ kind: 'structure', id }));
+  const withMovements = mode === 'region' && !useSession.getState().movementsBlocked;
+  const moves: LiveStep[] = withMovements ? MOVEMENTS.map((m) => ({ kind: 'movement', id: m.id })) : [];
   return [...moves, ...structure, ...discriminatorIds().map((id): LiveStep => ({ kind: 'question', id }))];
 }
 

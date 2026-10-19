@@ -21,6 +21,7 @@ import { SHOULDER_REGIONS } from '../src/regions/shoulder';
 import type { BodySelection } from '../src/regions/types';
 import { answered, unknown } from '../src/questions/answer';
 import { useSession } from '../src/store/session';
+import { lowRiskAnswers } from './support/safetyAnswers';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -149,7 +150,7 @@ describe('sourced red-flag questions and the real gate', () => {
     expect(s.runGate()).toBe('CLARIFY');
     for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:null,state:'unknown',clarificationAttempted:true});
     expect(s.runGate()).toBe('CLARIFY');
-    for(const q of questions.filter(q => q.required)) s.recordAnswer({questionId:q.questionId,type:q.type,value:q.type==='choice'?'normal':false,state:'answered',clarificationAttempted:true});
+    for(const a of lowRiskAnswers()) s.recordAnswer({...a,clarificationAttempted:true});
     expect(s.runGate()).toBe('SAFE');
   });
 });

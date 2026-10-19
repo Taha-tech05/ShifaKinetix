@@ -9,6 +9,7 @@ import { ApiClient } from '../src/storage/apiClient';
 import * as SafetyCoordinator from '../src/gate/safetySession';
 import { submitMovementDurable, goBackDurable } from '../src/flow/live';
 import { loadCases } from '../src/server/cases';
+import { LOW_RISK } from '../__tests__/support/safetyAnswers';
 
 // Run through scripts/check_mobile_sync.py: no mocked HTTP, gate, store or database.
 const url = process.env.SHIFA_TEST_API_URL!;
@@ -28,8 +29,11 @@ async function login(id: string, role: 'patient' | 'doctor') {
 }
 const negative = (id: string): SafetyAnswer => {
   const q = questions.find((q) => q.questionId === id)!;
-  return { questionId: id, type: q.type as SafetyAnswer['type'], value: q.type === 'choice' ? 'normal' : false, state: 'answered' };
+  return { questionId: id, type: q.type as SafetyAnswer['type'], value: LOW_RISK[id] ?? false, state: 'answered' };
 };
+const MOVES = ['sideways_raise', 'forward_raise', 'can_position_hold', 'outward_push_elbow_at_side', 'belly_press', 'hand_behind_back'];
+const fullSet = (...failed: string[]) => MOVES.forEach((movementId) => useSession.getState().recordMovement({
+  movementId, painful: failed.includes(movementId), weak: false, unableToDo: failed.includes(movementId), measuredAngle: null, state: 'answered' }));
 async function upload() { return opened.store.syncOrdered(intakeId, 'fictional-patient', (e) => patient.send(e)); }
 beforeAll(async () => {
   if (!url) throw Error('Run scripts/check_mobile_sync.py to start the isolated server.');
@@ -64,19 +68,20 @@ test('offline injury clarification survives restart/upload and roles protect rep
   await expect(otherPatient.gate(intakeId)).rejects.toThrow('not allowed');
 }, 30000);
 
-test('old negatives never clear new raw weakness; fresh saved follow-ups restore identical SAFE', async () => {
+test('weakness never re-asks; an old negative never clears a failed movement, one fresh check restores identical SAFE', async () => {
   useSession.getState().recordMovement({ movementId: 'sideways_raise', painful: false, weak: true,
     unableToDo: false, measuredAngle: 80, state: 'answered' });
-  expect((await session.checkpoint()).verdict).toBe('CLARIFY');
+  expect((await session.checkpoint()).verdict).toBe('SAFE');
+  fullSet('sideways_raise');
+  expect((await session.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['F_unable']);
   await upload();
   expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
-  for (const id of ['unable', 'numb', 'tingling']) await session.save(negative(id));
+  await session.save(negative('unable'));
   expect((await session.checkpoint()).verdict).toBe('SAFE');
   await upload();
   expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
   // Evidence changes after an earlier review require a new review on both sides.
-  useSession.getState().recordMovement({ movementId: 'sideways_raise', painful: true, weak: true,
-    unableToDo: false, measuredAngle: 60, state: 'answered' });
+  fullSet('sideways_raise', 'belly_press');
   expect((await session.checkpoint()).verdict).toBe('CLARIFY');
   await upload();
   expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
@@ -89,7 +94,7 @@ test('lost HTTP acknowledgement retries safely; repeated uncertainty and confirm
   })).rejects.toThrow('connection lost');
   expect((await opened.store.pending(intakeId))[0].id).toBe(first.id);
   await upload(); expect((await patient.gate(intakeId)).verdict).toBe('SAFE');
-  await session.save({ ...negative('numb'), value: null, state: 'unknown', clarificationAttempted: true });
+  await session.save({ ...negative('unable'), value: null, state: 'unknown', clarificationAttempted: true });
   await upload();
   expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
   expect((await doctor.doctorReport(intakeId)).differential).toEqual([]);

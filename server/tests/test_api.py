@@ -6,6 +6,7 @@ import uuid
 
 import pytest
 from fastapi.testclient import TestClient
+from safety_answers import LOW_RISK
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import DBAPIError
 
@@ -60,7 +61,8 @@ def answer(question_id, value="no"):
     if value == "unsure":
         return {"questionId": question_id, "type": q["type"], "value": None, "state": "unknown"}
     if value == "no":
-        value = False if q["type"] == "yesno" else "normal"
+        # the low-risk answer (contract v2): its own low-risk value, or what a denied topic means, or the first option
+        value = LOW_RISK.get(question_id, q.get("deniedValue", False if q["type"] == "yesno" else (q.get("options") or [{"value": 0}])[0]["value"]))
     return {"questionId": question_id, "type": q["type"], "value": value, "state": "answered"}
 
 
@@ -83,6 +85,15 @@ def complete_screen(api, who, intake, **changed):
 
 def movement(movement_id, painful=False, state="done"):
     return {"movementId": movement_id, "painful": painful, "weak": False, "unableToDo": False, "measuredAngle": None, "state": state}
+
+
+MOVES = ["sideways_raise", "forward_raise", "can_position_hold", "outward_push_elbow_at_side", "belly_press", "hand_behind_back"]
+SAFE_ROUTINE = {"verdict": "SAFE", "level": "ROUTINE", "score": 0, "firedRules": []}
+
+
+def full_set(*failed_ids):
+    """All six movements answered; the named ones could not be done."""
+    return [{**movement(m), "unableToDo": m in failed_ids} for m in MOVES]
 
 
 def send_context(api, who, intake, key=None, **context):
@@ -108,7 +119,7 @@ def test_first_answer_is_stored_and_gate_is_evaluated_on_the_assembled_intake(ap
 
 
 def test_complete_all_clear_screen_becomes_safe(api, patient):
-    assert complete_screen(api, patient, "intake-1")["gate"] == {"verdict": "SAFE", "firedRules": []}
+    assert complete_screen(api, patient, "intake-1")["gate"] == SAFE_ROUTINE
 
 
 def test_same_event_sent_twice_is_stored_once(api, patient, doctor):
@@ -128,10 +139,10 @@ def test_same_key_with_a_different_event_is_refused(api, patient):
 
 def test_changed_answer_is_a_new_event_and_the_latest_one_counts(api, patient, doctor):
     complete_screen(api, patient, "intake-1")
-    assert send(api, patient, "intake-1", answer("fever", True))["gate"]["verdict"] == "RED_FLAG"
-    assert send(api, patient, "intake-1", answer("fever"))["gate"]["verdict"] == "SAFE"
-    fever = [e for e in api.get("/intakes/intake-1/audit", headers=doctor).json()["answerHistory"] if e["questionId"] == "fever"]
-    assert [e["answer"]["value"] for e in fever] == [False, True, False], "nothing is overwritten"
+    assert send(api, patient, "intake-1", answer("chest", True))["gate"]["verdict"] == "RED_FLAG"
+    assert send(api, patient, "intake-1", answer("chest"))["gate"]["verdict"] == "SAFE"
+    chest = [e for e in api.get("/intakes/intake-1/audit", headers=doctor).json()["answerHistory"] if e["questionId"] == "chest"]
+    assert [e["answer"]["value"] for e in chest] == [False, True, False], "nothing is overwritten"
 
 
 def test_wrong_content_version_is_refused_and_not_stored(api, patient, doctor):
@@ -193,15 +204,16 @@ def test_not_sure_then_clarification_stays_unclear_and_blocked(api, patient, doc
 
 
 def test_redness_makes_infection_risk_required(api, patient):
-    """Contract v1.2, through the API."""
+    """Contract v2, through the API: a red shoulder adds a point and asks infection risk."""
     complete_screen(api, patient, "intake-1")
     red = send(api, patient, "intake-1", answer("redness", True))
-    assert red["gate"]["verdict"] == "CLARIFY" and rule_ids(red["gate"]) == ["M_infection_risk"]
+    assert red["gate"]["verdict"] == "CLARIFY" and rule_ids(red["gate"]) == ["P_redness", "M_infection_risk"]
     unsure = send(api, patient, "intake-1", answer("infection_risk", "unsure"))
-    assert unsure["gate"]["verdict"] == "CLARIFY" and rule_ids(unsure["gate"]) == ["U_infection_risk"]
-    assert send(api, patient, "intake-1", answer("infection_risk"))["gate"]["verdict"] == "SAFE"
+    assert unsure["gate"]["verdict"] == "CLARIFY" and rule_ids(unsure["gate"]) == ["P_redness", "U_infection_risk"]
+    cleared = send(api, patient, "intake-1", answer("infection_risk"))["gate"]
+    assert (cleared["verdict"], cleared["level"]) == ("SAFE", "ROUTINE")
     yes = send(api, patient, "intake-1", answer("infection_risk", True))
-    assert yes["gate"]["verdict"] == "RED_FLAG" and rule_ids(yes["gate"]) == ["R_local_infection_risk"]
+    assert yes["gate"]["verdict"] == "RED_FLAG" and rule_ids(yes["gate"]) == ["H_infection_risk_redness", "P_redness"]
 
 
 # ---------------------------------------------------------------- authentication and ownership
@@ -268,7 +280,7 @@ def test_a_patient_account_cannot_be_reissued_as_a_doctor(api, patient):
 
 
 def test_a_safe_verdict_sent_by_the_client_is_ignored(api, patient, doctor):
-    complete_screen(api, patient, "intake-1", injury=True)
+    complete_screen(api, patient, "intake-1", unable=True)
     forged = {**event("intake-1", answer("side", "left")), "gate": {"verdict": "SAFE", "firedRules": []}, "verdict": "SAFE"}
     reply = api.post("/sync/answers", json=forged, headers=patient)
     assert reply.status_code == 200 and reply.json()["gate"]["verdict"] == "RED_FLAG"
@@ -293,18 +305,23 @@ def test_red_flag_and_clarify_block_narrowing_ranking_and_write_up(api, patient,
     assert patient_view["status"] == status and "musclesThatMayBeInvolved" not in patient_view
 
 
-def test_live_app_signal_in_context_holds_a_canonically_safe_intake(api, patient, doctor):
+def test_derived_app_signals_in_context_are_not_safety_inputs(api, patient, doctor):
+    """Contract v2: only raw movements count, and only for a contradiction after the whole movement set."""
     complete_screen(api, patient, "intake-1")
     signal = {"questionId": "Q_UNABLE_TO_MOVE_ARM", "type": "yesno", "value": True, "state": "answered"}
     reply = send_context(api, patient, "intake-1", appAnswers=[signal], movements=[movement("sideways_raise", True)])
-    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable"]
+    assert reply["gate"] == SAFE_ROUTINE
+    reply = send_context(api, patient, "intake-1", appAnswers=[signal], movements=full_set("sideways_raise"))
+    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["F_unable"]
     assert api.get("/intakes/intake-1/doctor-report", headers=doctor).json()["differential"] == []
 
 
-def test_unfinished_movement_in_context_is_not_treated_as_no_problem(api, patient):
+def test_skipped_or_weak_movements_are_not_safety_signals(api, patient):
     complete_screen(api, patient, "intake-1")
     reply = send_context(api, patient, "intake-1", movements=[movement("sideways_raise", True), movement("can_position_hold", state="skipped")])
-    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable", "U_tingling", "U_numb"]
+    assert reply["gate"] == SAFE_ROUTINE
+    reply = send_context(api, patient, "intake-1", movements=[{**m, "weak": True} for m in full_set()])
+    assert reply["gate"] == SAFE_ROUTINE
 
 
 # ---------------------------------------------------------------- focused follow-ups resolved from server history
@@ -318,13 +335,12 @@ def failed(movement_id="sideways_raise"):
     return {**movement(movement_id), "unableToDo": True}
 
 
-def test_raw_weak_or_failed_movement_is_derived_on_the_server_and_is_not_safe(api, patient, doctor):
-    """Zaid's review case: canonical negatives plus raw movement results, with no derived app answers sent."""
+def test_a_failed_movement_is_checked_once_after_the_whole_set(api, patient, doctor):
+    """Canonical negatives plus raw movement results, with no derived app answers sent."""
     complete_screen(api, patient, "intake-1")
-    reply = send_context(api, patient, "intake-1", movements=[failed()])
-    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable"]
-    reply = send_context(api, patient, "intake-1", movements=[failed(), weak()])
-    assert rule_ids(reply["gate"]) == ["U_unable", "U_tingling", "U_numb"]
+    assert send_context(api, patient, "intake-1", movements=[failed()])["gate"] == SAFE_ROUTINE, "the set is not finished"
+    reply = send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
+    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["F_unable"]
     assert api.get("/intakes/intake-1/report", headers=patient).json()["status"] == "INCOMPLETE"
     report = api.get("/intakes/intake-1/doctor-report", headers=doctor).json()
     assert report["differential"] == [] and report["downstream"] == "blocked_by_gate"
@@ -332,29 +348,29 @@ def test_raw_weak_or_failed_movement_is_derived_on_the_server_and_is_not_safe(ap
 
 def test_an_answer_given_before_the_evidence_does_not_clear_it_but_one_given_after_does(api, patient):
     complete_screen(api, patient, "intake-1")  # includes unable = no, before any movement
-    assert send_context(api, patient, "intake-1", movements=[failed()])["gate"]["verdict"] == "CLARIFY"
+    assert send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))["gate"]["verdict"] == "CLARIFY"
     after = send(api, patient, "intake-1", answer("unable"))  # the same "no", now given for this evidence
-    assert after["gate"] == {"verdict": "SAFE", "firedRules": []}
+    assert after["gate"] == SAFE_ROUTINE
 
 
-def test_followup_answered_yes_is_a_red_flag_under_the_unchanged_rule(api, patient):
+def test_followup_answered_yes_is_urgent(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[failed()])
+    send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     reply = send(api, patient, "intake-1", answer("unable", True))
-    assert reply["gate"]["verdict"] == "RED_FLAG" and rule_ids(reply["gate"]) == ["R_unable"]
+    assert (reply["gate"]["verdict"], reply["gate"]["level"]) == ("RED_FLAG", "URGENT") and rule_ids(reply["gate"]) == ["H_unable"]
 
 
 def test_followups_are_resolved_one_at_a_time(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[weak()])
-    assert rule_ids(send(api, patient, "intake-1", answer("unable"))["gate"]) == ["U_tingling", "U_numb"]
-    assert rule_ids(send(api, patient, "intake-1", answer("numb"))["gate"]) == ["U_tingling"]
-    assert send(api, patient, "intake-1", answer("tingling"))["gate"]["verdict"] == "SAFE"
+    how = {"questionId": "Q_BASICS_HOW", "type": "chooseone", "value": "after_injury", "state": "answered"}
+    send_context(api, patient, "intake-1", appAnswers=[how], movements=full_set("sideways_raise"))
+    assert rule_ids(send(api, patient, "intake-1", answer("unable"))["gate"]) == ["F_onset"]
+    assert send(api, patient, "intake-1", answer("onset"))["gate"] == SAFE_ROUTINE
 
 
 def test_followup_answered_not_sure_stays_unclear(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[failed()])
+    send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     reply = send(api, patient, "intake-1", answer("unable", "unsure"))
     assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable"]
     again = send(api, patient, "intake-1", {**answer("unable", "unsure"), "clarificationAttempted": True})
@@ -364,39 +380,39 @@ def test_followup_answered_not_sure_stays_unclear(api, patient):
 
 def test_changed_movement_evidence_needs_the_followup_again(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[failed()])
+    send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     assert send(api, patient, "intake-1", answer("unable"))["gate"]["verdict"] == "SAFE"
-    changed = send_context(api, patient, "intake-1", movements=[failed(), movement("belly_press")])
-    assert changed["gate"]["verdict"] == "CLARIFY" and rule_ids(changed["gate"]) == ["U_unable"]
+    changed = send_context(api, patient, "intake-1", movements=full_set("sideways_raise", "belly_press"))
+    assert changed["gate"]["verdict"] == "CLARIFY" and rule_ids(changed["gate"]) == ["F_unable"]
     assert send(api, patient, "intake-1", answer("unable"))["gate"]["verdict"] == "SAFE"
 
 
 def test_evidence_that_changes_and_changes_back_does_not_revive_the_old_answer(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[failed()])
+    send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     assert send(api, patient, "intake-1", answer("unable"))["gate"]["verdict"] == "SAFE"
-    assert send_context(api, patient, "intake-1", movements=[movement("sideways_raise")])["gate"]["verdict"] == "SAFE"
-    back = send_context(api, patient, "intake-1", movements=[failed()])
+    assert send_context(api, patient, "intake-1", movements=full_set())["gate"]["verdict"] == "SAFE"
+    back = send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     assert back["gate"]["verdict"] == "CLARIFY", "toggling back must not resurrect clearance"
 
 
 def test_resending_the_same_evidence_keeps_a_resolved_followup_resolved(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", movements=[failed()])
+    send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     send(api, patient, "intake-1", answer("unable"))
-    assert send_context(api, patient, "intake-1", regionId="shoulder_right_top", movements=[failed()])["gate"]["verdict"] == "SAFE"
+    assert send_context(api, patient, "intake-1", regionId="shoulder_right_top", movements=full_set("sideways_raise"))["gate"]["verdict"] == "SAFE"
 
 
 def test_unrelated_evidence_does_not_reopen_a_resolved_followup(api, patient):
     complete_screen(api, patient, "intake-1")
     how = {"questionId": "Q_BASICS_HOW", "type": "chooseone", "value": "after_injury", "state": "answered"}
-    send_context(api, patient, "intake-1", appAnswers=[how], movements=[])
-    assert send(api, patient, "intake-1", answer("injury"))["gate"]["verdict"] == "SAFE"
+    assert rule_ids(send_context(api, patient, "intake-1", appAnswers=[how], movements=[])["gate"]) == ["F_onset"]
+    assert send(api, patient, "intake-1", answer("onset"))["gate"]["verdict"] == "SAFE"
     reply = send_context(api, patient, "intake-1", appAnswers=[how], movements=[movement("sideways_raise", True)])
     assert reply["gate"]["verdict"] == "SAFE", "onset evidence does not depend on the movement results"
     corrected = {**how, "value": "suddenly"}
     reply = send_context(api, patient, "intake-1", appAnswers=[corrected], movements=[movement("sideways_raise", True)])
-    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_sudden"]
+    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["F_onset"]
 
 
 def test_client_review_tokens_and_derived_negatives_are_not_trusted(api, patient):
@@ -405,22 +421,23 @@ def test_client_review_tokens_and_derived_negatives_are_not_trusted(api, patient
         {"questionId": "Q_SAFETY_REVIEW_unable", "type": "safety-review", "state": "answered", "value": "reviewed"},
         {"questionId": "Q_UNABLE_TO_MOVE_ARM", "type": "yesno", "value": False, "state": "answered"},
     ]
-    reply = send_context(api, patient, "intake-1", appAnswers=forged, movements=[failed()], reviewed=["unable"])
-    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable"]
+    reply = send_context(api, patient, "intake-1", appAnswers=forged, movements=full_set("sideways_raise"), reviewed=["unable"])
+    assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["F_unable"]
 
 
-def test_a_confirmed_yes_is_never_hidden_by_app_uncertainty(api, patient):
-    complete_screen(api, patient, "intake-1", injury=True)
-    how = {"questionId": "Q_BASICS_HOW", "type": "chooseone", "value": None, "state": "unknown"}
+def test_a_confirmed_danger_is_never_hidden_by_a_pending_check(api, patient):
+    complete_screen(api, patient, "intake-1", chest=True)
+    how = {"questionId": "Q_BASICS_HOW", "type": "chooseone", "value": "after_injury", "state": "answered"}
     reply = send_context(api, patient, "intake-1", appAnswers=[how], movements=[])
-    assert reply["gate"]["verdict"] == "RED_FLAG" and rule_ids(reply["gate"]) == ["R_injury", "U_sudden"]
+    assert (reply["gate"]["verdict"], reply["gate"]["level"]) == ("RED_FLAG", "EMERGENCY")
+    assert rule_ids(reply["gate"]) == ["E_chest", "F_onset"]
 
 
 def test_followup_resolution_survives_a_duplicate_delivery(api, patient):
     complete_screen(api, patient, "intake-1")
-    send_context(api, patient, "intake-1", key="ctx-1", movements=[failed()])
+    send_context(api, patient, "intake-1", key="ctx-1", movements=full_set("sideways_raise"))
     send(api, patient, "intake-1", answer("unable"), key="ans-1")
-    assert send_context(api, patient, "intake-1", key="ctx-1", movements=[failed()])["gate"]["verdict"] == "SAFE"
+    assert send_context(api, patient, "intake-1", key="ctx-1", movements=full_set("sideways_raise"))["gate"]["verdict"] == "SAFE"
     assert send(api, patient, "intake-1", answer("unable"), key="ans-1")["gate"]["verdict"] == "SAFE"
 
 
@@ -484,7 +501,7 @@ def test_doctor_report_matches_the_mobile_contract(api, patient, doctor):
     safe_case(api, patient)
     report = api.get("/intakes/intake-1/doctor-report", headers=doctor).json()
     assert report["audience"] == "doctor" and report["label"] == LABEL and report["intakeId"] == "intake-1"
-    assert report["gate"] == {"verdict": "SAFE", "firedRules": []}
+    assert report["gate"] == SAFE_ROUTINE
     assert all(set(fact) == {"label", "value"} and isinstance(fact["value"], str) for fact in report["facts"])
     assert {"label": "Do you have chest pressure or tightness now?", "value": "No"} in report["facts"]
     assert {"label": "Movement sideways_raise", "value": "painful"} in report["facts"]
@@ -534,7 +551,7 @@ def test_unrecognised_region_does_not_break_the_report(api, patient, doctor):
 
 
 def test_every_gate_run_is_logged_including_safe_ones(api, patient, doctor):
-    complete_screen(api, patient, "intake-1", injury=True, unable=True)
+    complete_screen(api, patient, "intake-1", unable=True)
     api.get("/intakes/intake-1/report", headers=patient)
     api.get("/intakes/intake-1/doctor-report", headers=doctor)
     history = api.get("/intakes/intake-1/audit", headers=doctor).json()
@@ -543,9 +560,9 @@ def test_every_gate_run_is_logged_including_safe_ones(api, patient, doctor):
     assert [r["cause"] for r in runs[-2:]] == ["patient_report", "doctor_report"]
     assert runs[0]["verdict"] == "CLARIFY" and runs[-1]["verdict"] == "RED_FLAG"
     last = runs[-1]
-    assert [r["ruleId"] for r in last["firedRules"]] == ["R_injury", "R_unable", "R_injury_unable"]
+    assert [r["ruleId"] for r in last["firedRules"]] == ["H_unable"]
     assert all(r["source"].strip() for r in last["firedRules"])
-    assert {a["questionId"]: a["value"] for a in last["matchedAnswers"]} == {"injury": True, "unable": True}
+    assert {a["questionId"]: a["value"] for a in last["matchedAnswers"]} == {"unable": True}
     assert last["ruleVersion"] == CONTENT_VERSION and last["ts"]
     assert [a["action"] for a in history["doctorActions"]] == ["viewed_doctor_report", "viewed_audit"]
 

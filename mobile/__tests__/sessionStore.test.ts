@@ -2,6 +2,7 @@ import { evaluateStub } from '../src/gate/stub';
 import { useSession } from '../src/store/session';
 import { evaluate, questions } from '../src/gate/evaluate';
 import type { Answer } from '../src/gate/evaluate';
+import { lowRiskAnswers } from './support/safetyAnswers';
 
 const yes = (id: string, flagged = false): Answer & { flagged?: boolean } => ({
   questionId: id,
@@ -11,9 +12,7 @@ const yes = (id: string, flagged = false): Answer & { flagged?: boolean } => ({
   ...(flagged ? { flagged } : {}),
 });
 
-const seedSafe = () => questions.filter(q => q.required).forEach(q => useSession.getState().recordAnswer({
-  questionId:q.questionId,type:q.type,state:'answered',value:q.type==='choice'?'normal':false
-}));
+const seedSafe = (changes = {}) => lowRiskAnswers(changes).forEach((a) => useSession.getState().recordAnswer(a));
 beforeEach(() => useSession.getState().reset());
 
 describe('session store', () => {
@@ -129,6 +128,21 @@ describe('session store', () => {
     expect(s.runGate()).toBe('RED_FLAG');
   });
 
+  it('the SOON care level blocks the movements; a later ROUTINE result lifts that again', () => {
+    expect(questions.length).toBeGreaterThan(0);
+    seedSafe({ onset: 'injury', shape: false });
+    expect(useSession.getState().runGate()).toBe('SAFE');
+    expect(useSession.getState().gateOutput?.level).toBe('SOON');
+    expect(useSession.getState().movementsBlocked).toBe(true);
+    seedSafe();
+    useSession.getState().recordAnswer({ questionId: 'shape', type: 'yesno', value: false, state: 'answered' });
+    useSession.getState().runGate();
+    expect(useSession.getState().gateOutput?.level).toBe('ROUTINE');
+    expect(useSession.getState().movementsBlocked).toBe(false);
+    useSession.getState().reset();
+    expect(useSession.getState().movementsBlocked).toBe(false);
+  });
+
   it('reset clears everything', () => {
     const s = useSession.getState();
     s.setSelection({ regionId: 'shoulder_left', subRegionId: 'back', point: { x: 0, y: 0, z: 0 }, hitStructure: null, layer: 'bone' });
@@ -144,6 +158,6 @@ describe('session store', () => {
 
 describe('gate stub', () => {
   it('returns SAFE with no fired rules when nothing is flagged', () => {
-    expect(evaluateStub([yes('Q1')])).toEqual({ verdict: 'SAFE', firedRules: [] });
+    expect(evaluateStub([yes('Q1')])).toEqual({ verdict: 'SAFE', level: 'ROUTINE', score: 0, firedRules: [] });
   });
 });

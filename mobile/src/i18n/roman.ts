@@ -190,6 +190,15 @@ export const roman: Translations = {
     title: 'Hum yaqeen se nahi keh sake. Ehtiyatan hum doctor se baat karne ka mashwara dete hain.',
     doctor: 'Doctor se baat karein',
   },
+  triage: {
+    emergencyTitle: 'Abhi emergency madad ke liye call karein',
+    because: 'Wajah: {{reasons}}',
+    soonChip: 'Jald doctor ko dikhayein',
+    soonTitle: 'Baraye meharbani agle chand dinon mein doctor ko dikhayein',
+    soonBody: 'Emergency ki zaroorat nahi, lekin doctor ko jald aap ka kandha dekhna chahiye. Agar takleef barh jaye ya tabiyat bohat kharab ho to foran madad lein.',
+    soonNext: 'Doctor ki madad ke liye aap chand mukhtasar sawalon ke jawab ab bhi de sakte hain. Harkat wale test nahi honge.',
+    uncertain: 'ek jawab jis ka aap ko yaqeen nahi tha',
+  },
   safe: {
     chip: 'Mehfooz',
     title: 'Koi fori khatre ki alamat nahi mili',

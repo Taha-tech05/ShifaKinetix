@@ -37,9 +37,9 @@ export function routeAfterGate(verdict: Verdict, reaskDone: boolean): string {
   return '/report/safe';
 }
 
-/** First step after SAFE. */
-export function routeAfterSafe(mode: IntakeMode): string {
-  return mode === 'exact' ? '/report/followup' : '/report/movement?i=0';
+/** First step after SAFE. The SOON care level skips the movements and goes straight to the questions. */
+export function routeAfterSafe(mode: IntakeMode, movementsBlocked = false): string {
+  return mode === 'exact' || movementsBlocked ? '/report/followup' : '/report/movement?i=0';
 }
 
 /** What comes after the follow-up questions. */
