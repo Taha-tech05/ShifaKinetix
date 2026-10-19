@@ -25,6 +25,10 @@ def _load(filename: str) -> dict[str, Any]:
 _RULE_FILE = _load("gate_rules.json")
 RULES: list[dict[str, Any]] = _RULE_FILE["rules"]
 THRESHOLDS: dict[str, float] = _RULE_FILE["levels"]
+# Hard-stop answers still "Not sure" after their simpler question: how many may stay open, and the lowest level they allow.
+UNRESOLVED: dict[str, Any] = _RULE_FILE["unresolved"]
+# Questions behind an EMERGENCY rule (chest, breathing): never left unresolved.
+EMERGENCY_IDS = {c["questionId"] for r in RULES if r.get("level") == "EMERGENCY" for c in r["all"]}
 _QUESTION_BANK = _load("questions_shoulder.json")
 QUESTIONS: list[dict[str, Any]] = _QUESTION_BANK["questions"]
 CONTENT_VERSION: str = _QUESTION_BANK["contentVersion"]
@@ -192,11 +196,32 @@ def evaluate(answers: Any) -> dict[str, Any]:
             }
         )
 
+    # Unresolved: a hard-stop answer still "Not sure" after its simpler question. A few may stay open (the result is then
+    # at least SOON); more, or chest/breathing, needs a doctor (CLARIFY). No points, so nothing can lower a result.
+    asked = [q for q in QUESTIONS if is_asked_question(q, answers)]
+    unresolved = [
+        q for q in asked
+        if q["tier"] == "hardStop" and q["questionId"] in by_id and by_id[q["questionId"]]["state"] == "unknown"
+        and by_id[q["questionId"]].get("clarificationAttempted") is True
+    ]
+    tolerated = len(unresolved) <= UNRESOLVED["allowed"] and not any(q["questionId"] in EMERGENCY_IDS for q in unresolved)
+    if tolerated:
+        for q in unresolved:
+            fired.append(
+                {
+                    "ruleId": f"N_{q['questionId']}",
+                    "matchedAnswers": [q["questionId"]],
+                    "source": POLICY,
+                    "reason": f"Could not check {q.get('shortName', q['questionId'])} in the app",
+                    "points": 0,
+                }
+            )
+
     incomplete = False
-    for q in QUESTIONS:
-        if not is_asked_question(q, answers):
-            continue
+    for q in asked:
         qid = q["questionId"]
+        if tolerated and q in unresolved:
+            continue
         a = by_id.get(qid)
         if a is None:
             incomplete = True
@@ -227,7 +252,8 @@ def evaluate(answers: Any) -> dict[str, Any]:
         return {"verdict": "RED_FLAG", "level": level, "score": score, "firedRules": fired}
     if incomplete:
         return {"verdict": "CLARIFY", "level": None, "score": score, "firedRules": fired}
-    level = "SOON" if score >= THRESHOLDS["SOON"] else "ROUTINE"
+    soon = score >= THRESHOLDS["SOON"] or (tolerated and len(unresolved) > 0)
+    level = UNRESOLVED["level"] if soon else "ROUTINE"
     return {"verdict": "SAFE", "level": level, "score": score, "firedRules": fired}
 
 

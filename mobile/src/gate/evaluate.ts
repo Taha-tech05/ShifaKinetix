@@ -41,6 +41,10 @@ export interface Question {
   askWhen?: Clause[];
   deniedValue?: boolean | string;
   prefillFrom?: { questionId: string; map?: Record<string, string> };
+  /** How a reason names this question ("swelling"). */
+  shortName?: string;
+  /** A simpler, concrete question asked after a first "Not sure"; each option gives the canonical value. */
+  fallback?: { wording: string; options: { label: string; value: boolean | string }[] };
   source: string;
   label: string;
   clarification: string;
@@ -77,6 +81,10 @@ export interface GateOutput {
 export const questions: Question[] = questionBank.questions as unknown as Question[];
 export const rules: Rule[] = gateRules.rules as unknown as Rule[];
 export const THRESHOLDS: { SOON: number; URGENT: number } = gateRules.levels;
+/** Hard-stop answers still "Not sure" after their simpler question: how many may stay open, and the lowest level they allow. */
+export const UNRESOLVED: { allowed: number; level: 'SOON' } = gateRules.unresolved as { allowed: number; level: 'SOON' };
+/** Questions behind an EMERGENCY rule (chest, breathing): never left unresolved. */
+export const EMERGENCY_IDS = new Set(rules.filter((r) => r.level === 'EMERGENCY').flatMap((r) => r.all.map((c) => c.questionId)));
 export const CONTENT_VERSION = questionBank.contentVersion;
 const POLICY = 'docs/gate-contract.md';
 const record = (x: unknown): x is Record<string, unknown> =>
@@ -166,10 +174,23 @@ export function evaluate(input: unknown): GateOutput {
     firedRules.push({ ruleId: `W_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
       reason: 'Answer is uncertain; counted at half weight.', points });
   }
-  // 3. Completeness of the linked questions that apply to these answers.
+  // 3. Unresolved: a hard-stop answer still "Not sure" after its simpler question. A few may stay open (the result is
+  //    then at least SOON); more, or chest/breathing, needs a doctor (CLARIFY). No points, so nothing can lower a result.
+  const asked = questions.filter((item) => isAskedQuestion(item, input));
+  const unresolved = asked.filter((q) => q.tier === 'hardStop' && answers.get(q.questionId)?.state === 'unknown'
+    && answers.get(q.questionId)?.clarificationAttempted === true);
+  const tolerated = unresolved.length <= UNRESOLVED.allowed && !unresolved.some((q) => EMERGENCY_IDS.has(q.questionId));
+  if (tolerated) {
+    for (const q of unresolved) {
+      firedRules.push({ ruleId: `N_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
+        reason: `Could not check ${q.shortName ?? q.questionId} in the app`, points: 0 });
+    }
+  }
+  // 4. Completeness of the linked questions that apply to these answers.
   let incomplete = false;
-  for (const q of questions.filter((item) => isAskedQuestion(item, input))) {
+  for (const q of asked) {
     const a = answers.get(q.questionId);
+    if (tolerated && unresolved.includes(q)) continue;
     if (!a) {
       incomplete = true;
       firedRules.push({ ruleId: `M_${q.questionId}`, matchedAnswers: [q.questionId], source: POLICY,
@@ -181,13 +202,14 @@ export function evaluate(input: unknown): GateOutput {
           : 'Safety answer is uncertain; ask the fixed clarification.' });
     }
   }
-  // 4. Danger first, then uncertainty, then the care level from the points.
+  // 5. Danger first, then uncertainty, then the care level from the points.
   if (hardStop || score >= THRESHOLDS.URGENT) {
     const level: Level = hardStop && RANK[hardStop] >= RANK.URGENT ? hardStop : 'URGENT';
     return { verdict: 'RED_FLAG', level, score, firedRules };
   }
   if (incomplete) return { verdict: 'CLARIFY', level: null, score, firedRules };
-  return { verdict: 'SAFE', level: score >= THRESHOLDS.SOON ? 'SOON' : 'ROUTINE', score, firedRules };
+  const soon = score >= THRESHOLDS.SOON || (tolerated && unresolved.length > 0);
+  return { verdict: 'SAFE', level: soon ? UNRESOLVED.level : 'ROUTINE', score, firedRules };
 }
 
 /**

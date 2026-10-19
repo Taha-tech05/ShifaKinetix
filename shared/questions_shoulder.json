@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "shoulder-3",
+  "contentVersion": "shoulder-4",
   "label": "draft, awaiting clinician review",
-  "note": "Linked safety questions (contract v2). tier: hardStop = a 'Not sure' needs clarification; gateway = one opening question per topic, a 'Yes' or 'Not sure' opens its detail questions; weighted = adds points, 'Not sure' counts half; context = never asked by the safety check. askWhen: the question is asked when ANY clause matches (orUnknown also matches 'Not sure'). deniedValue: what this question counts as when the answers that would open it were given and did not open it (for example a gateway No, or a gradual onset for 'changed shape'). prefillFrom: an earlier app answer that already answers this question. Bank order is the asking order; a linked question waits until a question that opens it has been answered.",
+  "note": "Linked safety questions (contract v2). tier: hardStop = a 'Not sure' needs clarification; gateway = one opening question per topic, a 'Yes' or 'Not sure' opens its detail questions; weighted = adds points, 'Not sure' counts half; context = never asked by the safety check. askWhen: the question is asked when ANY clause matches (orUnknown also matches 'Not sure'). deniedValue: what this question counts as when the answers that would open it were given and did not open it (for example a gateway No, or a gradual onset for 'changed shape'). prefillFrom: an earlier app answer that already answers this question. Bank order is the asking order; a linked question waits until a question that opens it has been answered. fallback: a simpler, concrete question asked after a first 'Not sure' on a hard-stop question; its options give the canonical value. shortName: how a reason names the question.",
   "questions": [
     {
       "questionId": "chest",
@@ -15,6 +15,20 @@
       "sourceSection": "Symptoms",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
       "clarification": "Chest pressure or tightness means a squeezing or heavy feeling in the chest. If you cannot tell, choose Not sure again.",
+      "shortName": "chest tightness",
+      "fallback": {
+        "wording": "Does your chest feel heavy, tight or squeezed right now?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": true
+          },
+          {
+            "label": "No",
+            "value": false
+          }
+        ]
+      },
       "dangerAnswers": [
         true
       ]
@@ -30,6 +44,20 @@
       "sourceSection": "Symptoms",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
       "clarification": "This means it is hard to catch your breath right now, even when resting. If you cannot tell, choose Not sure again.",
+      "shortName": "your breathing",
+      "fallback": {
+        "wording": "Can you say a full sentence without stopping for breath?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": false
+          },
+          {
+            "label": "No",
+            "value": true
+          }
+        ]
+      },
       "dangerAnswers": [
         true
       ]
@@ -80,6 +108,20 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
       "clarification": "This asks whether the arm cannot move at all, not whether moving it hurts. Do not try a painful movement to answer. If you cannot tell, choose Not sure again.",
+      "shortName": "whether the arm can move",
+      "fallback": {
+        "wording": "Can you lift your hand up to your mouth, even if it hurts?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": false
+          },
+          {
+            "label": "No",
+            "value": true
+          }
+        ]
+      },
       "dangerAnswers": [
         true
       ]
@@ -106,6 +148,20 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Asked after an injury or a sudden start. Draft adaptation, requires clinician review.",
       "clarification": "Look at both shoulders. A bump, a dip or an arm hanging differently counts. If you cannot tell, choose Not sure again.",
+      "shortName": "the shape of the shoulder",
+      "fallback": {
+        "wording": "Is there a bump or a dip, or does the arm hang lower than the other side?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": true
+          },
+          {
+            "label": "No",
+            "value": false
+          }
+        ]
+      },
       "dangerAnswers": [
         true
       ]
@@ -142,6 +198,20 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
       "clarification": "This is about losing feeling, for example not feeling a light touch. Weakness is not the same. Do not test yourself. If you cannot tell, choose Not sure again.",
+      "shortName": "feeling in the arm",
+      "fallback": {
+        "wording": "When your other hand touches the sore arm, does it feel the same as touching the good arm?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": false
+          },
+          {
+            "label": "No",
+            "value": true
+          }
+        ]
+      },
       "dangerAnswers": [
         true
       ]
@@ -179,6 +249,24 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Graded answer; only pins and needles that do not go away is an urgent sign. Draft adaptation, requires clinician review.",
       "clarification": "Pins and needles that keep going or never fully settle count as not going away. If you cannot tell, choose Not sure again.",
+      "shortName": "pins and needles",
+      "fallback": {
+        "wording": "Have you had pins and needles in this arm all day today?",
+        "options": [
+          {
+            "label": "Yes, all day",
+            "value": "persistent"
+          },
+          {
+            "label": "Only now and then",
+            "value": "comes_goes"
+          },
+          {
+            "label": "No pins and needles",
+            "value": "none"
+          }
+        ]
+      },
       "dangerAnswers": [
         "persistent"
       ]
@@ -221,6 +309,24 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Draft screening adaptation; referral policy requires clinician review.",
       "clarification": "Compare it with your other arm. If you cannot tell, choose Not sure again.",
+      "shortName": "the arm's temperature",
+      "fallback": {
+        "wording": "Touch both arms with the back of your hand. The sore arm feels:",
+        "options": [
+          {
+            "label": "Colder",
+            "value": "cold"
+          },
+          {
+            "label": "Warmer",
+            "value": "hot"
+          },
+          {
+            "label": "The same",
+            "value": "normal"
+          }
+        ]
+      },
       "dangerAnswers": [
         "cold"
       ]
@@ -271,6 +377,24 @@
       "sourceSection": "Urgent advice / symptom history",
       "adaptation": "Graded answer; only bad swelling is an urgent sign. Draft adaptation, requires clinician review.",
       "clarification": "Badly swollen means clearly bigger than the other side. If you cannot tell, choose Not sure again.",
+      "shortName": "swelling",
+      "fallback": {
+        "wording": "Look in a mirror. Compared with the other side, the sore shoulder is:",
+        "options": [
+          {
+            "label": "Clearly bigger",
+            "value": "severe"
+          },
+          {
+            "label": "A little bigger",
+            "value": "mild"
+          },
+          {
+            "label": "The same size",
+            "value": "none"
+          }
+        ]
+      },
       "dangerAnswers": [
         "severe"
       ]
@@ -315,6 +439,20 @@
       "sourceSection": "History and Physical / Epidemiology",
       "adaptation": "Asked when redness is reported or uncertain, so an unresolved combination rule cannot grant clearance. This completeness policy is not a validated diagnostic rule.",
       "clarification": "Answer Yes if any one of these applies to you. If you cannot tell, choose Not sure again.",
+      "shortName": "infection risk",
+      "fallback": {
+        "wording": "Has this shoulder had an operation or an injection, or do you take medicine for diabetes or for a weak immune system?",
+        "options": [
+          {
+            "label": "Yes",
+            "value": true
+          },
+          {
+            "label": "No",
+            "value": false
+          }
+        ]
+      },
       "dangerAnswers": []
     },
     {

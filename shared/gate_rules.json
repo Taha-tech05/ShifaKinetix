@@ -1,10 +1,11 @@
 {
   "schemaVersion": 2,
-  "contentVersion": "shoulder-3",
+  "contentVersion": "shoulder-4",
   "label": "draft, awaiting clinician review",
   "policySource": "docs/gate-contract.md",
-  "note": "Weighted triage (contract v2). A rule with 'level' is a hard stop: it sets that care level whatever the points. A rule with 'points' adds to the score. Score at or above levels.URGENT gives URGENT, at or above levels.SOON gives SOON, otherwise ROUTINE. Every single sign on the NHS shoulder-pain urgent list is worth at least levels.SOON on its own. All points and thresholds are draft and need clinician sign-off.",
+  "note": "Weighted triage (contract v2). A rule with 'level' is a hard stop: it sets that care level whatever the points. A rule with 'points' adds to the score. Score at or above levels.URGENT gives URGENT, at or above levels.SOON gives SOON, otherwise ROUTINE. Every single sign on the NHS shoulder-pain urgent list is worth at least levels.SOON on its own. All points and thresholds are draft and need clinician sign-off. unresolved: a hard-stop answer still 'Not sure' after its simpler question; up to 'allowed' of them (never chest or breathing) do not stop the check and make the result at least 'level'; more, or chest or breathing, is CLARIFY (see a doctor). They add no points, so a further answer can never lower the result.",
   "levels": {"SOON": 2, "URGENT": 4},
+  "unresolved": {"allowed": 1, "level": "SOON"},
   "rules": [
     {
       "ruleId": "E_chest",

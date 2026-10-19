@@ -39,7 +39,8 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
   const reviewed = useRef<string | undefined>(undefined);
   const [reason, setReason] = useState<Reason>('new');
   const [question, setQuestion] = useState<Question | null>(null);
-  const [unsure, setUnsure] = useState(false);
+  // after a first "Not sure" on a hard-stop question: its simpler, concrete question is shown instead
+  const [fallback, setFallback] = useState(false);
   const [prefilled, setPrefilled] = useState<string[]>([]);
   const [entry, setEntry] = useState(false);
   const [busy, setBusy] = useState(true);
@@ -53,7 +54,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     let output = await session.checkpoint();
     const requested = questions.find((q) => q.questionId === review);
     if (requested && reviewed.current !== review) {
-      setQuestion(requested); setReason('review'); setUnsure(false); setInput(''); return;
+      setQuestion(requested); setReason('review'); setFallback(false); setInput(''); return;
     }
     const filled: string[] = [];
     for (let i = 0; i <= MAX_PREFILLS; i += 1) {
@@ -66,7 +67,8 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
       }
       if (filled.length) setPrefilled((p) => [...new Set([...p, ...filled])]);
       if (step.kind === 'route') { setQuestion(null); router.replace(step.to); return; }
-      setQuestion(step.question); setReason(step.reason); setUnsure(false); setInput('');
+      setQuestion(step.question); setReason(step.reason); setInput('');
+      setFallback(step.reason === 'clarify' && !!step.question.fallback);
       return;
     }
     throw new Error('Could not confirm your saved answers. Please retry.');
@@ -91,14 +93,14 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
     await perform(async () => {
       const session = await openSafetySession();
       await session.save({ questionId: question.questionId, type: question.type as SafetyAnswer['type'],
-        value, state: value === null ? 'unknown' : 'answered', clarificationAttempted: value === null && (unsure || reason === 'clarify' || clarify) });
+        value, state: value === null ? 'unknown' : 'answered', clarificationAttempted: value === null && (fallback || reason === 'clarify' || clarify) });
       reviewed.current = review;
       await load();
     });
   }
   function notSure() {
-    // A hard-stop question explains itself once on the same card before "Not sure" is saved.
-    if (question?.tier === 'hardStop' && !unsure && reason !== 'clarify') { setUnsure(true); return; }
+    // A hard-stop question first offers its simpler, concrete question; only a "Not sure" to that is saved as unresolved.
+    if (question?.tier === 'hardStop' && question.fallback && !fallback && reason !== 'followup') { setFallback(true); return; }
     void save(null);
   }
   const numeric = input.trim() && /^\d+(\.\d+)?$/.test(input.trim()) ? Number(input) : NaN;
@@ -137,14 +139,16 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
         Already answered earlier, so not asked again: {prefilledNames.join(' · ')}. You can change them in your answers.
       </AppText>}
       <BotBubble>
-        <AppText variant="bodyStrong">{prompt?.text ?? question.wording}</AppText>
+        {fallback && question.fallback ? <>
+          <AppText variant="secondary" color={colors.muted}>That is fine. Let us try a simpler way.</AppText>
+          <AppText variant="bodyStrong">{question.fallback.wording}</AppText>
+        </> : <AppText variant="bodyStrong">{prompt?.text ?? question.wording}</AppText>}
         {reason === 'review' && <AppText variant="secondary" color={colors.muted}>Change your answer if it was not right. Everything is worked out again.</AppText>}
-        {questionHelp[question.questionId] && !prompt?.choices && <AppText variant="secondary" color={colors.muted}>{questionHelp[question.questionId]}</AppText>}
-        {(unsure || reason === 'clarify') && <>
-          <AppText variant="secondary" color={colors.muted}>{question.clarification}</AppText>
-          <AppText variant="secondary" color={colors.muted}>If you still cannot tell, choose Not sure again. We will suggest that a doctor checks this with you.</AppText>
-        </>}
+        {questionHelp[question.questionId] && !prompt?.choices && !fallback && <AppText variant="secondary" color={colors.muted}>{questionHelp[question.questionId]}</AppText>}
+        {fallback && <AppText variant="secondary" color={colors.muted}>If you still cannot tell, choose Not sure. We will suggest that a doctor checks this with you.</AppText>}
       </BotBubble>
+      {fallback && question.fallback ? <ChipRow>{question.fallback.options.map((o) => <Chip large key={o.label} label={o.label}
+        disabled={off} onPress={() => { void save(o.value); }} />)}</ChipRow> : <>
       {question.type === 'yesno' && <ChipRow>
         {(prompt?.choices ?? [{ label: 'Yes', value: true }, { label: 'No', value: false }]).map((c) =>
           <Chip large key={c.label} label={c.label} disabled={off} onPress={() => { void save(c.value); }} />)}
@@ -161,6 +165,7 @@ export function SafetyQuestionnaire({ clarify = false }: { clarify?: boolean }) 
           <Chip label="+" disabled={off} onPress={() => nudge(1)} style={{ minWidth: 52, paddingHorizontal: 0 }} />
         </View>
         <Button label="Save answer" disabled={busy || !!error || !validNumber} onPress={() => { void save(numeric); }} />
+      </>}
       </>}
       <ChipRow><Chip large label="Not sure" disabled={off} onPress={notSure} /></ChipRow>
       <AppText variant="secondary" color={colors.muted}>Source: {question.source}</AppText>

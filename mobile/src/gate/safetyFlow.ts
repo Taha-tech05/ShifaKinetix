@@ -1,8 +1,8 @@
 // What the safety check does next, as a pure function so it can be tested (contract v2, docs/safety-integration.md).
 // Draft, awaiting clinician review.
 //
-// Order: a confirmed danger stops at once. Then a follow-up for a real contradiction. Then persistent uncertainty stops at
-// the unclear screen. Then the next linked question that applies to the answers so far, in bank order: if an earlier app
+// Order: a confirmed danger stops at once. Then a follow-up for a real contradiction. Then uncertainty the gate cannot
+// leave open (chest or breathing, or too many unresolved answers) stops at the unclear screen. Then the next linked question that applies to the answers so far, in bank order: if an earlier app
 // answer already gives it (prefillFrom), it is saved from there instead of being asked again.
 import { Answer, GateOutput, isAskedQuestion, Question, questions, SafetyAnswer } from './evaluate';
 import { pendingSafetyFollowups, prefillValue, safetyAnswersFrom } from './sessionAdapter';
@@ -18,8 +18,11 @@ export function nextSafetyStep(input: Answer[], output: GateOutput): SafetyStep 
   const followUp = pendingSafetyFollowups(input)[0];
   if (followUp) return { kind: 'ask', question: questions.find((q) => q.questionId === followUp)!, reason: 'followup' };
   const asked = questions.filter((q) => isAskedQuestion(q, canonical));
-  if (asked.some((q) => q.tier === 'hardStop' && canonical.some((a) => a.questionId === q.questionId
-    && a.state === 'unknown' && a.clarificationAttempted))) return { kind: 'route', to: '/report/unclear' };
+  // The gate decides when uncertainty is too much (chest or breathing, or more than the allowed number of unresolved
+  // answers); a single unresolved answer lets the check continue.
+  if (output.firedRules.some((r) => r.ruleId.startsWith('U_') && r.reason.startsWith('Uncertainty persists'))) {
+    return { kind: 'route', to: '/report/unclear' };
+  }
   for (const q of asked) {
     const a = canonical.find((x) => x.questionId === q.questionId);
     if (!a) {
@@ -29,7 +32,8 @@ export function nextSafetyStep(input: Answer[], output: GateOutput): SafetyStep 
       }
       return { kind: 'ask', question: q, reason: 'new' };
     }
-    if (a.state === 'unknown' && q.tier === 'hardStop') return { kind: 'ask', question: q, reason: 'clarify' };
+    // Not sure without its simpler question yet: offer it. Already tried: it stays unresolved and the check moves on.
+    if (a.state === 'unknown' && q.tier === 'hardStop' && !a.clarificationAttempted) return { kind: 'ask', question: q, reason: 'clarify' };
   }
   return { kind: 'route', to: output.verdict === 'SAFE' ? '/report/safe' : '/report/unclear' };
 }
