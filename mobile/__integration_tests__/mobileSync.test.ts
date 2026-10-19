@@ -94,9 +94,16 @@ test('lost HTTP acknowledgement retries safely; repeated uncertainty and confirm
   })).rejects.toThrow('connection lost');
   expect((await opened.store.pending(intakeId))[0].id).toBe(first.id);
   await upload(); expect((await patient.gate(intakeId)).verdict).toBe('SAFE');
+  // one key answer still unsure after its simpler question: Soon on both sides
   await session.save({ ...negative('unable'), value: null, state: 'unknown', clarificationAttempted: true });
   await upload();
   expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
+  expect(useSession.getState().gateOutput).toMatchObject({ verdict: 'SAFE', level: 'SOON' });
+  // chest still unsure is never left open: unclear, and the differential stays blocked
+  await session.save({ ...negative('chest'), value: null, state: 'unknown', clarificationAttempted: true });
+  await upload();
+  expect(await patient.gate(intakeId)).toEqual(useSession.getState().gateOutput);
+  expect(useSession.getState().gateVerdict).toBe('CLARIFY');
   expect((await doctor.doctorReport(intakeId)).differential).toEqual([]);
   await session.save({ ...negative('numb'), value: true }); await upload();
   expect((await patient.gate(intakeId)).verdict).toBe('RED_FLAG');

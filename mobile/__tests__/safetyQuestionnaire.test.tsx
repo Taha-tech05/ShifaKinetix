@@ -89,16 +89,38 @@ test('the basics pain score is reused too: six questions to answer', async () =>
   expect(replace).toHaveBeenLastCalledWith('/report/safe');
 });
 
-test('a first Not sure on a hard-stop question explains it on the same card; a second one stops at unclear', async () => {
+test('Not sure on chest offers a simpler question; Not sure again stops at unclear', async () => {
   await start();
   await press('Not sure');
   expect(saved.has('chest')).toBe(false);
-  expect(text()).toContain('If you still cannot tell, choose Not sure again');
-  expect(text()).toContain(questions[0].clarification);
+  expect(text()).toContain('Let us try a simpler way');
+  expect(text()).toContain(questions[0].fallback!.wording);
   await press('Not sure');
   expect(saved.get('chest')).toMatchObject({ state: 'unknown', clarificationAttempted: true });
   expect(replace).toHaveBeenLastCalledWith('/report/unclear');
   expect(useSession.getState().gateVerdict).toBe('CLARIFY');
+});
+
+test('the simpler question can answer the original one', async () => {
+  await start();
+  await answer('chest', 'No'); await answer('breathing', 'No');
+  await press('Not sure');
+  expect(text()).toContain('Can you lift your hand up to your mouth');
+  await press('Yes');
+  expect(saved.get('unable')).toMatchObject({ value: false, state: 'answered' });
+  expect(text()).toContain(wording('sensation'));
+});
+
+test('one key answer still unclear after its simpler question: the check continues and ends at Soon', async () => {
+  await start();
+  await answer('chest', 'No'); await answer('breathing', 'No');
+  await press('Not sure'); await press('Not sure');
+  expect(saved.get('unable')).toMatchObject({ state: 'unknown', clarificationAttempted: true });
+  for (const [id, label] of LOW_RISK.slice(3)) await answer(id, label);
+  expect(useSession.getState().gateOutput).toMatchObject({ verdict: 'SAFE', level: 'SOON' });
+  expect(replace).toHaveBeenLastCalledWith('/report/safe');
+  await act(async () => { tree.update(<Safe />); });
+  expect(text()).toContain('Could not check whether the arm can move in the app');
 });
 
 test('a Yes to an opening question asks its details; No to each continues', async () => {

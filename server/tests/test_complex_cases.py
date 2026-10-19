@@ -302,14 +302,23 @@ def oracle(given):
     emergency = bool(pairs & EMERGENCY)
     urgent = bool(pairs & URGENT) or (said.get("redness") is True and (said.get("fever") is True or said.get("infection_risk") is True))
     asked = [q for q in QUESTIONS if is_asked_question(q, given)]
-    incomplete = any(q["questionId"] not in by_id or (by_id[q["questionId"]]["state"] == "unknown" and q["tier"] == "hardStop") for q in asked)
+    # still not sure after the simpler question: one may stay open (then at least SOON), never chest or breathing
+    unresolved = [q["questionId"] for q in asked if q["tier"] == "hardStop" and q["questionId"] in by_id
+                  and by_id[q["questionId"]]["state"] == "unknown" and by_id[q["questionId"]].get("clarificationAttempted") is True]
+    tolerated = len(unresolved) <= 1 and not set(unresolved) & {"chest", "breathing"}
+    incomplete = any(
+        q["questionId"] not in by_id
+        or (by_id[q["questionId"]]["state"] == "unknown" and q["tier"] == "hardStop"
+            and not (tolerated and q["questionId"] in unresolved))
+        for q in asked
+    )
     if emergency:
         return "RED_FLAG", "EMERGENCY", score
     if urgent or score >= THRESHOLDS["URGENT"]:
         return "RED_FLAG", "URGENT", score
     if incomplete:
         return "CLARIFY", None, score
-    return "SAFE", "SOON" if score >= THRESHOLDS["SOON"] else "ROUTINE", score
+    return "SAFE", "SOON" if score >= THRESHOLDS["SOON"] or (tolerated and unresolved) else "ROUTINE", score
 
 
 def random_intake(rng):
@@ -366,7 +375,10 @@ def test_every_pair_of_not_sure_answers_is_never_safe(pair):
     for given in (answers(unknown=pair), answers(unknown=pair[:1], clarified=pair[1:])):
         result = evaluate(given)
         assert result["verdict"] == "CLARIFY"
-        hard_stops = [q["questionId"] for q in REQUIRED if q["questionId"] in pair and q["tier"] == "hardStop"]
+        # in the second set the clarified pair[1] may stay unresolved, unless it is chest or breathing
+        clarified = any(a.get("clarificationAttempted") for a in given)
+        settled = pair[1] if clarified and pair[1] not in ("chest", "breathing") else None
+        hard_stops = [q["questionId"] for q in REQUIRED if q["questionId"] in pair and q["tier"] == "hardStop" and q["questionId"] != settled]
         assert [r["ruleId"] for r in result["firedRules"] if r["ruleId"].startswith("U_")] == [f"U_{q}" for q in hard_stops]
 
 

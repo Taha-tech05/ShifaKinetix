@@ -2167,8 +2167,8 @@
       "label": "draft, awaiting clinician review"
     },
     {
-      "caseId": "unknown_unable_persistent",
-      "description": "Persistent Not sure about moving the arm stays CLARIFY",
+      "caseId": "unknown_unable_first",
+      "description": "A first Not sure on a hard-stop question asks its simpler question",
       "answers": [
         {
           "questionId": "chest",
@@ -2192,8 +2192,7 @@
           "questionId": "unable",
           "type": "yesno",
           "value": null,
-          "state": "unknown",
-          "clarificationAttempted": true
+          "state": "unknown"
         },
         {
           "questionId": "sensation",
@@ -2232,6 +2231,185 @@
             "ruleId": "U_unable",
             "matchedAnswers": [
               "unable"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Safety answer is uncertain; ask the fixed clarification."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "unresolved_breathing_is_clarify",
+      "description": "Breathing still not sure after its simpler question is never left open",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "gradual",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedLevel": null,
+      "expectedScore": 0,
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "level": null,
+        "score": 0,
+        "firedRules": [
+          {
+            "ruleId": "U_breathing",
+            "matchedAnswers": [
+              "breathing"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Uncertainty persists after clarification; clinical review required."
+          }
+        ]
+      },
+      "mustNotBe": "SAFE",
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "two_unresolved_is_clarify",
+      "description": "Two answers still not sure after their simpler questions: a doctor is needed",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "gradual",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "tingling",
+          "type": "choice",
+          "value": "none",
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "CLARIFY",
+      "expectedLevel": null,
+      "expectedScore": 0,
+      "expectedOutput": {
+        "verdict": "CLARIFY",
+        "level": null,
+        "score": 0,
+        "firedRules": [
+          {
+            "ruleId": "U_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Uncertainty persists after clarification; clinical review required."
+          },
+          {
+            "ruleId": "U_numb",
+            "matchedAnswers": [
+              "numb"
             ],
             "source": "docs/gate-contract.md",
             "reason": "Uncertainty persists after clarification; clinical review required."
@@ -2417,100 +2595,6 @@
             ],
             "source": "docs/gate-contract.md",
             "reason": "Required safety answer is missing."
-          }
-        ]
-      },
-      "mustNotBe": "SAFE",
-      "source": "docs/gate-contract.md",
-      "label": "draft, awaiting clinician review"
-    },
-    {
-      "caseId": "unknown_numb_persistent",
-      "description": "Persistent Not sure about feeling stays CLARIFY",
-      "answers": [
-        {
-          "questionId": "chest",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "breathing",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "onset",
-          "type": "choice",
-          "value": "gradual",
-          "state": "answered"
-        },
-        {
-          "questionId": "unable",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "sensation",
-          "type": "yesno",
-          "value": true,
-          "state": "answered"
-        },
-        {
-          "questionId": "numb",
-          "type": "yesno",
-          "value": null,
-          "state": "unknown",
-          "clarificationAttempted": true
-        },
-        {
-          "questionId": "tingling",
-          "type": "choice",
-          "value": "none",
-          "state": "answered"
-        },
-        {
-          "questionId": "temperature",
-          "type": "choice",
-          "value": "normal",
-          "state": "answered"
-        },
-        {
-          "questionId": "inflammation",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "illness",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "pain_score",
-          "type": "number",
-          "value": 3,
-          "state": "answered"
-        }
-      ],
-      "expectedVerdict": "CLARIFY",
-      "expectedLevel": null,
-      "expectedScore": 0,
-      "expectedOutput": {
-        "verdict": "CLARIFY",
-        "level": null,
-        "score": 0,
-        "firedRules": [
-          {
-            "ruleId": "U_numb",
-            "matchedAnswers": [
-              "numb"
-            ],
-            "source": "docs/gate-contract.md",
-            "reason": "Uncertainty persists after clarification; clinical review required."
           }
         ]
       },
@@ -2727,121 +2811,6 @@
             ],
             "source": "docs/gate-contract.md",
             "reason": "Required safety answer is missing."
-          }
-        ]
-      },
-      "mustNotBe": "SAFE",
-      "source": "docs/gate-contract.md",
-      "label": "draft, awaiting clinician review"
-    },
-    {
-      "caseId": "infection_risk_unknown_persistent",
-      "description": "Persistent Not sure about infection risk with redness stays CLARIFY",
-      "answers": [
-        {
-          "questionId": "chest",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "breathing",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "onset",
-          "type": "choice",
-          "value": "gradual",
-          "state": "answered"
-        },
-        {
-          "questionId": "unable",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "sensation",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "temperature",
-          "type": "choice",
-          "value": "normal",
-          "state": "answered"
-        },
-        {
-          "questionId": "inflammation",
-          "type": "yesno",
-          "value": true,
-          "state": "answered"
-        },
-        {
-          "questionId": "swelling",
-          "type": "choice",
-          "value": "none",
-          "state": "answered"
-        },
-        {
-          "questionId": "redness",
-          "type": "yesno",
-          "value": true,
-          "state": "answered"
-        },
-        {
-          "questionId": "infection_risk",
-          "type": "yesno",
-          "value": null,
-          "state": "unknown",
-          "clarificationAttempted": true
-        },
-        {
-          "questionId": "fever",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "illness",
-          "type": "yesno",
-          "value": false,
-          "state": "answered"
-        },
-        {
-          "questionId": "pain_score",
-          "type": "number",
-          "value": 3,
-          "state": "answered"
-        }
-      ],
-      "expectedVerdict": "CLARIFY",
-      "expectedLevel": null,
-      "expectedScore": 1,
-      "expectedOutput": {
-        "verdict": "CLARIFY",
-        "level": null,
-        "score": 1,
-        "firedRules": [
-          {
-            "ruleId": "P_redness",
-            "matchedAnswers": [
-              "redness"
-            ],
-            "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
-            "reason": "A red painful shoulder.",
-            "points": 1
-          },
-          {
-            "ruleId": "U_infection_risk",
-            "matchedAnswers": [
-              "infection_risk"
-            ],
-            "source": "docs/gate-contract.md",
-            "reason": "Uncertainty persists after clarification; clinical review required."
           }
         ]
       },
@@ -4471,6 +4440,382 @@
             "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
             "reason": "Severe pain in both shoulders.",
             "points": 2
+          }
+        ]
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "soon_one_unresolved_unable",
+      "description": "Not sure about moving the arm, even with the simpler question: see a doctor soon, no movements",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "gradual",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedLevel": "SOON",
+      "expectedScore": 0,
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "level": "SOON",
+        "score": 0,
+        "firedRules": [
+          {
+            "ruleId": "N_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Could not check whether the arm can move in the app",
+            "points": 0
+          }
+        ]
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "soon_unresolved_adds_no_points",
+      "description": "An unresolved answer sets a minimum level and adds no points",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "injury",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "shape",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedLevel": "SOON",
+      "expectedScore": 2,
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "level": "SOON",
+        "score": 2,
+        "firedRules": [
+          {
+            "ruleId": "P_onset_injury",
+            "matchedAnswers": [
+              "onset"
+            ],
+            "source": "https://www.nhs.uk/symptoms/shoulder-pain/",
+            "reason": "The pain started after an injury or accident.",
+            "points": 2
+          },
+          {
+            "ruleId": "N_unable",
+            "matchedAnswers": [
+              "unable"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Could not check whether the arm can move in the app",
+            "points": 0
+          }
+        ]
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "soon_one_unresolved_numb",
+      "description": "Not sure about feeling, even with the simpler question: see a doctor soon",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "gradual",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "numb",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "tingling",
+          "type": "choice",
+          "value": "none",
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedLevel": "SOON",
+      "expectedScore": 0,
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "level": "SOON",
+        "score": 0,
+        "firedRules": [
+          {
+            "ruleId": "N_numb",
+            "matchedAnswers": [
+              "numb"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Could not check feeling in the arm in the app",
+            "points": 0
+          }
+        ]
+      },
+      "source": "docs/gate-contract.md",
+      "label": "draft, awaiting clinician review"
+    },
+    {
+      "caseId": "soon_red_joint_infection_risk_unresolved",
+      "description": "A red joint with infection risk still not sure: see a doctor soon",
+      "answers": [
+        {
+          "questionId": "chest",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "breathing",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "onset",
+          "type": "choice",
+          "value": "gradual",
+          "state": "answered"
+        },
+        {
+          "questionId": "unable",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "sensation",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "temperature",
+          "type": "choice",
+          "value": "normal",
+          "state": "answered"
+        },
+        {
+          "questionId": "inflammation",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "swelling",
+          "type": "choice",
+          "value": "none",
+          "state": "answered"
+        },
+        {
+          "questionId": "redness",
+          "type": "yesno",
+          "value": true,
+          "state": "answered"
+        },
+        {
+          "questionId": "infection_risk",
+          "type": "yesno",
+          "value": null,
+          "state": "unknown",
+          "clarificationAttempted": true
+        },
+        {
+          "questionId": "fever",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "illness",
+          "type": "yesno",
+          "value": false,
+          "state": "answered"
+        },
+        {
+          "questionId": "pain_score",
+          "type": "number",
+          "value": 3,
+          "state": "answered"
+        }
+      ],
+      "expectedVerdict": "SAFE",
+      "expectedLevel": "SOON",
+      "expectedScore": 1,
+      "expectedOutput": {
+        "verdict": "SAFE",
+        "level": "SOON",
+        "score": 1,
+        "firedRules": [
+          {
+            "ruleId": "P_redness",
+            "matchedAnswers": [
+              "redness"
+            ],
+            "source": "https://www.ncbi.nlm.nih.gov/sites/books/NBK538176/",
+            "reason": "A red painful shoulder.",
+            "points": 1
+          },
+          {
+            "ruleId": "N_infection_risk",
+            "matchedAnswers": [
+              "infection_risk"
+            ],
+            "source": "docs/gate-contract.md",
+            "reason": "Could not check infection risk in the app",
+            "points": 0
           }
         ]
       },

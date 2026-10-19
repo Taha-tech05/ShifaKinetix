@@ -67,10 +67,11 @@ test('conditional infection uncertainty survives restart and requires an explici
   await session.save({ questionId: 'infection_risk', type: 'yesno', state: 'unknown', value: null, clarificationAttempted: true });
   session.dispose(); useSession.getState().reset(); db.close(); open(); await store.initialize();
   const resumed = new SafetySession(store);
-  expect((await resumed.resumeLatest()).verdict).toBe('CLARIFY');
-  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['P_redness', 'U_infection_risk']);
+  // still not sure after the simpler question: one unresolved answer gives Soon (doctor in a few days, no movements)
+  expect(await resumed.resumeLatest()).toMatchObject({ verdict: 'SAFE', level: 'SOON' });
+  expect((await resumed.checkpoint()).firedRules.map((r) => r.ruleId)).toEqual(['P_redness', 'N_infection_risk']);
   await resumed.save({ questionId: 'infection_risk', type: 'yesno', state: 'answered', value: false, clarificationAttempted: true });
-  expect((await resumed.checkpoint()).verdict).toBe('SAFE');
+  expect(await resumed.checkpoint()).toMatchObject({ verdict: 'SAFE', level: 'ROUTINE' });
   resumed.dispose();
 });
 

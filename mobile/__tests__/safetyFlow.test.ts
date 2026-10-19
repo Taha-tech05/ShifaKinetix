@@ -60,11 +60,39 @@ test('no question is ever asked twice on any path', () => {
   }
 });
 
-test('a confirmed danger stops at once; persistent uncertainty goes to unclear', () => {
+const unresolved = (id: string): Answer => ({ questionId: id, type: questions.find((q) => q.questionId === id)!.type,
+  value: null, state: 'unknown', clarificationAttempted: true });
+
+test('a confirmed danger stops at once', () => {
   expect(step([how('slowly'), ...lowRiskAnswers({ chest: true })])).toEqual({ kind: 'route', to: '/report/urgent' });
-  const unsure = [how('slowly'), ...lowRiskAnswers({}, ['unable']),
-    { questionId: 'unable', type: 'yesno', value: null, state: 'unknown' as const, clarificationAttempted: true }];
-  expect(step(unsure)).toEqual({ kind: 'route', to: '/report/unclear' });
+});
+
+test('one unresolved answer lets the check finish at Soon; chest, breathing or two unresolved go to unclear', () => {
+  const one = [how('slowly'), ...lowRiskAnswers({}, ['unable']), unresolved('unable')];
+  expect(step(one)).toEqual({ kind: 'route', to: '/report/safe' });
+  expect(evaluateSessionGate(one)).toMatchObject({ verdict: 'SAFE', level: 'SOON' });
+  expect(step([how('slowly'), ...lowRiskAnswers({}, ['chest']), unresolved('chest')])).toEqual({ kind: 'route', to: '/report/unclear' });
+  const two = [how('slowly'), ...lowRiskAnswers({ sensation: true, tingling: 'none', temperature: 'normal' }, ['unable']),
+    unresolved('unable'), unresolved('numb')];
+  expect(step(two)).toEqual({ kind: 'route', to: '/report/unclear' });
+});
+
+test('a first Not sure on a hard-stop question offers its simpler question; one unresolved answer does not stop the rest', () => {
+  const first = [how('slowly'), ...lowRiskAnswers({ unable: null }, ['sensation', 'inflammation', 'illness', 'pain_score'])];
+  expect(step(first)).toMatchObject({ kind: 'ask', reason: 'clarify', question: { questionId: 'unable' } });
+  const later = [how('slowly'), ...lowRiskAnswers({}, ['unable', 'sensation', 'inflammation', 'illness', 'pain_score']), unresolved('unable')];
+  expect(step(later)).toMatchObject({ kind: 'ask', reason: 'new', question: { questionId: 'sensation' } });
+});
+
+test('every hard-stop question has a simpler question whose options are valid answers', () => {
+  for (const q of questions.filter((x) => x.tier === 'hardStop')) {
+    expect(q.fallback?.options.length).toBeGreaterThan(1);
+    expect(q.shortName).toBeTruthy();
+    for (const o of q.fallback!.options) {
+      expect(evaluate([{ questionId: q.questionId, type: q.type, value: o.value, state: 'answered' }]).firedRules
+        .some((r) => r.ruleId === 'INPUT_INVALID')).toBe(false);
+    }
+  }
 });
 
 test('a follow-up comes before any other question and is marked as such', () => {

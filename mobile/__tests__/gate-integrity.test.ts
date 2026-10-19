@@ -180,7 +180,12 @@ test('every path the questionnaire can take to SAFE has covered every hard-stop 
     const out = evaluate(answers);
     if (out.verdict !== 'SAFE') continue;
     safe += 1;
-    for (const q of questions.filter((x) => x.tier === 'hardStop')) expect(covered(q.questionId, answers)).toBe(true);
+    // a hard-stop question is answered, closed by its opening question, or left unresolved: then never ROUTINE
+    const open = questions.filter((x) => x.tier === 'hardStop' && !covered(x.questionId, answers));
+    for (const q of open) expect(answers.find((a) => a.questionId === q.questionId)).toMatchObject({ state: 'unknown', clarificationAttempted: true });
+    if (open.length) expect(out.level).toBe('SOON');
+    expect(open.length).toBeLessThanOrEqual(1);
+    expect(open.some((q) => q.questionId === 'chest' || q.questionId === 'breathing')).toBe(false);
     // a denied topic gives each detail its own No
     for (const q of questions.filter((x) => x.deniedValue !== undefined && !answers.some((a) => a.questionId === x.questionId))) {
       const implied = impliedAnswer(answers, q.questionId);

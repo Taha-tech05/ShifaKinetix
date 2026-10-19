@@ -1,4 +1,4 @@
-"""Writes shared/gate_test_cases.json (gate contract v2: weighted triage with linked questions).
+"""Writes shared/gate_test_cases.json (gate contract v2.1: weighted triage, linked questions, unresolved answers).
 
 Expected verdicts, care levels, scores and fired rule ids are stated by hand in
 this file from docs/gate-contract.md. Neither evaluator is imported or run, so
@@ -20,7 +20,7 @@ LABEL = "draft, awaiting clinician review"
 REASONS = {
     "M": "Required safety answer is missing.",
     "U": "Safety answer is uncertain; ask the fixed clarification.",
-    "U!": "Uncertainty persists after clarification; clinical review required.",
+    "U!": "Uncertainty persists after clarification; clinical review required.",  # after the simpler question too
     "W": "Answer is uncertain; counted at half weight.",
     "INPUT_INVALID": "Invalid or conflicting answers; clinical review required.",
 }
@@ -52,6 +52,10 @@ def fired(rule_id):
     """Expected fired-rule entry. M_x, U_x (first 'Not sure'), U!_x (after clarification), W_x:points."""
     if rule_id == "INPUT_INVALID":
         return {"ruleId": rule_id, "matchedAnswers": [], "source": POLICY, "reason": REASONS[rule_id]}
+    if rule_id.startswith("N_"):
+        qid = rule_id[2:]
+        return {"ruleId": rule_id, "matchedAnswers": [qid], "source": POLICY,
+                "reason": f"Could not check {QUESTIONS[qid]['shortName']} in the app", "points": 0}
     if rule_id.startswith("W_"):
         qid, points = rule_id[2:].split(":")
         return {"ruleId": f"W_{qid}", "matchedAnswers": [qid], "source": POLICY, "reason": REASONS["W"],
@@ -127,6 +131,7 @@ case("urgent_points_fever_and_cancer", "Fever plus a history of cancer reach the
      answers(**{**INFLAMMATION_NO_DETAILS, "fever": True}, illness=True, systemic=False, cancer=True),
      "RED_FLAG", "URGENT", 4, ["P_fever", "P_cancer"])
 
+
 # ---------------------------------------------------------------- invalid input fails closed
 case("input_invalid_string_boolean", "A string 'true' is not a yes/no answer",
      [*answers(drop=("chest",)), {"questionId": "chest", "type": "yesno", "value": "true", "state": "answered"}],
@@ -147,22 +152,23 @@ case("unknown_chest_first", "A first Not sure on a hard-stop question asks the c
      answers(chest=None), "CLARIFY", None, 0, ["U_chest"])
 case("unknown_chest_persistent", "Not sure again after the clarification stays CLARIFY",
      answers(chest="?!"), "CLARIFY", None, 0, ["U!_chest"])
-case("unknown_unable_persistent", "Persistent Not sure about moving the arm stays CLARIFY",
-     answers(unable="?!"), "CLARIFY", None, 0, ["U!_unable"])
+case("unknown_unable_first", "A first Not sure on a hard-stop question asks its simpler question",
+     answers(unable=None), "CLARIFY", None, 0, ["U_unable"])
+case("unresolved_breathing_is_clarify", "Breathing still not sure after its simpler question is never left open",
+     answers(breathing="?!"), "CLARIFY", None, 0, ["U!_breathing"])
+case("two_unresolved_is_clarify", "Two answers still not sure after their simpler questions: a doctor is needed",
+     answers(**{**SENSATION_NO_DETAILS, "numb": "?!"}, unable="?!"), "CLARIFY", None, 0, ["U!_unable", "U!_numb"])
 case("gateway_yes_opens_details", "A Yes to an opening question asks its detail questions",
      answers(sensation=True), "CLARIFY", None, 0, ["M_numb", "M_tingling", "M_temperature"])
 case("gateway_unknown_opens_details", "A Not sure to an opening question asks its details instead of blocking",
      answers(sensation=None), "CLARIFY", None, 0, ["M_numb", "M_tingling", "M_temperature"])
-case("unknown_numb_persistent", "Persistent Not sure about feeling stays CLARIFY",
-     answers(**{**SENSATION_NO_DETAILS, "numb": "?!"}), "CLARIFY", None, 0, ["U!_numb"])
+
 case("redness_asks_infection_risk", "A red joint asks the infection-risk question",
      answers(**{**INFLAMMATION_NO_DETAILS, "redness": True}), "CLARIFY", None, 1, ["P_redness", "M_infection_risk"])
 case("redness_unknown_asks_infection_risk", "Not sure about redness counts half and still asks infection risk",
      answers(**{**INFLAMMATION_NO_DETAILS, "redness": None}), "CLARIFY", None, 0.5,
      ["W_redness:0.5", "M_infection_risk"])
-case("infection_risk_unknown_persistent", "Persistent Not sure about infection risk with redness stays CLARIFY",
-     answers(**{**INFLAMMATION_NO_DETAILS, "redness": True, "infection_risk": "?!"}), "CLARIFY", None, 1,
-     ["P_redness", "U!_infection_risk"])
+
 case("injury_asks_shape", "An injury start asks about changed shape", answers(onset="injury"),
      "CLARIFY", None, 2, ["P_onset_injury", "M_shape"])
 case("unknown_onset_asks_shape", "Not sure how it started counts half and asks about changed shape",
@@ -203,6 +209,15 @@ case("soon_systemic_only", "Unexplained weight loss alone means see a doctor soo
      answers(illness=True, systemic=True, cancer=False), "SAFE", "SOON", 2, ["P_systemic"])
 case("soon_both_shoulders", "Severe pain in both shoulders with a strong score means see a doctor soon",
      answers(pain_score=6, bilateral=True), "SAFE", "SOON", 3, ["P_pain_moderate", "P_bilateral"])
+case("soon_one_unresolved_unable", "Not sure about moving the arm, even with the simpler question: see a doctor soon, no movements",
+     answers(unable="?!"), "SAFE", "SOON", 0, ["N_unable"])
+case("soon_unresolved_adds_no_points", "An unresolved answer sets a minimum level and adds no points",
+     answers(onset="injury", shape=False, unable="?!"), "SAFE", "SOON", 2, ["P_onset_injury", "N_unable"])
+case("soon_one_unresolved_numb", "Not sure about feeling, even with the simpler question: see a doctor soon",
+     answers(**{**SENSATION_NO_DETAILS, "numb": "?!"}), "SAFE", "SOON", 0, ["N_numb"])
+case("soon_red_joint_infection_risk_unresolved", "A red joint with infection risk still not sure: see a doctor soon",
+     answers(**{**INFLAMMATION_NO_DETAILS, "redness": True, "infection_risk": "?!"}), "SAFE", "SOON", 1,
+     ["P_redness", "N_infection_risk"])
 case("soon_two_uncertain_answers", "Two uncertain weighted answers add up to soon without blocking",
      answers(illness=True, systemic=None, cancer=None), "SAFE", "SOON", 2, ["W_systemic:1", "W_cancer:1"])
 

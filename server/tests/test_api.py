@@ -368,14 +368,14 @@ def test_followups_are_resolved_one_at_a_time(api, patient):
     assert send(api, patient, "intake-1", answer("onset"))["gate"] == SAFE_ROUTINE
 
 
-def test_followup_answered_not_sure_stays_unclear(api, patient):
+def test_followup_answered_not_sure_twice_leaves_one_unresolved_answer(api, patient):
     complete_screen(api, patient, "intake-1")
     send_context(api, patient, "intake-1", movements=full_set("sideways_raise"))
     reply = send(api, patient, "intake-1", answer("unable", "unsure"))
     assert reply["gate"]["verdict"] == "CLARIFY" and rule_ids(reply["gate"]) == ["U_unable"]
     again = send(api, patient, "intake-1", {**answer("unable", "unsure"), "clarificationAttempted": True})
-    assert again["gate"]["verdict"] == "CLARIFY"
-    assert again["gate"]["firedRules"][0]["reason"].startswith("Uncertainty persists")
+    assert (again["gate"]["verdict"], again["gate"]["level"]) == ("SAFE", "SOON"), "one unresolved answer: doctor soon"
+    assert rule_ids(again["gate"]) == ["N_unable"]
 
 
 def test_changed_movement_evidence_needs_the_followup_again(api, patient):

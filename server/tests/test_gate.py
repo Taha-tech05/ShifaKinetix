@@ -7,6 +7,7 @@ import pytest
 from safety_answers import REQUIRED, REQUIRED_IDS, answers, record
 
 from app.gate import (
+    EMERGENCY_IDS,
     QUESTIONS,
     RULES,
     SHARED_DIR,
@@ -52,23 +53,33 @@ def test_low_risk_path_is_eight_questions_and_routine():
 
 
 @pytest.mark.parametrize("qid", REQUIRED_IDS)
-def test_missing_or_not_sure_on_an_always_asked_question_is_never_safe(qid):
+def test_missing_or_not_sure_on_an_always_asked_question_is_never_routine(qid):
     assert evaluate(answers(missing=[qid]))["verdict"] == "CLARIFY"
     assert evaluate(answers(unknown=[qid]))["verdict"] == "CLARIFY"
-    assert evaluate(answers(clarified=[qid]))["verdict"] == "CLARIFY"
+    assert rank(evaluate(answers(clarified=[qid]))) >= RANK["SOON"]
 
 
 @pytest.mark.parametrize("question", [q for q in QUESTIONS if q["tier"] == "hardStop"], ids=lambda q: q["questionId"])
-def test_not_sure_on_an_asked_hard_stop_question_asks_the_clarification_then_persists(question):
+def test_not_sure_on_a_hard_stop_question_asks_its_simpler_question_then_one_may_stay_unresolved(question):
     opened = {c["questionId"]: (True if c.get("equals") is True else c.get("in", [None])[0]) for c in question.get("askWhen") or []}
     opened = {k: v for k, v in opened.items() if v is not None}
     if "pain_score" in opened or "redness" in opened:
         opened.setdefault("inflammation", True)
-    first = evaluate(answers(unknown=[question["questionId"]], **opened))
-    again = evaluate(answers(clarified=[question["questionId"]], **opened))
-    assert first["verdict"] == again["verdict"] == "CLARIFY"
-    assert f"U_{question['questionId']}" in ids(first)
-    assert next(r for r in again["firedRules"] if r["ruleId"] == f"U_{question['questionId']}")["reason"].startswith("Uncertainty persists")
+    qid = question["questionId"]
+    first = evaluate(answers(unknown=[qid], **opened))
+    again = evaluate(answers(clarified=[qid], **opened))
+    assert first["verdict"] == "CLARIFY" and f"U_{qid}" in ids(first)
+    if qid in EMERGENCY_IDS:
+        assert again["verdict"] == "CLARIFY"
+        assert next(r for r in again["firedRules"] if r["ruleId"] == f"U_{qid}")["reason"].startswith("Uncertainty persists")
+    else:
+        assert f"N_{qid}" in ids(again) and f"U_{qid}" not in ids(again)
+        assert rank(again) >= RANK["SOON"]
+
+
+def test_two_unresolved_answers_need_a_doctor():
+    out = evaluate(answers(clarified=["unable", "numb"], sensation=True, tingling="none", temperature="normal"))
+    assert out["verdict"] == "CLARIFY" and ids(out) == ["U_unable", "U_numb"]
 
 
 @pytest.mark.parametrize(
@@ -210,9 +221,14 @@ def test_every_questionnaire_path_to_safe_covers_every_hard_stop_question():
         if out["verdict"] != "SAFE":
             continue
         safe += 1
+        # answered, closed by its opening question, or left unresolved (at most one, never chest/breathing, then SOON)
+        unresolved = [q for q in QUESTIONS if q["tier"] == "hardStop" and not covered(q["questionId"], given)]
+        assert len(unresolved) <= 1 and not any(q["questionId"] in EMERGENCY_IDS for q in unresolved)
+        for q in unresolved:
+            assert next(a for a in given if a["questionId"] == q["questionId"]).get("clarificationAttempted") is True
+            assert out["level"] == "SOON"
         for q in QUESTIONS:
-            if q["tier"] == "hardStop":
-                assert covered(q["questionId"], given), (q["questionId"], given)
+            if q["tier"] == "hardStop" and q not in unresolved:
                 implied = implied_answer(given, q["questionId"])
                 assert implied is not None and implied["state"] == "answered"
     assert safe > 100
